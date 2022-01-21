@@ -1,12 +1,6 @@
 #include "tables.hpp"
-#include "bitboard.hpp"
+#include "utils.hpp"
 #include <iostream>
-
-using bb::BLACK, bb::WHITE;
-using bb::Color;
-using bb::NORTH_WEST, bb::NORTH_EAST, bb::SOUTH_WEST, bb::SOUTH_EAST;
-using bb::Square;
-using bb::ZERO;
 
 U64 tables::SQUARE_BB[64];
 U64 tables::PAWN_ATTACKS[2][64];
@@ -22,10 +16,10 @@ void tables::init()
 {
     for (int sq = 0; sq < 64; sq++)
     {
-        tables::SQUARE_BB[sq] = 1ULL << sq;
+        tables::SQUARE_BB[sq] = utils::ONE << sq;
 
-        tables::PAWN_ATTACKS[WHITE][sq] = wPawnAnyAttacks(tables::SQUARE_BB[sq]);
-        tables::PAWN_ATTACKS[BLACK][sq] = bPawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::PAWN_ATTACKS[bb::WHITE][sq] = wPawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::PAWN_ATTACKS[bb::BLACK][sq] = bPawnAnyAttacks(tables::SQUARE_BB[sq]);
 
         tables::KNIGHT_ATTACKS[sq] = knightAttacks(tables::SQUARE_BB[sq]);
 
@@ -33,11 +27,11 @@ void tables::init()
     }
 }
 
-inline U64 wPawnEastAttacks(U64 wpawns) { return bb::noEaOne(wpawns); }
-inline U64 wPawnWestAttacks(U64 wpawns) { return bb::noWeOne(wpawns); }
+inline U64 wPawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
+inline U64 wPawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
 
-inline U64 bPawnEastAttacks(U64 bpawns) { return bb::soEaOne(bpawns); }
-inline U64 bPawnWestAttacks(U64 bpawns) { return bb::soWeOne(bpawns); }
+inline U64 bPawnEastAttacks(U64 bpawns) { return utils::soEaOne(bpawns); }
+inline U64 bPawnWestAttacks(U64 bpawns) { return utils::soWeOne(bpawns); }
 
 U64 wPawnAnyAttacks(U64 wpawns)
 {
@@ -78,8 +72,8 @@ U64 knightAttacks(U64 knights)
 
 U64 kingAttacks(U64 kings)
 {
-    U64 attacks = bb::eastOne(kings) | bb::westOne(kings);
+    U64 attacks = utils::eastOne(kings) | utils::westOne(kings);
     kings |= attacks;
-    attacks |= bb::nortOne(kings) | bb::soutOne(kings);
+    attacks |= utils::nortOne(kings) | utils::soutOne(kings);
     return attacks;
 }

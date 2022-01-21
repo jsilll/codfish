@@ -47,4 +47,4 @@ namespace tables
     extern U64 KING_ATTACKS[64];
 
     void init();
-}
+} // namespace tables

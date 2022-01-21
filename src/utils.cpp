@@ -1,15 +1,14 @@
-#include "bitboard.hpp"
-
+#include "utils.hpp"
 #include <iostream>
 
-void bb::print_bb(U64 bitboard)
+void utils::print_bb(U64 bitboard)
 {
     for (int i = 7; i >= 0; i--)
     {
         std::cout << i + 1 << "  ";
         for (int n = 0; n < 8; n++)
         {
-            std::cout << ((bitboard >> get_square_index(i, n)) & ONE) << " ";
+            std::cout << ((bitboard >> get_square_index(i, n)) & utils::ONE) << " ";
         }
         std::cout << "\n";
     }

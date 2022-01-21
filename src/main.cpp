@@ -1,4 +1,4 @@
-#include "bitboard.hpp"
+#include "utils.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -6,7 +6,7 @@ int main(int argc, char const *argv[])
 
     for (int sq = 0; sq < 64; sq++)
     {
-        bb::print_bb(tables::KING_ATTACKS[sq]);
+        utils::print_bb(tables::PAWN_ATTACKS[bb::WHITE][sq]);
     }
 
     return 0;
