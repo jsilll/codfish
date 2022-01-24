@@ -4,7 +4,6 @@ typedef unsigned long long U64;
 
 namespace bb
 {
-
     enum Color
     {
         WHITE,

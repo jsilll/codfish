@@ -1,8 +1,11 @@
 #include "tables.hpp"
+#include "bitboard.hpp"
 #include "utils.hpp"
 #include <iostream>
 
 U64 tables::SQUARE_BB[64];
+int tables::MS1BTABLE[256];
+
 U64 tables::PAWN_ATTACKS[2][64];
 U64 tables::KNIGHT_ATTACKS[64];
 U64 tables::KING_ATTACKS[64];
@@ -24,6 +27,17 @@ void tables::init()
         tables::KNIGHT_ATTACKS[sq] = knightAttacks(tables::SQUARE_BB[sq]);
 
         tables::KING_ATTACKS[sq] = kingAttacks(tables::SQUARE_BB[sq]);
+    }
+
+    for (int i = 0; i < 256; i++)
+    {
+        MS1BTABLE[i] = ((i > 127) ? 7 : (i > 63) ? 6
+                                    : (i > 31)   ? 5
+                                    : (i > 15)   ? 4
+                                    : (i > 7)    ? 3
+                                    : (i > 3)    ? 2
+                                    : (i > 1)    ? 1
+                                                 : 0);
     }
 }
 
@@ -57,7 +71,7 @@ U64 bPawnAnyAttacks(U64 bpawns)
 //     return wPawnEastAttacks(wpawns) ^ wPawnWestAttacks(wpawns);
 // }
 
-U64 knightAttacks(U64 knights)
+U64 knightAttacks(U64 knights) // TODO: understand code and use Directions Enum
 {
     const U64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
     const U64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;

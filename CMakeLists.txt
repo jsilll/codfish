@@ -15,3 +15,4 @@ file(GLOB SRC
 )
 
 add_executable(main ${SRC})
+target_link_libraries(main readline)

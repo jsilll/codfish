@@ -4,7 +4,6 @@ typedef unsigned long long U64;
 
 namespace tables
 {
-
     const U64 MASK_RANK[] = {
         0xFF,
         0xFF00,
@@ -46,9 +45,12 @@ namespace tables
         0x7F7F7F7F7F7F7F7F};
 
     extern U64 SQUARE_BB[64];
+    extern int MS1BTABLE[256];
+
     extern U64 PAWN_ATTACKS[2][64];
     extern U64 KNIGHT_ATTACKS[64];
     extern U64 KING_ATTACKS[64];
 
     void init();
+
 } // namespace tables
