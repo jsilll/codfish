@@ -1,5 +1,6 @@
 #include <iostream>
-#include "commands.hpp"
+#include "cli.hpp"
+#include "tables.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -14,7 +15,8 @@ int main(int argc, char const *argv[])
     // std::getline(std::cin, line);
     // std::cout << line << std::endl;
 
-    std::cout << "Chess Engine Beta" << std::endl;
+    tables::init();
+    std::cout << "Chess Engine (Pre-Release) Initialized" << std::endl;
     cli::readCommands();
 
     return 0;

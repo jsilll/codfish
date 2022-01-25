@@ -83,5 +83,4 @@ void utils::print_bb(U64 bitboard)
     }
     std::cout << "\n   a b c d e f g h\n\n";
     printf("   Bitboard %llud\n", bitboard);
-    std::cout << std::endl;
 }
