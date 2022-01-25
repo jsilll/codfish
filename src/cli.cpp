@@ -14,10 +14,18 @@ void cli::readCommands() // TODO: tab completion
     Board board = Board();
     while (char *command = readline("> "))
     {
-        add_history(command);
-        if (!doCommand(std::string(command), board))
-            return;
-        free(command);
+        if (*command)
+        {
+            add_history(command);
+
+            if (!doCommand(command, board))
+            {
+                free(command);
+                return;
+            }
+
+            free(command);
+        }
     }
 }
 
