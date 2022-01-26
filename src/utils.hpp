@@ -1,25 +1,23 @@
 #pragma once
 
-typedef unsigned long long U64;
+#include "defs.hpp"
 
 namespace utils
 {
-    constexpr U64 ONE = 1ULL;
-    constexpr U64 ZERO = 0ULL;
 
-    inline int get_square_index(const int rank_index, const int file_index)
+    inline int getSquare(const int rank, const int file)
     {
-        return 8 * rank_index + file_index;
+        return 8 * rank + file;
     }
 
-    inline int get_file_index(const int square_index)
+    inline int getFile(const int square)
     {
-        return square_index & 7;
+        return square & 7;
     }
 
-    inline int get_rank_index(const int square_index)
+    inline int getRank(const int square)
     {
-        return square_index >> 3;
+        return square >> 3;
     }
 
     inline U64 soutOne(U64 b) { return (b >> 8); }
@@ -31,10 +29,10 @@ namespace utils
     inline U64 soWeOne(U64 b) { return (b >> 9) & 0x7F7F7F7F7F7F7F7F; }
     inline U64 noWeOne(U64 b) { return (b << 7) & 0x7F7F7F7F7F7F7F7F; }
 
-    unsigned int bitCnt(U64 bitmap);
-    unsigned int firstOne(U64 bitmap);
-    unsigned int lastOne(U64 bitmap);
+    unsigned int bitCnt(U64 bitmap);   // TODO: understand this
+    unsigned int firstOne(U64 bitmap); // TODO: understand this
+    unsigned int lastOne(U64 bitmap);  // TODO: understand this
 
-    void print_bb(U64 bb);
+    void printBB(U64 bb);
 
 } // namespace utils

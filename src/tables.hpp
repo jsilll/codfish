@@ -1,6 +1,6 @@
 #pragma once
 
-typedef unsigned long long U64;
+#include "defs.hpp"
 
 namespace tables
 {
@@ -44,13 +44,13 @@ namespace tables
         0xBFBFBFBFBFBFBFBF,
         0x7F7F7F7F7F7F7F7F};
 
-    extern U64 SQUARE_BB[64];
-    extern int MS1BTABLE[256];
-
-    extern U64 PAWN_ATTACKS[2][64];
-    extern U64 KNIGHT_ATTACKS[64];
-    extern U64 KING_ATTACKS[64];
-
     void init();
+
+    extern U64 SQUARE_BB[N_SQUARES];
+    extern int MS1BTABLE[256]; // TODO: make a define for this?
+
+    extern U64 PAWN_ATTACKS[N_SIDES][N_SQUARES];
+    extern U64 KNIGHT_ATTACKS[N_SQUARES];
+    extern U64 KING_ATTACKS[N_SQUARES];
 
 } // namespace tables

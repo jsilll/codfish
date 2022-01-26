@@ -1,28 +1,29 @@
 #include "tables.hpp"
-#include "bitboard.hpp"
+
 #include "utils.hpp"
 #include <iostream>
 
-U64 tables::SQUARE_BB[64];
 int tables::MS1BTABLE[256];
 
-U64 tables::PAWN_ATTACKS[2][64];
-U64 tables::KNIGHT_ATTACKS[64];
-U64 tables::KING_ATTACKS[64];
+U64 tables::SQUARE_BB[N_SQUARES];
 
-U64 wPawnAnyAttacks(U64 wpawns);
-U64 bPawnAnyAttacks(U64 bpawns);
+U64 tables::PAWN_ATTACKS[N_SIDES][N_SQUARES];
+U64 tables::KNIGHT_ATTACKS[N_SQUARES];
+U64 tables::KING_ATTACKS[N_SQUARES];
+
+U64 whitePawnAnyAttacks(U64 wpawns);
+U64 blackPawnAnyAttacks(U64 bpawns);
 U64 knightAttacks(U64 knights);
 U64 kingAttacks(U64 kings);
 
 void tables::init()
 {
-    for (int sq = 0; sq < 64; sq++)
+    for (int sq = 0; sq < N_SQUARES; sq++)
     {
-        tables::SQUARE_BB[sq] = utils::ONE << sq;
+        tables::SQUARE_BB[sq] = ONE << sq;
 
-        tables::PAWN_ATTACKS[bb::WHITE][sq] = wPawnAnyAttacks(tables::SQUARE_BB[sq]);
-        tables::PAWN_ATTACKS[bb::BLACK][sq] = bPawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::PAWN_ATTACKS[WHITE][sq] = whitePawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::PAWN_ATTACKS[BLACK][sq] = blackPawnAnyAttacks(tables::SQUARE_BB[sq]);
 
         tables::KNIGHT_ATTACKS[sq] = knightAttacks(tables::SQUARE_BB[sq]);
 
@@ -47,12 +48,12 @@ inline U64 wPawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
 inline U64 bPawnEastAttacks(U64 bpawns) { return utils::soEaOne(bpawns); }
 inline U64 bPawnWestAttacks(U64 bpawns) { return utils::soWeOne(bpawns); }
 
-U64 wPawnAnyAttacks(U64 wpawns)
+U64 whitePawnAnyAttacks(U64 wpawns)
 {
     return wPawnEastAttacks(wpawns) | wPawnWestAttacks(wpawns);
 }
 
-U64 bPawnAnyAttacks(U64 bpawns)
+U64 blackPawnAnyAttacks(U64 bpawns)
 {
     return bPawnEastAttacks(bpawns) | bPawnWestAttacks(bpawns);
 }

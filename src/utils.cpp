@@ -1,4 +1,5 @@
 #include "utils.hpp"
+
 #include "tables.hpp"
 #include <iostream>
 
@@ -41,7 +42,7 @@ unsigned int utils::firstOne(U64 bitmap)
 
     // here you would get a warming: "unary minus operator applied to unsigned type",
     // that's intended and OK so I'll disable it
-#pragma warning(disable : 4146)
+#pragma warning(disable : 4146) // TODO: is this pragma necessary?
     return INDEX64[((bitmap & -bitmap) * DEBRUIJN64) >> 58];
 }
 
@@ -70,14 +71,14 @@ unsigned int utils::lastOne(U64 bitmap)
     return result + tables::MS1BTABLE[bitmap];
 }
 
-void utils::print_bb(U64 bitboard)
+void utils::printBB(U64 bitboard)
 {
     for (int i = 7; i >= 0; i--)
     {
         std::cout << i + 1 << "  ";
         for (int n = 0; n < 8; n++)
         {
-            std::cout << ((bitboard >> get_square_index(i, n)) & utils::ONE) << " ";
+            std::cout << ((bitboard >> getSquare(i, n)) & ONE) << " ";
         }
         std::cout << "\n";
     }

@@ -1,32 +1,124 @@
 #include "cli.hpp"
-#include <iostream>
-#include <string>
-#include <readline/readline.h>
-#include <readline/history.h>
+
 #include "board.hpp"
 #include "utils.hpp"
+#include <iostream>
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cctype>
+#include <locale>
 
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
+char **commandCompletion(const char *text, int start, int end);
+char *commandMatchGenerator(const char *text, int state);
 
-void cli::readCommands() // TODO: tab completion
+// trim from start (in place)
+static inline void ltrim(std::string &s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
+                                    { return !std::isspace(ch); }));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
+                         { return !std::isspace(ch); })
+                .base(),
+            s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s)
+{
+    ltrim(s);
+    rtrim(s);
+}
+
+// trim from both ends (copying)
+static inline std::string trim_copy(std::string s)
+{
+    trim(s);
+    return s;
+}
+
+void cli::readCommands()
 {
     Board board = Board();
+    rl_attempted_completion_function = commandCompletion;
     while (char *command = readline("> "))
     {
         if (*command)
         {
             add_history(command);
-
-            if (!doCommand(command, board))
+            if (!doCommand(trim_copy(std::string(command)), board))
             {
                 free(command);
                 return;
             }
-
             free(command);
         }
     }
+}
+
+char **commandCompletion(const char *text, int start, int end)
+{
+    rl_attempted_completion_over = 1;
+    return rl_completion_matches(text, commandMatchGenerator);
+}
+
+char *commandMatchGenerator(const char *text, int state)
+{
+    static const std::vector<std::string> commands{
+        "help",
+        "black",
+        "cc",
+        "d",
+        "exit",
+        "eval",
+        "game",
+        "go",
+        "info",
+        "move",
+        "moves",
+        "new",
+        "perf",
+        "r",
+        "readfen",
+        "sd",
+        "setup",
+        "undo",
+        "white",
+    };
+
+    static std::vector<std::string> matches;
+    static size_t match_index = 0;
+
+    if (!state)
+    {
+        matches.clear();
+        match_index = 0;
+
+        std::string textstr(text);
+        for (auto word : commands)
+        {
+            if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0)
+            {
+                matches.push_back(word);
+            }
+        }
+    }
+
+    if (match_index >= matches.size())
+    {
+        return nullptr;
+    }
+
+    return strdup(matches[match_index++].c_str());
 }
 
 bool doCommand(const std::string buf, Board &board)
@@ -106,6 +198,6 @@ void infoCommand(const Board &board)
               << "\nbitCnt of white pawns     = " << utils::bitCnt(board._white_pawns)
               << "\nbitCnt of black pawns     = " << utils::bitCnt(board._black_pawns)
               << "\nbitmap of board._occupied_squares:" << std::endl;
-    utils::print_bb(board._occupied_squares);
+    utils::printBB(board._occupied_squares);
     std::cout << "============ info end ================\n";
 }
