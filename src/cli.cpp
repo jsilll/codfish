@@ -10,52 +10,25 @@
 #include <algorithm>
 #include <cctype>
 #include <locale>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/foreach.hpp>
+#include <iostream>
+#include <string>
+#include <vector>
 
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
-char **commandCompletion(const char *text, int start, int end);
-char *commandMatchGenerator(const char *text, int state);
-
-// trim from start (in place)
-static inline void ltrim(std::string &s)
-{
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
-                                    { return !std::isspace(ch); }));
-}
-
-// trim from end (in place)
-static inline void rtrim(std::string &s)
-{
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
-                         { return !std::isspace(ch); })
-                .base(),
-            s.end());
-}
-
-// trim from both ends (in place)
-static inline void trim(std::string &s)
-{
-    ltrim(s);
-    rtrim(s);
-}
-
-// trim from both ends (copying)
-static inline std::string trim_copy(std::string s)
-{
-    trim(s);
-    return s;
-}
 
 void cli::readCommands()
 {
     Board board = Board();
-    rl_attempted_completion_function = commandCompletion;
     while (char *command = readline("> "))
     {
         if (*command)
         {
             add_history(command);
-            if (!doCommand(trim_copy(std::string(command)), board))
+            if (!doCommand(std::string(command), board))
             {
                 free(command);
                 return;
@@ -65,124 +38,88 @@ void cli::readCommands()
     }
 }
 
-char **commandCompletion(const char *text, int start, int end)
-{
-    rl_attempted_completion_over = 1;
-    return rl_completion_matches(text, commandMatchGenerator);
-}
-
-char *commandMatchGenerator(const char *text, int state)
-{
-    static const std::vector<std::string> commands{
-        "help",
-        "black",
-        "cc",
-        "d",
-        "exit",
-        "eval",
-        "game",
-        "go",
-        "info",
-        "move",
-        "moves",
-        "new",
-        "perf",
-        "r",
-        "readfen",
-        "sd",
-        "setup",
-        "undo",
-        "white",
-    };
-
-    static std::vector<std::string> matches;
-    static size_t match_index = 0;
-
-    if (!state)
-    {
-        matches.clear();
-        match_index = 0;
-
-        std::string textstr(text);
-        for (auto word : commands)
-        {
-            if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0)
-            {
-                matches.push_back(word);
-            }
-        }
-    }
-
-    if (match_index >= matches.size())
-    {
-        return nullptr;
-    }
-
-    return strdup(matches[match_index++].c_str());
-}
-
 bool doCommand(const std::string buf, Board &board)
 {
-    if (buf == "help" || buf == "h" || buf == "?")
+    std::vector<std::string> tokens;
+    boost::split(tokens, buf, boost::is_any_of(" "));
+
+    if (tokens.size() == 1)
     {
-        std::cout << "\n"
-                  << "help                : Displays information about all the commands\n"
-                  << "black               : BLACK to move\n"
-                  << "cc                  : play computer-to-computer \n"
-                  << "d                   : display board \n"
-                  << "exit                : exit program \n"
-                  << "eval                : show static evaluation of this position\n"
-                  << "game                : show game moves \n"
-                  << "go                  : computer next move \n"
-                  << "help                : show this help \n"
-                  << "info                : display variables (for testing purposes)\n"
-                  << "move e2e4, or h7h8q : enter a move (use this format)\n"
-                  << "moves               : show all legal moves\n"
-                  << "new                 : start new game\n"
-                  << "perf                : benchmark a number of key functions\n"
-                  << "perft n             : calculate raw number of nodes from here, depth n \n"
-                  << "r                   : rotate board \n"
-                  << "readfen filename n  : reads #-th FEN position from filename\n"
-                  << "sd n                : set the search depth to n\n"
-                  << "setup               : setup board... \n"
-                  << "undo                : take back last move\n"
-                  << "white               : WHITE to move"
-                  << std::endl;
+        if (tokens[0] == "help" || tokens[0] == "h" || tokens[0] == "?")
+        {
+            std::cout << "\n"
+                      << "black               : BLACK to move\n"
+                      << "cc                  : play computer-to-computer \n"
+                      << "d                   : display board \n"
+                      << "eval                : show static evaluation of this position\n"
+                      << "exit                : exit program \n"
+                      << "game                : show game moves \n"
+                      << "go                  : computer next move \n"
+                      << "help                : Displays information about all the commands\n"
+                      << "help                : show this help \n"
+                      << "info                : display variables (for testing purposes)\n"
+                      << "move e2e4, or h7h8q : enter a move (use this format)\n"
+                      << "moves               : show all legal moves\n"
+                      << "new                 : start new game\n"
+                      << "perf                : benchmark a number of key functions\n"
+                      << "perft n             : calculate raw number of nodes from here, depth n \n"
+                      << "r                   : rotate board \n"
+                      << "readfen fen         : reads FEN position\n"
+                      << "sd n                : set the search depth to n\n"
+                      << "setup               : setup board... \n"
+                      << "undo                : take back last move\n"
+                      << "white               : WHITE to move"
+                      << std::endl;
+        }
+        else if (tokens[0] == "black")
+        {
+            board._white_to_move = false;
+        }
+        else if (tokens[0] == "d")
+        {
+            std::cout << board;
+        }
+        else if (tokens[0] == "info")
+        {
+            infoCommand(board);
+        }
+        else if (tokens[0] == "new")
+        {
+            board.init();
+        }
+        else if (tokens[0] == "r")
+        {
+            board._view_rotated = !board._view_rotated;
+            std::cout << board;
+        }
+        else if (tokens[0] == "white")
+        {
+            board._white_to_move = true;
+        }
+        else if ((tokens[0] == "exit"))
+        {
+            return false;
+        }
+        else
+        {
+            std::cout << "command unknown or not implemented: " << buf << ", type 'help' for more the available commands" << std::endl;
+        }
     }
-    else if (buf == "black")
+    else if (tokens.size() == 7)
     {
-        board._white_to_move = false;
-    }
-    else if (buf == "d")
-    {
-        std::cout << board;
-    }
-    else if (buf == "info")
-    {
-        infoCommand(board);
-    }
-    else if (buf == "new")
-    {
-        board.init();
-    }
-    else if (buf == "r")
-    {
-        board._view_rotated = !board._view_rotated;
-        std::cout << board;
-    }
-    else if (buf == "white")
-    {
-        board._white_to_move = true;
-    }
-    else if ((buf == "exit"))
-    {
-        return false;
+        if (tokens[0] == "readfen")
+        {
+            board.initFromFen(tokens[1].c_str(), tokens[2].c_str(), tokens[3].c_str(), tokens[4].c_str(), tokens[5].c_str(), tokens[6].c_str());
+        }
+        else
+        {
+            std::cout << "command unknown or not implemented: " << buf << ", type 'help' for more the available commands" << std::endl;
+        }
     }
     else
     {
         std::cout << "command unknown or not implemented: " << buf << ", type 'help' for more the available commands" << std::endl;
     }
-
     return true;
 }
 
@@ -200,4 +137,8 @@ void infoCommand(const Board &board)
               << "\nbitmap of board._occupied_squares:" << std::endl;
     utils::printBB(board._occupied_squares);
     std::cout << "============ info end ================\n";
+}
+
+void loadFenCommand(const Board &board)
+{
 }

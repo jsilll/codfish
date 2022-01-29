@@ -3,6 +3,7 @@
 #include "tables.hpp"
 #include "utils.hpp"
 #include <iomanip>
+#include <cstring>
 
 std::ostream &operator<<(std::ostream &os, const Board &board)
 {
@@ -191,4 +192,148 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
     //               bitCnt(blackBishops) * BISHOP_VALUE +
     //               bitCnt(blackRooks) * ROOK_VALUE +
     //               bitCnt(blackQueens) * QUEEN_VALUE);
+}
+
+// TODO: clean this funciton's code
+void Board::initFromFen(const char *fen, const char *fencolor, const char *fencastling, const char *fenenpassant, const char *char_fenhalfmoveclock, const char *char_fenfullmovenumber)
+{
+    int i, file, rank, counter, piece;
+    int whiteCastle, blackCastle, epsq;
+    bool white_to_move;
+
+    int fenhalfmoveclock, fenfullmovenumber;
+    scanf(char_fenhalfmoveclock, "%d", &fenhalfmoveclock);   // int, used for the fifty move draw rule
+    scanf(char_fenfullmovenumber, "%d", &fenfullmovenumber); // int. start with 1, It is incremented after move by Black
+
+    piece = 0;
+    for (i = 0; i < 64; i++)
+    {
+        _square[i] = EMPTY;
+    }
+
+    file = 1;
+    rank = 8;
+    i = 0;
+    counter = 0;
+    while ((counter < 64) && (fen[i] != '\0'))
+    {
+        // '1'  through '8':
+        if (((int)fen[i] > 48) && ((int)fen[i] < 57))
+        {
+            file += (int)fen[i] - 48;
+            counter += (int)fen[i] - 48;
+        }
+        else
+        //  other characters:
+        {
+            switch (fen[i])
+            {
+            case '/':
+                rank--;
+                file = 1;
+                break;
+
+            case 'P':
+                _square[utils::getSquare(rank, file)] = WHITE_PAWN;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'N':
+                _square[utils::getSquare(rank, file)] = WHITE_KNIGHT;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'B':
+                _square[utils::getSquare(rank, file)] = WHITE_BISHOP;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'R':
+                _square[utils::getSquare(rank, file)] = WHITE_ROOK;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'Q':
+                _square[utils::getSquare(rank, file)] = WHITE_QUEEN;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'K':
+                _square[utils::getSquare(rank, file)] = WHITE_KING;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'p':
+                _square[utils::getSquare(rank, file)] = BLACK_PAWN;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'n':
+                _square[utils::getSquare(rank, file)] = BLACK_KNIGHT;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'b':
+                _square[utils::getSquare(rank, file)] = BLACK_BISHOP;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'r':
+                _square[utils::getSquare(rank, file)] = BLACK_ROOK;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'q':
+                _square[utils::getSquare(rank, file)] = BLACK_QUEEN;
+                file += 1;
+                counter += 1;
+                break;
+
+            case 'k':
+                _square[utils::getSquare(rank, file)] = BLACK_KING;
+                file += 1;
+                counter += 1;
+                break;
+
+            default:
+                break;
+            }
+        }
+        i++;
+    }
+    white_to_move = true;
+    if (fencolor[0] == 'b')
+        white_to_move = false;
+
+    whiteCastle = 0;
+    blackCastle = 0;
+    if (strstr(fencastling, "K"))
+        whiteCastle += CANCASTLEOO;
+    if (strstr(fencastling, "Q"))
+        whiteCastle += CANCASTLEOOO;
+    if (strstr(fencastling, "k"))
+        blackCastle += CANCASTLEOO;
+    if (strstr(fencastling, "q"))
+        blackCastle += CANCASTLEOOO;
+    if (strstr(fenenpassant, "-"))
+    {
+        epsq = 0;
+    }
+    else
+    {
+        // translate a square coordinate (as string) to int (eg 'e3' to 20):
+        epsq = ((int)fenenpassant[0] - 96) + 8 * ((int)fenenpassant[1] - 48) - 9;
+    }
+
+    initFromSquares(_square, white_to_move, fenhalfmoveclock, whiteCastle, blackCastle, epsq);
 }

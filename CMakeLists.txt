@@ -16,3 +16,12 @@ file(GLOB SRC
 
 add_executable(main ${SRC})
 target_link_libraries(main readline)
+
+set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_RUNTIME OFF) 
+find_package(Boost 1.45.0 COMPONENTS filesystem regex) 
+
+if(Boost_FOUND)
+    target_link_libraries(main Boost::filesystem Boost::regex)
+endif()
