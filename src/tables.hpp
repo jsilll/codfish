@@ -53,4 +53,6 @@ namespace tables
     extern U64 KNIGHT_ATTACKS[N_SQUARES];
     extern U64 KING_ATTACKS[N_SQUARES];
 
+    // extern U64 RAY_ATTACKS[N_SQUARES][N_DIRECTIONS]; TODO: on .cpp
+
 } // namespace tables
