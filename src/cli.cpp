@@ -12,7 +12,6 @@
 #include <locale>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
