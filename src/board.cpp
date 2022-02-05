@@ -194,7 +194,7 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
     //               bitCnt(blackQueens) * QUEEN_VALUE);
 }
 
-// TODO: clean this funciton's code
+// TODO: debug and clean this funciton's code
 void Board::initFromFen(const char *fen, const char *fencolor, const char *fencastling, const char *fenenpassant, const char *char_fenhalfmoveclock, const char *char_fenfullmovenumber)
 {
     int i, file, rank, counter, piece;

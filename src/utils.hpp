@@ -20,6 +20,17 @@ namespace utils
         return square >> 3;
     }
 
+    inline unsigned int bitCntKernighan(U64 bitboard)
+    {
+        unsigned int count = 0;
+        while (bitboard)
+        {
+            count++;
+            bitboard &= bitboard - 1;
+        }
+        return count;
+    }
+
     inline U64 soutOne(U64 b) { return (b >> 8); }
     inline U64 nortOne(U64 b) { return (b << 8); }
     inline U64 eastOne(U64 b) { return (b << 1) & 0xFEFEFEFEFEFEFEFE; }
@@ -29,9 +40,8 @@ namespace utils
     inline U64 soWeOne(U64 b) { return (b >> 9) & 0x7F7F7F7F7F7F7F7F; }
     inline U64 noWeOne(U64 b) { return (b << 7) & 0x7F7F7F7F7F7F7F7F; }
 
-    unsigned int bitCnt(U64 bitmap);   // TODO: understand this
-    unsigned int firstOne(U64 bitmap); // TODO: understand this
-    unsigned int lastOne(U64 bitmap);  // TODO: understand this
+    unsigned int bitCntHakmem(U64 bitmap);
+    unsigned int bitScan(U64 bitmap); // TODO: understand this
 
     void printBB(U64 bb);
 

@@ -3,10 +3,9 @@
 #include "tables.hpp"
 #include <iostream>
 
-unsigned int utils::bitCnt(U64 bitmap)
+unsigned int utils::bitCntHakmem(U64 bitmap)
 {
     // MIT HAKMEM algorithm, see http://graphics.stanford.edu/~seander/bithacks.html
-
     static const U64 M1 = 0x5555555555555555;  // 1 zero,  1 one ...
     static const U64 M2 = 0x3333333333333333;  // 2 zeros,  2 ones ...
     static const U64 M4 = 0x0f0f0f0f0f0f0f0f;  // 4 zeros,  4 ones ...
@@ -23,7 +22,7 @@ unsigned int utils::bitCnt(U64 bitmap)
     return (int)bitmap;
 }
 
-unsigned int utils::firstOne(U64 bitmap)
+unsigned int utils::bitScan(U64 bitmap)
 {
     // De Bruijn Multiplication, see http://chessprogramming.wikispaces.com/BitScan
     // don't use this if bitmap = 0
@@ -40,35 +39,8 @@ unsigned int utils::firstOne(U64 bitmap)
 
     static const U64 DEBRUIJN64 = U64(0x07EDD5E59A4E28C2);
 
-    // here you would get a warming: "unary minus operator applied to unsigned type",
-    // that's intended and OK so I'll disable it
-#pragma warning(disable : 4146) // TODO: is this pragma necessary?
+    // #pragma warning(disable : 4146) TODO: is this pragma necessary?
     return INDEX64[((bitmap & -bitmap) * DEBRUIJN64) >> 58];
-}
-
-unsigned int utils::lastOne(U64 bitmap)
-{
-    // this is Eugene Nalimov's bitScanReverse
-    // use firstOne if you can, it is faster than lastOne.
-    // don't use this if bitmap = 0
-
-    int result = 0;
-    if (bitmap > 0xFFFFFFFF)
-    {
-        bitmap >>= 32;
-        result = 32;
-    }
-    if (bitmap > 0xFFFF)
-    {
-        bitmap >>= 16;
-        result += 16;
-    }
-    if (bitmap > 0xFF)
-    {
-        bitmap >>= 8;
-        result += 8;
-    }
-    return result + tables::MS1BTABLE[bitmap];
 }
 
 void utils::printBB(U64 bitboard)

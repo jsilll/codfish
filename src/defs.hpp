@@ -2,9 +2,9 @@
 
 typedef unsigned long long U64;
 
-// TODO: add other handy constexprs like white/black squares ...
 constexpr U64 ONE = 1ULL;
 constexpr U64 ZERO = 0ULL;
+// TODO: add other handy constexprs like white/black squares ...
 
 enum Color
 {

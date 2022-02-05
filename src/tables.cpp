@@ -30,13 +30,24 @@ inline U64 blackPawnWestAttacks(U64 bpawns) { return utils::soWeOne(bpawns); }
 
 void tables::init()
 {
-    // TODO: maybe multiple loops for each table?
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
         tables::SQUARE_BB[sq] = ONE << sq;
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
         tables::PAWN_ATTACKS[WHITE][sq] = whitePawnAnyAttacks(tables::SQUARE_BB[sq]);
         tables::PAWN_ATTACKS[BLACK][sq] = blackPawnAnyAttacks(tables::SQUARE_BB[sq]);
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
         tables::KNIGHT_ATTACKS[sq] = knightAttacks(tables::SQUARE_BB[sq]);
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
         tables::KING_ATTACKS[sq] = kingAttacks(tables::SQUARE_BB[sq]);
     }
 
@@ -73,6 +84,8 @@ void tables::init()
     //         utils::printBB(RAY_ATTACKS[r8 + f][NORTH_WEST]);
     //     }
     // }
+
+    // test code goes here
 }
 
 U64 whitePawnAnyAttacks(U64 wpawns)
@@ -88,7 +101,7 @@ U64 blackPawnAnyAttacks(U64 bpawns)
 // TODO: Pawn pushes
 // TODO: Pawn en passant
 
-// TODO: should be used in move gen BE USED
+// TODO: should be used in movegen
 // U64 wPawnDblAttacks(U64 wpawns)
 // {
 //     return wPawnEastAttacks(wpawns) & wPawnWestAttacks(wpawns);
@@ -99,16 +112,19 @@ U64 blackPawnAnyAttacks(U64 bpawns)
 //     return wPawnEastAttacks(wpawns) ^ wPawnWestAttacks(wpawns);
 // }
 
-U64 knightAttacks(U64 knights) // TODO: understand code and use Directions Enum
+U64 knightAttacks(U64 knights)
 {
-    const U64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
-    const U64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
+    static const U64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
+    static const U64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
+
     U64 l1 = (knights >> 1) & tables::CLEAR_FILE[7];
-    U64 l2 = (knights >> 2) & CLEAR_FILE_HG;
     U64 r1 = (knights << 1) & tables::CLEAR_FILE[0];
-    U64 r2 = (knights << 2) & CLEAR_FILE_AB;
     U64 h1 = l1 | r1;
+
+    U64 l2 = (knights >> 2) & CLEAR_FILE_HG;
+    U64 r2 = (knights << 2) & CLEAR_FILE_AB;
     U64 h2 = l2 | r2;
+
     return (h1 << 16) | (h1 >> 16) | (h2 << 8) | (h2 >> 8);
 }
 
@@ -119,6 +135,8 @@ U64 kingAttacks(U64 kings)
     attacks |= utils::nortOne(kings) | utils::soutOne(kings);
     return attacks;
 }
+
+// on the fly
 
 U64 bishopAttacks(int sq)
 {
