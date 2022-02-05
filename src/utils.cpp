@@ -55,5 +55,5 @@ void utils::printBB(U64 bitboard)
         std::cout << "\n";
     }
     std::cout << "\n   a b c d e f g h\n\n";
-    printf("   Bitboard %llud\n", bitboard);
+    printf("bitboard %llud\n", bitboard);
 }

@@ -52,7 +52,7 @@ bool doCommand(const std::string buf, Board &board)
 {
     if (buf == "help" || buf == "h" || buf == "?")
     {
-        std::cout << "\n"
+        std::cout
                   << "black               : BLACK to move\n"
                   << "cc                  : play computer-to-computer \n"
                   << "d                   : display board \n"
