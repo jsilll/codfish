@@ -22,6 +22,7 @@ U64 bishopAttacks(int sq);
 U64 rookAttacks(int sq);
 U64 bishopAttacks(int sq, U64 block);
 U64 rookAttacks(int sq, U64 block);
+U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask);
 
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
@@ -58,32 +59,12 @@ void tables::init()
         // clang-format on
     }
 
-    // Initializing RAY_ATTACKS array
-    // U64 nort = 0x0101010101010100;
-    // for (int sq = 0; sq < 64; sq++, nort <<= 1)
-    // {
-    //     tables::RAY_ATTACKS[sq][NORTH] = nort;
-    // }
-
-    // U64 noea = 0x8040201008040200;
-    // for (int f = 0; f < 8; f++, noea = utils::eastOne(noea))
-    // {
-    //     U64 ne = noea;
-    //     for (int r8 = 0; r8 < 8 * 8; r8 += 8, ne <<= 8)
-    //         RAY_ATTACKS[r8 + f][NORTH_EAST] = ne;
-    // }
-
-    // TODO: Debug this block of code
-    // U64 nowe = 0x102040810204000;
-    // for (int f = 0; f < 8; f++, noea = utils::westOne(nowe))
-    // {
-    //     U64 no = noea;
-    //     for (int r8 = 0; r8 < 8 * 8; r8 += 8, no <<= 8)
-    //     {
-    //         RAY_ATTACKS[r8 + f][NORTH_WEST] = no;
-    //         utils::printBB(RAY_ATTACKS[r8 + f][NORTH_WEST]);
-    //     }
-    // }
+    U64 attack_mask = bishopAttacks(D4);
+    for (int i = 0; i < 100; i++)
+    {
+        U64 occupancy = setOccupancy(i, utils::bitCount(attack_mask), attack_mask);
+        utils::printBB(occupancy);
+    }
 }
 
 U64 whitePawnAnyAttacks(U64 wpawns)
@@ -95,20 +76,6 @@ U64 blackPawnAnyAttacks(U64 bpawns)
 {
     return blackPawnEastAttacks(bpawns) | blackPawnWestAttacks(bpawns);
 }
-
-// TODO: Pawn pushes
-// TODO: Pawn en passant
-
-// TODO: should be used in movegen
-// U64 wPawnDblAttacks(U64 wpawns)
-// {
-//     return wPawnEastAttacks(wpawns) & wPawnWestAttacks(wpawns);
-// }
-
-// U64 wPawnSingleAttacks(U64 wpawns)
-// {
-//     return wPawnEastAttacks(wpawns) ^ wPawnWestAttacks(wpawns);
-// }
 
 U64 knightAttacks(U64 knights)
 {
@@ -230,4 +197,19 @@ U64 rookAttacks(int sq, U64 block)
             break;
     }
     return attacks;
+}
+
+U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask)
+{
+    U64 occupancy = ZERO;
+    for (int i = 0; i < bits_in_mask; i++)
+    {
+        int lsb_sq = utils::bitScan(attack_mask);
+        utils::popBit(attack_mask, lsb_sq);
+        if (sq & (1 << i))
+        {
+            occupancy |= tables::SQUARE_BB[lsb_sq];
+        }
+    }
+    return occupancy;
 }

@@ -20,8 +20,9 @@ namespace utils
         return square >> 3;
     }
 
-    inline unsigned int bitCntKernighan(U64 bitboard)
+    inline unsigned int bitCount(U64 bitboard)
     {
+        // Brian Kernighan's way
         unsigned int count = 0;
         while (bitboard)
         {
@@ -30,6 +31,10 @@ namespace utils
         }
         return count;
     }
+
+    inline void setBit(U64 &b, int sq) { b |= (1ULL << sq); }
+    inline void popBit(U64 &b, int sq) { b &= ~(1ULL << sq); }
+    inline bool getBit(U64 b, int sq) { return ((b >> sq) & 1ULL); }
 
     inline U64 soutOne(U64 b) { return (b >> 8); }
     inline U64 nortOne(U64 b) { return (b << 8); }
@@ -40,8 +45,7 @@ namespace utils
     inline U64 soWeOne(U64 b) { return (b >> 9) & 0x7F7F7F7F7F7F7F7F; }
     inline U64 noWeOne(U64 b) { return (b << 7) & 0x7F7F7F7F7F7F7F7F; }
 
-    unsigned int bitCntHakmem(U64 bitmap);
-    int bitScan(U64 bitmap); // TODO: understand this
+    int bitScan(U64 bitmap);
 
     void printBB(U64 bb);
 

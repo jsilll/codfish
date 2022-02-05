@@ -53,28 +53,28 @@ bool doCommand(const std::string buf, Board &board)
     if (buf == "help" || buf == "h" || buf == "?")
     {
         std::cout
-                  << "black               : BLACK to move\n"
-                  << "cc                  : play computer-to-computer \n"
-                  << "d                   : display board \n"
-                  << "eval                : show static evaluation of this position\n"
-                  << "exit                : exit program \n"
-                  << "game                : show game moves \n"
-                  << "go                  : computer next move \n"
-                  << "help                : Displays information about all the commands\n"
-                  << "help                : show this help \n"
-                  << "info                : display variables (for testing purposes)\n"
-                  << "move e2e4, or h7h8q : enter a move (use this format)\n"
-                  << "moves               : show all legal moves\n"
-                  << "new                 : start new game\n"
-                  << "perf                : benchmark a number of key functions\n"
-                  << "perft n             : calculate raw number of nodes from here, depth n \n"
-                  << "r                   : rotate board \n"
-                  << "readfen fen         : reads FEN position\n"
-                  << "sd n                : set the search depth to n\n"
-                  << "setup               : setup board... \n"
-                  << "undo                : take back last move\n"
-                  << "white               : WHITE to move"
-                  << std::endl;
+            << "black               : BLACK to move\n"
+            << "cc                  : play computer-to-computer \n"
+            << "d                   : display board \n"
+            << "eval                : show static evaluation of this position\n"
+            << "exit                : exit program \n"
+            << "game                : show game moves \n"
+            << "go                  : computer next move \n"
+            << "help                : Displays information about all the commands\n"
+            << "help                : show this help \n"
+            << "info                : display variables (for testing purposes)\n"
+            << "move e2e4, or h7h8q : enter a move (use this format)\n"
+            << "moves               : show all legal moves\n"
+            << "new                 : start new game\n"
+            << "perf                : benchmark a number of key functions\n"
+            << "perft n             : calculate raw number of nodes from here, depth n \n"
+            << "r                   : rotate board \n"
+            << "readfen fen         : reads FEN position\n"
+            << "sd n                : set the search depth to n\n"
+            << "setup               : setup board... \n"
+            << "undo                : take back last move\n"
+            << "white               : WHITE to move"
+            << std::endl;
     }
     else if (buf == "black")
     {
@@ -121,8 +121,8 @@ void infoCommand(const Board &board)
         << "\nBlack castling rights     = " << board._castle_black
         << "\nEn-passant square         = " << board._ep_square
         << "\nFifty move count          = " << board._fifty_move
-        << "\nbitCnt of white pawns     = " << utils::bitCntKernighan(board._white_pawns)
-        << "\nbitCnt of black pawns     = " << utils::bitCntKernighan(board._black_pawns)
+        << "\nbitCnt of white pawns     = " << utils::bitCount(board._white_pawns)
+        << "\nbitCnt of black pawns     = " << utils::bitCount(board._black_pawns)
         << "\nbitmap of board._occupied_squares:" << std::endl;
     utils::printBB(board._occupied_squares);
 }
