@@ -41,7 +41,7 @@ namespace utils
     inline U64 noWeOne(U64 b) { return (b << 7) & 0x7F7F7F7F7F7F7F7F; }
 
     unsigned int bitCntHakmem(U64 bitmap);
-    unsigned int bitScan(U64 bitmap); // TODO: understand this
+    int bitScan(U64 bitmap); // TODO: understand this
 
     void printBB(U64 bb);
 

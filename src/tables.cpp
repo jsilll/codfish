@@ -84,8 +84,6 @@ void tables::init()
     //         utils::printBB(RAY_ATTACKS[r8 + f][NORTH_WEST]);
     //     }
     // }
-
-    // test code goes here
 }
 
 U64 whitePawnAnyAttacks(U64 wpawns)
@@ -136,7 +134,7 @@ U64 kingAttacks(U64 kings)
     return attacks;
 }
 
-// on the fly
+// TODO: on the fly attacks, maybe move to movegen
 
 U64 bishopAttacks(int sq)
 {
