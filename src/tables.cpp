@@ -11,7 +11,31 @@ U64 tables::PAWN_ATTACKS[N_SIDES][N_SQUARES];
 U64 tables::KNIGHT_ATTACKS[N_SQUARES];
 U64 tables::KING_ATTACKS[N_SQUARES];
 
-// U64 tables::RAY_ATTACKS[N_SQUARES][N_DIRECTIONS];
+// relevant occupancy bit counts
+
+// clang-format off
+const int RELEVANT_BITS_COUNT_BISHOP[64] = {
+    6,5,5,5,5,5,5,6,
+    5,5,5,5,5,5,5,5,
+    5,5,7,7,7,7,5,5,
+    5,5,7,9,9,7,5,5,
+    5,5,7,9,9,7,5,5,
+    5,5,7,7,7,7,5,5,
+    5,5,5,5,5,5,5,5,
+    6,5,5,5,5,5,5,6,
+};
+
+const int RELEVANT_BITS_COUNT_ROOK[64] = {
+    12,11,11,11,11,11,11,12,
+    11,10,10,10,10,10,10,11,
+    11,10,10,10,10,10,10,11,
+    11,10,10,10,10,10,10,11,
+    11,10,10,10,10,10,10,11,
+    11,10,10,10,10,10,10,11,
+    11,10,10,10,10,10,10,11,
+    12,11,11,11,11,11,11,12,
+};
+// clang-format on
 
 U64 whitePawnAnyAttacks(U64 wpawns);
 U64 blackPawnAnyAttacks(U64 bpawns);
@@ -23,6 +47,8 @@ U64 rookAttacks(int sq);
 U64 bishopAttacks(int sq, U64 block);
 U64 rookAttacks(int sq, U64 block);
 U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask);
+
+unsigned int getRandomNumber();
 
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
@@ -57,13 +83,6 @@ void tables::init()
         // clang-format off
         MS1BTABLE[i] = ((i > 127) ? 7 : (i > 63) ? 6 : (i > 31)   ? 5 : (i > 15)   ? 4 : (i > 7)    ? 3 : (i > 3)    ? 2 : (i > 1)    ? 1 : 0);
         // clang-format on
-    }
-
-    U64 attack_mask = bishopAttacks(D4);
-    for (int i = 0; i < 100; i++)
-    {
-        U64 occupancy = setOccupancy(i, utils::bitCount(attack_mask), attack_mask);
-        utils::printBB(occupancy);
     }
 }
 
@@ -212,4 +231,16 @@ U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask)
         }
     }
     return occupancy;
+}
+
+unsigned int getRandomNumber()
+{
+    // XOR Shift 32
+    static unsigned int state = 1804289383;
+    unsigned int number = state;
+    number ^= number << 13;
+    number ^= number >> 17;
+    number ^= number << 5;
+    state = number;
+    return number;
 }
