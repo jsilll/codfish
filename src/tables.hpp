@@ -47,7 +47,6 @@ namespace tables
     void init();
 
     extern U64 SQUARE_BB[N_SQUARES];
-    extern int MS1BTABLE[256]; // TODO: make a define for 256?
 
     extern U64 PAWN_ATTACKS[N_SIDES][N_SQUARES];
     extern U64 KNIGHT_ATTACKS[N_SQUARES];
