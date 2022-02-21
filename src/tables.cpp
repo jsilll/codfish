@@ -16,10 +16,10 @@ U64 tables::maskRookAttacks(int sq, U64 block);
 U64 tables::maskRookAttacks(int sq);
 U64 tables::maskBishopAttacks(int sq);
 
-U64 BISHOP_MASKS[N_SQUARES];
-U64 ROOK_MASKS[N_SQUARES];
-U64 BISHOP_ATTACKS[N_SQUARES][512];
-U64 ROOK_ATTACKS[N_SQUARES][4096];
+U64 tables::BISHOP_MASKS[N_SQUARES];
+U64 tables::ROOK_MASKS[N_SQUARES];
+U64 tables::BISHOP_ATTACKS[N_SQUARES][512];
+U64 tables::ROOK_ATTACKS[N_SQUARES][4096];
 
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }

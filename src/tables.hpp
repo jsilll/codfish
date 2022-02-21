@@ -82,6 +82,11 @@ namespace tables
     U64 maskRookAttacks(int sq);
     U64 maskBishopAttacks(int sq);
 
+    extern U64 BISHOP_MASKS[N_SQUARES];
+    extern U64 ROOK_MASKS[N_SQUARES];
+    extern U64 BISHOP_ATTACKS[N_SQUARES][512];
+    extern U64 ROOK_ATTACKS[N_SQUARES][4096];
+
     // extern U64 RAY_ATTACKS[N_SQUARES][N_DIRECTIONS]; TODO: on .cpp
 
 } // namespace tables

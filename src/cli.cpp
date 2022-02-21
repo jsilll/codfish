@@ -1,5 +1,6 @@
 #include "cli.hpp"
 
+#include "tables.hpp"
 #include "board.hpp"
 #include "utils.hpp"
 #include <iostream>
@@ -32,7 +33,9 @@ void infoCommand(const Board &board);
 
 void cli::readCommands()
 {
+    tables::init();
     Board board = Board();
+
     while (char *command = readline("> "))
     {
         if (*command)
