@@ -135,5 +135,5 @@ namespace magics
         0x2006104900a0804ULL,
         0x1004081002402ULL};
 
-    void init();
+    void generate();
 }

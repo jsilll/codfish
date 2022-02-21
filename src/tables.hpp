@@ -4,7 +4,8 @@
 
 namespace tables
 {
-    const U64 MASK_RANK[] = {
+    // TODO: find a better solution for the mask/file tables
+    constexpr U64 MASK_RANK[] = {
         0xFF,
         0xFF00,
         0xFF0000,
@@ -14,7 +15,7 @@ namespace tables
         0xFF000000000000,
         0xFF00000000000000};
 
-    const U64 MASK_FILE[] = {
+    constexpr U64 MASK_FILE[] = {
         0x0101010101010101,
         0x202020202020202,
         0x404040404040404,
@@ -24,7 +25,7 @@ namespace tables
         0x4040404040404040,
         0x8080808080808080};
 
-    const U64 CLEAR_RANK[] = {
+    constexpr U64 CLEAR_RANK[] = {
         0xFFFFFFFFFFFFFF00,
         0xFFFFFFFFFFFF00FF,
         0xFFFFFFFFFF00FFFF,
@@ -34,7 +35,7 @@ namespace tables
         0xFF00FFFFFFFFFFFF,
         0x00FFFFFFFFFFFFFF};
 
-    const U64 CLEAR_FILE[] = {
+    constexpr U64 CLEAR_FILE[] = {
         0xFEFEFEFEFEFEFEFE,
         0xFDFDFDFDFDFDFDFD,
         0xFBFBFBFBFBFBFBFB,
@@ -44,13 +45,42 @@ namespace tables
         0xBFBFBFBFBFBFBFBF,
         0x7F7F7F7F7F7F7F7F};
 
-    void init();
+    // clang-format off
+    constexpr int RELEVANT_BITS_COUNT_BISHOP[N_SQUARES] = {
+        6,5,5,5,5,5,5,6,
+        5,5,5,5,5,5,5,5,
+        5,5,7,7,7,7,5,5,
+        5,5,7,9,9,7,5,5,
+        5,5,7,9,9,7,5,5,
+        5,5,7,7,7,7,5,5,
+        5,5,5,5,5,5,5,5,
+        6,5,5,5,5,5,5,6,
+    };
+
+    constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {
+        12,11,11,11,11,11,11,12,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        12,11,11,11,11,11,11,12,
+    };
+    // clang-format on
 
     extern U64 SQUARE_BB[N_SQUARES];
+
+    void init();
 
     extern U64 PAWN_ATTACKS[N_SIDES][N_SQUARES];
     extern U64 KNIGHT_ATTACKS[N_SQUARES];
     extern U64 KING_ATTACKS[N_SQUARES];
+
+    U64 maskBishopAttacks(int sq, U64 block);
+    U64 maskRookAttacks(int sq, U64 block);
+    U64 maskRookAttacks(int sq);
+    U64 maskBishopAttacks(int sq);
 
     // extern U64 RAY_ATTACKS[N_SQUARES][N_DIRECTIONS]; TODO: on .cpp
 

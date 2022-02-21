@@ -11,6 +11,16 @@ U64 tables::PAWN_ATTACKS[N_SIDES][N_SQUARES];
 U64 tables::KNIGHT_ATTACKS[N_SQUARES];
 U64 tables::KING_ATTACKS[N_SQUARES];
 
+U64 tables::maskBishopAttacks(int sq, U64 block);
+U64 tables::maskRookAttacks(int sq, U64 block);
+U64 tables::maskRookAttacks(int sq);
+U64 tables::maskBishopAttacks(int sq);
+
+U64 BISHOP_MASKS[N_SQUARES];
+U64 ROOK_MASKS[N_SQUARES];
+U64 BISHOP_ATTACKS[N_SQUARES][512];
+U64 ROOK_ATTACKS[N_SQUARES][4096];
+
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
 inline U64 blackPawnEastAttacks(U64 bpawns) { return utils::soEaOne(bpawns); }
@@ -22,10 +32,13 @@ U64 maskKingAttacks(U64 kings);
 
 void tables::init()
 {
+    // Misc. Tables
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
         tables::SQUARE_BB[sq] = ONE << sq;
     }
+
+    // Initializing Leaper Piece Attack Tables
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
@@ -43,7 +56,38 @@ void tables::init()
         tables::KING_ATTACKS[sq] = maskKingAttacks(tables::SQUARE_BB[sq]);
     }
 
-    magics::init();
+    // Initialize Slider Piece Attack Tables
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        BISHOP_MASKS[sq] = maskBishopAttacks(sq);
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        ROOK_MASKS[sq] = maskRookAttacks(sq);
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_BISHOP[sq];
+        for (int i = 0; i < occupancy_indices; i++)
+        {
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], BISHOP_MASKS[sq]);
+            int magic_index = (occupancy * magics::BISHOP_MAGICS[sq]) >> (64 - RELEVANT_BITS_COUNT_BISHOP[sq]);
+            BISHOP_ATTACKS[sq][magic_index] = maskBishopAttacks(sq, occupancy);
+        }
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_ROOK[sq];
+        for (int i = 0; i < occupancy_indices; i++)
+        {
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], ROOK_MASKS[sq]);
+            int magic_index = (occupancy * magics::ROOK_MAGICS[sq]) >> (64 - RELEVANT_BITS_COUNT_ROOK[sq]);
+            ROOK_ATTACKS[sq][magic_index] = maskRookAttacks(sq, occupancy);
+        }
+    }
 }
 
 U64 maskWhitePawnAnyAttacks(U64 wpawns)
@@ -77,5 +121,101 @@ U64 maskKingAttacks(U64 kings)
     U64 attacks = utils::eastOne(kings) | utils::westOne(kings);
     kings |= attacks;
     attacks |= utils::nortOne(kings) | utils::soutOne(kings);
+    return attacks;
+}
+
+U64 tables::maskBishopAttacks(int sq)
+{
+    U64 attacks = ZERO;
+    int rank = utils::getRank(sq);
+    int file = utils::getFile(sq);
+    for (int r = rank + 1, f = file + 1; r < 7 && f < 7; r++, f++)
+        attacks |= (ONE << utils::getSquare(r, f));
+    for (int r = rank + 1, f = file - 1; r < 7 && f > 0; r++, f--)
+        attacks |= (ONE << utils::getSquare(r, f));
+    for (int r = rank - 1, f = file + 1; r > 0 && f < 7; r--, f++)
+        attacks |= (ONE << utils::getSquare(r, f));
+    for (int r = rank - 1, f = file - 1; r > 0 && f > 0; r--, f--)
+        attacks |= (ONE << utils::getSquare(r, f));
+    return attacks;
+}
+
+U64 tables::maskRookAttacks(int sq)
+{
+    U64 attacks = ZERO;
+    int rank = utils::getRank(sq);
+    int file = utils::getFile(sq);
+    for (int r = rank + 1; r < 7; r++)
+        attacks |= (ONE << utils::getSquare(r, file));
+    for (int r = rank - 1; r > 0; r--)
+        attacks |= (ONE << utils::getSquare(r, file));
+    for (int f = file + 1; f < 7; f++)
+        attacks |= (ONE << utils::getSquare(rank, f));
+    for (int f = file - 1; f > 0; f--)
+        attacks |= (ONE << utils::getSquare(rank, f));
+    return attacks;
+}
+
+U64 tables::maskBishopAttacks(int sq, U64 block)
+{
+    U64 attacks = ZERO;
+    int rank = utils::getRank(sq);
+    int file = utils::getFile(sq);
+    for (int r = rank + 1, f = file + 1; r < 8 && f < 8; r++, f++)
+    {
+        attacks |= (ONE << utils::getSquare(r, f));
+        if ((ONE << utils::getSquare(r, f)) & block)
+            break;
+    }
+    for (int r = rank + 1, f = file - 1; r < 8 && f >= 0; r++, f--)
+    {
+        attacks |= (ONE << utils::getSquare(r, f));
+        if ((ONE << utils::getSquare(r, f)) & block)
+            break;
+    }
+    for (int r = rank - 1, f = file + 1; r >= 0 && f < 8; r--, f++)
+    {
+        attacks |= (ONE << utils::getSquare(r, f));
+        if ((ONE << utils::getSquare(r, f)) & block)
+            break;
+    }
+    for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; r--, f--)
+    {
+        attacks |= (ONE << utils::getSquare(r, f));
+        if ((ONE << utils::getSquare(r, f)) & block)
+            break;
+    }
+    return attacks;
+}
+
+U64 tables::maskRookAttacks(int sq, U64 block)
+{
+    U64 attacks = ZERO;
+    int rank = utils::getRank(sq);
+    int file = utils::getFile(sq);
+    for (int r = rank + 1; r < 8; r++)
+    {
+        attacks |= (ONE << utils::getSquare(r, file));
+        if ((ONE << utils::getSquare(r, file)) & block)
+            break;
+    }
+    for (int r = rank - 1; r >= 0; r--)
+    {
+        attacks |= (ONE << utils::getSquare(r, file));
+        if ((ONE << utils::getSquare(r, file)) & block)
+            break;
+    }
+    for (int f = file + 1; f < 8; f++)
+    {
+        attacks |= (ONE << utils::getSquare(rank, f));
+        if ((ONE << utils::getSquare(rank, f)) & block)
+            break;
+    }
+    for (int f = file - 1; f >= 0; f--)
+    {
+        attacks |= (ONE << utils::getSquare(rank, f));
+        if ((ONE << utils::getSquare(rank, f)) & block)
+            break;
+    }
     return attacks;
 }

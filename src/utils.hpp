@@ -47,6 +47,8 @@ namespace utils
 
     int bitScan(U64 bitmap);
 
+    U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask);
+
     void printBB(U64 bb);
 
 } // namespace utils
