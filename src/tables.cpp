@@ -7,19 +7,19 @@
 
 U64 tables::SQUARE_BB[N_SQUARES];
 
-U64 tables::PAWN_ATTACKS[N_SIDES][N_SQUARES];
-U64 tables::KNIGHT_ATTACKS[N_SQUARES];
-U64 tables::KING_ATTACKS[N_SQUARES];
+U64 tables::ATTACKS_PAWN[N_SIDES][N_SQUARES];
+U64 tables::ATTACKS_KNIGHT[N_SQUARES];
+U64 tables::ATTACKS_KING[N_SQUARES];
 
 U64 tables::maskBishopAttacks(int sq, U64 block);
 U64 tables::maskRookAttacks(int sq, U64 block);
 U64 tables::maskRookAttacks(int sq);
 U64 tables::maskBishopAttacks(int sq);
 
-U64 tables::BISHOP_MASKS[N_SQUARES];
-U64 tables::ROOK_MASKS[N_SQUARES];
-U64 tables::BISHOP_ATTACKS[N_SQUARES][512];
-U64 tables::ROOK_ATTACKS[N_SQUARES][4096];
+U64 tables::RAYS_BISHOP[N_SQUARES];
+U64 tables::RAYS_ROOK[N_SQUARES];
+U64 tables::ATTACKS_BISHOP[N_SQUARES][512];
+U64 tables::ATTACKS_ROOK[N_SQUARES][4096];
 
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
@@ -42,29 +42,29 @@ void tables::init()
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        tables::PAWN_ATTACKS[WHITE][sq] = maskWhitePawnAnyAttacks(tables::SQUARE_BB[sq]);
-        tables::PAWN_ATTACKS[BLACK][sq] = maskBlackPawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::ATTACKS_PAWN[WHITE][sq] = maskWhitePawnAnyAttacks(tables::SQUARE_BB[sq]);
+        tables::ATTACKS_PAWN[BLACK][sq] = maskBlackPawnAnyAttacks(tables::SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        tables::KNIGHT_ATTACKS[sq] = maskKnightAttacks(tables::SQUARE_BB[sq]);
+        tables::ATTACKS_KNIGHT[sq] = maskKnightAttacks(tables::SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        tables::KING_ATTACKS[sq] = maskKingAttacks(tables::SQUARE_BB[sq]);
+        tables::ATTACKS_KING[sq] = maskKingAttacks(tables::SQUARE_BB[sq]);
     }
 
     // Initialize Slider Piece Attack Tables
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        BISHOP_MASKS[sq] = maskBishopAttacks(sq);
+        RAYS_BISHOP[sq] = maskBishopAttacks(sq);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        ROOK_MASKS[sq] = maskRookAttacks(sq);
+        RAYS_ROOK[sq] = maskRookAttacks(sq);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
@@ -72,9 +72,9 @@ void tables::init()
         int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_BISHOP[sq];
         for (int i = 0; i < occupancy_indices; i++)
         {
-            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], BISHOP_MASKS[sq]);
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], RAYS_BISHOP[sq]);
             int magic_index = (occupancy * magics::BISHOP_MAGICS[sq]) >> (64 - RELEVANT_BITS_COUNT_BISHOP[sq]);
-            BISHOP_ATTACKS[sq][magic_index] = maskBishopAttacks(sq, occupancy);
+            ATTACKS_BISHOP[sq][magic_index] = maskBishopAttacks(sq, occupancy);
         }
     }
 
@@ -83,9 +83,9 @@ void tables::init()
         int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_ROOK[sq];
         for (int i = 0; i < occupancy_indices; i++)
         {
-            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], ROOK_MASKS[sq]);
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], RAYS_ROOK[sq]);
             int magic_index = (occupancy * magics::ROOK_MAGICS[sq]) >> (64 - RELEVANT_BITS_COUNT_ROOK[sq]);
-            ROOK_ATTACKS[sq][magic_index] = maskRookAttacks(sq, occupancy);
+            ATTACKS_ROOK[sq][magic_index] = maskRookAttacks(sq, occupancy);
         }
     }
 }
@@ -105,8 +105,8 @@ U64 maskKnightAttacks(U64 knights)
     static const U64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
     static const U64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
 
-    U64 l1 = (knights >> 1) & tables::CLEAR_FILE[7];
-    U64 r1 = (knights << 1) & tables::CLEAR_FILE[0];
+    U64 l1 = (knights >> 1) & tables::MASK_CLEAR_FILE[7];
+    U64 r1 = (knights << 1) & tables::MASK_CLEAR_FILE[0];
     U64 h1 = l1 | r1;
 
     U64 l2 = (knights >> 2) & CLEAR_FILE_HG;

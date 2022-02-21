@@ -40,11 +40,12 @@ enum Directions
     N_DIRECTIONS = 8,
 };
 
-// TODO: there's more to this than just two states
 enum CastleStatus
 {
-    CANCASTLEOO,
-    CANCASTLEOOO
+    CANT_CASTLE,
+    CAN_CASTLE_OO,
+    CAN_CASTLE_OOO,
+    CAN_CASTLE_BOTH
 };
 
 enum Piece

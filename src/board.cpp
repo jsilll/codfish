@@ -95,7 +95,7 @@ void Board::init()
     _square[G7] = BLACK_PAWN;
     _square[H7] = BLACK_PAWN;
 
-    this->initFromSquares(_square, true, 0, CANCASTLEOO + CANCASTLEOOO, CANCASTLEOO + CANCASTLEOOO, 0);
+    this->initFromSquares(_square, true, 0, CAN_CASTLE_BOTH, CAN_CASTLE_BOTH, 0);
 }
 
 void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castle_white, int clastle_black, int ep_square)
@@ -318,13 +318,13 @@ void Board::initFromFen(const char *fen, const char *fencolor, const char *fenca
     whiteCastle = 0;
     blackCastle = 0;
     if (strstr(fencastling, "K"))
-        whiteCastle += CANCASTLEOO;
+        whiteCastle += CAN_CASTLE_OO;
     if (strstr(fencastling, "Q"))
-        whiteCastle += CANCASTLEOOO;
+        whiteCastle += CAN_CASTLE_OOO;
     if (strstr(fencastling, "k"))
-        blackCastle += CANCASTLEOO;
+        blackCastle += CAN_CASTLE_OO;
     if (strstr(fencastling, "q"))
-        blackCastle += CANCASTLEOOO;
+        blackCastle += CAN_CASTLE_OOO;
     if (strstr(fenenpassant, "-"))
     {
         epsq = 0;

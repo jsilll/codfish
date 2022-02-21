@@ -4,7 +4,7 @@
 
 namespace tables
 {
-    // TODO: find a better solution for the mask/file tables
+
     constexpr U64 MASK_RANK[] = {
         0xFF,
         0xFF00,
@@ -25,7 +25,7 @@ namespace tables
         0x4040404040404040,
         0x8080808080808080};
 
-    constexpr U64 CLEAR_RANK[] = {
+    constexpr U64 MASK_CLEAR_RANK[] = {
         0xFFFFFFFFFFFFFF00,
         0xFFFFFFFFFFFF00FF,
         0xFFFFFFFFFF00FFFF,
@@ -35,7 +35,7 @@ namespace tables
         0xFF00FFFFFFFFFFFF,
         0x00FFFFFFFFFFFFFF};
 
-    constexpr U64 CLEAR_FILE[] = {
+    constexpr U64 MASK_CLEAR_FILE[] = {
         0xFEFEFEFEFEFEFEFE,
         0xFDFDFDFDFDFDFDFD,
         0xFBFBFBFBFBFBFBFB,
@@ -73,20 +73,17 @@ namespace tables
 
     void init();
 
-    extern U64 PAWN_ATTACKS[N_SIDES][N_SQUARES];
-    extern U64 KNIGHT_ATTACKS[N_SQUARES];
-    extern U64 KING_ATTACKS[N_SQUARES];
+    extern U64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
+    extern U64 ATTACKS_KNIGHT[N_SQUARES];
+    extern U64 ATTACKS_KING[N_SQUARES];
 
     U64 maskBishopAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq);
     U64 maskBishopAttacks(int sq);
-
-    extern U64 BISHOP_MASKS[N_SQUARES];
-    extern U64 ROOK_MASKS[N_SQUARES];
-    extern U64 BISHOP_ATTACKS[N_SQUARES][512];
-    extern U64 ROOK_ATTACKS[N_SQUARES][4096];
-
-    // extern U64 RAY_ATTACKS[N_SQUARES][N_DIRECTIONS]; TODO: on .cpp
+    extern U64 RAYS_BISHOP[N_SQUARES];
+    extern U64 RAYS_ROOK[N_SQUARES];
+    extern U64 ATTACKS_BISHOP[N_SQUARES][512];
+    extern U64 ATTACKS_ROOK[N_SQUARES][4096];
 
 } // namespace tables
