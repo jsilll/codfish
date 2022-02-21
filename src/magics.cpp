@@ -5,6 +5,9 @@
 #include <iostream>
 #include <cstring>
 
+U64 magics::BISHOP_MAGICS[N_SQUARES];
+U64 magics::ROOK_MAGICS[N_SQUARES];
+
 // clang-format off
 const int RELEVANT_BITS_COUNT_BISHOP[64] = {
     6,5,5,5,5,5,5,6,
@@ -27,6 +30,7 @@ const int RELEVANT_BITS_COUNT_ROOK[64] = {
     11,10,10,10,10,10,10,11,
     12,11,11,11,11,11,11,12,
 };
+// clang-format on
 
 U64 maskBishopAttacks(int sq)
 {
@@ -139,9 +143,7 @@ U64 setOccupancy(int sq, int bits_in_mask, U64 attack_mask)
     return occupancy;
 }
 
-// clang-format on
-
-unsigned int getRandomNumberU32()
+unsigned int generateRandomNumberU32()
 {
     // XOR Shift 32 algorithm
     static unsigned int state = 1804289383;
@@ -153,55 +155,58 @@ unsigned int getRandomNumberU32()
     return number;
 }
 
-U64 getRandomNumberU64()
+U64 generateRandomNumberU64()
 {
-    U64 n1 = (U64)(getRandomNumberU32()) & 0xFFFF;
-    U64 n2 = (U64)(getRandomNumberU32()) & 0xFFFF;
-    U64 n3 = (U64)(getRandomNumberU32()) & 0xFFFF;
-    U64 n4 = (U64)(getRandomNumberU32()) & 0xFFFF;
+    U64 n1 = ((U64)generateRandomNumberU32()) & 0xFFFF;
+    U64 n2 = ((U64)generateRandomNumberU32()) & 0xFFFF;
+    U64 n3 = ((U64)generateRandomNumberU32()) & 0xFFFF;
+    U64 n4 = ((U64)generateRandomNumberU32()) & 0xFFFF;
     return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
 }
 
-U64 getMagicNumberCandidate()
+inline U64 getMagicNumberCandidate()
 {
-    return getRandomNumberU64() & getRandomNumberU64() & getRandomNumberU64();
+    return generateRandomNumberU64() & generateRandomNumberU64() & generateRandomNumberU64();
 }
 
-U64 getMagicNumber(int sq, int relevant_bits, int bishop)
+U64 generateMagicNumber(int sq, int relevant_bits, U64 (*maskAttacksFun)(int), U64 (*maskAttacksOccFun)(int, U64))
 {
-    U64 occupancies[4096];
-    U64 attacks[4096];
-    U64 used_attacks[4096];
-    U64 attack_mask = bishop ? maskBishopAttacks(sq) : maskRookAttacks(sq);
-
     int occupancy_indices = 1 << relevant_bits;
+    U64 attack_mask = maskAttacksFun(sq);
+    U64 occupancies[4096], attacks[4096], used_attacks[4096];
+
     for (int i = 0; i < occupancy_indices; i++)
     {
         occupancies[i] = setOccupancy(i, relevant_bits, attack_mask);
-        attacks[i] = bishop ? maskBishopAttacks(sq, occupancies[i]) : maskRookAttacks(sq, occupancies[i]);
+        attacks[i] = maskAttacksOccFun(sq, occupancies[i]);
     }
 
-    for (int random_count = 0; random_count < 100000000; random_count++)
+    for (int max_tries = 0; max_tries < 99999999; max_tries++)
     {
         U64 candidate = getMagicNumberCandidate();
+
         if (utils::bitCount((attack_mask * candidate) & 0xFF00000000000000) < 6)
         {
             continue;
         }
+
         memset(used_attacks, ZERO, sizeof(used_attacks));
-        int index, fail;
-        for (index = 0, fail = 0; !fail && index < occupancy_indices; index++)
+
+        int fail = 0;
+        for (int index = 0; !fail && index < occupancy_indices; index++)
         {
-            int magic_index = (int)(occupancies[index] * candidate) >> (64 - relevant_bits);
+            int magic_index = (int)((occupancies[index] * candidate) >> (64 - relevant_bits));
             if (used_attacks[magic_index] == ZERO)
             {
-                used_attacks[magic_index] = attacks[magic_index];
+                used_attacks[magic_index] = attacks[index];
             }
-            else if (used_attacks[magic_index] != attacks[magic_index])
+            else // alternatively, else if (used_attacks[magic_index] != attacks[index])
             {
                 fail = 1;
+                break;
             }
         }
+
         if (!fail)
         {
             return candidate;
@@ -213,8 +218,15 @@ U64 getMagicNumber(int sq, int relevant_bits, int bishop)
 
 void magics::init()
 {
-    for (int sq = 0; sq < 64; sq++) // TODO: unknown error to be fixed, wrong magics
+    std::cout << "BISHOP MAGICS" << std::endl;
+    for (int sq = 0; sq < 64; sq++)
     {
-        printf(" 0x%llxULL\n", getMagicNumber(sq, RELEVANT_BITS_COUNT_ROOK[sq], 0));
+        printf(" 0x%llxULL\n", generateMagicNumber(sq, RELEVANT_BITS_COUNT_BISHOP[sq], &maskBishopAttacks, &maskBishopAttacks));
+    }
+
+    std::cout << "ROOK MAGICS" << std::endl;
+    for (int sq = 0; sq < 64; sq++)
+    {
+        printf(" 0x%llxULL\n", generateMagicNumber(sq, RELEVANT_BITS_COUNT_ROOK[sq], &maskRookAttacks, &maskRookAttacks));
     }
 }

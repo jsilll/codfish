@@ -6,7 +6,6 @@
 int main(int argc, char const *argv[])
 {
     tables::init();
-    magics::init();
 
     // std::cout << "Chess Engine Initialized" << std::endl;
     // cli::readCommands();

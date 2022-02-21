@@ -1,6 +1,7 @@
 #include "tables.hpp"
 
 #include "utils.hpp"
+#include "magics.hpp"
 #include <iostream>
 #include <cstring>
 
@@ -41,6 +42,8 @@ void tables::init()
     {
         tables::KING_ATTACKS[sq] = maskKingAttacks(tables::SQUARE_BB[sq]);
     }
+
+    magics::init();
 }
 
 U64 maskWhitePawnAnyAttacks(U64 wpawns)
