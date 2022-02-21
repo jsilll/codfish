@@ -2,7 +2,7 @@
 
 namespace magics
 {
-    constexpr U64 BISHOP_MAGICS[64] = {
+    constexpr U64 BISHOP_MAGICS[N_SQUARES] = {
         0x40040844404084ULL,
         0x2004208a004208ULL,
         0x10190041080202ULL,
@@ -69,7 +69,7 @@ namespace magics
         0x4010011029020020ULL};
     ;
 
-    constexpr U64 ROOK_MAGICS[64] = {
+    constexpr U64 ROOK_MAGICS[N_SQUARES] = {
         0x8a80104000800020ULL,
         0x140002000100040ULL,
         0x2801880a0017001ULL,

@@ -5,9 +5,6 @@
 #include <iostream>
 #include <cstring>
 
-U64 magics::BISHOP_MAGICS[N_SQUARES];
-U64 magics::ROOK_MAGICS[N_SQUARES];
-
 // clang-format off
 const int RELEVANT_BITS_COUNT_BISHOP[64] = {
     6,5,5,5,5,5,5,6,
@@ -218,15 +215,15 @@ U64 generateMagicNumber(int sq, int relevant_bits, U64 (*maskAttacksFun)(int), U
 
 void magics::init()
 {
-    std::cout << "BISHOP MAGICS" << std::endl;
-    for (int sq = 0; sq < 64; sq++)
-    {
-        printf(" 0x%llxULL\n", generateMagicNumber(sq, RELEVANT_BITS_COUNT_BISHOP[sq], &maskBishopAttacks, &maskBishopAttacks));
-    }
-
     std::cout << "ROOK MAGICS" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
         printf(" 0x%llxULL\n", generateMagicNumber(sq, RELEVANT_BITS_COUNT_ROOK[sq], &maskRookAttacks, &maskRookAttacks));
+    }
+
+    std::cout << "BISHOP MAGICS" << std::endl;
+    for (int sq = 0; sq < 64; sq++)
+    {
+        printf(" 0x%llxULL\n", generateMagicNumber(sq, RELEVANT_BITS_COUNT_BISHOP[sq], &maskBishopAttacks, &maskBishopAttacks));
     }
 }
