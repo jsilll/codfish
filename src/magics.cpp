@@ -83,12 +83,12 @@ void magics::generate()
     std::cout << "ROOK MAGICS" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-        printf(" 0x%llxULL\n", generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_ROOK[sq], &tables::maskRookAttacks, &tables::maskRookAttacks));
+        printf(" 0x%llxULL\n", generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_ROOK[sq], &tables::maskRookAttackRays, &tables::maskRookAttacks));
     }
 
     std::cout << "BISHOP MAGICS" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-        printf(" 0x%llxULL\n", generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_BISHOP[sq], &tables::maskBishopAttacks, &tables::maskBishopAttacks));
+        printf(" 0x%llxULL\n", generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_BISHOP[sq], &tables::maskBishopAttackRays, &tables::maskBishopAttacks));
     }
 }

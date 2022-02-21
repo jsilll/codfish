@@ -79,11 +79,20 @@ namespace tables
 
     U64 maskBishopAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq, U64 block);
-    U64 maskRookAttacks(int sq);
-    U64 maskBishopAttacks(int sq);
-    extern U64 RAYS_BISHOP[N_SQUARES];
-    extern U64 RAYS_ROOK[N_SQUARES];
+    U64 maskRookAttackRays(int sq);
+    U64 maskBishopAttackRays(int sq);
+
     extern U64 ATTACKS_BISHOP[N_SQUARES][512];
     extern U64 ATTACKS_ROOK[N_SQUARES][4096];
+
+    struct SMagic
+    {
+        U64 mask;
+        U64 magic;
+        int shift;
+    };
+
+    extern SMagic MAGIC_TABLE_BISHOP[N_SQUARES];
+    extern SMagic MAGIC_TABLE_ROOK[N_SQUARES];
 
 } // namespace tables

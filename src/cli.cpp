@@ -33,7 +33,6 @@ void infoCommand(const Board &board);
 
 void cli::readCommands()
 {
-    tables::init();
     Board board = Board();
 
     while (char *command = readline("> "))

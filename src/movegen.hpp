@@ -8,17 +8,17 @@ namespace movegen
 {
     inline U64 getBishopAttacks(int sq, U64 occupancy)
     {
-        occupancy &= tables::RAYS_BISHOP[sq];
-        occupancy *= magics::BISHOP_MAGICS[sq];
-        occupancy >>= 64 - tables::RELEVANT_BITS_COUNT_BISHOP[sq];
-        return tables::ATTACKS_BISHOP[sq][(int)occupancy];
+        occupancy &= tables::MAGIC_TABLE_BISHOP[sq].mask;
+        occupancy *= tables::MAGIC_TABLE_BISHOP[sq].magic;
+        occupancy >>= tables::MAGIC_TABLE_BISHOP[sq].shift;
+        return tables::ATTACKS_BISHOP[sq][occupancy];
     }
 
     inline U64 getRookAttacks(int sq, U64 occupancy)
     {
-        occupancy &= tables::RAYS_ROOK[sq];
-        occupancy *= magics::ROOK_MAGICS[sq];
-        occupancy >>= 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
-        return tables::ATTACKS_ROOK[sq][(int)occupancy];
+        occupancy &= tables::MAGIC_TABLE_ROOK[sq].mask;
+        occupancy *= tables::MAGIC_TABLE_ROOK[sq].magic;
+        occupancy >>= tables::MAGIC_TABLE_ROOK[sq].shift;
+        return tables::ATTACKS_ROOK[sq][occupancy];
     }
 }
