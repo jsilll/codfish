@@ -3,16 +3,17 @@
 #include "tables.hpp"
 #include "board.hpp"
 #include "utils.hpp"
+#include <algorithm>
+#include <cctype>
+#include <csignal>
 #include <iostream>
+#include <iostream>
+#include <locale>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <cctype>
-#include <locale>
-#include <iostream>
 #include <string>
+#include <vector>
 #include <vector>
 
 // clang-format off
@@ -28,6 +29,8 @@ const char* SQUARE_NAMES[] = {
 };
 // clang-format on
 
+char *COMMAND{};
+
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
 
@@ -35,17 +38,17 @@ void cli::readCommands()
 {
     Board board = Board();
 
-    while (char *command = readline("> "))
+    while (COMMAND = readline("> "))
     {
-        if (*command)
+        if (*COMMAND)
         {
-            add_history(command);
-            if (!doCommand(std::string(command), board))
+            add_history(COMMAND);
+            if (!doCommand(std::string(COMMAND), board))
             {
-                free(command);
+                free(COMMAND);
                 return;
             }
-            free(command);
+            free(COMMAND);
         }
     }
 }
@@ -55,27 +58,26 @@ bool doCommand(const std::string buf, Board &board)
     if (buf == "help" || buf == "h" || buf == "?")
     {
         std::cout
-            << "black               : BLACK to move\n"
-            << "cc                  : play computer-to-computer \n"
-            << "d                   : display board \n"
-            << "eval                : show static evaluation of this position\n"
-            << "exit                : exit program \n"
-            << "game                : show game moves \n"
-            << "go                  : computer next move \n"
-            << "help                : Displays information about all the commands\n"
-            << "help                : show this help \n"
-            << "info                : display variables (for testing purposes)\n"
-            << "move e2e4, or h7h8q : enter a move (use this format)\n"
-            << "moves               : show all legal moves\n"
-            << "new                 : start new game\n"
-            << "perf                : benchmark a number of key functions\n"
-            << "perft n             : calculate raw number of nodes from here, depth n \n"
-            << "r                   : rotate board \n"
-            << "readfen fen         : reads FEN position\n"
-            << "sd n                : set the search depth to n\n"
-            << "setup               : setup board... \n"
-            << "undo                : take back last move\n"
-            << "white               : WHITE to move"
+            << "black                 Black to move\n"
+            << "cc                    Play computer-to-computer \n"
+            << "d                     Display board \n"
+            << "eval                  Show static evaluation of this position\n"
+            << "exit                  Exit program \n"
+            << "game                  Show game moves \n"
+            << "go                    Computer next move \n"
+            << "help                  Show this help \n"
+            << "info                  Display variables (for testing purposes)\n"
+            << "move e2e4, or h7h8q   Enter a move (use this format)\n"
+            << "moves                 Show all legal moves\n"
+            << "new                   Start new game\n"
+            << "perf                  Benchmark a number of key functions\n"
+            << "perft n               Calculate raw number of nodes from here, depth n \n"
+            << "r                     Rotate board \n"
+            << "readfen fen           Reads FEN position\n"
+            << "sd n                  Set the search depth to n\n"
+            << "setup                 Setup board... \n"
+            << "undo                  Take back last move\n"
+            << "white                 White to move"
             << std::endl;
     }
     else if (buf == "black")

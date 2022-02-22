@@ -64,3 +64,5 @@ enum Piece
     BLACK_PAWN,
     EMPTY
 };
+
+class Board; // TODO: should this be here?
