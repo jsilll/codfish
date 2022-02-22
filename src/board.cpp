@@ -5,47 +5,46 @@
 #include <iomanip>
 #include <cstring>
 
-std::ostream &operator<<(std::ostream &os, const Board &board)
+void Board::print(bool ascii = false)
 {
-    // TODO: add command for toggling between these two representations
-    // static const std::string PIECE_NAMES[13] = {"K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  "};
-    static const std::string PIECE_NAMES[13] = {"♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
+    static const std::string PIECE_NAMES[26] = {"K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ", "♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
 
-    os << '\n';
-    if (!board._view_rotated)
+    int offset = ascii ? 0 : 13;
+
+    std::cout << '\n';
+    if (!_view_rotated)
     {
         for (int rank = 7; rank >= 0; rank--)
         {
-            os << "    +---+---+---+---+---+---+---+---+\n"
-               << std::setw(3) << rank << " |";
+            std::cout << "    +---+---+---+---+---+---+---+---+\n"
+                      << std::setw(3) << rank << " |";
 
             for (int file = 0; file < 8; file++)
             {
-                os << " " << PIECE_NAMES[board._square[utils::getSquare(rank, file)]] << "|";
+                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
             }
-            os << '\n';
+            std::cout << '\n';
         }
-        os << "    +---+---+---+---+---+---+---+---+\n"
-           << "      a   b   c   d   e   f   g   h\n";
+        std::cout << "    +---+---+---+---+---+---+---+---+\n"
+                  << "      a   b   c   d   e   f   g   h\n";
     }
     else
     {
-        os << "      h   g   f   e   d   c   b   a\n";
+        std::cout << "      h   g   f   e   d   c   b   a\n";
         for (int rank = 0; rank < 8; rank++)
         {
-            os << "    +---+---+---+---+---+---+---+---+\n"
-               << "    |";
+            std::cout << "    +---+---+---+---+---+---+---+---+\n"
+                      << "    |";
             for (int file = 7; file >= 0; file--)
             {
-                os << " " << PIECE_NAMES[board._square[utils::getSquare(rank, file)]] << "|";
+                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
             }
-            os << std::setw(3) << rank << "\n";
+            std::cout << std::setw(3) << rank << "\n";
         }
-        os << "    +---+---+---+---+---+---+---+---+\n";
+        std::cout << "    +---+---+---+---+---+---+---+---+\n";
     }
 
-    os << std::endl;
-    return os;
+    std::cout << std::endl;
 }
 
 Board::Board()

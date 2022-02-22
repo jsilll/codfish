@@ -5,7 +5,7 @@
 
 class Board
 {
-public:
+public: // TODO: make things private ...
     U64 _white_king, _white_queens, _white_rooks, _white_bishops, _white_knights, _white_pawns;
     U64 _black_king, _black_queens, _black_rooks, _black_bishops, _black_knights, _black_pawns;
     U64 _white_pieces, _black_pieces, _occupied_squares;
@@ -28,5 +28,5 @@ public:
     void initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castle_white, int clastle_black, int ep_square);
     void initFromFen(const char *fen, const char *fencolor, const char *fencastling, const char *fenenpassant, const char *char_fenhalfmoveclock, const char *char_fenfullmovenumber);
 
-    friend std::ostream &operator<<(std::ostream &os, const Board &rhs);
+    void print(bool ascii);
 };

@@ -31,6 +31,7 @@ const char* SQUARE_NAMES[] = {
 // clang-format on
 
 char *COMMAND{};
+bool ASCII{};
 
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
@@ -59,6 +60,7 @@ bool doCommand(const std::string buf, Board &board)
     if (buf == "help" || buf == "h" || buf == "?")
     {
         std::cout
+            << "ascii                 Toggles between ascii and utf-8 board representation\n"
             << "black                 Black to move\n"
             << "cc                    Play computer-to-computer \n"
             << "d                     Display board \n"
@@ -68,6 +70,7 @@ bool doCommand(const std::string buf, Board &board)
             << "go                    Computer next move \n"
             << "help                  Show this help \n"
             << "info                  Display variables (for testing purposes)\n"
+            << "magics                Generates magic numbers for the bishop and rook pieces\n"
             << "move e2e4, or h7h8q   Enter a move (use this format)\n"
             << "moves                 Show all legal moves\n"
             << "new                   Start new game\n"
@@ -79,7 +82,6 @@ bool doCommand(const std::string buf, Board &board)
             << "setup                 Setup board... \n"
             << "undo                  Take back last move\n"
             << "white                 White to move"
-            << "magics                Generates magic numbers for the bishop and rook pieces\n"
             << std::endl;
     }
     else if (buf == "black")
@@ -88,7 +90,7 @@ bool doCommand(const std::string buf, Board &board)
     }
     else if (buf == "d")
     {
-        std::cout << board;
+        board.print(ASCII);
     }
     else if (buf == "info")
     {
@@ -101,7 +103,7 @@ bool doCommand(const std::string buf, Board &board)
     else if (buf == "r")
     {
         board._view_rotated = !board._view_rotated;
-        std::cout << board;
+        board.print(ASCII);
     }
     else if (buf == "white")
     {
@@ -114,6 +116,11 @@ bool doCommand(const std::string buf, Board &board)
     else if (buf == "magics")
     {
         magics::generate();
+    }
+    else if (buf == "ascii")
+    {
+        ASCII = !ASCII;
+        std::cout << "ascii mode toggled " << (ASCII ? "on" : "off") << std::endl;
     }
     else
     {
