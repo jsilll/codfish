@@ -5,6 +5,9 @@
 #include <iostream>
 #include <cstring>
 
+magics::Magic magics::MAGIC_TABLE_BISHOP[N_SQUARES];
+magics::Magic magics::MAGIC_TABLE_ROOK[N_SQUARES];
+
 unsigned int generateRandomNumberU32()
 {
     // XOR Shift 32 algorithm
@@ -93,4 +96,21 @@ void magics::generate()
         printf("%d : 0x%llxULL\n", sq, generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_BISHOP[sq], &tables::maskBishopAttackRays, &tables::maskBishopAttacks));
     }
     std::cout << std::endl;
+}
+
+void magics::init()
+{
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        magics::MAGIC_TABLE_BISHOP[sq].mask = tables::maskBishopAttackRays(sq);
+        magics::MAGIC_TABLE_BISHOP[sq].magic = magics::MAGICS_BISHOP[sq];
+        magics::MAGIC_TABLE_BISHOP[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_BISHOP[sq];
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        magics::MAGIC_TABLE_ROOK[sq].mask = tables::maskRookAttackRays(sq);
+        magics::MAGIC_TABLE_ROOK[sq].magic = magics::MAGICS_ROOK[sq];
+        magics::MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
+    }
 }

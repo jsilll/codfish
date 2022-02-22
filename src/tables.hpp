@@ -85,14 +85,4 @@ namespace tables
     extern U64 ATTACKS_BISHOP[N_SQUARES][512];
     extern U64 ATTACKS_ROOK[N_SQUARES][4096];
 
-    struct SMagic
-    {
-        U64 mask;
-        U64 magic;
-        int shift;
-    };
-
-    extern SMagic MAGIC_TABLE_BISHOP[N_SQUARES];
-    extern SMagic MAGIC_TABLE_ROOK[N_SQUARES];
-
 } // namespace tables

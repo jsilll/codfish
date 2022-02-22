@@ -19,9 +19,6 @@ U64 tables::maskBishopAttackRays(int sq);
 U64 tables::ATTACKS_BISHOP[N_SQUARES][512];
 U64 tables::ATTACKS_ROOK[N_SQUARES][4096];
 
-tables::SMagic tables::MAGIC_TABLE_BISHOP[N_SQUARES];
-tables::SMagic tables::MAGIC_TABLE_ROOK[N_SQUARES];
-
 inline U64 whitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
 inline U64 whitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
 inline U64 blackPawnEastAttacks(U64 bpawns) { return utils::soEaOne(bpawns); }
@@ -57,28 +54,14 @@ void tables::init()
         tables::ATTACKS_KING[sq] = maskKingAttacks(tables::SQUARE_BB[sq]);
     }
 
-    // Initialize Slider Piece Attack Tables
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-        tables::MAGIC_TABLE_BISHOP[sq].mask = maskBishopAttackRays(sq);
-        tables::MAGIC_TABLE_BISHOP[sq].magic = magics::BISHOP_MAGICS[sq];
-        tables::MAGIC_TABLE_BISHOP[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_BISHOP[sq];
-    }
-
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-        tables::MAGIC_TABLE_ROOK[sq].mask = maskRookAttackRays(sq);
-        tables::MAGIC_TABLE_ROOK[sq].magic = magics::ROOK_MAGICS[sq];
-        tables::MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
-    }
-
+    // Initialize slider piece Attack Tables
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
         int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_BISHOP[sq];
         for (int i = 0; i < occupancy_indices; i++)
         {
-            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], tables::MAGIC_TABLE_BISHOP[sq].mask);
-            int magic_index = (occupancy * tables::MAGIC_TABLE_BISHOP[sq].magic) >> tables::MAGIC_TABLE_BISHOP[sq].shift;
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
+            int magic_index = (occupancy * magics::MAGIC_TABLE_BISHOP[sq].magic) >> magics::MAGIC_TABLE_BISHOP[sq].shift;
             ATTACKS_BISHOP[sq][magic_index] = maskBishopAttacks(sq, occupancy);
         }
     }
@@ -88,8 +71,8 @@ void tables::init()
         int occupancy_indices = 1 << tables::RELEVANT_BITS_COUNT_ROOK[sq];
         for (int i = 0; i < occupancy_indices; i++)
         {
-            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], tables::MAGIC_TABLE_ROOK[sq].mask);
-            int magic_index = (occupancy * tables::MAGIC_TABLE_ROOK[sq].magic) >> tables::MAGIC_TABLE_ROOK[sq].shift;
+            U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
+            int magic_index = (occupancy * magics::MAGIC_TABLE_ROOK[sq].magic) >> magics::MAGIC_TABLE_ROOK[sq].shift;
             ATTACKS_ROOK[sq][magic_index] = maskRookAttacks(sq, occupancy);
         }
     }

@@ -5,20 +5,9 @@
 namespace utils
 {
 
-    inline int getSquare(const int rk, const int fl)
-    {
-        return 8 * rk + fl;
-    }
-
-    inline int getFile(const int sq)
-    {
-        return sq & 7;
-    }
-
-    inline int getRank(const int sq)
-    {
-        return sq >> 3;
-    }
+    inline int getSquare(const int rk, const int fl) { return 8 * rk + fl; }
+    inline int getFile(const int sq) { return sq & 7; }
+    inline int getRank(const int sq) { return sq >> 3; }
 
     inline unsigned int bitCount(U64 bb)
     {
