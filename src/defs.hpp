@@ -40,13 +40,10 @@ enum Directions
     N_DIRECTIONS = 8,
 };
 
-enum CastlingRight
-{
-    CANT_CASTLE,
-    CAN_CASTLE_OO,
-    CAN_CASTLE_OOO,
-    CAN_CASTLE_BOTH
-};
+constexpr int CASTLE_KING_WHITE = 1;
+constexpr int CASTLE_QUEEN_WHITE = 2;
+constexpr int CASTLE_KING_BLACK = 4;
+constexpr int CASTLE_QUEEN_BLACK = 8;
 
 enum Piece
 {

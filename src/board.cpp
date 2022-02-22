@@ -95,10 +95,10 @@ void Board::reset()
     _square[G7] = BLACK_PAWN;
     _square[H7] = BLACK_PAWN;
 
-    this->initFromSquares(_square, true, 0, CAN_CASTLE_BOTH, CAN_CASTLE_BOTH, 0);
+    this->initFromSquares(_square, true, 0, CASTLE_KING_BLACK + CASTLE_KING_WHITE + CASTLE_QUEEN_BLACK + CASTLE_QUEEN_WHITE, 0);
 }
 
-void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castle_white, int clastle_black, int en_passant_square)
+void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castling_rights, int en_passant_square)
 {
 
     _white_king = ZERO;
@@ -176,8 +176,7 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
     _occupied_squares = _white_pieces | _black_pieces;
 
     _white_to_move = next;
-    _castle_white = castle_white;
-    _castle_black = clastle_black;
+    _castling_rights = castling_rights;
     _en_passant_square = en_passant_square;
     _fifty_move = fifty_move;
 
@@ -315,16 +314,15 @@ void Board::initFromFen(const char *fen, const char *fencolor, const char *fenca
     if (fencolor[0] == 'b')
         white_to_move = false;
 
-    whiteCastle = 0;
-    blackCastle = 0;
+    int castling_rights = 0;
     if (strstr(fencastling, "K"))
-        whiteCastle += CAN_CASTLE_OO;
+        castling_rights += CASTLE_KING_WHITE;
     if (strstr(fencastling, "Q"))
-        whiteCastle += CAN_CASTLE_OOO;
+        castling_rights += CASTLE_QUEEN_WHITE;
     if (strstr(fencastling, "k"))
-        blackCastle += CAN_CASTLE_OO;
+        castling_rights += CASTLE_KING_BLACK;
     if (strstr(fencastling, "q"))
-        blackCastle += CAN_CASTLE_OOO;
+        castling_rights += CASTLE_QUEEN_BLACK;
     if (strstr(fenenpassant, "-"))
     {
         epsq = 0;
@@ -335,7 +333,7 @@ void Board::initFromFen(const char *fen, const char *fencolor, const char *fenca
         epsq = ((int)fenenpassant[0] - 96) + 8 * ((int)fenenpassant[1] - 48) - 9;
     }
 
-    initFromSquares(_square, white_to_move, fenhalfmoveclock, whiteCastle, blackCastle, epsq);
+    initFromSquares(_square, white_to_move, fenhalfmoveclock, castling_rights, epsq);
 }
 
 int Board::getMaterial() const
@@ -344,11 +342,13 @@ int Board::getMaterial() const
 }
 int Board::getCastleWhite() const
 {
-    return _castle_white;
+    static const int mask = CASTLE_KING_WHITE + CASTLE_QUEEN_WHITE;
+    return _castling_rights & mask; // TODO: maybe improve performance of this
 }
 int Board::getCastleBlack() const
 {
-    return _castle_black;
+    static const int mask = CASTLE_KING_BLACK + CASTLE_QUEEN_BLACK;
+    return _castling_rights & mask; // TODO: maybe improve performance of this
 }
 int Board::getEnPassantSquare() const
 {
