@@ -69,7 +69,6 @@ namespace magics
         0x6000020202d0240ULL,
         0x8918844842082200ULL,
         0x4010011029020020ULL};
-    ;
 
     constexpr U64 MAGICS_ROOK[N_SQUARES] = {
         0x8a80104000800020ULL,
@@ -137,6 +136,8 @@ namespace magics
         0x2006104900a0804ULL,
         0x1004081002402ULL};
 
+    void init();
+
     struct Magic
     {
         U64 mask;
@@ -147,5 +148,4 @@ namespace magics
     extern Magic MAGIC_TABLE_BISHOP[N_SQUARES];
     extern Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
-    void init();
 }
