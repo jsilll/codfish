@@ -40,7 +40,7 @@ enum Directions
     N_DIRECTIONS = 8,
 };
 
-enum CastleStatus
+enum CastlingRight
 {
     CANT_CASTLE,
     CAN_CASTLE_OO,

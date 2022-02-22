@@ -84,9 +84,10 @@ bool doCommand(const std::string buf, Board &board)
             << "white                 White to move"
             << std::endl;
     }
-    else if (buf == "black")
+    else if (buf == "s")
     {
-        board._white_to_move = false;
+        bool white_to_play = board.switchSideToMove();
+        std::cout << "side to play is now " << (white_to_play ? "white" : "black") << std::endl;
     }
     else if (buf == "d")
     {
@@ -98,16 +99,12 @@ bool doCommand(const std::string buf, Board &board)
     }
     else if (buf == "new")
     {
-        board.init();
+        board.reset();
     }
     else if (buf == "r")
     {
-        board._view_rotated = !board._view_rotated;
-        board.print(ASCII);
-    }
-    else if (buf == "white")
-    {
-        board._white_to_move = true;
+        bool white_on_bottom = board.rotate();
+        std::cout << (white_on_bottom ? "white" : "black") << " is now on bottom" << std::endl;
     }
     else if (buf == "exit")
     {
@@ -133,15 +130,14 @@ void infoCommand(const Board &board)
 {
     std::cout
         << "Size of board, in bytes   = " << sizeof(board)
-        << "\nMaterial value            = " << board._material
-        << "\nWhite castling rights     = " << board._castle_white
-        << "\nBlack castling rights     = " << board._castle_black
-        << "\nEn-passant square         = " << board._ep_square
-        << "\nFifty move count          = " << board._fifty_move
-        << "\nbitCnt of white pawns     = " << utils::bitCount(board._white_pawns)
-        << "\nbitCnt of black pawns     = " << utils::bitCount(board._black_pawns)
-        << "\nbitmap of board._occupied_squares:" << std::endl;
-    utils::printBB(board._occupied_squares);
+        << "\nMaterial value            = " << board.getMaterial()
+        << "\nWhite castling rights     = " << board.getCastleWhite()
+        << "\nBlack castling rights     = " << board.getCastleBlack()
+        << "\nEn-passant square         = " << board.getEnPassantSquare()
+        << "\nFifty move count          = " << board.getFiftyMove()
+        << "\nBit count of white pawns     = " << board.getWhitePawnsCount()
+        << "\nBit count of black pawns     = " << board.getBlackPawnsCount()
+        << "\nBitmap of board._occupied_squares:" << std::endl;
 }
 
 void loadFenCommand(const Board &board)

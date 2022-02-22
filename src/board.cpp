@@ -12,7 +12,23 @@ void Board::print(bool ascii = false)
     int offset = ascii ? 0 : 13;
 
     std::cout << '\n';
-    if (!_view_rotated)
+
+    if (!_white_on_bottom)
+    {
+        std::cout << "      h   g   f   e   d   c   b   a\n";
+        for (int rank = 0; rank < 8; rank++)
+        {
+            std::cout << "    +---+---+---+---+---+---+---+---+\n"
+                      << "    |";
+            for (int file = 7; file >= 0; file--)
+            {
+                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
+            }
+            std::cout << std::setw(3) << rank << "\n";
+        }
+        std::cout << "    +---+---+---+---+---+---+---+---+\n";
+    }
+    else
     {
         for (int rank = 7; rank >= 0; rank--)
         {
@@ -28,33 +44,18 @@ void Board::print(bool ascii = false)
         std::cout << "    +---+---+---+---+---+---+---+---+\n"
                   << "      a   b   c   d   e   f   g   h\n";
     }
-    else
-    {
-        std::cout << "      h   g   f   e   d   c   b   a\n";
-        for (int rank = 0; rank < 8; rank++)
-        {
-            std::cout << "    +---+---+---+---+---+---+---+---+\n"
-                      << "    |";
-            for (int file = 7; file >= 0; file--)
-            {
-                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
-            }
-            std::cout << std::setw(3) << rank << "\n";
-        }
-        std::cout << "    +---+---+---+---+---+---+---+---+\n";
-    }
 
     std::cout << std::endl;
 }
 
 Board::Board()
 {
-    this->init();
+    this->reset();
 }
 
-void Board::init()
+void Board::reset()
 {
-    _view_rotated = false;
+    _white_on_bottom = true;
 
     for (int i = 0; i < N_SQUARES; i++)
     {
@@ -97,7 +98,7 @@ void Board::init()
     this->initFromSquares(_square, true, 0, CAN_CASTLE_BOTH, CAN_CASTLE_BOTH, 0);
 }
 
-void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castle_white, int clastle_black, int ep_square)
+void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castle_white, int clastle_black, int en_passant_square)
 {
 
     _white_king = ZERO;
@@ -177,7 +178,7 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
     _white_to_move = next;
     _castle_white = castle_white;
     _castle_black = clastle_black;
-    _ep_square = ep_square;
+    _en_passant_square = en_passant_square;
     _fifty_move = fifty_move;
 
     _material = 0;
@@ -335,4 +336,43 @@ void Board::initFromFen(const char *fen, const char *fencolor, const char *fenca
     }
 
     initFromSquares(_square, white_to_move, fenhalfmoveclock, whiteCastle, blackCastle, epsq);
+}
+
+int Board::getMaterial() const
+{
+    return _material;
+}
+int Board::getCastleWhite() const
+{
+    return _castle_white;
+}
+int Board::getCastleBlack() const
+{
+    return _castle_black;
+}
+int Board::getEnPassantSquare() const
+{
+    return _en_passant_square;
+}
+int Board::getFiftyMove() const
+{
+    return _fifty_move;
+}
+int Board::getWhitePawnsCount() const
+{
+    return utils::bitCount(_white_pawns);
+}
+int Board::getBlackPawnsCount() const
+{
+    return utils::bitCount(_black_pawns);
+}
+
+bool Board::switchSideToMove()
+{
+    return _white_to_move = !_white_to_move;
+}
+
+bool Board::rotate()
+{
+    return _white_on_bottom = !_white_on_bottom;
 }
