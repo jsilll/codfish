@@ -1,8 +1,9 @@
 #include "cli.hpp"
 
-#include "tables.hpp"
-#include "board.hpp"
 #include "utils.hpp"
+#include "tables.hpp"
+#include "magics.hpp"
+#include "board.hpp"
 #include <algorithm>
 #include <cctype>
 #include <csignal>
@@ -78,6 +79,7 @@ bool doCommand(const std::string buf, Board &board)
             << "setup                 Setup board... \n"
             << "undo                  Take back last move\n"
             << "white                 White to move"
+            << "magics                Generates magic numbers for the bishop and rook pieces\n"
             << std::endl;
     }
     else if (buf == "black")
@@ -105,9 +107,13 @@ bool doCommand(const std::string buf, Board &board)
     {
         board._white_to_move = true;
     }
-    else if ((buf == "exit"))
+    else if (buf == "exit")
     {
         return false;
+    }
+    else if (buf == "magics")
+    {
+        magics::generate();
     }
     else
     {
