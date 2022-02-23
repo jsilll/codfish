@@ -24,7 +24,7 @@ void Board::print(bool ascii = false)
             {
                 std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
             }
-            std::cout << std::setw(3) << rank << "\n";
+            std::cout << std::setw(3) << rank + 1 << "\n";
         }
         std::cout << "    +---+---+---+---+---+---+---+---+\n";
     }
@@ -33,7 +33,7 @@ void Board::print(bool ascii = false)
         for (int rank = 7; rank >= 0; rank--)
         {
             std::cout << "    +---+---+---+---+---+---+---+---+\n"
-                      << std::setw(3) << rank << " |";
+                      << std::setw(3) << rank + 1 << " |";
 
             for (int file = 0; file < 8; file++)
             {
