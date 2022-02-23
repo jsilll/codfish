@@ -4,4 +4,5 @@
 
 namespace UCI
 {
+    void init();
 } // namespace UCI

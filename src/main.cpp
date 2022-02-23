@@ -6,6 +6,7 @@
 #include "movegen.hpp"
 #include "board.hpp"
 #include "cli.hpp"
+#include "uci.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -14,7 +15,9 @@ int main(int argc, char const *argv[])
 
     std::cout << "Chess Engine Initialized" << std::endl;
 
-    CLI::readCommands();
+    CLI::init();
+    // UCI::init();
+    // Lichess::init(); ??
 
     return 0;
 }

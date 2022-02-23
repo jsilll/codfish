@@ -9,6 +9,10 @@ namespace Utils
     inline int getFile(const int sq) { return sq & 7; }
     inline int getRank(const int sq) { return sq >> 3; }
 
+    inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
+    inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }
+    inline bool getBit(U64 bb, int sq) { return ((bb >> sq) & 1ULL); }
+
     inline unsigned int bitCount(U64 bb)
     {
         // Brian Kernighan's way
@@ -21,9 +25,7 @@ namespace Utils
         return count;
     }
 
-    inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
-    inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }
-    inline bool getBit(U64 bb, int sq) { return ((bb >> sq) & 1ULL); }
+    int bitScan(U64 bb);
 
     inline U64 soutOne(U64 bb) { return (bb >> 8); }
     inline U64 nortOne(U64 bb) { return (bb << 8); }
@@ -33,8 +35,6 @@ namespace Utils
     inline U64 westOne(U64 bb) { return (bb >> 1) & 0x7F7F7F7F7F7F7F7F; }
     inline U64 soWeOne(U64 bb) { return (bb >> 9) & 0x7F7F7F7F7F7F7F7F; }
     inline U64 noWeOne(U64 bb) { return (bb << 7) & 0x7F7F7F7F7F7F7F7F; }
-
-    int bitScan(U64 bb);
 
     U64 setOccupancy(int index, int bits_in_mask, U64 attack_mask);
 

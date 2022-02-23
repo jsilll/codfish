@@ -2,6 +2,6 @@
 
 namespace CLI
 {
-    void readCommands();
+    void init();
 
 } // namespace CLI

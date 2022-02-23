@@ -36,7 +36,7 @@ bool ASCII{};
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
 
-void CLI::readCommands()
+void CLI::init()
 {
     Board board = Board();
 
