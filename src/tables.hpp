@@ -70,19 +70,16 @@ namespace tables
     // clang-format on
 
     extern U64 SQUARE_BB[N_SQUARES];
-
-    void init();
-
     extern U64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
     extern U64 ATTACKS_KNIGHT[N_SQUARES];
     extern U64 ATTACKS_KING[N_SQUARES];
+    extern U64 ATTACKS_BISHOP[N_SQUARES][512];
+    extern U64 ATTACKS_ROOK[N_SQUARES][4096];
 
+    void init();
     U64 maskBishopAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq, U64 block);
     U64 maskRookAttackRays(int sq);
     U64 maskBishopAttackRays(int sq);
-
-    extern U64 ATTACKS_BISHOP[N_SQUARES][512];
-    extern U64 ATTACKS_ROOK[N_SQUARES][4096];
 
 } // namespace tables

@@ -2,8 +2,6 @@
 
 namespace magics
 {
-    void generate();
-
     constexpr U64 MAGICS_BISHOP[N_SQUARES] = {
         0x40040844404084ULL,
         0x2004208a004208ULL,
@@ -136,8 +134,6 @@ namespace magics
         0x2006104900a0804ULL,
         0x1004081002402ULL};
 
-    void init();
-
     struct Magic
     {
         U64 mask;
@@ -148,4 +144,6 @@ namespace magics
     extern Magic MAGIC_TABLE_BISHOP[N_SQUARES];
     extern Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
+    void generate();
+    void init();
 }

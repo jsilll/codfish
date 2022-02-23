@@ -2,6 +2,7 @@
 
 #include "utils.hpp"
 #include "tables.hpp"
+#include "attacks.hpp"
 #include <iostream>
 #include <cstring>
 
@@ -86,14 +87,14 @@ void magics::generate()
     std::cout << "Rook Magic Numbers" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-        printf("%d : 0x%llxULL\n", sq, generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_ROOK[sq], &tables::maskRookAttackRays, &tables::maskRookAttacks));
+        printf("%d : 0x%llxULL\n", sq, generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_ROOK[sq], &attacks::maskRookAttackRays, &attacks::maskRookAttacks));
     }
     std::cout << std::endl;
 
     std::cout << "Bishop Magic Numbers" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-        printf("%d : 0x%llxULL\n", sq, generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_BISHOP[sq], &tables::maskBishopAttackRays, &tables::maskBishopAttacks));
+        printf("%d : 0x%llxULL\n", sq, generateMagicNumber(sq, tables::RELEVANT_BITS_COUNT_BISHOP[sq], &attacks::maskBishopAttackRays, &attacks::maskBishopAttacks));
     }
     std::cout << std::endl;
 }
@@ -102,14 +103,14 @@ void magics::init()
 {
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        magics::MAGIC_TABLE_BISHOP[sq].mask = tables::maskBishopAttackRays(sq);
+        magics::MAGIC_TABLE_BISHOP[sq].mask = attacks::maskBishopAttackRays(sq);
         magics::MAGIC_TABLE_BISHOP[sq].magic = magics::MAGICS_BISHOP[sq];
         magics::MAGIC_TABLE_BISHOP[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_BISHOP[sq];
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        magics::MAGIC_TABLE_ROOK[sq].mask = tables::maskRookAttackRays(sq);
+        magics::MAGIC_TABLE_ROOK[sq].mask = attacks::maskRookAttackRays(sq);
         magics::MAGIC_TABLE_ROOK[sq].magic = magics::MAGICS_ROOK[sq];
         magics::MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
     }
