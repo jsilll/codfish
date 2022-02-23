@@ -1,5 +1,7 @@
 #pragma once
 
+#include "defs.hpp"
+
 namespace CLI
 {
     void init();

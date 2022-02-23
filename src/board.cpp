@@ -50,17 +50,44 @@ void Board::print(bool ascii = false)
 
 Board::Board()
 {
-    this->reset();
+    this->setStartingPosition();
 }
 
-void Board::reset()
+void Board::clear()
 {
-    _white_on_bottom = true;
+    _white_king = ZERO;
+    _white_queens = ZERO;
+    _white_rooks = ZERO;
+    _white_bishops = ZERO;
+    _white_knights = ZERO;
+    _white_pawns = ZERO;
+    _black_king = ZERO;
+    _black_queens = ZERO;
+    _black_rooks = ZERO;
+    _black_bishops = ZERO;
+    _black_knights = ZERO;
+    _black_pawns = ZERO;
+    _white_pieces = ZERO;
+    _black_pieces = ZERO;
+    _occupied_squares = ZERO;
+
+    _white_to_move = true;
+    _castling_rights = CASTLE_KING_BLACK + CASTLE_KING_WHITE + CASTLE_QUEEN_BLACK + CASTLE_QUEEN_WHITE;
+    _en_passant_square = -1;
+    _fifty_move = 0;
+    _material = 0;
 
     for (int i = 0; i < N_SQUARES; i++)
     {
         _square[i] = EMPTY;
     }
+
+    _white_on_bottom = true;
+}
+
+void Board::setStartingPosition()
+{
+    this->clear();
 
     _square[E1] = WHITE_KING;
     _square[D1] = WHITE_QUEEN;
@@ -95,32 +122,8 @@ void Board::reset()
     _square[G7] = BLACK_PAWN;
     _square[H7] = BLACK_PAWN;
 
-    this->initFromSquares(_square, true, 0, CASTLE_KING_BLACK + CASTLE_KING_WHITE + CASTLE_QUEEN_BLACK + CASTLE_QUEEN_WHITE, 0);
-}
-
-void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castling_rights, int en_passant_square)
-{
-
-    _white_king = ZERO;
-    _white_queens = ZERO;
-    _white_rooks = ZERO;
-    _white_bishops = ZERO;
-    _white_knights = ZERO;
-    _white_pawns = ZERO;
-    _black_king = ZERO;
-    _black_queens = ZERO;
-    _black_rooks = ZERO;
-    _black_bishops = ZERO;
-    _black_knights = ZERO;
-    _black_pawns = ZERO;
-    _white_pieces = ZERO;
-    _black_pieces = ZERO;
-    _occupied_squares = ZERO;
-
     for (int i = 0; i < N_SQUARES; i++)
     {
-        _square[i] = input[i];
-
         if (_square[i] == WHITE_KING)
         {
             _white_king = _white_king | Tables::SQUARE_BB[i];
@@ -174,182 +177,21 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
     _white_pieces = _white_king | _white_queens | _white_rooks | _white_bishops | _white_knights | _white_pawns;
     _black_pieces = _black_king | _black_queens | _black_rooks | _black_bishops | _black_knights | _black_pawns;
     _occupied_squares = _white_pieces | _black_pieces;
-
-    _white_to_move = next;
-    _castling_rights = castling_rights;
-    _en_passant_square = en_passant_square;
-    _fifty_move = fifty_move;
-
-    _material = 0;
-    // _material = bitCnt(whitePawns) * PAWN_VALUE +
-    //             bitCnt(whiteKnights) * KNIGHT_VALUE +
-    //             bitCnt(whiteBishops) * BISHOP_VALUE +
-    //             bitCnt(whiteRooks) * ROOK_VALUE +
-    //             bitCnt(whiteQueens) * QUEEN_VALUE;
-    // _material -= (bitCnt(blackPawns) * PAWN_VALUE +
-    //               bitCnt(blackKnights) * KNIGHT_VALUE +
-    //               bitCnt(blackBishops) * BISHOP_VALUE +
-    //               bitCnt(blackRooks) * ROOK_VALUE +
-    //               bitCnt(blackQueens) * QUEEN_VALUE);
 }
 
-// TODO: debug and clean this funciton's code
-void Board::initFromFen(const char *fen, const char *fencolor, const char *fencastling, const char *fenenpassant, const char *char_fenhalfmoveclock, const char *char_fenfullmovenumber)
+void Board::setFromFen() // TODO: to be implemented
 {
-    int i, file, rank, counter, piece;
-    int whiteCastle, blackCastle, epsq;
-    bool white_to_move;
-
-    int fenhalfmoveclock, fenfullmovenumber;
-    scanf(char_fenhalfmoveclock, "%d", &fenhalfmoveclock);   // int, used for the fifty move draw rule
-    scanf(char_fenfullmovenumber, "%d", &fenfullmovenumber); // int. start with 1, It is incremented after move by Black
-
-    piece = 0;
-    for (i = 0; i < 64; i++)
-    {
-        _square[i] = EMPTY;
-    }
-
-    file = 1;
-    rank = 8;
-    i = 0;
-    counter = 0;
-    while ((counter < 64) && (fen[i] != '\0'))
-    {
-        // '1'  through '8':
-        if (((int)fen[i] > 48) && ((int)fen[i] < 57))
-        {
-            file += (int)fen[i] - 48;
-            counter += (int)fen[i] - 48;
-        }
-        else
-        //  other characters:
-        {
-            switch (fen[i])
-            {
-            case '/':
-                rank--;
-                file = 1;
-                break;
-
-            case 'P':
-                _square[Utils::getSquare(rank, file)] = WHITE_PAWN;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'N':
-                _square[Utils::getSquare(rank, file)] = WHITE_KNIGHT;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'B':
-                _square[Utils::getSquare(rank, file)] = WHITE_BISHOP;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'R':
-                _square[Utils::getSquare(rank, file)] = WHITE_ROOK;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'Q':
-                _square[Utils::getSquare(rank, file)] = WHITE_QUEEN;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'K':
-                _square[Utils::getSquare(rank, file)] = WHITE_KING;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'p':
-                _square[Utils::getSquare(rank, file)] = BLACK_PAWN;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'n':
-                _square[Utils::getSquare(rank, file)] = BLACK_KNIGHT;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'b':
-                _square[Utils::getSquare(rank, file)] = BLACK_BISHOP;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'r':
-                _square[Utils::getSquare(rank, file)] = BLACK_ROOK;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'q':
-                _square[Utils::getSquare(rank, file)] = BLACK_QUEEN;
-                file += 1;
-                counter += 1;
-                break;
-
-            case 'k':
-                _square[Utils::getSquare(rank, file)] = BLACK_KING;
-                file += 1;
-                counter += 1;
-                break;
-
-            default:
-                break;
-            }
-        }
-        i++;
-    }
-    white_to_move = true;
-    if (fencolor[0] == 'b')
-        white_to_move = false;
-
-    int castling_rights = 0;
-    if (strstr(fencastling, "K"))
-        castling_rights += CASTLE_KING_WHITE;
-    if (strstr(fencastling, "Q"))
-        castling_rights += CASTLE_QUEEN_WHITE;
-    if (strstr(fencastling, "k"))
-        castling_rights += CASTLE_KING_BLACK;
-    if (strstr(fencastling, "q"))
-        castling_rights += CASTLE_QUEEN_BLACK;
-    if (strstr(fenenpassant, "-"))
-    {
-        epsq = 0;
-    }
-    else
-    {
-        // translate a square coordinate (as string) to int (eg 'e3' to 20):
-        epsq = ((int)fenenpassant[0] - 96) + 8 * ((int)fenenpassant[1] - 48) - 9;
-    }
-
-    initFromSquares(_square, white_to_move, fenhalfmoveclock, castling_rights, epsq);
 }
 
 int Board::getMaterial() const
 {
     return _material;
 }
-int Board::getCastleWhite() const
+int Board::getCastlingRights() const
 {
-    static const int mask = CASTLE_KING_WHITE + CASTLE_QUEEN_WHITE;
-    return _castling_rights & mask; // TODO: maybe improve performance of this
+    return _castling_rights;
 }
-int Board::getCastleBlack() const
-{
-    static const int mask = CASTLE_KING_BLACK + CASTLE_QUEEN_BLACK;
-    return _castling_rights & mask; // TODO: maybe improve performance of this
-}
+
 int Board::getEnPassantSquare() const
 {
     return _en_passant_square;
@@ -365,6 +207,11 @@ int Board::getWhitePawnsCount() const
 int Board::getBlackPawnsCount() const
 {
     return Utils::bitCount(_black_pawns);
+}
+
+bool Board::isWhiteToMove() const
+{
+    return _white_to_move;
 }
 
 bool Board::switchSideToMove()

@@ -19,33 +19,43 @@
 
 // clang-format off
 const char* SQUARE_NAMES[] = {
-    "A1","B1","C1","D1","E1","F1","G1","H1",
-    "A2","B2","C2","D2","E2","F2","G2","H2",
-    "A3","B3","C3","D3","E3","F3","G3","H3",
-    "A4","B4","C4","D4","E4","F4","G4","H4",
-    "A5","B5","C5","D5","E5","F5","G5","H5",
-    "A6","B6","C6","D6","E6","F6","G6","H6",
-    "A7","B7","C7","D7","E7","F7","G7","H7",
-    "A8","B8","C8","D8","E8","F8","G8","H8",
+    "a1","b1","c1","d1","e1","f1","g1","h1",
+    "a2","b2","c2","d2","e2","f2","g2","h2",
+    "a3","b3","c3","d3","e3","f3","g3","h3",
+    "a4","b4","c4","d4","e4","f4","g4","h4",
+    "a5","b5","c5","d5","e5","f5","g5","h5",
+    "a6","b6","c6","d6","e6","f6","g6","h6",
+    "a7","b7","c7","d7","e7","f7","g7","h7",
+    "a8","b8","c8","d8","e8","f8","g8","h8",
 };
 // clang-format on
 
 char *COMMAND{};
 bool ASCII{};
 
-bool doCommand(const std::string buf, Board &board);
+bool parseCommand(std::string buf, Board &board);
+void helpCommand();
 void infoCommand(const Board &board);
+void readFenCommand(
+    Board &Board,
+    std::string piece_placements,
+    std::string active_color,
+    std::string castling_rights,
+    std::string en_passant,
+    std::string halfmove_clock,
+    std::string fullmove_number);
+std::vector<std::string> splitString(std::string &str);
 
 void CLI::init()
 {
-    Board board = Board();
+    Board board = Board(); // TODO: make this global
 
     while (COMMAND = readline("> "))
     {
         if (*COMMAND)
         {
             add_history(COMMAND);
-            if (!doCommand(std::string(COMMAND), board))
+            if (!parseCommand(std::string(COMMAND), board))
             {
                 free(COMMAND);
                 return;
@@ -55,67 +65,52 @@ void CLI::init()
     }
 }
 
-bool doCommand(const std::string buf, Board &board)
+bool parseCommand(std::string buf, Board &board)
 {
-    if (buf == "help" || buf == "h" || buf == "?")
+    std::vector<std::string> words = splitString(buf);
+    if (words.size() == 0)
     {
-        std::cout
-            << "ascii                 Toggles between ascii and utf-8 board representation\n"
-            << "black                 Black to move\n"
-            << "cc                    Play computer-to-computer \n"
-            << "d                     Display board \n"
-            << "eval                  Show static evaluation of this position\n"
-            << "exit                  Exit program \n"
-            << "game                  Show game moves \n"
-            << "go                    Computer next move \n"
-            << "help                  Show this help \n"
-            << "info                  Display variables (for testing purposes)\n"
-            << "magics                Generates magic numbers for the bishop and rook pieces\n"
-            << "move e2e4, or h7h8q   Enter a move (use this format)\n"
-            << "moves                 Show all legal moves\n"
-            << "new                   Start new game\n"
-            << "perf                  Benchmark a number of key functions\n"
-            << "perft n               Calculate raw number of nodes from here, depth n \n"
-            << "r                     Rotate board \n"
-            << "readfen fen           Reads FEN position\n"
-            << "sd n                  Set the search depth to n\n"
-            << "setup                 Setup board... \n"
-            << "undo                  Take back last move\n"
-            << "white                 White to move"
-            << std::endl;
     }
-    else if (buf == "s")
+    else if (words[0] == "help" || words[0] == "h" || words[0] == "?")
+    {
+        helpCommand();
+    }
+    else if (words[0] == "switch" || words[0] == "s")
     {
         bool white_to_play = board.switchSideToMove();
         std::cout << "side to play is now " << (white_to_play ? "white" : "black") << std::endl;
     }
-    else if (buf == "d")
+    else if (words[0] == "display" || words[0] == "d")
     {
         board.print(ASCII);
     }
-    else if (buf == "info")
+    else if (words[0] == "info" || words[0] == "i")
     {
         infoCommand(board);
     }
-    else if (buf == "new")
+    else if (words[0] == "new" || words[0] == "n")
     {
-        board.reset();
+        board.setStartingPosition();
     }
-    else if (buf == "r")
+    else if (words[0] == "rotate" || words[0] == "r")
     {
         std::cout << (board.rotate() ? "white" : "black") << " is now on bottom" << std::endl;
     }
-    else if (buf == "exit")
+    else if (words[0] == "readfen")
     {
-        return false;
+        readFenCommand(board, words[1], words[2], words[3], words[4], words[5], words[6]);
     }
-    else if (buf == "magics")
+    else if (words[0] == "magics")
     {
         Magics::generate();
     }
-    else if (buf == "ascii")
+    else if (words[0] == "ascii")
     {
         std::cout << "ascii mode toggled " << ((ASCII = !ASCII) ? "on" : "off") << std::endl;
+    }
+    else if (words[0] == "exit")
+    {
+        return false;
     }
     else
     {
@@ -124,20 +119,82 @@ bool doCommand(const std::string buf, Board &board)
     return true;
 }
 
-void infoCommand(const Board &board)
+void helpCommand()
 {
     std::cout
-        << "Size of board, in bytes   = " << sizeof(board)
-        << "\nMaterial value            = " << board.getMaterial()
-        << "\nWhite castling rights     = " << board.getCastleWhite()
-        << "\nBlack castling rights     = " << board.getCastleBlack()
-        << "\nEn-passant square         = " << board.getEnPassantSquare()
-        << "\nFifty move count          = " << board.getFiftyMove()
-        << "\nBit count of white pawns     = " << board.getWhitePawnsCount()
-        << "\nBit count of black pawns     = " << board.getBlackPawnsCount()
-        << "\nBitmap of board._occupied_squares:" << std::endl;
+        << "ascii                 Toggles between ascii and utf-8 board representation\n"
+        << "cc                    Play computer-to-computer \n"
+        << "d                     Display board \n"
+        << "eval                  Show static evaluation of this position\n"
+        << "exit                  Exit program \n"
+        << "game                  Show game moves \n"
+        << "go                    Computer next move \n"
+        << "help                  Show this help \n"
+        << "info                  Display variables (for testing purposes)\n"
+        << "magics                Generates magic numbers for the bishop and rook pieces\n"
+        << "move e2e4, or h7h8q   Enter a move (use this format)\n"
+        << "moves                 Show all legal moves\n"
+        << "new                   Start new game\n"
+        << "perf                  Benchmark a number of key functions\n"
+        << "perft n               Calculate raw number of nodes from here, depth n \n"
+        << "r                     Rotate board \n"
+        << "readfen fen           Reads FEN position\n"
+        << "sd n                  Set the search depth to n\n"
+        << "undo                  Take back last move\n"
+        << "switch                Switches the next side to move\n"
+        << std::endl;
 }
 
-void loadFenCommand(const Board &board)
+void infoCommand(const Board &board)
 {
+    int castling_rights = board.getCastlingRights();
+    char castling_rights_buf[5];
+    snprintf(castling_rights_buf, 5, "%c%c%c%c",
+             (castling_rights & CASTLE_KING_WHITE) ? 'K' : '-',
+             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-',
+             (castling_rights & CASTLE_KING_BLACK) ? 'k' : '-',
+             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-');
+
+    std::cout
+        << "Side to Play                 = " << (board.isWhiteToMove() ? "White" : "Black")
+        << "\nCastling Rights              = " << castling_rights_buf
+        << "\nEn-passant Square            = " << board.getEnPassantSquare() // TODO: implement uci repr
+        << "\nFifty Move Count             = " << board.getFiftyMove()
+        << std::endl;
+}
+
+void readFenCommand( // TODO: to be implemented
+    Board &Board,
+    std::string piece_placements,
+    std::string active_color,
+    std::string castling_rights,
+    std::string en_passant,
+    std::string halfmove_clock,
+    std::string fullmove_number)
+{
+}
+
+std::vector<std::string> splitString(std::string &text)
+{
+    size_t pos = 0;
+    std::string delimiter = " ";
+    std::vector<std::string> words{};
+
+    if ((pos = text.find(delimiter)) != std::string::npos)
+    {
+        words.push_back(text.substr(0, pos));
+        text.erase(0, pos + delimiter.length());
+
+        while ((pos = text.find(delimiter)) != std::string::npos)
+        {
+            words.push_back(text.substr(0, pos));
+            text.erase(0, pos + delimiter.length());
+        }
+    }
+    else
+    {
+        words.push_back(text.substr(0, text.size()));
+    }
+
+    return words;
 }

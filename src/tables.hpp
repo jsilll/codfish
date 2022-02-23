@@ -4,7 +4,6 @@
 
 namespace Tables
 {
-
     constexpr U64 MASK_RANK[] = {
         0xFF,
         0xFF00,

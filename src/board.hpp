@@ -23,19 +23,20 @@ private:
 public:
     Board();
 
-    void reset();
-    void initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int castling_rights, int ep_square);
-    void initFromFen(const char *fen, const char *fencolor, const char *fencastling, const char *fenenpassant, const char *char_fenhalfmoveclock, const char *char_fenfullmovenumber);
+    void clear();
+
+    void setStartingPosition();
+    void setFromFen();
+    bool switchSideToMove();
 
     int getMaterial() const;
-    int getCastleWhite() const;
-    int getCastleBlack() const;
+    int getCastlingRights() const;
     int getEnPassantSquare() const;
     int getFiftyMove() const;
     int getWhitePawnsCount() const;
     int getBlackPawnsCount() const;
 
-    bool switchSideToMove();
+    bool isWhiteToMove() const;
 
     bool rotate();
     void print(bool ascii);
