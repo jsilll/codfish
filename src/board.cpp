@@ -22,7 +22,7 @@ void Board::print(bool ascii = false)
                       << "    |";
             for (int file = 7; file >= 0; file--)
             {
-                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
+                std::cout << " " << PIECE_NAMES[_square[Utils::getSquare(rank, file)] + offset] << "|";
             }
             std::cout << std::setw(3) << rank + 1 << "\n";
         }
@@ -37,7 +37,7 @@ void Board::print(bool ascii = false)
 
             for (int file = 0; file < 8; file++)
             {
-                std::cout << " " << PIECE_NAMES[_square[utils::getSquare(rank, file)] + offset] << "|";
+                std::cout << " " << PIECE_NAMES[_square[Utils::getSquare(rank, file)] + offset] << "|";
             }
             std::cout << '\n';
         }
@@ -123,51 +123,51 @@ void Board::initFromSquares(int input[N_SQUARES], bool next, int fifty_move, int
 
         if (_square[i] == WHITE_KING)
         {
-            _white_king = _white_king | tables::SQUARE_BB[i];
+            _white_king = _white_king | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == WHITE_QUEEN)
         {
-            _white_queens = _white_queens | tables::SQUARE_BB[i];
+            _white_queens = _white_queens | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == WHITE_ROOK)
         {
-            _white_rooks = _white_rooks | tables::SQUARE_BB[i];
+            _white_rooks = _white_rooks | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == WHITE_BISHOP)
         {
-            _white_bishops = _white_bishops | tables::SQUARE_BB[i];
+            _white_bishops = _white_bishops | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == WHITE_KNIGHT)
         {
-            _white_knights = _white_knights | tables::SQUARE_BB[i];
+            _white_knights = _white_knights | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == WHITE_PAWN)
         {
-            _white_pawns = _white_pawns | tables::SQUARE_BB[i];
+            _white_pawns = _white_pawns | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_KING)
         {
-            _black_king = _black_king | tables::SQUARE_BB[i];
+            _black_king = _black_king | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_QUEEN)
         {
-            _black_queens = _black_queens | tables::SQUARE_BB[i];
+            _black_queens = _black_queens | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_ROOK)
         {
-            _black_rooks = _black_rooks | tables::SQUARE_BB[i];
+            _black_rooks = _black_rooks | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_BISHOP)
         {
-            _black_bishops = _black_bishops | tables::SQUARE_BB[i];
+            _black_bishops = _black_bishops | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_KNIGHT)
         {
-            _black_knights = _black_knights | tables::SQUARE_BB[i];
+            _black_knights = _black_knights | Tables::SQUARE_BB[i];
         }
         else if (_square[i] == BLACK_PAWN)
         {
-            _black_pawns = _black_pawns | tables::SQUARE_BB[i];
+            _black_pawns = _black_pawns | Tables::SQUARE_BB[i];
         }
     }
 
@@ -233,73 +233,73 @@ void Board::initFromFen(const char *fen, const char *fencolor, const char *fenca
                 break;
 
             case 'P':
-                _square[utils::getSquare(rank, file)] = WHITE_PAWN;
+                _square[Utils::getSquare(rank, file)] = WHITE_PAWN;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'N':
-                _square[utils::getSquare(rank, file)] = WHITE_KNIGHT;
+                _square[Utils::getSquare(rank, file)] = WHITE_KNIGHT;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'B':
-                _square[utils::getSquare(rank, file)] = WHITE_BISHOP;
+                _square[Utils::getSquare(rank, file)] = WHITE_BISHOP;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'R':
-                _square[utils::getSquare(rank, file)] = WHITE_ROOK;
+                _square[Utils::getSquare(rank, file)] = WHITE_ROOK;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'Q':
-                _square[utils::getSquare(rank, file)] = WHITE_QUEEN;
+                _square[Utils::getSquare(rank, file)] = WHITE_QUEEN;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'K':
-                _square[utils::getSquare(rank, file)] = WHITE_KING;
+                _square[Utils::getSquare(rank, file)] = WHITE_KING;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'p':
-                _square[utils::getSquare(rank, file)] = BLACK_PAWN;
+                _square[Utils::getSquare(rank, file)] = BLACK_PAWN;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'n':
-                _square[utils::getSquare(rank, file)] = BLACK_KNIGHT;
+                _square[Utils::getSquare(rank, file)] = BLACK_KNIGHT;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'b':
-                _square[utils::getSquare(rank, file)] = BLACK_BISHOP;
+                _square[Utils::getSquare(rank, file)] = BLACK_BISHOP;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'r':
-                _square[utils::getSquare(rank, file)] = BLACK_ROOK;
+                _square[Utils::getSquare(rank, file)] = BLACK_ROOK;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'q':
-                _square[utils::getSquare(rank, file)] = BLACK_QUEEN;
+                _square[Utils::getSquare(rank, file)] = BLACK_QUEEN;
                 file += 1;
                 counter += 1;
                 break;
 
             case 'k':
-                _square[utils::getSquare(rank, file)] = BLACK_KING;
+                _square[Utils::getSquare(rank, file)] = BLACK_KING;
                 file += 1;
                 counter += 1;
                 break;
@@ -360,11 +360,11 @@ int Board::getFiftyMove() const
 }
 int Board::getWhitePawnsCount() const
 {
-    return utils::bitCount(_white_pawns);
+    return Utils::bitCount(_white_pawns);
 }
 int Board::getBlackPawnsCount() const
 {
-    return utils::bitCount(_black_pawns);
+    return Utils::bitCount(_black_pawns);
 }
 
 bool Board::switchSideToMove()

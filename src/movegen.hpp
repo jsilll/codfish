@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace movegen
+namespace Movegen
 {
     void generateMoves(Board &board);
-}
+} // namespace Movegen

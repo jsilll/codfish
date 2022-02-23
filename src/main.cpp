@@ -9,11 +9,12 @@
 
 int main(int argc, char const *argv[])
 {
-    magics::init();
-    tables::init();
+    Magics::init();
+    Tables::init();
 
     std::cout << "Chess Engine Initialized" << std::endl;
-    cli::readCommands();
+
+    CLI::readCommands();
 
     return 0;
 }

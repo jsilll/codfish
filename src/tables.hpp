@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace tables
+namespace Tables
 {
 
     constexpr U64 MASK_RANK[] = {
@@ -82,4 +82,4 @@ namespace tables
     U64 maskRookAttackRays(int sq);
     U64 maskBishopAttackRays(int sq);
 
-} // namespace tables
+} // namespace Tables

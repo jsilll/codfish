@@ -1,7 +1,7 @@
 #pragma once
 
-namespace cli
+namespace CLI
 {
     void readCommands();
 
-} // namespace cli
+} // namespace CLI

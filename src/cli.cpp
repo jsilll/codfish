@@ -36,7 +36,7 @@ bool ASCII{};
 bool doCommand(const std::string buf, Board &board);
 void infoCommand(const Board &board);
 
-void cli::readCommands()
+void CLI::readCommands()
 {
     Board board = Board();
 
@@ -103,8 +103,7 @@ bool doCommand(const std::string buf, Board &board)
     }
     else if (buf == "r")
     {
-        bool white_on_bottom = board.rotate();
-        std::cout << (white_on_bottom ? "white" : "black") << " is now on bottom" << std::endl;
+        std::cout << (board.rotate() ? "white" : "black") << " is now on bottom" << std::endl;
     }
     else if (buf == "exit")
     {
@@ -112,12 +111,11 @@ bool doCommand(const std::string buf, Board &board)
     }
     else if (buf == "magics")
     {
-        magics::generate();
+        Magics::generate();
     }
     else if (buf == "ascii")
     {
-        ASCII = !ASCII;
-        std::cout << "ascii mode toggled " << (ASCII ? "on" : "off") << std::endl;
+        std::cout << "ascii mode toggled " << ((ASCII = !ASCII) ? "on" : "off") << std::endl;
     }
     else
     {

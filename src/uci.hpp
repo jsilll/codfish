@@ -2,6 +2,6 @@
 
 #include "defs.hpp"
 
-namespace uci
+namespace UCI
 {
-}
+} // namespace UCI

@@ -3,11 +3,11 @@
 #include "tables.hpp"
 #include <iostream>
 
-int utils::bitScan(U64 bb)
+int Utils::bitScan(U64 bb)
 {
     if (bb)
     {
-        return utils::bitCount((bb & -bb) - 1);
+        return Utils::bitCount((bb & -bb) - 1);
     }
     else
     {
@@ -15,22 +15,22 @@ int utils::bitScan(U64 bb)
     }
 }
 
-U64 utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask)
+U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask)
 {
     U64 occupancy = ZERO;
     for (int bit = 0; bit < bits_in_mask; bit++)
     {
-        int lsb_sq = utils::bitScan(attack_mask);
-        utils::popBit(attack_mask, lsb_sq);
+        int lsb_sq = Utils::bitScan(attack_mask);
+        Utils::popBit(attack_mask, lsb_sq);
         if (index & (1 << bit))
         {
-            occupancy |= tables::SQUARE_BB[lsb_sq];
+            occupancy |= Tables::SQUARE_BB[lsb_sq];
         }
     }
     return occupancy;
 }
 
-void utils::printBB(U64 bb)
+void Utils::printBB(U64 bb)
 {
     for (int i = 7; i >= 0; i--)
     {

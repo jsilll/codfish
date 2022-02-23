@@ -1,6 +1,6 @@
 #include "defs.hpp"
 
-namespace magics
+namespace Magics
 {
     constexpr U64 MAGICS_BISHOP[N_SQUARES] = {
         0x40040844404084ULL,
@@ -146,4 +146,4 @@ namespace magics
 
     void generate();
     void init();
-}
+} // namespace Magics

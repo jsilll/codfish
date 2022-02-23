@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace utils
+namespace Utils
 {
 
     inline int getSquare(const int rk, const int fl) { return 8 * rk + fl; }
@@ -40,4 +40,4 @@ namespace utils
 
     void printBB(U64 bb);
 
-} // namespace utils
+} // namespace Utils

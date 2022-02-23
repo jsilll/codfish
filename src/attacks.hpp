@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace attacks
+namespace Attacks
 {
     U64 maskWhitePawnAnyAttacks(U64 wpawns);
     U64 maskBlackPawnAnyAttacks(U64 bpawns);
@@ -12,4 +12,4 @@ namespace attacks
     U64 maskBishopAttackRays(int sq);
     U64 maskBishopAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq, U64 block);
-} // namespace attacks
+} // namespace Attacks
