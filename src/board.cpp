@@ -3,7 +3,7 @@
 #include "tables.hpp"
 #include "utils.hpp"
 #include <iomanip>
-#include <cstring>
+#include <string>
 
 void Board::print(bool ascii = false)
 {
@@ -72,9 +72,10 @@ void Board::clear()
     _occupied_squares = ZERO;
 
     _white_to_move = true;
-    _castling_rights = CASTLE_KING_BLACK + CASTLE_KING_WHITE + CASTLE_QUEEN_BLACK + CASTLE_QUEEN_WHITE;
+    _castling_rights = 0;
     _en_passant_square = -1;
-    _fifty_move = 0;
+    _half_move_clock = 0;
+    _full_move_number = 0;
     _material = 0;
 
     for (int i = 0; i < N_SQUARES; i++)
@@ -122,6 +123,11 @@ void Board::setStartingPosition()
     _square[G7] = BLACK_PAWN;
     _square[H7] = BLACK_PAWN;
 
+    this->updateBBFromSquares();
+}
+
+void Board::updateBBFromSquares()
+{
     for (int i = 0; i < N_SQUARES; i++)
     {
         if (_square[i] == WHITE_KING)
@@ -179,14 +185,130 @@ void Board::setStartingPosition()
     _occupied_squares = _white_pieces | _black_pieces;
 }
 
-void Board::setFromFen() // TODO: to be implemented
+void Board::setFromFen(std::string piece_placements,
+                       std::string active_color,
+                       std::string castling_rights,
+                       std::string en_passant,
+                       std::string half_move_clock,
+                       std::string full_move_number)
 {
+    this->clear();
+
+    // Piece Placements Parsing
+    int file = 0, rank = 7;
+    for (auto &c : piece_placements)
+    {
+        switch (c)
+        {
+        case 'p':
+            _square[Utils::getSquare(rank, file)] = BLACK_PAWN;
+            file = (file + 1) % 8;
+            break;
+        case 'n':
+            _square[Utils::getSquare(rank, file)] = BLACK_KNIGHT;
+            file = (file + 1) % 8;
+            break;
+        case 'b':
+            _square[Utils::getSquare(rank, file)] = BLACK_BISHOP;
+            file = (file + 1) % 8;
+            break;
+        case 'r':
+            _square[Utils::getSquare(rank, file)] = BLACK_ROOK;
+            file = (file + 1) % 8;
+            break;
+        case 'q':
+            _square[Utils::getSquare(rank, file)] = BLACK_QUEEN;
+            file = (file + 1) % 8;
+            break;
+        case 'k':
+            _square[Utils::getSquare(rank, file)] = BLACK_KING;
+            file = (file + 1) % 8;
+            break;
+        case 'P':
+            _square[Utils::getSquare(rank, file)] = WHITE_PAWN;
+            file = (file + 1) % 8;
+            break;
+        case 'N':
+            _square[Utils::getSquare(rank, file)] = WHITE_KNIGHT;
+            file = (file + 1) % 8;
+            break;
+        case 'B':
+            _square[Utils::getSquare(rank, file)] = WHITE_BISHOP;
+            file = (file + 1) % 8;
+            break;
+        case 'R':
+            _square[Utils::getSquare(rank, file)] = WHITE_ROOK;
+            file = (file + 1) % 8;
+            break;
+        case 'Q':
+            _square[Utils::getSquare(rank, file)] = WHITE_QUEEN;
+            file = (file + 1) % 8;
+            break;
+        case 'K':
+            _square[Utils::getSquare(rank, file)] = WHITE_KING;
+            file = (file + 1) % 8;
+            break;
+        case '/':
+            rank--;
+            file = 0;
+            break;
+        default:
+            file += (c - '0');
+            break;
+        }
+    }
+
+    // Active Color Parsing
+    if (active_color == "w")
+    {
+        _white_to_move = true;
+    }
+    else
+    {
+        _white_to_move = false;
+    }
+
+    // Castling Righst Parsing
+    for (auto &c : castling_rights)
+    {
+        switch (c)
+        {
+        case 'q':
+            _castling_rights += CASTLE_QUEEN_BLACK;
+            break;
+        case 'k':
+            _castling_rights += CASTLE_KING_BLACK;
+            break;
+        case 'Q':
+            _castling_rights += CASTLE_QUEEN_WHITE;
+            break;
+        case 'K':
+            _castling_rights += CASTLE_KING_WHITE;
+            break;
+        default:
+            break;
+        }
+    }
+
+    // TODO: En Passant Square Parsing
+
+    // Halfmove Clock
+    _half_move_clock = std::stoi(half_move_clock);
+
+    // Fullmove Number
+    _full_move_number = std::stoi(full_move_number);
+}
+
+std::string Board::toFen() const
+{
+    return " ";
 }
 
 int Board::getMaterial() const
 {
     return _material;
 }
+
 int Board::getCastlingRights() const
 {
     return _castling_rights;
@@ -196,14 +318,22 @@ int Board::getEnPassantSquare() const
 {
     return _en_passant_square;
 }
-int Board::getFiftyMove() const
+
+int Board::getHalfMoveClock() const
 {
-    return _fifty_move;
+    return _half_move_clock;
 }
+
+int Board::getFullMoveNumber() const
+{
+    return _full_move_number;
+}
+
 int Board::getWhitePawnsCount() const
 {
     return Utils::bitCount(_white_pawns);
 }
+
 int Board::getBlackPawnsCount() const
 {
     return Utils::bitCount(_black_pawns);

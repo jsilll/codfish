@@ -8,14 +8,13 @@
 #include <cctype>
 #include <csignal>
 #include <iostream>
-#include <iostream>
 #include <locale>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <string>
-#include <string>
+#include <sstream>
 #include <vector>
-#include <vector>
+#include <iterator>
 
 // clang-format off
 const char* SQUARE_NAMES[] = {
@@ -36,14 +35,6 @@ bool ASCII{};
 bool parseCommand(std::string buf, Board &board);
 void helpCommand();
 void infoCommand(const Board &board);
-void readFenCommand(
-    Board &Board,
-    std::string piece_placements,
-    std::string active_color,
-    std::string castling_rights,
-    std::string en_passant,
-    std::string halfmove_clock,
-    std::string fullmove_number);
 std::vector<std::string> splitString(std::string &str);
 
 void CLI::init()
@@ -77,8 +68,7 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "switch" || words[0] == "s")
     {
-        bool white_to_play = board.switchSideToMove();
-        std::cout << "side to play is now " << (white_to_play ? "white" : "black") << std::endl;
+        std::cout << "side to play is now " << (board.switchSideToMove() ? "white" : "black") << std::endl;
     }
     else if (words[0] == "display" || words[0] == "d")
     {
@@ -98,7 +88,14 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "readfen")
     {
-        readFenCommand(board, words[1], words[2], words[3], words[4], words[5], words[6]);
+        if (words.size() != 7) // TODO: sanitize input
+        {
+            std::cerr << "Invalid FEN String" << std::endl;
+        }
+        else
+        {
+            board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
+        }
     }
     else if (words[0] == "magics")
     {
@@ -150,51 +147,27 @@ void infoCommand(const Board &board)
     int castling_rights = board.getCastlingRights();
     char castling_rights_buf[5];
     snprintf(castling_rights_buf, 5, "%c%c%c%c",
-             (castling_rights & CASTLE_KING_WHITE) ? 'K' : '-',
-             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-',
              (castling_rights & CASTLE_KING_BLACK) ? 'k' : '-',
-             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-');
+             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-',
+             (castling_rights & CASTLE_KING_WHITE) ? 'K' : '-',
+             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-');
 
     std::cout
         << "Side to Play                 = " << (board.isWhiteToMove() ? "White" : "Black")
         << "\nCastling Rights              = " << castling_rights_buf
         << "\nEn-passant Square            = " << board.getEnPassantSquare() // TODO: implement uci repr
-        << "\nFifty Move Count             = " << board.getFiftyMove()
+        << "\nFifty Move Count             = " << board.getHalfMoveClock()
+        << "\nFull Move Number             = " << board.getFullMoveNumber()
         << std::endl;
-}
-
-void readFenCommand( // TODO: to be implemented
-    Board &Board,
-    std::string piece_placements,
-    std::string active_color,
-    std::string castling_rights,
-    std::string en_passant,
-    std::string halfmove_clock,
-    std::string fullmove_number)
-{
 }
 
 std::vector<std::string> splitString(std::string &text)
 {
-    size_t pos = 0;
-    std::string delimiter = " ";
     std::vector<std::string> words{};
-
-    if ((pos = text.find(delimiter)) != std::string::npos)
-    {
-        words.push_back(text.substr(0, pos));
-        text.erase(0, pos + delimiter.length());
-
-        while ((pos = text.find(delimiter)) != std::string::npos)
-        {
-            words.push_back(text.substr(0, pos));
-            text.erase(0, pos + delimiter.length());
-        }
-    }
-    else
-    {
-        words.push_back(text.substr(0, text.size()));
-    }
-
+    char delimiter = ' ';
+    std::istringstream iss(text);
+    copy(std::istream_iterator<std::string>(iss),
+         std::istream_iterator<std::string>(),
+         std::back_inserter(words));
     return words;
 }
