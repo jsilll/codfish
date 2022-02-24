@@ -33,9 +33,7 @@ public:
                     std::string fullmove_number);
     bool switchSideToMove();
     bool rotate();
-    void print(bool ascii);
 
-    std::string getFen() const;
     int getMaterial() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
@@ -44,4 +42,7 @@ public:
     int getWhitePawnsCount() const;
     int getBlackPawnsCount() const;
     bool isWhiteToMove() const;
+    std::string getFen() const;
+
+    void print(bool ascii) const;
 };
