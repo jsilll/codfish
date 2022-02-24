@@ -4,6 +4,7 @@ C++ Chess engine that uses bitboard representation.
 
 Detailed Feature List
 ===
+- FEN I/O
 - UCI support
 - CLI interface
 - Bitboard representation
