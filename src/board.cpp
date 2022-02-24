@@ -76,7 +76,6 @@ void Board::clear()
     _en_passant_square = -1;
     _half_move_clock = 0;
     _full_move_number = 0;
-    _material = 0;
 
     for (int i = 0; i < N_SQUARES; i++)
     {
@@ -88,41 +87,7 @@ void Board::clear()
 
 void Board::setStartingPosition()
 {
-    this->clear();
-
-    _square[E1] = WHITE_KING;
-    _square[D1] = WHITE_QUEEN;
-    _square[A1] = WHITE_ROOK;
-    _square[H1] = WHITE_ROOK;
-    _square[B1] = WHITE_KNIGHT;
-    _square[G1] = WHITE_KNIGHT;
-    _square[C1] = WHITE_BISHOP;
-    _square[F1] = WHITE_BISHOP;
-    _square[A2] = WHITE_PAWN;
-    _square[B2] = WHITE_PAWN;
-    _square[C2] = WHITE_PAWN;
-    _square[D2] = WHITE_PAWN;
-    _square[E2] = WHITE_PAWN;
-    _square[F2] = WHITE_PAWN;
-    _square[G2] = WHITE_PAWN;
-    _square[H2] = WHITE_PAWN;
-    _square[E8] = BLACK_KING;
-    _square[D8] = BLACK_QUEEN;
-    _square[A8] = BLACK_ROOK;
-    _square[H8] = BLACK_ROOK;
-    _square[B8] = BLACK_KNIGHT;
-    _square[G8] = BLACK_KNIGHT;
-    _square[C8] = BLACK_BISHOP;
-    _square[F8] = BLACK_BISHOP;
-    _square[A7] = BLACK_PAWN;
-    _square[B7] = BLACK_PAWN;
-    _square[C7] = BLACK_PAWN;
-    _square[D7] = BLACK_PAWN;
-    _square[E7] = BLACK_PAWN;
-    _square[F7] = BLACK_PAWN;
-    _square[G7] = BLACK_PAWN;
-    _square[H7] = BLACK_PAWN;
-
+    this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
     this->updateBBFromSquares();
 }
 
@@ -198,7 +163,7 @@ void Board::setFromFen(std::string piece_placements,
     int file = 0, rank = 7;
     for (auto &c : piece_placements)
     {
-        switch (c)
+        switch (c) // TODO: improve perfomance by finding a mapping from char to Enum Piece
         {
         case 'p':
             _square[Utils::getSquare(rank, file)] = BLACK_PAWN;
@@ -268,45 +233,149 @@ void Board::setFromFen(std::string piece_placements,
         _white_to_move = false;
     }
 
-    // Castling Righst Parsing
+    // Castling Rights Parsing
     for (auto &c : castling_rights)
     {
         switch (c)
         {
-        case 'q':
-            _castling_rights += CASTLE_QUEEN_BLACK;
-            break;
-        case 'k':
-            _castling_rights += CASTLE_KING_BLACK;
-            break;
         case 'Q':
             _castling_rights += CASTLE_QUEEN_WHITE;
             break;
         case 'K':
             _castling_rights += CASTLE_KING_WHITE;
             break;
+        case 'q':
+            _castling_rights += CASTLE_QUEEN_BLACK;
+            break;
+        case 'k':
+            _castling_rights += CASTLE_KING_BLACK;
+            break;
         default:
             break;
         }
     }
 
-    // TODO: En Passant Square Parsing
+    // En Passant Square Parsing
+    if (en_passant != "-")
+    {
+        int en_passant_file = en_passant[0] - 'a';
+        int en_passant_rank = en_passant[1] - '1';
+        _en_passant_square = Utils::getSquare(en_passant_rank, en_passant_file);
+    }
+    else
+    {
+        _en_passant_square = -1;
+    }
 
-    // Halfmove Clock
+    // Halfmove Clock Parsing
     _half_move_clock = std::stoi(half_move_clock);
 
-    // Fullmove Number
+    // Fullmove Number Parsing
     _full_move_number = std::stoi(full_move_number);
 }
 
-std::string Board::toFen() const
+std::string Board::getFen() const
 {
-    return " ";
-}
+    std::string piece_placements;
+    std::string active_color;
+    std::string castling_rights;
+    std::string en_passant;
+    std::string half_move_clock;
+    std::string full_move_number;
 
-int Board::getMaterial() const
-{
-    return _material;
+    static const char fen_piece_rep[]{
+        // TODO: this depends on Enum Piece order, maybe find better implementation
+        'K',
+        'Q',
+        'R',
+        'N',
+        'B',
+        'P',
+        'k',
+        'q',
+        'r',
+        'n',
+        'b',
+        'p',
+    };
+
+    // Piece Placements
+    int empty_squares = 0;
+    for (int rank = 7; rank >= 0; rank--)
+    {
+        for (int file = 0; file < 8; file++)
+        {
+            int sq = Utils::getSquare(rank, file);
+            if (file == 0)
+            {
+                if (empty_squares)
+                {
+                    piece_placements += std::to_string(empty_squares);
+                    empty_squares = 0;
+                }
+                piece_placements += '/';
+            }
+            switch (_square[sq])
+            {
+            case EMPTY:
+                empty_squares++;
+                break;
+            default:
+                if (empty_squares)
+                {
+                    piece_placements += std::to_string(empty_squares);
+                    empty_squares = 0;
+                }
+                piece_placements += fen_piece_rep[_square[sq]];
+                break;
+            }
+        }
+        if (empty_squares)
+        {
+            piece_placements += std::to_string(empty_squares);
+            empty_squares = 0;
+        }
+    }
+
+    // Active Color
+    active_color = _white_to_move ? "w" : "b";
+
+    // Castling Rights
+    char castling_rights_buf[5]; // TODO: hanlde other cases
+    snprintf(castling_rights_buf, 5, "%s%s%s%s",
+             (_castling_rights & CASTLE_KING_WHITE) ? "K" : "",
+             (_castling_rights & CASTLE_QUEEN_WHITE) ? "Q" : "",
+             (_castling_rights & CASTLE_KING_BLACK) ? "k" : "",
+             (_castling_rights & CASTLE_QUEEN_BLACK) ? "q" : "");
+    castling_rights = std::string(castling_rights_buf);
+    if (castling_rights == "")
+    {
+        castling_rights = "-";
+    }
+
+    // En Passant Square
+    // clang-format off
+    static const char* SQUARE_NAMES[] = {
+        "a1","b1","c1","d1","e1","f1","g1","h1",
+        "a2","b2","c2","d2","e2","f2","g2","h2",
+        "a3","b3","c3","d3","e3","f3","g3","h3",
+        "a4","b4","c4","d4","e4","f4","g4","h4",
+        "a5","b5","c5","d5","e5","f5","g5","h5",
+        "a6","b6","c6","d6","e6","f6","g6","h6",
+        "a7","b7","c7","d7","e7","f7","g7","h7",
+        "a8","b8","c8","d8","e8","f8","g8","h8", 
+        "-"
+    };
+    // clang-format on
+
+    std::string fen = piece_placements + " " +
+                      active_color + " " +
+                      castling_rights + " " +
+                      SQUARE_NAMES[this->getEnPassantSquare() == -1 ? 64 : this->getEnPassantSquare()] + " " +
+                      std::to_string(_half_move_clock) + " " +  // Halfmove Clock
+                      std::to_string(_full_move_number) + "\n"; // Fullmove Number
+
+    return fen.substr(1, std::string::npos);
 }
 
 int Board::getCastlingRights() const

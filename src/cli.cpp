@@ -15,6 +15,7 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <regex>
 
 // clang-format off
 const char* SQUARE_NAMES[] = {
@@ -25,7 +26,8 @@ const char* SQUARE_NAMES[] = {
     "a5","b5","c5","d5","e5","f5","g5","h5",
     "a6","b6","c6","d6","e6","f6","g6","h6",
     "a7","b7","c7","d7","e7","f7","g7","h7",
-    "a8","b8","c8","d8","e8","f8","g8","h8",
+    "a8","b8","c8","d8","e8","f8","g8","h8", 
+    "none"
 };
 // clang-format on
 
@@ -37,7 +39,7 @@ void helpCommand();
 void infoCommand(const Board &board);
 std::vector<std::string> splitString(std::string &str);
 
-void CLI::init()
+void Cli::init()
 {
     Board board = Board(); // TODO: make this global
 
@@ -88,7 +90,19 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "readfen")
     {
-        if (words.size() != 7) // TODO: sanitize input
+        static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
+        static const std::regex active_color_regex(R"(b|w)");
+        static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
+        static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
+        static const std::regex halfmove_clock_regex(R"(\d+)");
+        static const std::regex fullmove_number_regex(R"(\d+)");
+        if (words.size() != 7 ||
+            !std::regex_match(words[1], piece_placements_regex) ||
+            !std::regex_match(words[2], active_color_regex) ||
+            !std::regex_match(words[3], castling_rights_regex) ||
+            !std::regex_match(words[4], en_passant_regex) ||
+            !std::regex_match(words[5], halfmove_clock_regex) ||
+            !std::regex_match(words[6], fullmove_number_regex))
         {
             std::cerr << "Invalid FEN String" << std::endl;
         }
@@ -96,6 +110,10 @@ bool parseCommand(std::string buf, Board &board)
         {
             board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
         }
+    }
+    else if (words[0] == "printfen")
+    {
+        std::cout << board.getFen();
     }
     else if (words[0] == "magics")
     {
@@ -136,6 +154,7 @@ void helpCommand()
         << "perft n               Calculate raw number of nodes from here, depth n \n"
         << "r                     Rotate board \n"
         << "readfen fen           Reads FEN position\n"
+        << "printfen              Print current position to FEN \n"
         << "sd n                  Set the search depth to n\n"
         << "undo                  Take back last move\n"
         << "switch                Switches the next side to move\n"
@@ -147,15 +166,14 @@ void infoCommand(const Board &board)
     int castling_rights = board.getCastlingRights();
     char castling_rights_buf[5];
     snprintf(castling_rights_buf, 5, "%c%c%c%c",
-             (castling_rights & CASTLE_KING_BLACK) ? 'k' : '-',
-             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-',
              (castling_rights & CASTLE_KING_WHITE) ? 'K' : '-',
-             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-');
-
+             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-',
+             (castling_rights & CASTLE_KING_BLACK) ? 'k' : '-',
+             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-');
     std::cout
         << "Side to Play                 = " << (board.isWhiteToMove() ? "White" : "Black")
         << "\nCastling Rights              = " << castling_rights_buf
-        << "\nEn-passant Square            = " << board.getEnPassantSquare() // TODO: implement uci repr
+        << "\nEn-passant Square            = " << SQUARE_NAMES[board.getEnPassantSquare() == -1 ? 64 : board.getEnPassantSquare()] // TODO: implement uci repr
         << "\nFifty Move Count             = " << board.getHalfMoveClock()
         << "\nFull Move Number             = " << board.getFullMoveNumber()
         << std::endl;

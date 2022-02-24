@@ -16,7 +16,6 @@ private:
     int _en_passant_square;
     int _half_move_clock;
     int _full_move_number;
-    int _material;
 
     int _square[N_SQUARES];
     bool _white_on_bottom;
@@ -24,8 +23,8 @@ private:
 public:
     Board();
     void clear();
-    void setStartingPosition();
     void updateBBFromSquares();
+    void setStartingPosition();
     void setFromFen(std::string piece_placements,
                     std::string active_color,
                     std::string castling_rights,
@@ -36,6 +35,7 @@ public:
     bool rotate();
     void print(bool ascii);
 
+    std::string getFen() const;
     int getMaterial() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
@@ -44,5 +44,4 @@ public:
     int getWhitePawnsCount() const;
     int getBlackPawnsCount() const;
     bool isWhiteToMove() const;
-    std::string toFen() const;
 };

@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 
     std::cout << "Chess Engine Initialized" << std::endl;
 
-    CLI::init();
+    Cli::init();
     // UCI::init();
     // Lichess::init(); ??
 
