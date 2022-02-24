@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <string>
 
-void Board::print(bool ascii = false)
+void Board::print(bool ascii = false) const
 {
     static const std::string PIECE_NAMES[26] = {"K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ", "♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
 
