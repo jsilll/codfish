@@ -9,7 +9,7 @@ Detailed Feature List
 - CLI interface
 - Bitboard representation
 - Pre-calculated attack tables
-- Magic Bitboards for sliding pieces pre-calculated attacks
+- Magic Bitboards for sliding pieces's pre-calculated attacks
 
 Resources
 ===
