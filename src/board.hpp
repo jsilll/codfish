@@ -43,8 +43,8 @@ public:
     U64 getOccupiedSquares() const;
     std::string getFen() const;
 
-    bool isSquareAttacked(const int sq, const Color side_to_attack) const;
+    bool isSquareAttacked(const int sq) const;
     void getLegalMoves() const;
 
-    void print(bool ascii) const;
+    void print(bool ascii = false) const;
 };

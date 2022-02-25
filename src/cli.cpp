@@ -109,7 +109,6 @@ bool parseCommand(std::string buf, Board &board)
         else
         {
             board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
-            board.isSquareAttacked(A1, WHITE);
         }
     }
     else if (words[0] == "printfen")
@@ -180,26 +179,16 @@ void infoCommand(const Board &board)
         << "\nOccupied Squares:\n";
     Utils::printBB(board.getOccupiedSquares());
 
-    U64 attacked_squares_white = ZERO;
-    U64 attacked_squares_black = ZERO;
+    U64 attacked_squares = ZERO;
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        if (board.isSquareAttacked(sq, WHITE))
+        if (board.isSquareAttacked(sq))
         {
-            attacked_squares_white |= Tables::SQUARE_BB[sq];
-        }
-    }
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-        if (board.isSquareAttacked(sq, BLACK))
-        {
-            attacked_squares_black |= Tables::SQUARE_BB[sq];
+            attacked_squares |= Tables::SQUARE_BB[sq];
         }
     }
     std::cout << "Attacked Squares White:\n";
-    Utils::printBB(attacked_squares_white);
-    std::cout << "Attacked Squares Black:\n";
-    Utils::printBB(attacked_squares_black);
+    Utils::printBB(attacked_squares);
 }
 
 std::vector<std::string> splitString(std::string &text)

@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <string>
 
-void Board::print(bool ascii = false) const
+void Board::print(bool ascii) const
 {
     static const std::string PIECE_NAMES[26] = {
         "K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ",
@@ -452,11 +452,10 @@ inline U64 getQueenAttacks(const int &sq, U64 occ)
     return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
 }
 
-bool Board::isSquareAttacked(const int sq, const Color side_to_attack) const
+bool Board::isSquareAttacked(const int sq) const
 {
-    switch (side_to_attack) // TODO: maybe split in two separate functions
+    if (_white_to_move) // TODO: maybe split in two separate functions
     {
-    case WHITE:
         if (getRookAttacks(sq, _occupied_squares) & (_white_rooks | _white_queens))
         {
             return true;
@@ -477,9 +476,9 @@ bool Board::isSquareAttacked(const int sq, const Color side_to_attack) const
         {
             return true;
         }
-        break;
-
-    case BLACK:
+    }
+    else
+    {
         if (getRookAttacks(sq, _occupied_squares) & (_black_rooks | _black_queens))
         {
             return true;
@@ -500,15 +499,30 @@ bool Board::isSquareAttacked(const int sq, const Color side_to_attack) const
         {
             return true;
         }
-        break;
-    default:
-        break;
     }
+
     return false;
 }
 
 void Board::getLegalMoves() const
 {
-    int src_square;
-    int target_square;
+    int src_square, target_square;
+    U64 bitboard, attacks;
+
+    if (_white_to_move)
+    {
+        // generate pawn moves
+        // generate castling moves
+    }
+    else
+    {
+        // generate pawn moves
+        // generate castling moves
+    }
+
+    // generate knight moves
+    // generate bishop moves
+    // generate rook moves
+    // generate queen moves
+    // generate king moves
 }
