@@ -43,8 +43,8 @@ public:
     U64 getOccupiedSquares() const;
     std::string getFen() const;
 
-    // movegen.cpp
     bool isSquareAttacked(const int sq, const Color side_to_attack) const;
+    void getLegalMoves() const;
 
     void print(bool ascii) const;
 };

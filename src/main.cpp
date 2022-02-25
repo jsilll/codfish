@@ -3,7 +3,6 @@
 #include "utils.hpp"
 #include "magics.hpp"
 #include "tables.hpp"
-#include "movegen.hpp"
 #include "board.hpp"
 #include "cli.hpp"
 #include "uci.hpp"
