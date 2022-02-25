@@ -25,6 +25,60 @@ inline U64 getQueenAttacks(const int &sq, U64 occ)
     return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
 }
 
+bool Board::isSquareAttacked(const int sq, const Color side_to_attack) const
+{
+    switch (side_to_attack) // TODO: maybe split in two separate functions
+    {
+    case WHITE:
+        if (getRookAttacks(sq, _occupied_squares) & (_white_rooks | _white_queens))
+        {
+            return true;
+        }
+        else if (getBishopAttacks(sq, _occupied_squares) & (_white_bishops | _white_queens))
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_KNIGHT[sq] & _white_knights)
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_PAWN[BLACK][sq] & _white_pawns)
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_KING[sq] & _white_king)
+        {
+            return true;
+        }
+        break;
+    case BLACK:
+        if (getRookAttacks(sq, _occupied_squares) & (_black_rooks | _black_queens))
+        {
+            return true;
+        }
+        else if (getBishopAttacks(sq, _occupied_squares) & (_black_bishops | _black_queens))
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_KNIGHT[sq] & _black_knights)
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_PAWN[WHITE][sq] & _black_pawns)
+        {
+            return true;
+        }
+        else if (Tables::ATTACKS_KING[sq] & _black_king)
+        {
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
 void Movegen::generateMoves(Board &board)
 {
 }

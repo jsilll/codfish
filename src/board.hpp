@@ -21,6 +21,7 @@ private:
     bool _white_on_bottom;
 
 public:
+    // board.cpp
     Board();
     void clear();
     void updateBBFromSquares();
@@ -34,15 +35,16 @@ public:
     bool switchSideToMove();
     bool rotate();
 
-    int getMaterial() const;
+    bool isWhiteToMove() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
     int getHalfMoveClock() const;
     int getFullMoveNumber() const;
-    int getWhitePawnsCount() const;
-    int getBlackPawnsCount() const;
-    bool isWhiteToMove() const;
+    U64 getOccupiedSquares() const;
     std::string getFen() const;
+
+    // movegen.cpp
+    bool isSquareAttacked(const int sq, const Color side_to_attack) const;
 
     void print(bool ascii) const;
 };

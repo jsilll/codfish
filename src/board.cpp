@@ -90,11 +90,26 @@ void Board::clear()
 void Board::setStartingPosition()
 {
     this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
-    this->updateBBFromSquares();
 }
 
 void Board::updateBBFromSquares()
 {
+    _white_king = ZERO;
+    _white_queens = ZERO;
+    _white_rooks = ZERO;
+    _white_bishops = ZERO;
+    _white_knights = ZERO;
+    _white_pawns = ZERO;
+    _black_king = ZERO;
+    _black_queens = ZERO;
+    _black_rooks = ZERO;
+    _black_bishops = ZERO;
+    _black_knights = ZERO;
+    _black_pawns = ZERO;
+    _white_pieces = ZERO;
+    _black_pieces = ZERO;
+    _occupied_squares = ZERO;
+
     for (int i = 0; i < N_SQUARES; i++)
     {
         switch (_square[i])
@@ -267,6 +282,8 @@ void Board::setFromFen(std::string piece_placements,
 
     // Fullmove Number Parsing
     _full_move_number = std::stoi(full_move_number);
+
+    this->updateBBFromSquares();
 }
 
 std::string Board::getFen() const
@@ -393,14 +410,9 @@ int Board::getFullMoveNumber() const
     return _full_move_number;
 }
 
-int Board::getWhitePawnsCount() const
+U64 Board::getOccupiedSquares() const
 {
-    return Utils::bitCount(_white_pawns);
-}
-
-int Board::getBlackPawnsCount() const
-{
-    return Utils::bitCount(_black_pawns);
+    return _occupied_squares;
 }
 
 bool Board::isWhiteToMove() const

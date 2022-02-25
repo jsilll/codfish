@@ -109,6 +109,7 @@ bool parseCommand(std::string buf, Board &board)
         else
         {
             board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
+            board.isSquareAttacked(A1, WHITE);
         }
     }
     else if (words[0] == "printfen")
@@ -176,7 +177,29 @@ void infoCommand(const Board &board)
         << "\nEn-passant Square            = " << SQUARE_NAMES[board.getEnPassantSquare() == -1 ? 64 : board.getEnPassantSquare()] // TODO: implement uci repr
         << "\nFifty Move Count             = " << board.getHalfMoveClock()
         << "\nFull Move Number             = " << board.getFullMoveNumber()
-        << std::endl;
+        << "\nOccupied Squares:\n";
+    Utils::printBB(board.getOccupiedSquares());
+
+    // U64 attacked_squares_white = ZERO;
+    // U64 attacked_squares_black = ZERO;
+    // for (int sq = A1; sq < N_SQUARES; sq++)
+    // {
+    //     if (board.isSquareAttacked(sq, WHITE))
+    //     {
+    //         attacked_squares_white |= Tables::SQUARE_BB[sq];
+    //     }
+    // }
+    // for (int sq = A1; sq < N_SQUARES; sq++)
+    // {
+    //     if (board.isSquareAttacked(sq, BLACK))
+    //     {
+    //         attacked_squares_black |= Tables::SQUARE_BB[sq];
+    //     }
+    // }
+    // std::cout << "Attacked Squares White:\n";
+    // Utils::printBB(attacked_squares_white);
+    // std::cout << "Attacked Squares White:\n";
+    // Utils::printBB(attacked_squares_black);
 }
 
 std::vector<std::string> splitString(std::string &text)
