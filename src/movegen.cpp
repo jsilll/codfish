@@ -4,7 +4,7 @@
 #include "magics.hpp"
 #include "board.hpp"
 
-inline U64 getBishopAttacks(int sq, U64 occ)
+inline U64 getBishopAttacks(const int &sq, U64 occ)
 {
     occ &= Magics::MAGIC_TABLE_BISHOP[sq].mask;
     occ *= Magics::MAGIC_TABLE_BISHOP[sq].magic;
@@ -12,12 +12,17 @@ inline U64 getBishopAttacks(int sq, U64 occ)
     return Tables::ATTACKS_BISHOP[sq][occ];
 }
 
-inline U64 getRookAttacks(int sq, U64 occ)
+inline U64 getRookAttacks(const int &sq, U64 occ)
 {
     occ &= Magics::MAGIC_TABLE_ROOK[sq].mask;
     occ *= Magics::MAGIC_TABLE_ROOK[sq].magic;
     occ >>= Magics::MAGIC_TABLE_ROOK[sq].shift;
     return Tables::ATTACKS_ROOK[sq][occ];
+}
+
+inline U64 getQueenAttacks(const int &sq, U64 occ)
+{
+    return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
 }
 
 void Movegen::generateMoves(Board &board)
