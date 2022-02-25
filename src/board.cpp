@@ -7,7 +7,9 @@
 
 void Board::print(bool ascii = false) const
 {
-    static const std::string PIECE_NAMES[26] = {"K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ", "♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
+    static const std::string PIECE_NAMES[26] = {
+        "K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ",
+        "♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
 
     int offset = ascii ? 0 : 13;
 
@@ -95,53 +97,46 @@ void Board::updateBBFromSquares()
 {
     for (int i = 0; i < N_SQUARES; i++)
     {
-        if (_square[i] == WHITE_KING)
+        switch (_square[i])
         {
+        case WHITE_KING:
             _white_king = _white_king | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == WHITE_QUEEN)
-        {
+            break;
+        case WHITE_QUEEN:
             _white_queens = _white_queens | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == WHITE_ROOK)
-        {
+            break;
+        case WHITE_ROOK:
             _white_rooks = _white_rooks | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == WHITE_BISHOP)
-        {
+            break;
+        case WHITE_BISHOP:
             _white_bishops = _white_bishops | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == WHITE_KNIGHT)
-        {
+            break;
+        case WHITE_KNIGHT:
             _white_knights = _white_knights | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == WHITE_PAWN)
-        {
+            break;
+        case WHITE_PAWN:
             _white_pawns = _white_pawns | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_KING)
-        {
+            break;
+        case BLACK_KING:
             _black_king = _black_king | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_QUEEN)
-        {
+            break;
+        case BLACK_QUEEN:
             _black_queens = _black_queens | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_ROOK)
-        {
+            break;
+        case BLACK_ROOK:
             _black_rooks = _black_rooks | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_BISHOP)
-        {
+            break;
+        case BLACK_BISHOP:
             _black_bishops = _black_bishops | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_KNIGHT)
-        {
+            break;
+        case BLACK_KNIGHT:
             _black_knights = _black_knights | Tables::SQUARE_BB[i];
-        }
-        else if (_square[i] == BLACK_PAWN)
-        {
+            break;
+        case BLACK_PAWN:
             _black_pawns = _black_pawns | Tables::SQUARE_BB[i];
+            break;
+        default:
+            break;
         }
     }
 
