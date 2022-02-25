@@ -180,26 +180,26 @@ void infoCommand(const Board &board)
         << "\nOccupied Squares:\n";
     Utils::printBB(board.getOccupiedSquares());
 
-    // U64 attacked_squares_white = ZERO;
-    // U64 attacked_squares_black = ZERO;
-    // for (int sq = A1; sq < N_SQUARES; sq++)
-    // {
-    //     if (board.isSquareAttacked(sq, WHITE))
-    //     {
-    //         attacked_squares_white |= Tables::SQUARE_BB[sq];
-    //     }
-    // }
-    // for (int sq = A1; sq < N_SQUARES; sq++)
-    // {
-    //     if (board.isSquareAttacked(sq, BLACK))
-    //     {
-    //         attacked_squares_black |= Tables::SQUARE_BB[sq];
-    //     }
-    // }
-    // std::cout << "Attacked Squares White:\n";
-    // Utils::printBB(attacked_squares_white);
-    // std::cout << "Attacked Squares White:\n";
-    // Utils::printBB(attacked_squares_black);
+    U64 attacked_squares_white = ZERO;
+    U64 attacked_squares_black = ZERO;
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        if (board.isSquareAttacked(sq, WHITE))
+        {
+            attacked_squares_white |= Tables::SQUARE_BB[sq];
+        }
+    }
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        if (board.isSquareAttacked(sq, BLACK))
+        {
+            attacked_squares_black |= Tables::SQUARE_BB[sq];
+        }
+    }
+    std::cout << "Attacked Squares White:\n";
+    Utils::printBB(attacked_squares_white);
+    std::cout << "Attacked Squares Black:\n";
+    Utils::printBB(attacked_squares_black);
 }
 
 std::vector<std::string> splitString(std::string &text)
