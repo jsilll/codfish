@@ -11,6 +11,7 @@ namespace Utils
 
     inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
     inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }
+    inline void popLastBit(U64 &bb) { bb &= bb - 1; }
     inline bool getBit(U64 bb, int sq) { return ((bb >> sq) & 1ULL); }
 
     inline unsigned int bitCount(U64 bb)

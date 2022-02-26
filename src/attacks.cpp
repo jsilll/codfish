@@ -3,6 +3,32 @@
 #include "utils.hpp"
 #include "tables.hpp"
 
+// TODO: implement with generalized shift
+
+U64 Attacks::maskWhitePawnSinglePushes(U64 wpawns, U64 empty)
+{
+    return Utils::nortOne(wpawns) & empty;
+}
+
+U64 Attacks::maskBlackPawnSinglePushes(U64 bpawns, U64 empty)
+{
+    return Utils::soutOne(bpawns) & empty;
+}
+
+U64 Attacks::maskWhitePawnDoublePushes(U64 wpawns, U64 empty)
+{
+    static const U64 rank4 = 0x00000000FF000000;
+    U64 singlePushs = Attacks::maskWhitePawnSinglePushes(wpawns, empty);
+    return Utils::nortOne(singlePushs) & empty & rank4;
+}
+
+U64 Attacks::maskBlackPawnDoublePushes(U64 bpawns, U64 empty)
+{
+    static const U64 rank5 = 0x000000FF00000000;
+    U64 singlePushs = Attacks::maskBlackPawnSinglePushes(bpawns, empty);
+    return Utils::soutOne(singlePushs) & empty & rank5;
+}
+
 inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return Utils::noEaOne(wpawns); }
 inline U64 maskWhitePawnWestAttacks(U64 wpawns) { return Utils::noWeOne(wpawns); }
 inline U64 maskBlackPawnEastAttacks(U64 bpawns) { return Utils::soEaOne(bpawns); }

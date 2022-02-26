@@ -1,24 +1,11 @@
 #include "board.hpp"
 
 #include "utils.hpp"
+#include "attacks.hpp"
 #include "tables.hpp"
 #include "magics.hpp"
 #include <iomanip>
 #include <string>
-
-// clang-format off
-// const char* SQUARE_NAMES[] = {
-//     "a1","b1","c1","d1","e1","f1","g1","h1",
-//     "a2","b2","c2","d2","e2","f2","g2","h2",
-//     "a3","b3","c3","d3","e3","f3","g3","h3",
-//     "a4","b4","c4","d4","e4","f4","g4","h4",
-//     "a5","b5","c5","d5","e5","f5","g5","h5",
-//     "a6","b6","c6","d6","e6","f6","g6","h6",
-//     "a7","b7","c7","d7","e7","f7","g7","h7",
-//     "a8","b8","c8","d8","e8","f8","g8","h8", 
-//     "-"
-// };
-// clang-format on
 
 void Board::print(bool ascii) const
 {
@@ -449,39 +436,22 @@ bool Board::isSquareAttacked(const int sq) const
 
 void Board::getLegalMoves() const
 {
-    int src_square, target_square;
-    U64 bitboard, attacks;
-
-    if (_to_move == WHITE)
+    // Generating Pawn Pushes
+    int offset = _to_move == WHITE ? -8 : 8;
+    U64 pawn_single_pushes = _to_move == WHITE ? Attacks::maskWhitePawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
+                                               : Attacks::maskBlackPawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
+    while (pawn_single_pushes)
     {
-        // generate pawn pushes
-        U64 pawn_pushes = (_pieces[_to_move][PAWN] << 8) & (~_occupancies[BOTH]);
-        while (pawn_pushes)
-        {
-            int toSquare = Utils::bitScan(pawn_pushes);
-            int fromSquare = toSquare - 8;
-            std::cout << SQUARE_NAMES[fromSquare] << SQUARE_NAMES[toSquare] << std::endl;
-            pawn_pushes &= pawn_pushes - 1;
-        }
-        // generate castling moves
-    }
-    else
-    {
-        // generate pawn pushes
-        U64 pawn_pushes = (_pieces[_to_move][PAWN] >> 8) & (~_occupancies[BOTH]);
-        while (pawn_pushes)
-        {
-            int toSquare = Utils::bitScan(pawn_pushes);
-            int fromSquare = toSquare + 8;
-            std::cout << SQUARE_NAMES[fromSquare] << SQUARE_NAMES[toSquare] << std::endl;
-            pawn_pushes &= pawn_pushes - 1;
-        }
-        // generate castling moves
+        int to_square = Utils::bitScan(pawn_single_pushes);
+        int from_square = to_square + offset;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        Utils::popLastBit(pawn_single_pushes);
     }
 
-    // generate knight moves
-    // generate bishop moves
-    // generate rook moves
-    // generate queen moves
-    // generate king moves
+    // Generate Castling Moves
+    // Generate Knight Moves
+    // Generate Bishop Moves
+    // Generate Rook Moves
+    // Generate Queen Moves
+    // Generate King Moves
 }

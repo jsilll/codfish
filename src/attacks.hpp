@@ -4,6 +4,13 @@
 
 namespace Attacks
 {
+    // On-the Fly
+    U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty);
+    U64 maskBlackPawnSinglePushes(U64 bpawns, U64 empty);
+    U64 maskWhitePawnDoublePushes(U64 wpawns, U64 empty);
+    U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty);
+
+    // Pre-Initialized
     U64 maskWhitePawnAnyAttacks(U64 wpawns);
     U64 maskBlackPawnAnyAttacks(U64 bpawns);
     U64 maskKnightAttacks(U64 knights);
