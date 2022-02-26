@@ -436,22 +436,48 @@ bool Board::isSquareAttacked(const int sq) const
 
 void Board::getLegalMoves() const
 {
-    // Generating Pawn Pushes
-    int offset = _to_move == WHITE ? -8 : 8;
-    U64 pawn_single_pushes = _to_move == WHITE ? Attacks::maskWhitePawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
-                                               : Attacks::maskBlackPawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
-    while (pawn_single_pushes)
+    /* Pawns */
+    int double_offset = _to_move == WHITE ? -16 : 16;
+    int single_offset = double_offset / 2;
+
+    U64 pawn_double_pushes = _to_move == WHITE ? Attacks::maskWhitePawnDoublePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
+                                               : Attacks::maskBlackPawnDoublePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
+    // Generating Pawn Double Pushes
+    while (pawn_double_pushes)
     {
-        int to_square = Utils::bitScan(pawn_single_pushes);
-        int from_square = to_square + offset;
+        int to_square = Utils::bitScan(pawn_double_pushes);
+        int from_square = to_square + double_offset;
         std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
-        Utils::popLastBit(pawn_single_pushes);
+        Utils::popLastBit(pawn_double_pushes);
     }
 
-    // Generate Castling Moves
-    // Generate Knight Moves
-    // Generate Bishop Moves
-    // Generate Rook Moves
-    // Generate Queen Moves
-    // Generate King Moves
+    U64 pawn_single_pushes = _to_move == WHITE ? Attacks::maskWhitePawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
+                                               : Attacks::maskBlackPawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
+    // Generating Pawn Single Pushes no promotion
+    U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
+    while (pawn_single_pushes_no_promo)
+    {
+        int to_square = Utils::bitScan(pawn_single_pushes_no_promo);
+        int from_square = to_square + single_offset;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        Utils::popLastBit(pawn_single_pushes_no_promo);
+    }
+    // Generate Pawn Single Pushes with promotion
+    U64 pawn_single_pushes_promo = pawn_single_pushes & (Tables::MASK_RANK[0] | Tables::MASK_RANK[7]);
+    while (pawn_single_pushes_promo)
+    {
+        int to_square = Utils::bitScan(pawn_single_pushes_promo);
+        int from_square = to_square + single_offset;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "k" << std::endl;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "b" << std::endl;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "r" << std::endl;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "q" << std::endl;
+        Utils::popLastBit(pawn_single_pushes_promo);
+    }
+
+    /* Castling */
+    /* Knight */
+    /* Bishop */
+    /* Rook */
+    /* Queen */
 }
