@@ -1,11 +1,7 @@
 #include <iostream>
-#include "defs.hpp"
-#include "utils.hpp"
 #include "magics.hpp"
 #include "tables.hpp"
-#include "board.hpp"
 #include "cli.hpp"
-#include "uci.hpp"
 
 int main(int argc, char const *argv[])
 {

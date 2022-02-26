@@ -1,24 +1,33 @@
 #pragma once
 
 #include "defs.hpp"
+
 #include <iostream>
+
+constexpr int CASTLE_KING_WHITE = 1;
+constexpr int CASTLE_QUEEN_WHITE = 2;
+constexpr int CASTLE_KING_BLACK = 4;
+constexpr int CASTLE_QUEEN_BLACK = 8;
+
+struct Piece
+{
+    PieceType type;
+    PieceColor color;
+};
 
 class Board
 {
 private:
-    U64 _white_king, _white_queens, _white_rooks, _white_bishops, _white_knights, _white_pawns;
-    U64 _black_king, _black_queens, _black_rooks, _black_bishops, _black_knights, _black_pawns;
-
-    U64 _white_pieces, _black_pieces, _occupied_squares;
-
-    bool _white_to_move;
+    U64 _pieces[BOTH][EMPTY];
+    U64 _occupancies[BOTH + 1];
+    int _to_move;
     int _castling_rights;
     int _en_passant_square;
     int _half_move_clock;
     int _full_move_number;
 
-    int _square[N_SQUARES];
     bool _white_on_bottom;
+    Piece _square[N_SQUARES];
 
 public:
     // board.cpp
@@ -32,10 +41,10 @@ public:
                     std::string en_passant,
                     std::string halfmove_clock,
                     std::string fullmove_number);
-    bool switchSideToMove();
+    int switchSideToMove();
     bool rotate();
 
-    bool isWhiteToMove() const;
+    int getColorToMove() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
     int getHalfMoveClock() const;

@@ -1,5 +1,6 @@
 #include "cli.hpp"
 
+#include "defs.hpp"
 #include "utils.hpp"
 #include "tables.hpp"
 #include "magics.hpp"
@@ -18,17 +19,17 @@
 #include <regex>
 
 // clang-format off
-const char* SQUARE_NAMES[] = {
-    "a1","b1","c1","d1","e1","f1","g1","h1",
-    "a2","b2","c2","d2","e2","f2","g2","h2",
-    "a3","b3","c3","d3","e3","f3","g3","h3",
-    "a4","b4","c4","d4","e4","f4","g4","h4",
-    "a5","b5","c5","d5","e5","f5","g5","h5",
-    "a6","b6","c6","d6","e6","f6","g6","h6",
-    "a7","b7","c7","d7","e7","f7","g7","h7",
-    "a8","b8","c8","d8","e8","f8","g8","h8", 
-    "none"
-};
+// const char* SQUARE_NAMES[] = {
+//     "a1","b1","c1","d1","e1","f1","g1","h1",
+//     "a2","b2","c2","d2","e2","f2","g2","h2",
+//     "a3","b3","c3","d3","e3","f3","g3","h3",
+//     "a4","b4","c4","d4","e4","f4","g4","h4",
+//     "a5","b5","c5","d5","e5","f5","g5","h5",
+//     "a6","b6","c6","d6","e6","f6","g6","h6",
+//     "a7","b7","c7","d7","e7","f7","g7","h7",
+//     "a8","b8","c8","d8","e8","f8","g8","h8", 
+//     "none"
+// };
 // clang-format on
 
 char *COMMAND{};
@@ -70,7 +71,7 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "switch" || words[0] == "s")
     {
-        std::cout << "side to play is now " << (board.switchSideToMove() ? "white" : "black") << std::endl;
+        std::cout << "side to play is now " << (board.switchSideToMove() == WHITE ? "white" : "black") << std::endl;
     }
     else if (words[0] == "display" || words[0] == "d")
     {
@@ -119,6 +120,10 @@ bool parseCommand(std::string buf, Board &board)
     {
         Magics::generate();
     }
+    else if (words[0] == "perf")
+    {
+        board.getLegalMoves();
+    }
     else if (words[0] == "ascii")
     {
         std::cout << "ascii mode toggled " << ((ASCII = !ASCII) ? "on" : "off") << std::endl;
@@ -129,7 +134,7 @@ bool parseCommand(std::string buf, Board &board)
     }
     else
     {
-        std::cout << "command unknown or not implemented: " << buf << ", type 'help' for more the available commands" << std::endl;
+        std::cout << "unknown command, type 'help' for more the available commands" << std::endl;
     }
     return true;
 }
@@ -163,31 +168,27 @@ void helpCommand()
 
 void infoCommand(const Board &board)
 {
-    int castling_rights = board.getCastlingRights();
-    char castling_rights_buf[5];
-    snprintf(castling_rights_buf, 5, "%c%c%c%c",
-             (castling_rights & CASTLE_KING_WHITE) ? 'K' : '-',
-             (castling_rights & CASTLE_QUEEN_WHITE) ? 'Q' : '-',
-             (castling_rights & CASTLE_KING_BLACK) ? 'k' : '-',
-             (castling_rights & CASTLE_QUEEN_BLACK) ? 'q' : '-');
+    std::string fen = board.getFen();
+    std::vector<std::string> splitted_fen = splitString(fen);
     std::cout
-        << "Side to Play                 = " << (board.isWhiteToMove() ? "White" : "Black")
-        << "\nCastling Rights              = " << castling_rights_buf
-        << "\nEn-passant Square            = " << SQUARE_NAMES[board.getEnPassantSquare() == -1 ? 64 : board.getEnPassantSquare()] // TODO: implement uci repr
-        << "\nFifty Move Count             = " << board.getHalfMoveClock()
-        << "\nFull Move Number             = " << board.getFullMoveNumber()
-        << "\nOccupied Squares:\n";
+        << "Side to Play                 = " << splitted_fen[1]
+        << "\nCastling Rights              = " << splitted_fen[2]
+        << "\nEn-passant Square            = " << splitted_fen[3]
+        << "\nFifty Move Count             = " << splitted_fen[4]
+        << "\nFull Move Number             = " << splitted_fen[5];
+
+    std::cout << "\nOccupied Squares:\n";
     Utils::printBB(board.getOccupiedSquares());
 
     U64 attacked_squares = ZERO;
-    for (int sq = A1; sq < N_SQUARES; sq++)
+    for (int sq = A1; sq < N_SQUARES; sq++) // generating a BB for all the attacked squares
     {
         if (board.isSquareAttacked(sq))
         {
             attacked_squares |= Tables::SQUARE_BB[sq];
         }
     }
-    std::cout << "Attacked Squares White:\n";
+    std::cout << "Attacked Squares:\n";
     Utils::printBB(attacked_squares);
 }
 

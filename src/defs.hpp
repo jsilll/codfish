@@ -1,17 +1,12 @@
 #pragma once
 
+#include <string>
+
 typedef unsigned long long U64;
 
+// TODO: add other handy constexprs like white/black squares ...
 constexpr U64 ONE = 1ULL;
 constexpr U64 ZERO = 0ULL;
-// TODO: add other handy constexprs like white/black squares ...
-
-enum Color
-{
-    WHITE,
-    BLACK,
-    N_SIDES,
-};
 
 // clang-format off
 enum Square{
@@ -25,7 +20,18 @@ enum Square{
     A8,B8,C8,D8,E8,F8,G8,H8,
     N_SQUARES,
 };
-// clang-format on
+
+const std::string SQUARE_NAMES[] = {
+    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+    "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+    "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+    "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+    "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+    "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+    "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+    "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+    "-"};
+// clang-format off
 
 enum Directions
 {
@@ -40,26 +46,28 @@ enum Directions
     N_DIRECTIONS = 8,
 };
 
-constexpr int CASTLE_KING_WHITE = 1;
-constexpr int CASTLE_QUEEN_WHITE = 2;
-constexpr int CASTLE_KING_BLACK = 4;
-constexpr int CASTLE_QUEEN_BLACK = 8;
-
-enum Piece
+enum PieceColor
 {
-    WHITE_KING,
-    WHITE_QUEEN,
-    WHITE_ROOK,
-    WHITE_KNIGHT,
-    WHITE_BISHOP,
-    WHITE_PAWN,
-    BLACK_KING,
-    BLACK_QUEEN,
-    BLACK_ROOK,
-    BLACK_KNIGHT,
-    BLACK_BISHOP,
-    BLACK_PAWN,
-    EMPTY
+    WHITE,
+    BLACK,
+    BOTH,
 };
 
-class Board; // TODO: should this be here?
+enum PieceType {
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING,
+    EMPTY,
+};
+
+const std::string PIECE_REPR[26] = {
+    "P", "N", "B", "R", "Q", "K",
+    "p", "n", "b", "r", "q", "k",
+    " ", 
+    "♙", "♘", "♗", "♖", "♕", "♔",
+    "♟︎", "♞", "♝", "♜", "♛", "♚", 
+    " ",
+};

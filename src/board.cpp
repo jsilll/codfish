@@ -6,16 +6,24 @@
 #include <iomanip>
 #include <string>
 
+// clang-format off
+// const char* SQUARE_NAMES[] = {
+//     "a1","b1","c1","d1","e1","f1","g1","h1",
+//     "a2","b2","c2","d2","e2","f2","g2","h2",
+//     "a3","b3","c3","d3","e3","f3","g3","h3",
+//     "a4","b4","c4","d4","e4","f4","g4","h4",
+//     "a5","b5","c5","d5","e5","f5","g5","h5",
+//     "a6","b6","c6","d6","e6","f6","g6","h6",
+//     "a7","b7","c7","d7","e7","f7","g7","h7",
+//     "a8","b8","c8","d8","e8","f8","g8","h8", 
+//     "-"
+// };
+// clang-format on
+
 void Board::print(bool ascii) const
 {
-    static const std::string PIECE_NAMES[26] = {
-        "K ", "Q ", "R ", "K ", "B ", "P ", "K*", "Q*", "R*", "K*", "B*", "P*", "  ",
-        "♔ ", "♕ ", "♖ ", "♘ ", "♗ ", "♙ ", "♚ ", "♛ ", "♜ ", "♞ ", "♝ ", "♟︎ ", "  "};
-
     int offset = ascii ? 0 : 13;
-
     std::cout << '\n';
-
     if (!_white_on_bottom)
     {
         std::cout << "      h   g   f   e   d   c   b   a\n";
@@ -25,7 +33,8 @@ void Board::print(bool ascii) const
                       << "    |";
             for (int file = 7; file >= 0; file--)
             {
-                std::cout << " " << PIECE_NAMES[_square[Utils::getSquare(rank, file)] + offset] << "|";
+                struct Piece piece = _square[Utils::getSquare(rank, file)];
+                std::cout << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
             }
             std::cout << std::setw(3) << rank + 1 << "\n";
         }
@@ -40,14 +49,14 @@ void Board::print(bool ascii) const
 
             for (int file = 0; file < 8; file++)
             {
-                std::cout << " " << PIECE_NAMES[_square[Utils::getSquare(rank, file)] + offset] << "|";
+                struct Piece piece = _square[Utils::getSquare(rank, file)];
+                std::cout << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
             }
             std::cout << '\n';
         }
         std::cout << "    +---+---+---+---+---+---+---+---+\n"
                   << "      a   b   c   d   e   f   g   h\n";
     }
-
     std::cout << std::endl;
 }
 
@@ -58,34 +67,29 @@ Board::Board()
 
 void Board::clear()
 {
-    _white_king = ZERO;
-    _white_queens = ZERO;
-    _white_rooks = ZERO;
-    _white_bishops = ZERO;
-    _white_knights = ZERO;
-    _white_pawns = ZERO;
-    _black_king = ZERO;
-    _black_queens = ZERO;
-    _black_rooks = ZERO;
-    _black_bishops = ZERO;
-    _black_knights = ZERO;
-    _black_pawns = ZERO;
-    _white_pieces = ZERO;
-    _black_pieces = ZERO;
-    _occupied_squares = ZERO;
+    for (int color = WHITE; color < BOTH; color++)
+    {
+        for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+        {
+            _pieces[color][piece_type] = ZERO;
+        }
 
-    _white_to_move = true;
+        _occupancies[color] = ZERO;
+    }
+    _occupancies[BOTH] = ZERO;
+
+    _to_move = WHITE;
     _castling_rights = 0;
     _en_passant_square = -1;
     _half_move_clock = 0;
     _full_move_number = 0;
 
-    for (int i = 0; i < N_SQUARES; i++)
-    {
-        _square[i] = EMPTY;
-    }
-
     _white_on_bottom = true;
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
+        _square[sq].color = BLACK;
+    }
 }
 
 void Board::setStartingPosition()
@@ -95,70 +99,27 @@ void Board::setStartingPosition()
 
 void Board::updateBBFromSquares()
 {
-    _white_king = ZERO;
-    _white_queens = ZERO;
-    _white_rooks = ZERO;
-    _white_bishops = ZERO;
-    _white_knights = ZERO;
-    _white_pawns = ZERO;
-    _black_king = ZERO;
-    _black_queens = ZERO;
-    _black_rooks = ZERO;
-    _black_bishops = ZERO;
-    _black_knights = ZERO;
-    _black_pawns = ZERO;
-    _white_pieces = ZERO;
-    _black_pieces = ZERO;
-    _occupied_squares = ZERO;
-
-    for (int i = 0; i < N_SQUARES; i++)
+    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
-        switch (_square[i])
+        _pieces[WHITE][piece_type] = ZERO;
+        _pieces[BLACK][piece_type] = ZERO;
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+        if (_square[sq].type != EMPTY)
         {
-        case WHITE_KING:
-            _white_king = _white_king | Tables::SQUARE_BB[i];
-            break;
-        case WHITE_QUEEN:
-            _white_queens = _white_queens | Tables::SQUARE_BB[i];
-            break;
-        case WHITE_ROOK:
-            _white_rooks = _white_rooks | Tables::SQUARE_BB[i];
-            break;
-        case WHITE_BISHOP:
-            _white_bishops = _white_bishops | Tables::SQUARE_BB[i];
-            break;
-        case WHITE_KNIGHT:
-            _white_knights = _white_knights | Tables::SQUARE_BB[i];
-            break;
-        case WHITE_PAWN:
-            _white_pawns = _white_pawns | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_KING:
-            _black_king = _black_king | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_QUEEN:
-            _black_queens = _black_queens | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_ROOK:
-            _black_rooks = _black_rooks | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_BISHOP:
-            _black_bishops = _black_bishops | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_KNIGHT:
-            _black_knights = _black_knights | Tables::SQUARE_BB[i];
-            break;
-        case BLACK_PAWN:
-            _black_pawns = _black_pawns | Tables::SQUARE_BB[i];
-            break;
-        default:
-            break;
+            _pieces[_square[sq].color][_square[sq].type] |= Tables::SQUARE_BB[sq];
         }
     }
 
-    _white_pieces = _white_king | _white_queens | _white_rooks | _white_bishops | _white_knights | _white_pawns;
-    _black_pieces = _black_king | _black_queens | _black_rooks | _black_bishops | _black_knights | _black_pawns;
-    _occupied_squares = _white_pieces | _black_pieces;
+    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    {
+        _occupancies[WHITE] |= _pieces[WHITE][piece_type];
+        _occupancies[BLACK] |= _pieces[BLACK][piece_type];
+    }
+
+    _occupancies[BOTH] = _occupancies[WHITE] | _occupancies[BLACK];
 }
 
 void Board::setFromFen(std::string piece_placements,
@@ -174,54 +135,66 @@ void Board::setFromFen(std::string piece_placements,
     int file = 0, rank = 7;
     for (auto &c : piece_placements)
     {
-        switch (c) // TODO: improve perfomance by finding a mapping from char to Enum Piece
+        switch (c)
         {
         case 'p':
-            _square[Utils::getSquare(rank, file)] = BLACK_PAWN;
+            _square[Utils::getSquare(rank, file)].type = PAWN;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'n':
-            _square[Utils::getSquare(rank, file)] = BLACK_KNIGHT;
+            _square[Utils::getSquare(rank, file)].type = KNIGHT;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'b':
-            _square[Utils::getSquare(rank, file)] = BLACK_BISHOP;
+            _square[Utils::getSquare(rank, file)].type = BISHOP;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'r':
-            _square[Utils::getSquare(rank, file)] = BLACK_ROOK;
+            _square[Utils::getSquare(rank, file)].type = ROOK;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'q':
-            _square[Utils::getSquare(rank, file)] = BLACK_QUEEN;
+            _square[Utils::getSquare(rank, file)].type = QUEEN;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'k':
-            _square[Utils::getSquare(rank, file)] = BLACK_KING;
+            _square[Utils::getSquare(rank, file)].type = KING;
+            _square[Utils::getSquare(rank, file)].color = BLACK;
             file = (file + 1) % 8;
             break;
         case 'P':
-            _square[Utils::getSquare(rank, file)] = WHITE_PAWN;
+            _square[Utils::getSquare(rank, file)].type = PAWN;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case 'N':
-            _square[Utils::getSquare(rank, file)] = WHITE_KNIGHT;
+            _square[Utils::getSquare(rank, file)].type = KNIGHT;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case 'B':
-            _square[Utils::getSquare(rank, file)] = WHITE_BISHOP;
+            _square[Utils::getSquare(rank, file)].type = BISHOP;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case 'R':
-            _square[Utils::getSquare(rank, file)] = WHITE_ROOK;
+            _square[Utils::getSquare(rank, file)].type = ROOK;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case 'Q':
-            _square[Utils::getSquare(rank, file)] = WHITE_QUEEN;
+            _square[Utils::getSquare(rank, file)].type = QUEEN;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case 'K':
-            _square[Utils::getSquare(rank, file)] = WHITE_KING;
+            _square[Utils::getSquare(rank, file)].type = KING;
+            _square[Utils::getSquare(rank, file)].color = WHITE;
             file = (file + 1) % 8;
             break;
         case '/':
@@ -237,11 +210,11 @@ void Board::setFromFen(std::string piece_placements,
     // Active Color Parsing
     if (active_color == "w")
     {
-        _white_to_move = true;
+        _to_move = WHITE;
     }
     else
     {
-        _white_to_move = false;
+        _to_move = BLACK;
     }
 
     // Castling Rights Parsing
@@ -296,22 +269,6 @@ std::string Board::getFen() const
     std::string half_move_clock;
     std::string full_move_number;
 
-    static const char fen_piece_rep[]{
-        // TODO: this depends on Enum Piece order, maybe find better implementation
-        'K',
-        'Q',
-        'R',
-        'N',
-        'B',
-        'P',
-        'k',
-        'q',
-        'r',
-        'n',
-        'b',
-        'p',
-    };
-
     // Piece Placements
     int empty_squares = 0;
     for (int rank = 7; rank >= 0; rank--)
@@ -328,7 +285,7 @@ std::string Board::getFen() const
                 }
                 piece_placements += '/';
             }
-            switch (_square[sq])
+            switch (_square[sq].type)
             {
             case EMPTY:
                 empty_squares++;
@@ -339,7 +296,7 @@ std::string Board::getFen() const
                     piece_placements += std::to_string(empty_squares);
                     empty_squares = 0;
                 }
-                piece_placements += fen_piece_rep[_square[sq]];
+                piece_placements += PIECE_REPR[_square[sq].type + (6 * _square[sq].color)];
                 break;
             }
         }
@@ -351,10 +308,10 @@ std::string Board::getFen() const
     }
 
     // Active Color
-    active_color = _white_to_move ? "w" : "b";
+    active_color = _to_move == WHITE ? "w" : "b";
 
     // Castling Rights
-    char castling_rights_buf[5]; // TODO: hanlde other cases
+    char castling_rights_buf[5];
     snprintf(castling_rights_buf, 5, "%s%s%s%s",
              (_castling_rights & CASTLE_KING_WHITE) ? "K" : "",
              (_castling_rights & CASTLE_QUEEN_WHITE) ? "Q" : "",
@@ -367,20 +324,6 @@ std::string Board::getFen() const
     }
 
     // En Passant Square
-    // clang-format off
-    static const char* SQUARE_NAMES[] = {
-        "a1","b1","c1","d1","e1","f1","g1","h1",
-        "a2","b2","c2","d2","e2","f2","g2","h2",
-        "a3","b3","c3","d3","e3","f3","g3","h3",
-        "a4","b4","c4","d4","e4","f4","g4","h4",
-        "a5","b5","c5","d5","e5","f5","g5","h5",
-        "a6","b6","c6","d6","e6","f6","g6","h6",
-        "a7","b7","c7","d7","e7","f7","g7","h7",
-        "a8","b8","c8","d8","e8","f8","g8","h8", 
-        "-"
-    };
-    // clang-format on
-
     std::string fen = piece_placements + " " +
                       active_color + " " +
                       castling_rights + " " +
@@ -413,17 +356,17 @@ int Board::getFullMoveNumber() const
 
 U64 Board::getOccupiedSquares() const
 {
-    return _occupied_squares;
+    return _occupancies[BOTH];
 }
 
-bool Board::isWhiteToMove() const
+int Board::getColorToMove() const
 {
-    return _white_to_move;
+    return _to_move;
 }
 
-bool Board::switchSideToMove()
+int Board::switchSideToMove()
 {
-    return _white_to_move = !_white_to_move;
+    return _to_move = (_to_move + 1) % 2;
 }
 
 bool Board::rotate()
@@ -454,48 +397,48 @@ inline U64 getQueenAttacks(const int &sq, U64 occ)
 
 bool Board::isSquareAttacked(const int sq) const
 {
-    if (_white_to_move) // TODO: maybe split in two separate functions
+    if (_to_move == WHITE) // TODO: maybe split in two separate functions
     {
-        if (getRookAttacks(sq, _occupied_squares) & (_white_rooks | _white_queens))
+        if (getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[WHITE][ROOK] | _pieces[WHITE][QUEEN]))
         {
             return true;
         }
-        else if (getBishopAttacks(sq, _occupied_squares) & (_white_bishops | _white_queens))
+        else if (getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[WHITE][BISHOP] | _pieces[WHITE][QUEEN]))
         {
             return true;
         }
-        else if (Tables::ATTACKS_KNIGHT[sq] & _white_knights)
+        else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[WHITE][KNIGHT])
         {
             return true;
         }
-        else if (Tables::ATTACKS_PAWN[BLACK][sq] & _white_pawns)
+        else if (Tables::ATTACKS_PAWN[BLACK][sq] & _pieces[WHITE][PAWN])
         {
             return true;
         }
-        else if (Tables::ATTACKS_KING[sq] & _white_king)
+        else if (Tables::ATTACKS_KING[sq] & _pieces[WHITE][KING])
         {
             return true;
         }
     }
     else
     {
-        if (getRookAttacks(sq, _occupied_squares) & (_black_rooks | _black_queens))
+        if (getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[BLACK][ROOK] | _pieces[BLACK][QUEEN]))
         {
             return true;
         }
-        else if (getBishopAttacks(sq, _occupied_squares) & (_black_bishops | _black_queens))
+        else if (getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[BLACK][BISHOP] | _pieces[BLACK][QUEEN]))
         {
             return true;
         }
-        else if (Tables::ATTACKS_KNIGHT[sq] & _black_knights)
+        else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[BLACK][KNIGHT])
         {
             return true;
         }
-        else if (Tables::ATTACKS_PAWN[WHITE][sq] & _black_pawns)
+        else if (Tables::ATTACKS_PAWN[WHITE][sq] & _pieces[BLACK][PAWN])
         {
             return true;
         }
-        else if (Tables::ATTACKS_KING[sq] & _black_king)
+        else if (Tables::ATTACKS_KING[sq] & _pieces[BLACK][KING])
         {
             return true;
         }
@@ -509,14 +452,30 @@ void Board::getLegalMoves() const
     int src_square, target_square;
     U64 bitboard, attacks;
 
-    if (_white_to_move)
+    if (_to_move == WHITE)
     {
-        // generate pawn moves
+        // generate pawn pushes
+        U64 pawn_pushes = (_pieces[_to_move][PAWN] << 8) & (~_occupancies[BOTH]);
+        while (pawn_pushes)
+        {
+            int toSquare = Utils::bitScan(pawn_pushes);
+            int fromSquare = toSquare - 8;
+            std::cout << SQUARE_NAMES[fromSquare] << SQUARE_NAMES[toSquare] << std::endl;
+            pawn_pushes &= pawn_pushes - 1;
+        }
         // generate castling moves
     }
     else
     {
-        // generate pawn moves
+        // generate pawn pushes
+        U64 pawn_pushes = (_pieces[_to_move][PAWN] >> 8) & (~_occupancies[BOTH]);
+        while (pawn_pushes)
+        {
+            int toSquare = Utils::bitScan(pawn_pushes);
+            int fromSquare = toSquare + 8;
+            std::cout << SQUARE_NAMES[fromSquare] << SQUARE_NAMES[toSquare] << std::endl;
+            pawn_pushes &= pawn_pushes - 1;
+        }
         // generate castling moves
     }
 
