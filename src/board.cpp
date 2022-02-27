@@ -441,14 +441,14 @@ void Board::getLegalMoves() const
         {
             if (!this->isSquareAttacked(castle_f_sq, opponent && !this->isSquareAttacked(castle_g_sq, opponent)))
             {
-                std::cout << "castle king" << std::endl;
+                std::cout << "castle king side" << std::endl;
             }
         }
         if ((_castling_rights & castle_queen_mask) && !Utils::getBit(_occupancies[BOTH], castle_d_sq) && !Utils::getBit(_occupancies[BOTH], castle_c_sq) && !Utils::getBit(_occupancies[BOTH], castle_b_sq))
         {
             if (!this->isSquareAttacked(castle_d_sq, opponent && !this->isSquareAttacked(castle_c_sq, opponent)))
             {
-                std::cout << "castle queen" << std::endl;
+                std::cout << "castle queen side" << std::endl;
             }
         }
     }
@@ -533,7 +533,73 @@ void Board::getLegalMoves() const
     }
 
     // Knight Moves
+    U64 knights = _pieces[_to_move][KNIGHT];
+    while (knights)
+    {
+        int from_square = Utils::bitScan(knights);
+        U64 moves = Tables::ATTACKS_KNIGHT[from_square] & ~_occupancies[_to_move];
+        while (moves)
+        {
+            int to_square = Utils::bitScan(moves);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            Utils::popLastBit(moves);
+        }
+        Utils::popLastBit(knights);
+    }
+
     // Bishop Moves
+    U64 bishops = _pieces[_to_move][BISHOP];
+    while (bishops)
+    {
+        int from_square = Utils::bitScan(bishops);
+        U64 moves = Tables::getBishopAttacks(from_square, _occupancies[BOTH]) & ~_occupancies[_to_move];
+        while (moves)
+        {
+            int to_square = Utils::bitScan(moves);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            Utils::popLastBit(moves);
+        }
+        Utils::popLastBit(bishops);
+    }
+
     // Rook Moves
+    U64 rooks = _pieces[_to_move][ROOK];
+    while (rooks)
+    {
+        int from_square = Utils::bitScan(rooks);
+        U64 moves = Tables::getRookAttacks(from_square, _occupancies[BOTH]) & ~_occupancies[_to_move];
+        while (moves)
+        {
+            int to_square = Utils::bitScan(moves);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            Utils::popLastBit(moves);
+        }
+        Utils::popLastBit(rooks);
+    }
+
     // Queen Moves
+    U64 queens = _pieces[_to_move][QUEEN];
+    while (queens)
+    {
+        int from_square = Utils::bitScan(queens);
+        U64 moves = Tables::getQueenAttacks(from_square, _occupancies[BOTH]) & ~_occupancies[_to_move];
+        while (moves)
+        {
+            int to_square = Utils::bitScan(moves);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            Utils::popLastBit(moves);
+        }
+        Utils::popLastBit(queens);
+    }
+
+    // King Moves
+    U64 king = _pieces[_to_move][KING];
+    int from_square = Utils::bitScan(king);
+    U64 moves = Tables::ATTACKS_KING[from_square] & ~_occupancies[_to_move];
+    while (moves)
+    {
+        int to_square = Utils::bitScan(moves);
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        Utils::popLastBit(moves);
+    }
 }
