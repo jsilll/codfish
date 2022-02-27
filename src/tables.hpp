@@ -69,16 +69,15 @@ namespace Tables
     // clang-format on
 
     extern U64 SQUARE_BB[N_SQUARES];
-    extern U64 ATTACKS_PAWN[BOTH][N_SQUARES];
-    extern U64 ATTACKS_KNIGHT[N_SQUARES];
-    extern U64 ATTACKS_KING[N_SQUARES];
-    extern U64 ATTACKS_BISHOP[N_SQUARES][512];
-    extern U64 ATTACKS_ROOK[N_SQUARES][4096];
+    extern U64 ATTACKS_PAWN[BOTH][N_SQUARES];  // Direct Access
+    extern U64 ATTACKS_KNIGHT[N_SQUARES];      // Direct Access
+    extern U64 ATTACKS_KING[N_SQUARES];        // Direct Access
+    extern U64 ATTACKS_BISHOP[N_SQUARES][512]; // Needs Magics Bitboards For Accessing
+    extern U64 ATTACKS_ROOK[N_SQUARES][4096];  // Needs Magics Bitboards For Accessing
 
     void init();
-    U64 maskBishopAttacks(int sq, U64 block);
-    U64 maskRookAttacks(int sq, U64 block);
-    U64 maskRookAttackRays(int sq);
-    U64 maskBishopAttackRays(int sq);
 
+    U64 getBishopAttacks(const int &sq, U64 occ);
+    U64 getRookAttacks(const int &sq, U64 occ);
+    U64 getQueenAttacks(const int &sq, U64 occ);
 } // namespace Tables

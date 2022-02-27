@@ -8,6 +8,7 @@ namespace Utils
     inline int getSquare(const int rk, const int fl) { return 8 * rk + fl; }
     inline int getFile(const int sq) { return sq & 7; }
     inline int getRank(const int sq) { return sq >> 3; }
+    inline int mirrorRank(int sq) { return Utils::getSquare(7 - Utils::getRank(sq), Utils::getFile(sq)); }
 
     inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
     inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }

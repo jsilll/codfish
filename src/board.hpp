@@ -44,7 +44,7 @@ public:
     int switchSideToMove();
     bool rotate();
 
-    int getColorToMove() const;
+    int getSideToMove() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
     int getHalfMoveClock() const;
@@ -52,7 +52,7 @@ public:
     U64 getOccupiedSquares() const;
     std::string getFen() const;
 
-    bool isSquareAttacked(const int sq) const;
+    bool isSquareAttacked(const int sq, const int attacker_side) const;
     void getLegalMoves() const;
 
     void print(bool ascii = false) const;

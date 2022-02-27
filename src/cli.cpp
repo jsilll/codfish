@@ -183,7 +183,7 @@ void infoCommand(const Board &board)
     U64 attacked_squares = ZERO;
     for (int sq = A1; sq < N_SQUARES; sq++) // generating a BB for all the attacked squares
     {
-        if (board.isSquareAttacked(sq))
+        if (board.isSquareAttacked(sq, board.getSideToMove()))
         {
             attacked_squares |= Tables::SQUARE_BB[sq];
         }
