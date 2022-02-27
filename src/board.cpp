@@ -384,65 +384,39 @@ inline U64 getQueenAttacks(const int &sq, U64 occ)
 
 bool Board::isSquareAttacked(const int sq) const
 {
-    if (_to_move == WHITE) // TODO: maybe split in two separate functions
+    if (getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[_to_move][ROOK] | _pieces[_to_move][QUEEN]))
     {
-        if (getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[WHITE][ROOK] | _pieces[WHITE][QUEEN]))
-        {
-            return true;
-        }
-        else if (getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[WHITE][BISHOP] | _pieces[WHITE][QUEEN]))
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[WHITE][KNIGHT])
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_PAWN[BLACK][sq] & _pieces[WHITE][PAWN])
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_KING[sq] & _pieces[WHITE][KING])
-        {
-            return true;
-        }
+        return true;
     }
-    else
+    else if (getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[_to_move][BISHOP] | _pieces[_to_move][QUEEN]))
     {
-        if (getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[BLACK][ROOK] | _pieces[BLACK][QUEEN]))
-        {
-            return true;
-        }
-        else if (getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[BLACK][BISHOP] | _pieces[BLACK][QUEEN]))
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[BLACK][KNIGHT])
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_PAWN[WHITE][sq] & _pieces[BLACK][PAWN])
-        {
-            return true;
-        }
-        else if (Tables::ATTACKS_KING[sq] & _pieces[BLACK][KING])
-        {
-            return true;
-        }
+        return true;
     }
-
+    else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[_to_move][KNIGHT])
+    {
+        return true;
+    }
+    else if (Tables::ATTACKS_PAWN[BLACK][sq] & _pieces[_to_move][PAWN])
+    {
+        return true;
+    }
+    else if (Tables::ATTACKS_KING[sq] & _pieces[_to_move][KING])
+    {
+        return true;
+    }
     return false;
 }
 
+// TODO: maybe create a movegen.cpp
 void Board::getLegalMoves() const
 {
-    /* Pawns */
+    // Pawn Moves
     int double_offset = _to_move == WHITE ? -16 : 16;
     int single_offset = double_offset / 2;
 
+    // Pawn Double Pushes TODO: implement generalized shift to remove turnery
     U64 pawn_double_pushes = _to_move == WHITE ? Attacks::maskWhitePawnDoublePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
                                                : Attacks::maskBlackPawnDoublePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
-    // Generating Pawn Double Pushes
     while (pawn_double_pushes)
     {
         int to_square = Utils::bitScan(pawn_double_pushes);
@@ -453,16 +427,7 @@ void Board::getLegalMoves() const
 
     U64 pawn_single_pushes = _to_move == WHITE ? Attacks::maskWhitePawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH])
                                                : Attacks::maskBlackPawnSinglePushes(_pieces[_to_move][PAWN], ~_occupancies[BOTH]);
-    // Generating Pawn Single Pushes no promotion
-    U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
-    while (pawn_single_pushes_no_promo)
-    {
-        int to_square = Utils::bitScan(pawn_single_pushes_no_promo);
-        int from_square = to_square + single_offset;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
-        Utils::popLastBit(pawn_single_pushes_no_promo);
-    }
-    // Generate Pawn Single Pushes with promotion
+    // Pawn Single Pushes With Promotion
     U64 pawn_single_pushes_promo = pawn_single_pushes & (Tables::MASK_RANK[0] | Tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
@@ -475,9 +440,64 @@ void Board::getLegalMoves() const
         Utils::popLastBit(pawn_single_pushes_promo);
     }
 
-    /* Castling */
-    /* Knight */
-    /* Bishop */
-    /* Rook */
-    /* Queen */
+    // Pawn Single Pushes No Promotion
+    U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
+    while (pawn_single_pushes_no_promo)
+    {
+        int to_square = Utils::bitScan(pawn_single_pushes_no_promo);
+        int from_square = to_square + single_offset;
+        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        Utils::popLastBit(pawn_single_pushes_no_promo);
+    }
+
+    // Pawn Captures With Promotion
+    U64 pawns_can_capture_with_promo = _pieces[_to_move][PAWN] & Tables::MASK_RANK[6 - (5 * _to_move)];
+    while (pawns_can_capture_with_promo)
+    {
+        int from_square = Utils::bitScan(pawns_can_capture_with_promo);
+        U64 pawn_captures_promo = Tables::ATTACKS_PAWN[_to_move][from_square] & _occupancies[(_to_move + 1) % 2];
+        while (pawn_captures_promo)
+        {
+            int to_square = Utils::bitScan(pawn_captures_promo);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "k" << std::endl;
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "b" << std::endl;
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "r" << std::endl;
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "q" << std::endl;
+            Utils::popLastBit(pawn_captures_promo);
+        }
+        Utils::popLastBit(pawns_can_capture_with_promo);
+    }
+
+    // Pawns Captures No Promotion
+    U64 pawns_can_capture_no_promo = _pieces[_to_move][PAWN] & Tables::MASK_CLEAR_RANK[6 - (5 * _to_move)];
+    while (pawns_can_capture_no_promo)
+    {
+        int from_square = Utils::bitScan(pawns_can_capture_no_promo);
+        U64 pawn_captures_no_promo = Tables::ATTACKS_PAWN[_to_move][from_square] & _occupancies[(_to_move + 1) % 2];
+        while (pawn_captures_no_promo)
+        {
+            int to_square = Utils::bitScan(pawn_captures_no_promo);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            Utils::popLastBit(pawn_captures_no_promo);
+        }
+        Utils::popLastBit(pawns_can_capture_no_promo);
+    }
+
+    // En-Passant Capture TODO: captured piece must not be absolutely pineed (defending king)
+    if (_en_passant_square != -1)
+    {
+        U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[(_to_move + 1) % 2][_en_passant_square] & _pieces[_to_move][PAWN];
+        while (pawns_can_en_passant)
+        {
+            int from_square = Utils::bitScan(pawns_can_en_passant);
+            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[_en_passant_square] << std::endl;
+            Utils::popLastBit(pawns_can_en_passant);
+        }
+    }
+
+    // Castling Moves
+    // Knight Moves
+    // Bishop Moves
+    // Rook Moves
+    // Queen Moves
 }
