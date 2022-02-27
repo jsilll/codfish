@@ -4,6 +4,7 @@
 #include "attacks.hpp"
 #include "tables.hpp"
 #include "magics.hpp"
+#include "move.hpp"
 #include <iomanip>
 #include <string>
 
@@ -392,8 +393,10 @@ bool Board::isSquareAttacked(const int sq, const int attacker_side) const
 }
 
 // TODO: maybe create a movegen.cpp
-void Board::getLegalMoves() const
+std::vector<Move> Board::moves() const
 {
+    std::vector<Move> moves_vec;
+
     int opponent = getOpponent(_to_move);
     int castle_b_sq, castle_c_sq, castle_d_sq, castle_e_sq, castle_f_sq, castle_g_sq;
     int castle_king_mask, castle_queen_mask;
@@ -436,19 +439,20 @@ void Board::getLegalMoves() const
     // Castling Moves
     if (!this->isSquareAttacked(castle_e_sq, opponent))
     {
-        // TODO: remove this last verification because we are already going to check if king is in check after the move for the move
         if ((_castling_rights & castle_king_mask) && !Utils::getBit(_occupancies[BOTH], castle_f_sq) && !Utils::getBit(_occupancies[BOTH], castle_g_sq))
         {
+            // TODO: remove this last verification of attack
+            // because we are already going to check if king is in check after the move
             if (!this->isSquareAttacked(castle_f_sq, opponent && !this->isSquareAttacked(castle_g_sq, opponent)))
             {
-                std::cout << "castle king side" << std::endl;
+                moves_vec.push_back(Move(castle_e_sq, castle_g_sq, KING, 0, false, false, false, true));
             }
         }
         if ((_castling_rights & castle_queen_mask) && !Utils::getBit(_occupancies[BOTH], castle_d_sq) && !Utils::getBit(_occupancies[BOTH], castle_c_sq) && !Utils::getBit(_occupancies[BOTH], castle_b_sq))
         {
-            if (!this->isSquareAttacked(castle_d_sq, opponent && !this->isSquareAttacked(castle_c_sq, opponent)))
+            if (!this->isSquareAttacked(castle_d_sq, opponent) && !this->isSquareAttacked(castle_c_sq, opponent))
             {
-                std::cout << "castle queen side" << std::endl;
+                moves_vec.push_back(Move(castle_e_sq, castle_c_sq, KING, 0, false, false, false, true));
             }
         }
     }
@@ -460,7 +464,7 @@ void Board::getLegalMoves() const
     {
         int to_square = Utils::bitScan(pawn_double_pushes);
         int from_square = to_square + pawn_double_push_offset;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        moves_vec.push_back(Move(from_square, to_square, PAWN, 0, false, true, false, false));
         Utils::popLastBit(pawn_double_pushes);
     }
 
@@ -470,10 +474,10 @@ void Board::getLegalMoves() const
     {
         int to_square = Utils::bitScan(pawn_single_pushes_promo);
         int from_square = to_square + pawn_single_push_offset;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "k" << std::endl;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "b" << std::endl;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "r" << std::endl;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "q" << std::endl;
+        moves_vec.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
+        moves_vec.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
+        moves_vec.push_back(Move(from_square, to_square, PAWN, ROOK, false, false, false, false));
+        moves_vec.push_back(Move(from_square, to_square, PAWN, QUEEN, false, false, false, false));
         Utils::popLastBit(pawn_single_pushes_promo);
     }
 
@@ -483,7 +487,7 @@ void Board::getLegalMoves() const
     {
         int to_square = Utils::bitScan(pawn_single_pushes_no_promo);
         int from_square = to_square + pawn_single_push_offset;
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        moves_vec.push_back(Move(from_square, to_square, PAWN, 0, false, false, false, false));
         Utils::popLastBit(pawn_single_pushes_no_promo);
     }
 
@@ -496,10 +500,10 @@ void Board::getLegalMoves() const
         while (pawn_captures_promo)
         {
             int to_square = Utils::bitScan(pawn_captures_promo);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "k" << std::endl;
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "b" << std::endl;
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "r" << std::endl;
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << "q" << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, PAWN, KNIGHT, true, false, false, false));
+            moves_vec.push_back(Move(from_square, to_square, PAWN, BISHOP, true, false, false, false));
+            moves_vec.push_back(Move(from_square, to_square, PAWN, ROOK, true, false, false, false));
+            moves_vec.push_back(Move(from_square, to_square, PAWN, QUEEN, true, false, false, false));
             Utils::popLastBit(pawn_captures_promo);
         }
         Utils::popLastBit(pawns_can_capture_with_promo);
@@ -514,20 +518,20 @@ void Board::getLegalMoves() const
         while (pawn_captures_no_promo)
         {
             int to_square = Utils::bitScan(pawn_captures_no_promo);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, PAWN, 0, true, false, false, false));
             Utils::popLastBit(pawn_captures_no_promo);
         }
         Utils::popLastBit(pawns_can_capture_no_promo);
     }
 
-    // En-Passant Capture TODO: captured piece must not be absolutely pineed (defending king)
+    // En-Passant Capture TODO: captured piece must not be absolutely pineed (defending king) (??)
     if (_en_passant_square != -1)
     {
         U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[opponent][_en_passant_square] & _pieces[_to_move][PAWN];
         while (pawns_can_en_passant)
         {
             int from_square = Utils::bitScan(pawns_can_en_passant);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[_en_passant_square] << std::endl;
+            moves_vec.push_back(Move(from_square, _en_passant_square, PAWN, 0, true, false, true, false));
             Utils::popLastBit(pawns_can_en_passant);
         }
     }
@@ -541,7 +545,7 @@ void Board::getLegalMoves() const
         while (moves)
         {
             int to_square = Utils::bitScan(moves);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, KNIGHT, 0, Utils::getBit(_occupancies[opponent], to_square), false, false, false));
             Utils::popLastBit(moves);
         }
         Utils::popLastBit(knights);
@@ -556,7 +560,7 @@ void Board::getLegalMoves() const
         while (moves)
         {
             int to_square = Utils::bitScan(moves);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, BISHOP, 0, Utils::getBit(_occupancies[opponent], to_square), false, false, false));
             Utils::popLastBit(moves);
         }
         Utils::popLastBit(bishops);
@@ -571,7 +575,7 @@ void Board::getLegalMoves() const
         while (moves)
         {
             int to_square = Utils::bitScan(moves);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, ROOK, 0, Utils::getBit(_occupancies[opponent], to_square), false, false, false));
             Utils::popLastBit(moves);
         }
         Utils::popLastBit(rooks);
@@ -586,7 +590,7 @@ void Board::getLegalMoves() const
         while (moves)
         {
             int to_square = Utils::bitScan(moves);
-            std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+            moves_vec.push_back(Move(from_square, to_square, QUEEN, 0, Utils::getBit(_occupancies[opponent], to_square), false, false, false));
             Utils::popLastBit(moves);
         }
         Utils::popLastBit(queens);
@@ -599,7 +603,9 @@ void Board::getLegalMoves() const
     while (moves)
     {
         int to_square = Utils::bitScan(moves);
-        std::cout << SQUARE_NAMES[from_square] << SQUARE_NAMES[to_square] << std::endl;
+        moves_vec.push_back(Move(from_square, to_square, KING, 0, Utils::getBit(_occupancies[opponent], to_square), false, false, false));
         Utils::popLastBit(moves);
     }
+
+    return moves_vec;
 }

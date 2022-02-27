@@ -5,6 +5,7 @@
 #include "tables.hpp"
 #include "magics.hpp"
 #include "board.hpp"
+#include "move.hpp"
 #include <algorithm>
 #include <cctype>
 #include <csignal>
@@ -122,7 +123,11 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "perf")
     {
-        board.getLegalMoves();
+        std::vector<Move> moves = board.moves();
+        for (auto move : moves)
+        {
+            std::cout << move;
+        }
     }
     else if (words[0] == "ascii")
     {

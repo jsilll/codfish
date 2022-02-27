@@ -3,6 +3,7 @@
 #include "defs.hpp"
 
 #include <iostream>
+#include <vector>
 
 constexpr int CASTLE_KING_WHITE = 1;
 constexpr int CASTLE_QUEEN_WHITE = 2;
@@ -14,6 +15,8 @@ struct Piece
     PieceType type;
     PieceColor color;
 };
+
+class Move;
 
 class Board
 {
@@ -53,7 +56,7 @@ public:
     std::string getFen() const;
 
     bool isSquareAttacked(const int sq, const int attacker_side) const;
-    void getLegalMoves() const;
+    std::vector<Move> moves() const;
 
     void print(bool ascii = false) const;
 };
