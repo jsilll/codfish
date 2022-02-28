@@ -2,7 +2,12 @@
 
 std::ostream &operator<<(std::ostream &os, const Move &m)
 {
-    os << SQUARE_NAMES[m.getFromSquare()] << SQUARE_NAMES[m.getTargetSquare()] << "\n";
+    os << SQUARE_NAMES[m.getFromSquare()] << SQUARE_NAMES[m.getToSquare()];
+    if (m.getPromotedPiece())
+    {
+        os << PIECE_REPR[m.getPromotedPiece() + 6];
+    }
+    os << "\n";
     return os;
 }
 
@@ -31,7 +36,7 @@ int Move::getFromSquare() const
     return (_move_encoded & 0x3f);
 }
 
-int Move::getTargetSquare() const
+int Move::getToSquare() const
 {
     return ((_move_encoded & 0xfc0) >> 6);
 }

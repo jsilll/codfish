@@ -45,6 +45,7 @@ public:
                     std::string halfmove_clock,
                     std::string fullmove_number);
     int switchSideToMove();
+    void makeMove(Move move);
     bool rotate();
 
     int getSideToMove() const;

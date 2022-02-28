@@ -392,7 +392,6 @@ bool Board::isSquareAttacked(const int sq, const int attacker_side) const
     return false;
 }
 
-// TODO: maybe create a movegen.cpp
 std::vector<Move> Board::moves() const
 {
     std::vector<Move> moves_vec;
@@ -459,7 +458,7 @@ std::vector<Move> Board::moves() const
 
     // Pawn Moves
 
-    // Pawn Double Pushes TODO: implement generalized shift to remove turnery
+    // Pawn Double Pushes
     while (pawn_double_pushes)
     {
         int to_square = Utils::bitScan(pawn_double_pushes);
@@ -608,4 +607,21 @@ std::vector<Move> Board::moves() const
     }
 
     return moves_vec;
+}
+
+void Board::makeMove(Move move)
+{
+    Board backup = *this;
+
+    int from_square = move.getFromSquare();
+    int to_square = move.getToSquare();
+    int piece = move.getPiece();
+    int promoted_piece = move.getPromotedPiece();
+    bool capture = move.isCapture();
+    bool double_push = move.isDoublePush();
+    bool en_passant = move.isEnPassant();
+    bool castle = move.isCastle();
+
+    Utils::popBit(_pieces[_to_move][piece], from_square);
+    Utils::setBit(_pieces[_to_move][piece], to_square);
 }

@@ -20,7 +20,7 @@ public:
         bool castle);
 
     int getFromSquare() const;
-    int getTargetSquare() const;
+    int getToSquare() const;
     int getPiece() const;
     int getPromotedPiece() const;
     bool isCapture() const;
