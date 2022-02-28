@@ -28,5 +28,5 @@ public:
     bool isEnPassant() const;
     bool isCastle() const;
 
-    friend std::ostream &operator<<(std::ostream &os, const Move &m);
+    std::string getUCI();
 };

@@ -13,8 +13,14 @@ int getOpponent(int to_play)
     return (to_play + 1) % 2;
 }
 
-void Board::print(bool ascii) const
+void Board::print(bool ascii)
 {
+
+    if (!_squares_updated)
+    {
+        this->updateSquaresFromBB();
+    }
+
     int offset = ascii ? 0 : 13;
     std::cout << '\n';
     if (!_white_on_bottom)
@@ -90,8 +96,25 @@ void Board::setStartingPosition()
     this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
 }
 
+void Board::updateOccupancies()
+{
+    _occupancies[WHITE] = ZERO;
+    _occupancies[BLACK] = ZERO;
+    _occupancies[BOTH] = ZERO;
+
+    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    {
+        _occupancies[WHITE] |= _pieces[WHITE][piece_type];
+        _occupancies[BLACK] |= _pieces[BLACK][piece_type];
+    }
+
+    _occupancies[BOTH] = _occupancies[WHITE] | _occupancies[BLACK];
+}
+
 void Board::updateBBFromSquares()
 {
+    _squares_updated = true;
+
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
         _pieces[WHITE][piece_type] = ZERO;
@@ -106,13 +129,39 @@ void Board::updateBBFromSquares()
         }
     }
 
-    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    this->updateOccupancies();
+}
+
+void Board::updateSquaresFromBB()
+{
+    _squares_updated = true;
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
     {
-        _occupancies[WHITE] |= _pieces[WHITE][piece_type];
-        _occupancies[BLACK] |= _pieces[BLACK][piece_type];
+        _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
+        _square[sq].color = BLACK;
     }
 
-    _occupancies[BOTH] = _occupancies[WHITE] | _occupancies[BLACK];
+    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    {
+        U64 white_pieces = _pieces[WHITE][piece_type];
+        while (white_pieces)
+        {
+            int sq = Utils::bitScan(white_pieces);
+            _square[sq].type = piece_type;
+            _square[sq].color = WHITE;
+            Utils::popLastBit(white_pieces);
+        }
+
+        U64 black_pieces = _pieces[BLACK][piece_type];
+        while (black_pieces)
+        {
+            int sq = Utils::bitScan(black_pieces);
+            _square[sq].type = piece_type;
+            _square[sq].color = BLACK;
+            Utils::popLastBit(black_pieces);
+        }
+    }
 }
 
 void Board::setFromFen(std::string piece_placements,
@@ -392,7 +441,7 @@ bool Board::isSquareAttacked(const int sq, const int attacker_side) const
     return false;
 }
 
-std::vector<Move> Board::moves() const
+std::vector<Move> Board::getPseudoLegalMoves() const
 {
     std::vector<Move> moves_vec;
 
@@ -455,8 +504,6 @@ std::vector<Move> Board::moves() const
             }
         }
     }
-
-    // Pawn Moves
 
     // Pawn Double Pushes
     while (pawn_double_pushes)
@@ -524,6 +571,7 @@ std::vector<Move> Board::moves() const
     }
 
     // En-Passant Capture TODO: captured piece must not be absolutely pineed (defending king) (??)
+    // (fundamentally it's the same problem as in line 443)
     if (_en_passant_square != -1)
     {
         U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[opponent][_en_passant_square] & _pieces[_to_move][PAWN];
@@ -609,10 +657,28 @@ std::vector<Move> Board::moves() const
     return moves_vec;
 }
 
-void Board::makeMove(Move move)
+std::vector<std::string> Board::getLegalMoves()
+{
+    if (!_moves_computed)
+    {
+        _moves = this->getPseudoLegalMoves();
+        _moves_computed = true;
+    }
+    std::vector<std::string> moves_uci;
+    for (Move move : _moves)
+    {
+        moves_uci.push_back(move.getUCI());
+    }
+    return moves_uci;
+}
+
+bool Board::makeMove(Move move)
 {
     Board backup = *this;
 
+    _squares_updated = false;
+
+    // Parsing Move
     int from_square = move.getFromSquare();
     int to_square = move.getToSquare();
     int piece = move.getPiece();
@@ -623,5 +689,32 @@ void Board::makeMove(Move move)
     bool castle = move.isCastle();
 
     Utils::popBit(_pieces[_to_move][piece], from_square);
+    // TODO: if it's promotion set bit on different bitboard
     Utils::setBit(_pieces[_to_move][piece], to_square);
+    // TODO: if it's capture remove captured piece
+    this->updateOccupancies();
+    _to_move = getOpponent(_to_move);
+    _moves_computed = false;
+
+    // check if king square is attacked, if not return true, else return false
+
+    return true;
+}
+
+bool Board::makeMoveFromUCI(std::string move)
+{
+    if (!_moves_computed)
+    {
+        _moves = this->getPseudoLegalMoves(); // TODO: make a only legal moves filterer
+        _moves_computed = true;
+    }
+    for (auto move_candidate : _moves)
+    {
+        if (move_candidate.getUCI() == move)
+        {
+            this->makeMove(move_candidate);
+            return true;
+        }
+    }
+    return false;
 }

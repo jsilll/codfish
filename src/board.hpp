@@ -12,8 +12,8 @@ constexpr int CASTLE_QUEEN_BLACK = 8;
 
 struct Piece
 {
-    PieceType type;
-    PieceColor color;
+    int type;
+    int color;
 };
 
 class Move;
@@ -29,14 +29,23 @@ private:
     int _half_move_clock;
     int _full_move_number;
 
+    bool _moves_computed;
+    std::vector<Move> _moves;
+
     bool _white_on_bottom;
+    bool _squares_updated;
     Piece _square[N_SQUARES];
 
+    void updateOccupancies();
+    void updateBBFromSquares();
+    void updateSquaresFromBB();
+
+    bool makeMove(Move move);
+    std::vector<Move> getPseudoLegalMoves() const;
+
 public:
-    // board.cpp
     Board();
     void clear();
-    void updateBBFromSquares();
     void setStartingPosition();
     void setFromFen(std::string piece_placements,
                     std::string active_color,
@@ -45,9 +54,9 @@ public:
                     std::string halfmove_clock,
                     std::string fullmove_number);
     int switchSideToMove();
-    void makeMove(Move move);
-    bool rotate();
+    bool makeMoveFromUCI(std::string move);
 
+    bool isSquareAttacked(const int sq, const int attacker_side) const;
     int getSideToMove() const;
     int getCastlingRights() const;
     int getEnPassantSquare() const;
@@ -55,9 +64,8 @@ public:
     int getFullMoveNumber() const;
     U64 getOccupiedSquares() const;
     std::string getFen() const;
+    std::vector<std::string> getLegalMoves();
 
-    bool isSquareAttacked(const int sq, const int attacker_side) const;
-    std::vector<Move> moves() const;
-
-    void print(bool ascii = false) const;
+    bool rotate();
+    void print(bool ascii = false);
 };

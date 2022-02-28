@@ -1,14 +1,13 @@
 #include "move.hpp"
 
-std::ostream &operator<<(std::ostream &os, const Move &m)
+std::string Move::getUCI()
 {
-    os << SQUARE_NAMES[m.getFromSquare()] << SQUARE_NAMES[m.getToSquare()];
-    if (m.getPromotedPiece())
+    std::string uci = std::string(SQUARE_NAMES[this->getFromSquare()]) + std::string(SQUARE_NAMES[this->getToSquare()]);
+    if (this->getPromotedPiece())
     {
-        os << PIECE_REPR[m.getPromotedPiece() + 6];
+        uci += std::string(PIECE_REPR[this->getPromotedPiece() + 6]);
     }
-    os << "\n";
-    return os;
+    return uci;
 }
 
 Move::Move(

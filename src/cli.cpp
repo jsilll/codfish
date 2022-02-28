@@ -107,12 +107,19 @@ bool parseCommand(std::string buf, Board &board)
     {
         Magics::generate();
     }
-    else if (words[0] == "perf")
+    else if (words[0] == "move")
     {
-        std::vector<Move> moves = board.moves();
-        for (auto move : board.moves())
+        if (!board.makeMoveFromUCI(words[1]))
         {
-            std::cout << move;
+            std::cout << "invalid move" << std::endl;
+        }
+    }
+    else if (words[0] == "moves")
+    {
+        std::vector<std::string> moves = board.getLegalMoves();
+        for (auto move : moves)
+        {
+            std::cout << move << "\n";
         }
         std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
