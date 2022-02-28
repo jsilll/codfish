@@ -33,15 +33,15 @@ private:
     std::vector<Move> _moves;
 
     bool _white_on_bottom;
-    bool _squares_updated;
     Piece _square[N_SQUARES];
 
     void updateOccupancies();
     void updateBBFromSquares();
-    void updateSquaresFromBB();
 
-    bool makeMove(Move move);
+    void makeMove(Move move);
     std::vector<Move> getPseudoLegalMoves() const;
+    bool isLegal(Move move); // TODO: implement
+    void filterLegalMoves(); // TODO: implement
 
 public:
     Board();

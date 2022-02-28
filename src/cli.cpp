@@ -120,6 +120,10 @@ bool parseCommand(std::string buf, Board &board)
         for (auto move : moves)
         {
             std::cout << move << "\n";
+            Board board_copy = board;
+            board_copy.makeMoveFromUCI(move);
+            board_copy.print();
+            getchar();
         }
         std::cout << "Total number of moves: " << moves.size() << std::endl;
     }

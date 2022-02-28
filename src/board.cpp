@@ -7,6 +7,7 @@
 #include "move.hpp"
 #include <iomanip>
 #include <string>
+#include <algorithm>
 
 int getOpponent(int to_play)
 {
@@ -15,12 +16,6 @@ int getOpponent(int to_play)
 
 void Board::print(bool ascii)
 {
-
-    if (!_squares_updated)
-    {
-        this->updateSquaresFromBB();
-    }
-
     int offset = ascii ? 0 : 13;
     std::cout << '\n';
     if (!_white_on_bottom)
@@ -89,6 +84,8 @@ void Board::clear()
         _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
         _square[sq].color = BLACK;
     }
+
+    _moves_computed = false;
 }
 
 void Board::setStartingPosition()
@@ -113,8 +110,6 @@ void Board::updateOccupancies()
 
 void Board::updateBBFromSquares()
 {
-    _squares_updated = true;
-
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
         _pieces[WHITE][piece_type] = ZERO;
@@ -130,38 +125,6 @@ void Board::updateBBFromSquares()
     }
 
     this->updateOccupancies();
-}
-
-void Board::updateSquaresFromBB()
-{
-    _squares_updated = true;
-
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-        _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
-        _square[sq].color = BLACK;
-    }
-
-    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
-    {
-        U64 white_pieces = _pieces[WHITE][piece_type];
-        while (white_pieces)
-        {
-            int sq = Utils::bitScan(white_pieces);
-            _square[sq].type = piece_type;
-            _square[sq].color = WHITE;
-            Utils::popLastBit(white_pieces);
-        }
-
-        U64 black_pieces = _pieces[BLACK][piece_type];
-        while (black_pieces)
-        {
-            int sq = Utils::bitScan(black_pieces);
-            _square[sq].type = piece_type;
-            _square[sq].color = BLACK;
-            Utils::popLastBit(black_pieces);
-        }
-    }
 }
 
 void Board::setFromFen(std::string piece_placements,
@@ -299,6 +262,8 @@ void Board::setFromFen(std::string piece_placements,
     // Fullmove Number Parsing
     _full_move_number = std::stoi(full_move_number);
 
+    _moves_computed = false;
+
     this->updateBBFromSquares();
 }
 
@@ -408,6 +373,7 @@ int Board::getSideToMove() const
 
 int Board::switchSideToMove()
 {
+    _moves_computed = false;
     return _to_move = getOpponent(_to_move);
 }
 
@@ -664,6 +630,7 @@ std::vector<std::string> Board::getLegalMoves()
         _moves = this->getPseudoLegalMoves();
         _moves_computed = true;
     }
+
     std::vector<std::string> moves_uci;
     for (Move move : _moves)
     {
@@ -672,33 +639,65 @@ std::vector<std::string> Board::getLegalMoves()
     return moves_uci;
 }
 
-bool Board::makeMove(Move move)
+void Board::makeMove(Move move)
 {
-    Board backup = *this;
+    Board board_backup = *this;
 
-    _squares_updated = false;
-
-    // Parsing Move
     int from_square = move.getFromSquare();
     int to_square = move.getToSquare();
     int piece = move.getPiece();
     int promoted_piece = move.getPromotedPiece();
-    bool capture = move.isCapture();
-    bool double_push = move.isDoublePush();
-    bool en_passant = move.isEnPassant();
-    bool castle = move.isCastle();
+    bool is_capture = move.isCapture();
+    bool is_double_push = move.isDoublePush();
+    bool is_en_passant = move.isEnPassant();
+    bool is_castle = move.isCastle();
 
     Utils::popBit(_pieces[_to_move][piece], from_square);
-    // TODO: if it's promotion set bit on different bitboard
-    Utils::setBit(_pieces[_to_move][piece], to_square);
-    // TODO: if it's capture remove captured piece
+    _square[from_square].type = EMPTY;
+    _square[from_square].color = BLACK;
+
+    if (is_capture)
+    {
+        int captured_piece_type = _square[to_square].type;
+        Utils::popBit(_pieces[getOpponent(_to_move)][captured_piece_type], to_square);
+    }
+
+    if (promoted_piece)
+    {
+        _square[to_square].type = promoted_piece;
+        Utils::setBit(_pieces[_to_move][promoted_piece], to_square);
+    }
+    else
+    {
+        _square[to_square].type = piece;
+        Utils::setBit(_pieces[_to_move][piece], to_square);
+    }
+    _square[to_square].color = _to_move;
+
+    if (is_castle)
+    {
+        int rook_from_square, rook_to_square;
+        if (to_square - from_square > 0) // TODO: improve this if with a mapping??
+        {
+            rook_from_square = _to_move == WHITE ? H1 : Utils::mirrorRank(H1);
+            rook_to_square = _to_move == WHITE ? F1 : Utils::mirrorRank(F1);
+        }
+        else
+        {
+            rook_from_square = _to_move == WHITE ? A1 : Utils::mirrorRank(A1);
+            rook_to_square = _to_move == WHITE ? D1 : Utils::mirrorRank(D1);
+        }
+        _square[rook_from_square].type = EMPTY;
+        _square[rook_from_square].color = BLACK;
+        _square[rook_to_square].type = ROOK;
+        _square[rook_to_square].color = _to_move;
+        Utils::popBit(_pieces[_to_move][ROOK], rook_from_square);
+        Utils::setBit(_pieces[_to_move][ROOK], rook_to_square);
+    }
+
     this->updateOccupancies();
     _to_move = getOpponent(_to_move);
     _moves_computed = false;
-
-    // check if king square is attacked, if not return true, else return false
-
-    return true;
 }
 
 bool Board::makeMoveFromUCI(std::string move)
