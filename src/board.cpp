@@ -84,8 +84,6 @@ void Board::clear()
         _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
         _square[sq].color = BLACK;
     }
-
-    _moves_computed = false;
 }
 
 void Board::setStartingPosition()
@@ -262,8 +260,6 @@ void Board::setFromFen(std::string piece_placements,
     // Fullmove Number Parsing
     _full_move_number = std::stoi(full_move_number);
 
-    _moves_computed = false;
-
     this->updateBBFromSquares();
 }
 
@@ -373,7 +369,6 @@ int Board::getSideToMove() const
 
 int Board::switchSideToMove()
 {
-    _moves_computed = false;
     return _to_move = getOpponent(_to_move);
 }
 
@@ -625,21 +620,19 @@ std::vector<Move> Board::getPseudoLegalMoves() const
 
 std::vector<std::string> Board::getLegalMoves()
 {
-    if (!_moves_computed)
-    {
-        _moves = this->getPseudoLegalMoves();
-        _moves_computed = true;
-    }
-
     std::vector<std::string> moves_uci;
-    for (Move move : _moves)
+    for (Move move : this->getPseudoLegalMoves())
     {
-        moves_uci.push_back(move.getUCI());
+        Board board_copy = *this;
+        if (board_copy.makeMoveFromUCI(move.getUCI()))
+        {
+            moves_uci.push_back(move.getUCI());
+        }
     }
     return moves_uci;
 }
 
-void Board::makeMove(Move move)
+bool Board::makeMove(Move move)
 {
     Board board_backup = *this;
 
@@ -697,21 +690,17 @@ void Board::makeMove(Move move)
 
     this->updateOccupancies();
     _to_move = getOpponent(_to_move);
-    _moves_computed = false;
+
+    // TODO: test for king check, return true if no checks
+    return true;
 }
 
 bool Board::makeMoveFromUCI(std::string move)
 {
-    if (!_moves_computed)
+    for (auto move_candidate : this->getPseudoLegalMoves())
     {
-        _moves = this->getPseudoLegalMoves(); // TODO: make a only legal moves filterer
-        _moves_computed = true;
-    }
-    for (auto move_candidate : _moves)
-    {
-        if (move_candidate.getUCI() == move)
+        if (move_candidate.getUCI() == move && this->makeMoveFromUCI(move))
         {
-            this->makeMove(move_candidate);
             return true;
         }
     }

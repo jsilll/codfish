@@ -29,22 +29,18 @@ private:
     int _half_move_clock;
     int _full_move_number;
 
-    bool _moves_computed;
-    std::vector<Move> _moves;
-
     bool _white_on_bottom;
     Piece _square[N_SQUARES];
 
     void updateOccupancies();
     void updateBBFromSquares();
 
-    void makeMove(Move move);
+    bool makeMove(Move move);
     std::vector<Move> getPseudoLegalMoves() const;
-    bool isLegal(Move move); // TODO: implement
-    void filterLegalMoves(); // TODO: implement
 
 public:
     Board();
+    // TODO: implement deep copy
     void clear();
     void setStartingPosition();
     void setFromFen(std::string piece_placements,
