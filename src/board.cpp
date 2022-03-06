@@ -5,6 +5,7 @@
 #include "tables.hpp"
 #include "magics.hpp"
 #include "move.hpp"
+#include <cstring>
 #include <iomanip>
 #include <string>
 #include <algorithm>
@@ -57,6 +58,21 @@ void Board::print(bool ascii)
 Board::Board()
 {
     this->setStartingPosition();
+}
+
+Board::Board(const Board &board)
+{
+    memcpy(_pieces, board._pieces, sizeof(_pieces));
+    memcpy(_occupancies, board._occupancies, sizeof(_occupancies));
+
+    _to_move = board._to_move;
+    _castling_rights = board._castling_rights;
+    _en_passant_square = board._en_passant_square;
+    _half_move_clock = board._half_move_clock;
+    _full_move_number = board._full_move_number;
+
+    _white_on_bottom = board._white_on_bottom;
+    memcpy(_square, board._square, sizeof(_square));
 }
 
 void Board::clear()
@@ -618,7 +634,7 @@ std::vector<Move> Board::getPseudoLegalMoves() const
     return moves_vec;
 }
 
-std::vector<std::string> Board::getLegalMoves()
+std::vector<std::string> Board::getLegalMovesUCI()
 {
     std::vector<std::string> moves_uci;
     for (Move move : this->getPseudoLegalMoves())
@@ -649,7 +665,15 @@ bool Board::makeMove(Move move)
     _square[from_square].type = EMPTY;
     _square[from_square].color = BLACK;
 
-    if (is_capture)
+    if (is_en_passant)
+    {
+        int captured_piece_square = to_square + 8 * (_to_move - 1);
+        _square[captured_piece_square].type = EMPTY;
+        _square[captured_piece_square].color = BLACK;
+        Utils::popBit(_pieces[getOpponent(_to_move)][PAWN], captured_piece_square);
+        Utils::printBB(_pieces[getOpponent(_to_move)][PAWN]);
+    }
+    else if (is_capture)
     {
         int captured_piece_type = _square[to_square].type;
         Utils::popBit(_pieces[getOpponent(_to_move)][captured_piece_type], to_square);
@@ -691,7 +715,12 @@ bool Board::makeMove(Move move)
     this->updateOccupancies();
     _to_move = getOpponent(_to_move);
 
-    // TODO: test for king check, return true if no checks
+    if (this->isSquareAttacked(Utils::bitScan(_pieces[getOpponent(_to_move)][KING]), _to_move))
+    {
+        *this = board_backup;
+        return false;
+    }
+
     return true;
 }
 
@@ -699,7 +728,7 @@ bool Board::makeMoveFromUCI(std::string move)
 {
     for (auto move_candidate : this->getPseudoLegalMoves())
     {
-        if (move_candidate.getUCI() == move && this->makeMoveFromUCI(move))
+        if (move_candidate.getUCI() == move && this->makeMove(move_candidate))
         {
             return true;
         }

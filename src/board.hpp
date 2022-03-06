@@ -40,6 +40,7 @@ private:
 
 public:
     Board();
+    Board(const Board &board);
     // TODO: implement deep copy
     void clear();
     void setStartingPosition();
@@ -60,7 +61,7 @@ public:
     int getFullMoveNumber() const;
     U64 getOccupiedSquares() const;
     std::string getFen() const;
-    std::vector<std::string> getLegalMoves();
+    std::vector<std::string> getLegalMovesUCI();
 
     bool rotate();
     void print(bool ascii = false);

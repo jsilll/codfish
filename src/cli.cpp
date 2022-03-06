@@ -116,14 +116,14 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "moves")
     {
-        std::vector<std::string> moves = board.getLegalMoves();
+        std::vector<std::string> moves = board.getLegalMovesUCI();
         for (auto move : moves)
         {
             std::cout << move << "\n";
-            Board board_copy = board;
-            board_copy.makeMoveFromUCI(move);
-            board_copy.print();
-            getchar();
+            // Board board_copy = board;
+            // board_copy.makeMoveFromUCI(move);
+            // board_copy.print();
+            // getchar();
         }
         std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
