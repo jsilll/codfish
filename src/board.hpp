@@ -35,9 +35,6 @@ private:
     void updateOccupancies();
     void updateBBFromSquares();
 
-    bool makeMove(Move move);
-    std::vector<Move> getPseudoLegalMoves() const;
-
 public:
     Board();
     Board(const Board &board);
@@ -51,6 +48,7 @@ public:
                     std::string halfmove_clock,
                     std::string fullmove_number);
     int switchSideToMove();
+    bool makeMove(Move move);
     bool makeMoveFromUCI(std::string move);
 
     bool isSquareAttacked(const int sq, const int attacker_side) const;
@@ -61,6 +59,7 @@ public:
     int getFullMoveNumber() const;
     U64 getOccupiedSquares() const;
     std::string getFen() const;
+    std::vector<Move> getPseudoLegalMoves() const;
     std::vector<std::string> getLegalMovesUCI();
 
     bool rotate();

@@ -18,6 +18,7 @@
 #include <vector>
 #include <iterator>
 #include <regex>
+#include <chrono>
 
 char *COMMAND{};
 bool ASCII{};
@@ -26,7 +27,7 @@ bool parseCommand(std::string buf, Board &board);
 void helpCommand();
 void infoCommand(const Board &board);
 void movesCommand(Board &board);
-void perftCommand(Board &board);
+void perftCommand(Board &board, int depth);
 std::vector<std::string> splitString(std::string &str);
 
 void Cli::init()
@@ -130,7 +131,15 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "perft")
     {
-        perftCommand(board);
+        int depth = std::stoi(words[1]);
+        if (depth >= 0)
+        {
+            perftCommand(board, depth);
+        }
+        else
+        {
+            std::cout << "invalid depth value." << std::endl;
+        }
     }
     else
     {
@@ -215,4 +224,38 @@ void movesCommand(Board &board)
         getchar();
     }
     std::cout << "Total number of moves: " << moves.size() << std::endl;
+}
+
+long PERFT_NODES_COUNT{}; // TODO: static ?
+void perft(Board &board, int depth)
+{
+    if (depth == 0)
+    {
+        PERFT_NODES_COUNT++;
+        return;
+    }
+
+    Board backup = board;
+    for (auto move : board.getPseudoLegalMoves())
+    {
+        if (board.makeMove(move))
+        {
+            perft(backup, depth - 1);
+            board = backup;
+        }
+    }
+}
+
+void perftCommand(Board &board, int depth)
+{
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    perft(board, depth);
+    std::cout << "Found " << PERFT_NODES_COUNT << " nodes." << std::endl;
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+    std::cout << "Finished computation at " << std::ctime(&end_time);
+    std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+    PERFT_NODES_COUNT = 0;
 }
