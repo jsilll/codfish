@@ -667,11 +667,10 @@ bool Board::makeMove(Move move)
 
     if (is_en_passant)
     {
-        int captured_piece_square = to_square + 8 * (_to_move - 1);
+        int captured_piece_square = to_square + 8 * (((_to_move + 1) * 2) - 3);
         _square[captured_piece_square].type = EMPTY;
         _square[captured_piece_square].color = BLACK;
         Utils::popBit(_pieces[getOpponent(_to_move)][PAWN], captured_piece_square);
-        Utils::printBB(_pieces[getOpponent(_to_move)][PAWN]);
     }
     else if (is_capture)
     {
