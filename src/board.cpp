@@ -650,6 +650,20 @@ std::vector<std::string> Board::getLegalMovesUCI()
 
 bool Board::makeMove(Move move)
 {
+
+    // clang-format off
+    constexpr int castling_rights[64] = {
+        14, 15, 15, 15, 12, 15, 15, 13,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        15, 15, 15, 15, 15, 15, 15, 15,
+        11, 15, 15, 15, 3, 15, 15, 7
+    };
+    // clang-format on
+
     Board board_backup = *this;
 
     int from_square = move.getFromSquare();
@@ -690,16 +704,18 @@ bool Board::makeMove(Move move)
     }
     _square[to_square].color = _to_move;
 
-    if (is_castle)
+    if (is_castle) // move corresponding rook piece
     {
         int rook_from_square, rook_to_square;
-        if (to_square - from_square > 0) // TODO: improve this if with a mapping??
+        if (to_square - from_square > 0)
         {
+            // King Side Caslting
             rook_from_square = _to_move == WHITE ? H1 : Utils::mirrorRank(H1);
             rook_to_square = _to_move == WHITE ? F1 : Utils::mirrorRank(F1);
         }
         else
         {
+            // Queen Side Castling
             rook_from_square = _to_move == WHITE ? A1 : Utils::mirrorRank(A1);
             rook_to_square = _to_move == WHITE ? D1 : Utils::mirrorRank(D1);
         }
@@ -709,10 +725,13 @@ bool Board::makeMove(Move move)
         _square[rook_to_square].color = _to_move;
         Utils::popBit(_pieces[_to_move][ROOK], rook_from_square);
         Utils::setBit(_pieces[_to_move][ROOK], rook_to_square);
-    }
+    } // TODO: updating castling rights
 
-    this->updateOccupancies();
+    _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;
+    _castling_rights &= castling_rights[from_square];
+    _castling_rights &= castling_rights[to_square];
     _to_move = getOpponent(_to_move);
+    this->updateOccupancies();
 
     if (this->isSquareAttacked(Utils::bitScan(_pieces[getOpponent(_to_move)][KING]), _to_move))
     {
