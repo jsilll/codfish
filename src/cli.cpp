@@ -25,6 +25,8 @@ bool ASCII{};
 bool parseCommand(std::string buf, Board &board);
 void helpCommand();
 void infoCommand(const Board &board);
+void movesCommand(Board &board);
+void perftCommand(Board &board);
 std::vector<std::string> splitString(std::string &str);
 
 void Cli::init()
@@ -116,16 +118,7 @@ bool parseCommand(std::string buf, Board &board)
     }
     else if (words[0] == "moves")
     {
-        std::vector<std::string> moves = board.getLegalMovesUCI();
-        for (auto move : moves)
-        {
-            std::cout << move << "\n";
-            // Board board_copy = board;
-            // board_copy.makeMoveFromUCI(move);
-            // board_copy.print();
-            // getchar();
-        }
-        std::cout << "Total number of moves: " << moves.size() << std::endl;
+        movesCommand(board);
     }
     else if (words[0] == "ascii")
     {
@@ -134,6 +127,10 @@ bool parseCommand(std::string buf, Board &board)
     else if (words[0] == "exit")
     {
         return false;
+    }
+    else if (words[0] == "perft")
+    {
+        perftCommand(board);
     }
     else
     {
@@ -204,4 +201,18 @@ std::vector<std::string> splitString(std::string &text)
          std::istream_iterator<std::string>(),
          std::back_inserter(words));
     return words;
+}
+
+void movesCommand(Board &board)
+{
+    std::vector<std::string> moves = board.getLegalMovesUCI();
+    for (auto move : moves)
+    {
+        std::cout << move << "\n";
+        Board board_copy = board;
+        board_copy.makeMoveFromUCI(move);
+        board_copy.print();
+        getchar();
+    }
+    std::cout << "Total number of moves: " << moves.size() << std::endl;
 }

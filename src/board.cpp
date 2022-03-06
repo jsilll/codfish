@@ -10,9 +10,9 @@
 #include <string>
 #include <algorithm>
 
-int getOpponent(int to_play)
+inline int getOpponent(int to_play)
 {
-    return (to_play + 1) % 2;
+    return to_play ^ 1;
 }
 
 void Board::print(bool ascii)
@@ -116,10 +116,15 @@ void Board::updateOccupancies()
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
         _occupancies[WHITE] |= _pieces[WHITE][piece_type];
+    }
+
+    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    {
         _occupancies[BLACK] |= _pieces[BLACK][piece_type];
     }
 
-    _occupancies[BOTH] = _occupancies[WHITE] | _occupancies[BLACK];
+    _occupancies[BOTH] |= _occupancies[WHITE];
+    _occupancies[BOTH] |= _occupancies[BLACK];
 }
 
 void Board::updateBBFromSquares()
