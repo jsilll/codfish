@@ -3,16 +3,15 @@
 #include "tables.hpp"
 #include "cli.hpp"
 
-int main(int argc, char const *argv[])
-{
-    Magics::init();
-    Tables::init();
+int main(int argc, char const *argv[]) {
+  Magics::init();
+  Tables::init();
 
-    std::cout << "Chess Engine Initialized" << std::endl;
+  std::cout << "Chess Engine Initialized" << std::endl;
 
-    Cli::init();
-    // UCI::init();
-    // Lichess::init(); ??
+  Cli::init();
+  // UCI::init();
+  // Lichess::init(); ??
 
-    return 0;
+  return 0;
 }

@@ -1,7 +1,4 @@
 #include "uci.hpp"
 
-#include <iostream>
-
-void UCI::init()
-{
+void UCI::init() {
 }
