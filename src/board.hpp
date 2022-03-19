@@ -10,15 +10,17 @@ constexpr int CASTLE_QUEEN_WHITE = 2;
 constexpr int CASTLE_KING_BLACK = 4;
 constexpr int CASTLE_QUEEN_BLACK = 8;
 
-struct Piece {
+struct Piece
+{
   int type;
   int color;
 };
 
 class Move;
 
-class Board {
- private:
+class Board
+{
+private:
   U64 _pieces[BOTH][EMPTY];
   U64 _occupancies[BOTH + 1];
   int _to_move;
@@ -33,7 +35,7 @@ class Board {
   void updateOccupancies();
   void updateBBFromSquares();
 
- public:
+public:
   Board();
   Board(const Board &board);
   // TODO: implement deep copy

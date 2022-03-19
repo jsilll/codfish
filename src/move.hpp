@@ -3,11 +3,12 @@
 #include <iostream>
 #include <string>
 
-class Move {
- private:
+class Move
+{
+private:
   int _move_encoded;
 
- public:
+public:
   Move(
       int source_square,
       int target_square,

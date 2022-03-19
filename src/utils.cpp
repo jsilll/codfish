@@ -16,7 +16,9 @@ U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask) {
   for (int bit = 0; bit < bits_in_mask; bit++) {
     int lsb_sq = Utils::bitScan(attack_mask);
     Utils::popBit(attack_mask, lsb_sq);
-    if (index & (1 << bit)) {
+    if (index & (1 << bit)) 
+    
+    {
       occupancy |= Tables::SQUARE_BB[lsb_sq];
     }
   }

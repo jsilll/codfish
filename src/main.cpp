@@ -3,7 +3,8 @@
 #include "tables.hpp"
 #include "cli.hpp"
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[])
+{
   Magics::init();
   Tables::init();
 
