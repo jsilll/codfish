@@ -35,6 +35,10 @@ std::vector<std::string> splitString(std::string &str);
 
 void Cli::init()
 {
+
+  Magics::init();
+  Tables::init();
+
   Board board = Board(); // TODO: make this global
 
   while (COMMAND = readline("> "))

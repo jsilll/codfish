@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace UCI
+namespace Uci
 {
     void init();
-} // namespace UCI
+} // namespace Uci
