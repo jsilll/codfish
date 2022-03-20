@@ -38,7 +38,7 @@ private:
 public:
   Board();
   Board(const Board &board);
-  // TODO: implement deep copy
+
   void clear();
   void setStartingPosition();
   void setFromFen(std::string piece_placements,
@@ -50,6 +50,9 @@ public:
   int switchSideToMove();
   bool makeMove(Move move);
   bool makeMoveFromUCI(std::string move);
+  std::vector<std::string> getLegalMovesUCI();
+  bool rotate();
+  void print(bool ascii = false);
 
   bool isSquareAttacked(const int sq, const int attacker_side) const;
   int getSideToMove() const;
@@ -60,8 +63,4 @@ public:
   U64 getOccupiedSquares() const;
   std::string getFen() const;
   std::vector<Move> getPseudoLegalMoves() const;
-  std::vector<std::string> getLegalMovesUCI();
-
-  bool rotate();
-  void print(bool ascii = false);
 };

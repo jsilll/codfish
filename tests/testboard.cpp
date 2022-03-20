@@ -5,14 +5,11 @@
 #include "../src/tables.hpp"
 #include "../src/board.hpp"
 
-TEST_CASE("Initial Board")
+TEST_CASE("Test Initial Board")
 {
   Magics::init();
   Tables::init();
   Board board = Board();
   REQUIRE(board.getSideToMove() == WHITE);
   REQUIRE(board.getLegalMovesUCI().size() == 20);
-  // SECTION("WIP")
-  // {
-  // }
 }
