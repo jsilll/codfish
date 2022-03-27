@@ -9,7 +9,8 @@ file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*
 
 add_executable(engine ${ENGINE_SRC})
 target_link_libraries(engine readline)
-set_target_properties(engine PROPERTIES COMPILE_FLAGS "-O3 -Wall -Wextra")
+set_target_properties(engine PROPERTIES COMPILE_FLAGS "-g -Wall -Wextra")
+# set_target_properties(engine PROPERTIES COMPILE_FLAGS "-O3 -Wall -Wextra")
 
 # Tests
 set(TEST_SRC ${ENGINE_SRC})
@@ -19,9 +20,7 @@ list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.hpp)
 list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
 list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.hpp)
 
-add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp ${TEST_SRC})
-add_executable(test_movegen ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_movegen.cpp ${TEST_SRC})
+add_executable(tables_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/tables_tests.cpp ${TEST_SRC})
 
 enable_testing()
-add_test(NAME test_board COMMAND test_board)
-add_test(NAME test_movegen COMMAND test_movegen)
+add_test(NAME tables_tests COMMAND tables_tests)

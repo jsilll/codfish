@@ -510,7 +510,7 @@ std::vector<Move> Board::getPseudoLegalMoves() const
     Utils::popLastBit(pawns_can_capture_no_promo);
   }
 
-  // En-Passant Captur
+  // En-Passant Capture
   if (_en_passant_square != -1)
   {
     U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[opponent][_en_passant_square] & _pieces[_to_move][PAWN];
