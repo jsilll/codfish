@@ -21,13 +21,14 @@ class Move;
 class Board
 {
 private:
-  U64 _pieces[BOTH][EMPTY];
-  U64 _occupancies[BOTH + 1];
   int _to_move;
   int _castling_rights;
   int _en_passant_square;
   int _half_move_clock;
   int _full_move_number;
+
+  U64 _pieces[BOTH][EMPTY];
+  U64 _occupancies[BOTH + 1];
 
   bool _white_on_bottom;
   Piece _square[N_SQUARES];
@@ -39,6 +40,20 @@ public:
   Board();
   Board(const Board &board);
 
+  // Getters
+  U64 getPieces(int color, int type) const;
+  U64 getOccupancies(int color) const;
+
+  int getSideToMove() const;
+  int getCastlingRights() const;
+  int getEnPassantSquare() const;
+  int getHalfMoveClock() const;
+  int getFullMoveNumber() const;
+  bool isSquareAttacked(const int sq, const int attacker_side) const;
+
+  std::string getFen() const;
+
+  // Modififiers
   void clear();
   void setStartingPosition();
   void setFromFen(std::string piece_placements,
@@ -49,18 +64,8 @@ public:
                   std::string fullmove_number);
   int switchSideToMove();
   bool makeMove(Move move);
-  bool makeMoveFromUCI(std::string move);
-  std::vector<std::string> getLegalMovesUCI();
-  bool rotate();
-  void print(bool ascii = false);
 
-  bool isSquareAttacked(const int sq, const int attacker_side) const;
-  int getSideToMove() const;
-  int getCastlingRights() const;
-  int getEnPassantSquare() const;
-  int getHalfMoveClock() const;
-  int getFullMoveNumber() const;
-  U64 getOccupiedSquares() const;
-  std::string getFen() const;
-  std::vector<Move> getPseudoLegalMoves() const;
+  // Display
+  void display(bool ascii = false) const;
+  bool rotateDisplay();
 };

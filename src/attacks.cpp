@@ -3,7 +3,6 @@
 #include "utils.hpp"
 #include "tables.hpp"
 
-// TODO: implement with generalized shift
 U64 Attacks::maskWhitePawnSinglePushes(U64 wpawns, U64 empty)
 {
   return Utils::nortOne(wpawns) & empty;

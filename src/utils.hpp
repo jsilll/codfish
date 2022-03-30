@@ -10,6 +10,8 @@ namespace Utils
   inline int getRank(const int sq) { return sq >> 3; }
   inline int mirrorRank(int sq) { return Utils::getSquare(7 - Utils::getRank(sq), Utils::getFile(sq)); }
 
+  inline int getOpponent(int to_move) { return to_move ^ 1; }
+
   inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
   inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }
   inline void popLastBit(U64 &bb) { bb &= bb - 1; }

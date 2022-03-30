@@ -11,14 +11,14 @@ typedef enum
 
 typedef struct
 {
-  InterfaceMode engine_mode;
+  InterfaceMode interface;
 } ExecOptions;
 
 ExecOptions parseOptions(int argc, const char *argv[]);
 
 int main(int argc, char const *argv[])
 {
-  switch (parseOptions(argc, argv).engine_mode)
+  switch (parseOptions(argc, argv).interface)
   {
   case CLI:
     std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
@@ -44,11 +44,11 @@ ExecOptions parseOptions(int argc, const char *argv[])
     std::string option = std::string(argv[i]);
     if (option == "--cli")
     {
-      options.engine_mode = CLI;
+      options.interface = CLI;
     }
     else if (option == "--uci")
     {
-      options.engine_mode = UCI;
+      options.interface = UCI;
     }
     else
     {

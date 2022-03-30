@@ -10,7 +10,7 @@ file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*
 add_executable(engine ${ENGINE_SRC})
 target_link_libraries(engine readline)
 set_target_properties(engine PROPERTIES COMPILE_FLAGS "-g -Wall -Wextra")
-# set_target_properties(engine PROPERTIES COMPILE_FLAGS "-O3 -Wall -Wextra")
+# set_target_properties(engine PROPERTIES COMPILE_FLAGS "-Ofast -Wall -Wextra")
 
 # Tests
 set(TEST_SRC ${ENGINE_SRC})

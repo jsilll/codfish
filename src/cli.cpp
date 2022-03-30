@@ -11,12 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "board.hpp"
 #include "defs.hpp"
-#include "magics.hpp"
-#include "move.hpp"
-#include "tables.hpp"
 #include "utils.hpp"
+#include "magics.hpp"
+#include "tables.hpp"
+#include "move.hpp"
+#include "board.hpp"
+#include "movegen.hpp"
 
 char *COMMAND{};
 bool ASCII{};
@@ -31,17 +32,16 @@ void movesCommand(Board &board);
 
 void perftCommand(Board &board, int depth);
 
+void moveCommand(Board &board, std::string move_uci);
+
 std::vector<std::string> splitString(std::string &str);
 
 void Cli::init()
 {
-
   Magics::init();
   Tables::init();
-
   Board board = Board(); // TODO: make this global
-
-  while (COMMAND = readline("> "))
+  while ((COMMAND = readline("> ")) != nullptr)
   {
     if (*COMMAND)
     {
@@ -74,7 +74,7 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "display" || words[0] == "d")
   {
-    board.print(ASCII);
+    board.display(ASCII);
   }
   else if (words[0] == "info" || words[0] == "i")
   {
@@ -86,7 +86,7 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "rotate" || words[0] == "r")
   {
-    std::cout << (board.rotate() ? "white" : "black") << " is now on bottom"
+    std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom"
               << std::endl;
   }
   else if (words[0] == "readfen")
@@ -124,10 +124,7 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "move")
   {
-    if (!board.makeMoveFromUCI(words[1]))
-    {
-      std::cout << "invalid move" << std::endl;
-    }
+    moveCommand(board, words[1]);
   }
   else if (words[0] == "moves")
   {
@@ -144,14 +141,21 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "perft")
   {
-    int depth = std::stoi(words[1]);
-    if (depth >= 0)
+    if (words.size() == 2)
     {
-      perftCommand(board, depth);
+      int depth = std::stoi(words[1]);
+      if (depth >= 0)
+      {
+        perftCommand(board, depth);
+      }
+      else
+      {
+        std::cout << "invalid depth value." << std::endl;
+      }
     }
     else
     {
-      std::cout << "invalid depth value." << std::endl;
+      std::cout << "perft command takes exactly one argument" << std::endl;
     }
   }
   else
@@ -203,7 +207,7 @@ void infoCommand(const Board &board)
             << "\nFull Move Number             = " << splitted_fen[5];
 
   std::cout << "\nOccupied Squares:\n";
-  Utils::printBB(board.getOccupiedSquares());
+  Utils::printBB(board.getOccupancies(BOTH));
 
   U64 attacked_squares = ZERO;
   for (int sq = A1; sq < N_SQUARES;
@@ -221,7 +225,6 @@ void infoCommand(const Board &board)
 std::vector<std::string> splitString(std::string &text)
 {
   std::vector<std::string> words{};
-  char delimiter = ' ';
   std::istringstream iss(text);
   copy(std::istream_iterator<std::string>(iss),
        std::istream_iterator<std::string>(), std::back_inserter(words));
@@ -230,13 +233,13 @@ std::vector<std::string> splitString(std::string &text)
 
 void movesCommand(Board &board)
 {
-  std::vector<std::string> moves = board.getLegalMovesUCI();
+  std::vector<Move> moves = Movegen::generateLegalMoves(board);
   for (auto move : moves)
   {
-    std::cout << move << "\n";
+    std::cout << move.getUCI() << "\n";
     Board board_copy = board;
-    board_copy.makeMoveFromUCI(move);
-    board_copy.print();
+    board_copy.makeMove(move);
+    board_copy.display();
     getchar();
   }
   std::cout << "Total number of moves: " << moves.size() << std::endl;
@@ -251,12 +254,12 @@ long perft(Board &board, int depth)
 
   long nodes{};
   Board backup = board;
-  for (auto move : board.getPseudoLegalMoves())
+  for (auto move : Movegen::generatePseudoLegalMoves(board))
   {
     if (board.makeMove(move))
     {
       nodes += perft(backup, depth - 1);
-      board = backup;
+      board = backup; // TODO: fix this??
     }
   }
 
@@ -275,4 +278,17 @@ void perftCommand(Board &board, int depth)
   std::cout << "Finished computation at " << std::ctime(&end_time);
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
   std::cout << "Nodes Per Second: " << nodes / elapsed_seconds.count() << std::endl;
+}
+
+void moveCommand(Board &board, std::string move_uci)
+{
+  for (Move move : Movegen::generateLegalMoves(board))
+  {
+    if (move.getUCI() == move_uci)
+    {
+      board.makeMove(move);
+      return;
+    }
+  }
+  std::cout << "invalid move" << std::endl;
 }
