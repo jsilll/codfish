@@ -6,18 +6,18 @@
 #include "move.hpp"
 #include "board.hpp"
 
-void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, const int &opponent, const int &castle_b_sq, const int &castle_c_sq, const int &castle_d_sq, const int &castle_e_sq, const int &castle_f_sq, const int &castle_g_sq, const int &castle_queen_mask, const int &castle_king_mask);
-void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 &pawn_double_pushes, const int &pawn_double_push_offset);
-void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, const U64 &pawn_single_pushes, const int &pawn_single_push_offset);
-void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, const U64 &pawn_single_pushes, const int &pawn_single_push_offset);
-void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, const int &to_move, const U64 &to_move_pawns, const U64 &opponent_occupancies);
-void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, const int &to_move, const U64 &to_move_pawns, const U64 &opponent_occupancies);
-void generateEnPassantCapture(std::vector<Move> &moves_vec, const U64 &to_move_pawns, const int &en_passant_square, const int &opponent);
-void generateKnightMoves(std::vector<Move> &moves_vec, const U64 &to_move_knights, const U64 &to_move_occupancies, const U64 &opponent_occupancies);
-void generateBishopMoves(std::vector<Move> &moves_vec, const U64 &to_move_bishops, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies);
-void generateRookMoves(std::vector<Move> &moves_vec, const U64 &to_move_rooks, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies);
-void generateQueenMoves(std::vector<Move> &moves_vec, const U64 &to_move_queens, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies);
-void generateKingMoves(std::vector<Move> &moves_vec, const U64 &to_move_king, const U64 &to_move_occupancies, const U64 &opponent_occupancies);
+void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask);
+void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 pawn_double_pushes, int pawn_double_push_offset);
+void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, U64 pawn_single_pushes, int pawn_single_push_offset);
+void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, U64 pawn_single_pushes, int pawn_single_push_offset);
+void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, int to_move, U64 to_move_pawns, U64 opponent_occupancies);
+void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, int to_move, U64 to_move_pawns, U64 opponent_occupancies);
+void generateEnPassantCapture(std::vector<Move> &moves_vec, U64 to_move_pawns, int en_passant_square, int opponent);
+void generateKnightMoves(std::vector<Move> &moves_vec, U64 to_move_knights, U64 to_move_occupancies, U64 opponent_occupancies);
+void generateBishopMoves(std::vector<Move> &moves_vec, U64 to_move_bishops, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
+void generateRookMoves(std::vector<Move> &moves_vec, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
+void generateQueenMoves(std::vector<Move> &moves_vec, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
+void generateKingMoves(std::vector<Move> &moves_vec, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies);
 
 // TODO: improve correctness
 // TODO: improve performance 10M NPS -> ~ 20 NPS
@@ -104,7 +104,7 @@ std::vector<Move> Movegen::generateLegalMoves(const Board &board)
     return legal_moves;
 }
 
-void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, const int &opponent, const int &castle_b_sq, const int &castle_c_sq, const int &castle_d_sq, const int &castle_e_sq, const int &castle_f_sq, const int &castle_g_sq, const int &castle_queen_mask, const int &castle_king_mask)
+void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask)
 {
     // Castling Moves
     if (!board.isSquareAttacked(castle_e_sq, opponent))
@@ -128,7 +128,7 @@ void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, con
     }
 }
 
-void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 &pawn_double_pushes, const int &pawn_double_push_offset)
+void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 pawn_double_pushes, int pawn_double_push_offset)
 {
     // Pawn Double Pushes
     while (pawn_double_pushes)
@@ -140,7 +140,7 @@ void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 &pawn_double_pus
     }
 }
 
-void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, const U64 &pawn_single_pushes, const int &pawn_single_push_offset)
+void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, U64 pawn_single_pushes, int pawn_single_push_offset)
 {
     // Pawn Single Pushes With Promotion
     U64 pawn_single_pushes_promo = pawn_single_pushes & (Tables::MASK_RANK[0] | Tables::MASK_RANK[7]);
@@ -156,7 +156,7 @@ void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, const U64
     }
 }
 
-void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, const U64 &pawn_single_pushes, const int &pawn_single_push_offset)
+void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, U64 pawn_single_pushes, int pawn_single_push_offset)
 {
     // Pawn Single Pushes No Promotion
     U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
@@ -169,7 +169,7 @@ void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, const U64 &
     }
 }
 
-void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, const int &to_move, const U64 &to_move_pawns, const U64 &opponent_occupancies)
+void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
 {
     // Pawn Captures With Promotion
     U64 pawns_can_capture_with_promo = to_move_pawns & Tables::MASK_RANK[6 - (5 * to_move)];
@@ -190,7 +190,7 @@ void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, const int &
     }
 }
 
-void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, const int &to_move, const U64 &to_move_pawns, const U64 &opponent_occupancies)
+void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
 {
     // Pawns Captures No Promotion
     U64 pawns_can_capture_no_promo = to_move_pawns & Tables::MASK_CLEAR_RANK[6 - (5 * to_move)];
@@ -208,7 +208,7 @@ void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, const int &to
     }
 }
 
-void generateEnPassantCapture(std::vector<Move> &moves_vec, const U64 &to_move_pawns, const int &en_passant_square, const int &opponent)
+void generateEnPassantCapture(std::vector<Move> &moves_vec, U64 to_move_pawns, int en_passant_square, int opponent)
 {
     // En-Passant Capture
     if (en_passant_square != -1)
@@ -223,7 +223,7 @@ void generateEnPassantCapture(std::vector<Move> &moves_vec, const U64 &to_move_p
     }
 }
 
-void generateKnightMoves(std::vector<Move> &moves_vec, const U64 &to_move_knights, const U64 &to_move_occupancies, const U64 &opponent_occupancies)
+void generateKnightMoves(std::vector<Move> &moves_vec, U64 to_move_knights, U64 to_move_occupancies, U64 opponent_occupancies)
 {
     // Knight Moves
     U64 knights = to_move_knights;
@@ -241,7 +241,7 @@ void generateKnightMoves(std::vector<Move> &moves_vec, const U64 &to_move_knight
     }
 }
 
-void generateBishopMoves(std::vector<Move> &moves_vec, const U64 &to_move_bishops, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies)
+void generateBishopMoves(std::vector<Move> &moves_vec, U64 to_move_bishops, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
 {
     // Bishop Moves
     U64 bishops = to_move_bishops;
@@ -259,7 +259,7 @@ void generateBishopMoves(std::vector<Move> &moves_vec, const U64 &to_move_bishop
     }
 }
 
-void generateRookMoves(std::vector<Move> &moves_vec, const U64 &to_move_rooks, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies)
+void generateRookMoves(std::vector<Move> &moves_vec, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
 {
     // Rook Moves
     U64 rooks = to_move_rooks;
@@ -277,7 +277,7 @@ void generateRookMoves(std::vector<Move> &moves_vec, const U64 &to_move_rooks, c
     }
 }
 
-void generateQueenMoves(std::vector<Move> &moves_vec, const U64 &to_move_queens, const U64 &to_move_occupancies, const U64 &opponent_occupancies, const U64 &both_occupancies)
+void generateQueenMoves(std::vector<Move> &moves_vec, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
 {
     // Queen Moves
     U64 queens = to_move_queens;
@@ -295,7 +295,7 @@ void generateQueenMoves(std::vector<Move> &moves_vec, const U64 &to_move_queens,
     }
 }
 
-void generateKingMoves(std::vector<Move> &moves_vec, const U64 &to_move_king, const U64 &to_move_occupancies, const U64 &opponent_occupancies)
+void generateKingMoves(std::vector<Move> &moves_vec, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies)
 {
     // King Moves
     U64 king = to_move_king;
