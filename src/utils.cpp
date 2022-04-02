@@ -3,21 +3,27 @@
 #include "tables.hpp"
 #include <iostream>
 
-int Utils::bitScan(U64 bb) {
-  if (bb) {
+int Utils::bitScan(U64 bb)
+{
+  if (bb)
+  {
     return Utils::bitCount((bb & -bb) - 1);
-  } else {
+  }
+  else
+  {
     return -1;
   }
 }
 
-U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask) {
+U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask)
+{
   U64 occupancy = ZERO;
-  for (int bit = 0; bit < bits_in_mask; bit++) {
+  for (int bit = 0; bit < bits_in_mask; bit++)
+  {
     int lsb_sq = Utils::bitScan(attack_mask);
     Utils::popBit(attack_mask, lsb_sq);
-    if (index & (1 << bit)) 
-    
+    if (index & (1 << bit))
+
     {
       occupancy |= Tables::SQUARE_BB[lsb_sq];
     }
@@ -25,10 +31,13 @@ U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask) {
   return occupancy;
 }
 
-void Utils::printBB(U64 bb) {
-  for (int i = 7; i >= 0; i--) {
+void Utils::printBB(U64 bb)
+{
+  for (int i = 7; i >= 0; i--)
+  {
     std::cout << i + 1 << "  ";
-    for (int n = 0; n < 8; n++) {
+    for (int n = 0; n < 8; n++)
+    {
       std::cout << ((bb >> getSquare(i, n)) & ONE) << " ";
     }
     std::cout << "\n";
