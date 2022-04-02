@@ -463,7 +463,6 @@ bool Board::makeMove(Move move)
     Utils::popBit(_pieces[Utils::getOpponent(_to_move)][PAWN], captured_piece_square);
   }
   else if (is_capture)
-
   {
     int captured_piece_type = _square[to_square].type;
     Utils::popBit(_pieces[Utils::getOpponent(_to_move)][captured_piece_type], to_square);

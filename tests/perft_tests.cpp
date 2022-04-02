@@ -53,6 +53,11 @@ TEST_CASE("Starting Board")
     {
         REQUIRE(Movegen::perft(board, 5) == 4865609);
     }
+
+    SECTION("Perft 6")
+    {
+        REQUIRE(Movegen::perft(board, 6) == 119060324);
+    }
 }
 
 TEST_CASE("KiwiPete Board")
@@ -85,6 +90,11 @@ TEST_CASE("KiwiPete Board")
     SECTION("Perft 4")
     {
         REQUIRE(Movegen::perft(board, 4) == 4085603);
+    }
+
+    SECTION("Perft 5")
+    {
+        REQUIRE(Movegen::perft(board, 5) == 193690690);
     }
 }
 
@@ -119,6 +129,16 @@ TEST_CASE("Chess Programming Wiki Board 3")
     {
         REQUIRE(Movegen::perft(board, 4) == 43238);
     }
+
+    SECTION("Perft 5")
+    {
+        REQUIRE(Movegen::perft(board, 5) == 674624);
+    }
+
+    SECTION("Perft 6")
+    {
+        REQUIRE(Movegen::perft(board, 6) == 11030083);
+    }
 }
 
 TEST_CASE("Chess Programming Wiki Board 4")
@@ -151,6 +171,11 @@ TEST_CASE("Chess Programming Wiki Board 4")
     SECTION("Perft 4")
     {
         REQUIRE(Movegen::perft(board, 4) == 422333);
+    }
+
+    SECTION("Perft 5")
+    {
+        REQUIRE(Movegen::perft(board, 5) == 15833292);
     }
 }
 
@@ -185,6 +210,11 @@ TEST_CASE("Chess Programming Wiki Board 5")
     {
         REQUIRE(Movegen::perft(board, 4) == 2103487);
     }
+
+    SECTION("Perft 5")
+    {
+        REQUIRE(Movegen::perft(board, 5) == 89941194);
+    }
 }
 
 TEST_CASE("Chess Programming Wiki Board 6")
@@ -217,5 +247,10 @@ TEST_CASE("Chess Programming Wiki Board 6")
     SECTION("Perft 4")
     {
         REQUIRE(Movegen::perft(board, 4) == 3894594);
+    }
+
+    SECTION("Perft 5")
+    {
+        REQUIRE(Movegen::perft(board, 5) == 164075551);
     }
 }
