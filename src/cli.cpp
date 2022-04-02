@@ -286,14 +286,18 @@ void dperftCommand(Board &board, int depth)
   unsigned long long total_nodes = 0;
 
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-  for (Move move : Movegen::generateLegalMoves(board))
+
+  for (Move move : Movegen::generatePseudoLegalMoves(board))
   {
     Board backup = board;
-    backup.makeMove(move);
-    unsigned long long nodes = Movegen::perft(backup, depth - 1);
-    std::cout << move.getUCI() << ": " << nodes << std::endl;
-    total_nodes += nodes;
+    if (backup.makeMove(move))
+    {
+      unsigned long long nodes = Movegen::perft(backup, depth - 1);
+      std::cout << move.getUCI() << ": " << nodes << std::endl;
+      total_nodes += nodes;
+    }
   }
+
   std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = end - start;

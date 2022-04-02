@@ -510,7 +510,7 @@ bool Board::makeMove(Move move)
   _to_move = Utils::getOpponent(_to_move);
   this->updateOccupancies();
 
-  if (this->isSquareAttacked(Utils::bitScan(_pieces[Utils::getOpponent(_to_move)][KING]), _to_move))
+  if (this->isSquareAttacked(Utils::bitScanForward(_pieces[Utils::getOpponent(_to_move)][KING]), _to_move))
   {
     *this = board_backup;
     return false;

@@ -30,6 +30,7 @@ namespace Utils
   }
 
   int bitScan(U64 bb);
+  int bitScanForward(U64 bb);
 
   inline U64 soutOne(U64 bb) { return (bb >> 8); }
   inline U64 nortOne(U64 bb) { return (bb << 8); }

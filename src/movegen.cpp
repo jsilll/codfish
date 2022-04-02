@@ -31,11 +31,13 @@ unsigned long long Movegen::perft(const Board &board, int depth)
     }
 
     unsigned long long nodes = 0;
-    for (auto move : Movegen::generateLegalMoves(board))
+    for (auto move : Movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
-        backup.makeMove(move);
-        nodes += perft(backup, depth - 1);
+        if (backup.makeMove(move))
+        {
+            nodes += perft(backup, depth - 1);
+        }
     }
 
     return nodes;
@@ -155,7 +157,7 @@ void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 pawn_double_push
     // Pawn Double Pushes
     while (pawn_double_pushes)
     {
-        int to_square = Utils::bitScan(pawn_double_pushes);
+        int to_square = Utils::bitScanForward(pawn_double_pushes);
         int from_square = to_square + pawn_double_push_offset;
         moves_vec.push_back(Move(from_square, to_square, PAWN, 0, false, true, false, false));
         Utils::popLastBit(pawn_double_pushes);
@@ -168,7 +170,7 @@ void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, U64 pawn_
     U64 pawn_single_pushes_promo = pawn_single_pushes & (Tables::MASK_RANK[0] | Tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
-        int to_square = Utils::bitScan(pawn_single_pushes_promo);
+        int to_square = Utils::bitScanForward(pawn_single_pushes_promo);
         int from_square = to_square + pawn_single_push_offset;
         moves_vec.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
         moves_vec.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
@@ -184,7 +186,7 @@ void generatePawnSinglePushNoPromotion(std::vector<Move> &moves_vec, U64 pawn_si
     U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
     while (pawn_single_pushes_no_promo)
     {
-        int to_square = Utils::bitScan(pawn_single_pushes_no_promo);
+        int to_square = Utils::bitScanForward(pawn_single_pushes_no_promo);
         int from_square = to_square + pawn_single_push_offset;
         moves_vec.push_back(Move(from_square, to_square, PAWN, 0, false, false, false, false));
         Utils::popLastBit(pawn_single_pushes_no_promo);
@@ -197,11 +199,11 @@ void generatePawnCapturesWithPromotion(std::vector<Move> &moves_vec, int to_move
     U64 pawns_can_capture_with_promo = to_move_pawns & Tables::MASK_RANK[6 - (5 * to_move)];
     while (pawns_can_capture_with_promo)
     {
-        int from_square = Utils::bitScan(pawns_can_capture_with_promo);
+        int from_square = Utils::bitScanForward(pawns_can_capture_with_promo);
         U64 pawn_captures_promo = Tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
         while (pawn_captures_promo)
         {
-            int to_square = Utils::bitScan(pawn_captures_promo);
+            int to_square = Utils::bitScanForward(pawn_captures_promo);
             moves_vec.push_back(Move(from_square, to_square, PAWN, KNIGHT, true, false, false, false));
             moves_vec.push_back(Move(from_square, to_square, PAWN, BISHOP, true, false, false, false));
             moves_vec.push_back(Move(from_square, to_square, PAWN, ROOK, true, false, false, false));
@@ -218,11 +220,11 @@ void generatePawnCapturesNoPromotion(std::vector<Move> &moves_vec, int to_move, 
     U64 pawns_can_capture_no_promo = to_move_pawns & Tables::MASK_CLEAR_RANK[6 - (5 * to_move)];
     while (pawns_can_capture_no_promo)
     {
-        int from_square = Utils::bitScan(pawns_can_capture_no_promo);
+        int from_square = Utils::bitScanForward(pawns_can_capture_no_promo);
         U64 pawn_captures_no_promo = Tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
         while (pawn_captures_no_promo)
         {
-            int to_square = Utils::bitScan(pawn_captures_no_promo);
+            int to_square = Utils::bitScanForward(pawn_captures_no_promo);
             moves_vec.push_back(Move(from_square, to_square, PAWN, 0, true, false, false, false));
             Utils::popLastBit(pawn_captures_no_promo);
         }
@@ -238,7 +240,7 @@ void generateEnPassantCapture(std::vector<Move> &moves_vec, U64 to_move_pawns, i
         U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[opponent][en_passant_square] & to_move_pawns;
         while (pawns_can_en_passant)
         {
-            int from_square = Utils::bitScan(pawns_can_en_passant);
+            int from_square = Utils::bitScanForward(pawns_can_en_passant);
             moves_vec.push_back(Move(from_square, en_passant_square, PAWN, 0, true, false, true, false));
             Utils::popLastBit(pawns_can_en_passant);
         }
@@ -251,11 +253,11 @@ void generateKnightMoves(std::vector<Move> &moves_vec, U64 to_move_knights, U64 
     U64 knights = to_move_knights;
     while (knights)
     {
-        int from_square = Utils::bitScan(knights);
+        int from_square = Utils::bitScanForward(knights);
         U64 moves = Tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
         while (moves)
         {
-            int to_square = Utils::bitScan(moves);
+            int to_square = Utils::bitScanForward(moves);
             moves_vec.push_back(Move(from_square, to_square, KNIGHT, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
             Utils::popLastBit(moves);
         }
@@ -269,11 +271,11 @@ void generateBishopMoves(std::vector<Move> &moves_vec, U64 to_move_bishops, U64 
     U64 bishops = to_move_bishops;
     while (bishops)
     {
-        int from_square = Utils::bitScan(bishops);
+        int from_square = Utils::bitScanForward(bishops);
         U64 moves = Tables::getBishopAttacks(from_square, both_occupancies) & ~to_move_occupancies;
         while (moves)
         {
-            int to_square = Utils::bitScan(moves);
+            int to_square = Utils::bitScanForward(moves);
             moves_vec.push_back(Move(from_square, to_square, BISHOP, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
             Utils::popLastBit(moves);
         }
@@ -287,11 +289,11 @@ void generateRookMoves(std::vector<Move> &moves_vec, U64 to_move_rooks, U64 to_m
     U64 rooks = to_move_rooks;
     while (rooks)
     {
-        int from_square = Utils::bitScan(rooks);
+        int from_square = Utils::bitScanForward(rooks);
         U64 moves = Tables::getRookAttacks(from_square, both_occupancies) & ~to_move_occupancies;
         while (moves)
         {
-            int to_square = Utils::bitScan(moves);
+            int to_square = Utils::bitScanForward(moves);
             moves_vec.push_back(Move(from_square, to_square, ROOK, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
             Utils::popLastBit(moves);
         }
@@ -305,11 +307,11 @@ void generateQueenMoves(std::vector<Move> &moves_vec, U64 to_move_queens, U64 to
     U64 queens = to_move_queens;
     while (queens)
     {
-        int from_square = Utils::bitScan(queens);
+        int from_square = Utils::bitScanForward(queens);
         U64 moves = Tables::getQueenAttacks(from_square, both_occupancies) & ~to_move_occupancies;
         while (moves)
         {
-            int to_square = Utils::bitScan(moves);
+            int to_square = Utils::bitScanForward(moves);
             moves_vec.push_back(Move(from_square, to_square, QUEEN, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
             Utils::popLastBit(moves);
         }
@@ -321,11 +323,11 @@ void generateKingMoves(std::vector<Move> &moves_vec, U64 to_move_king, U64 to_mo
 {
     // King Moves
     U64 king = to_move_king;
-    int from_square = Utils::bitScan(king);
+    int from_square = Utils::bitScanForward(king);
     U64 moves = Tables::ATTACKS_KING[from_square] & ~to_move_occupancies;
     while (moves)
     {
-        int to_square = Utils::bitScan(moves);
+        int to_square = Utils::bitScanForward(moves);
         moves_vec.push_back(Move(from_square, to_square, KING, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
         Utils::popLastBit(moves);
     }
