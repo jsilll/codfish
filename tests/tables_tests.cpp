@@ -5,13 +5,43 @@
 #include "../src/tables.hpp"
 #include "../src/board.hpp"
 
+void setup()
+{
+
+    static bool init = false;
+
+    if (!init)
+    {
+        Magics::init();
+        Tables::init();
+        init = true;
+    }
+}
+
 // Test Pawn
 // Test King
 
+TEST_CASE("Test King Moves")
+{
+    setup();
+
+    SECTION("Corners")
+    {
+        REQUIRE(Tables::ATTACKS_KING[A1] == 0x302);
+        REQUIRE(Tables::ATTACKS_KING[H1] == 0xc040);
+        REQUIRE(Tables::ATTACKS_KING[A8] == 0x203000000000000);
+        REQUIRE(Tables::ATTACKS_KING[H8] == 0x40c0000000000000);
+    }
+
+    SECTION("Middle of the Board")
+    {
+        REQUIRE(Tables::ATTACKS_KING[D4] == 0x1c141c0000);
+    }
+}
+
 TEST_CASE("Test Knights Moves")
 {
-    Magics::init();
-    Tables::init();
+    setup();
 
     SECTION("Corners")
     {
