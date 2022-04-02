@@ -3,7 +3,8 @@
 #include "defs.hpp"
 
 #include <iostream>
-#include <vector>
+
+class Move;
 
 constexpr int CASTLE_KING_WHITE = 1;
 constexpr int CASTLE_QUEEN_WHITE = 2;
@@ -15,8 +16,6 @@ struct Piece
   int type;
   int color;
 };
-
-class Move;
 
 class Board
 {

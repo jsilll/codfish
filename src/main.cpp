@@ -1,7 +1,8 @@
-#include <iostream>
-#include <string>
 #include "cli.hpp"
 #include "uci.hpp"
+
+#include <iostream>
+#include <string>
 
 typedef enum
 {

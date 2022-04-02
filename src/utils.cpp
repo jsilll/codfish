@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include "tables.hpp"
+
 #include <iostream>
 
 int Utils::bitScan(U64 bb)
