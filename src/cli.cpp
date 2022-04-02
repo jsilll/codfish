@@ -32,6 +32,8 @@ void movesCommand(Board &board);
 
 void perftCommand(Board &board, int depth);
 
+void dperftCommand(Board &board, int depth);
+
 void moveCommand(Board &board, std::string move_uci);
 
 std::vector<std::string> splitString(std::string &str);
@@ -158,6 +160,25 @@ bool parseCommand(std::string buf, Board &board)
       std::cout << "perft command takes exactly one argument" << std::endl;
     }
   }
+  else if (words[0] == "dperft")
+  {
+    if (words.size() == 2)
+    {
+      int depth = std::stoi(words[1]);
+      if (depth >= 0)
+      {
+        dperftCommand(board, depth);
+      }
+      else
+      {
+        std::cout << "invalid depth value." << std::endl;
+      }
+    }
+    else
+    {
+      std::cout << "dperft command takes exactly one argument" << std::endl;
+    }
+  }
   else
   {
     std::cout << "unknown command, type 'help' for more the available commands"
@@ -185,8 +206,8 @@ void helpCommand()
       << "moves                 Show all legal moves\n"
       << "new                   Start new game\n"
       << "perf                  Benchmark a number of key functions\n"
-      << "perft n               Calculate raw number of nodes from here, depth "
-         "n \n"
+      << "perft n               Calculate raw number of nodes from here, depth n\n"
+      << "dperft n              Perft function, divided\n"
       << "r                     Rotate board \n"
       << "readfen fen           Reads FEN position\n"
       << "printfen              Print current position to FEN \n"
@@ -245,39 +266,43 @@ void movesCommand(Board &board)
   std::cout << "Total number of moves: " << moves.size() << std::endl;
 }
 
-long perft(Board &board, int depth)
-{
-  if (depth == 0)
-  {
-    return 1;
-  }
-
-  long nodes{};
-  Board backup = board;
-  for (auto move : Movegen::generatePseudoLegalMoves(board))
-  {
-    if (board.makeMove(move))
-    {
-      nodes += perft(backup, depth - 1);
-      board = backup; // TODO: fix this??
-    }
-  }
-
-  return nodes;
-}
-
 void perftCommand(Board &board, int depth)
 {
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  start = std::chrono::system_clock::now();
-  long nodes = perft(board, depth);
-  std::cout << "Found " << nodes << " nodes." << std::endl;
-  end = std::chrono::system_clock::now();
+  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+  unsigned long long nodes = Movegen::perft(board, depth);
+  std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+
   std::chrono::duration<double> elapsed_seconds = end - start;
   std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+  std::cout << "Found " << nodes << " nodes." << std::endl;
   std::cout << "Finished computation at " << std::ctime(&end_time);
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
   std::cout << "Nodes Per Second: " << nodes / elapsed_seconds.count() << std::endl;
+}
+
+void dperftCommand(Board &board, int depth)
+{
+  unsigned long long total_nodes = 0;
+
+  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+  for (Move move : Movegen::generateLegalMoves(board))
+  {
+    Board backup = board;
+    backup.makeMove(move);
+    unsigned long long nodes = Movegen::perft(backup, depth - 1);
+    std::cout << move.getUCI() << ": " << nodes << std::endl;
+    total_nodes += nodes;
+  }
+  std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+  std::cout << "Found " << total_nodes << " nodes." << std::endl;
+  std::cout << "Finished computation at " << std::ctime(&end_time);
+  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+  std::cout << "Nodes Per Second: " << total_nodes / elapsed_seconds.count() << std::endl;
 }
 
 void moveCommand(Board &board, std::string move_uci)

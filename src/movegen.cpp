@@ -6,6 +6,9 @@
 #include "move.hpp"
 #include "board.hpp"
 
+unsigned long long Movegen::perft(const Board &board, int depth);
+std::vector<Move> Movegen::generateLegalMoves(const Board &board);
+std::vector<Move> Movegen::generatePseudoLegalMoves(const Board &board);
 void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask);
 void generatePawnDoublePushes(std::vector<Move> &moves_vec, U64 pawn_double_pushes, int pawn_double_push_offset);
 void generatePawnSinglePushWithPromotion(std::vector<Move> &moves_vec, U64 pawn_single_pushes, int pawn_single_push_offset);
@@ -18,6 +21,25 @@ void generateBishopMoves(std::vector<Move> &moves_vec, U64 to_move_bishops, U64 
 void generateRookMoves(std::vector<Move> &moves_vec, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
 void generateQueenMoves(std::vector<Move> &moves_vec, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
 void generateKingMoves(std::vector<Move> &moves_vec, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies);
+
+// TODO: move this to perft.cpp / perft.hpp??
+unsigned long long Movegen::perft(const Board &board, int depth)
+{
+    if (depth == 0)
+    {
+        return 1;
+    }
+
+    unsigned long long nodes = 0;
+    for (auto move : Movegen::generateLegalMoves(board))
+    {
+        Board backup = board;
+        backup.makeMove(move);
+        nodes += perft(backup, depth - 1);
+    }
+
+    return nodes;
+}
 
 // TODO: improve correctness
 // TODO: improve performance 10M NPS -> ~ 20 NPS
