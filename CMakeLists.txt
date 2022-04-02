@@ -21,6 +21,8 @@ list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
 list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.hpp)
 
 add_executable(tables_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/tables_tests.cpp ${TEST_SRC})
+add_executable(perft_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/perft_tests.cpp ${TEST_SRC})
 
 enable_testing()
 add_test(NAME tables_tests COMMAND tables_tests)
+add_test(NAME perft_tests COMMAND perft_tests)

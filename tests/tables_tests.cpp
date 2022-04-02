@@ -7,7 +7,6 @@
 
 void setup()
 {
-
     static bool init = false;
 
     if (!init)
