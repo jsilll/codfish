@@ -226,13 +226,11 @@ void infoCommand(const Board &board)
             << "\nEn-passant Square            = " << splitted_fen[3]
             << "\nFifty Move Count             = " << splitted_fen[4]
             << "\nFull Move Number             = " << splitted_fen[5];
-
   std::cout << "\nOccupied Squares:\n";
   Utils::printBB(board.getOccupancies(BOTH));
 
   U64 attacked_squares = ZERO;
-  for (int sq = A1; sq < N_SQUARES;
-       sq++) // generating a BB for all the attacked squares
+  for (int sq = A1; sq < N_SQUARES; sq++) // generating a BB for all the attacked squares
   {
     if (board.isSquareAttacked(sq, board.getSideToMove()))
     {
@@ -290,7 +288,10 @@ void dperftCommand(Board &board, int depth)
   for (Move move : Movegen::generatePseudoLegalMoves(board))
   {
     Board backup = board;
-    if (backup.makeMove(move))
+    backup.makeMove(move);
+    int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
+    int attacker_side = backup.getSideToMove();
+    if (!backup.isSquareAttacked(king_sq, attacker_side))
     {
       unsigned long long nodes = Movegen::perft(backup, depth - 1);
       std::cout << move.getUCI() << ": " << nodes << std::endl;

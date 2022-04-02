@@ -425,7 +425,7 @@ int Board::switchSideToMove()
   return _to_move = Utils::getOpponent(_to_move);
 }
 
-bool Board::makeMove(Move move)
+void Board::makeMove(Move move)
 {
   // clang-format off
   constexpr int castling_rights[64] = {
@@ -439,8 +439,6 @@ bool Board::makeMove(Move move)
       11, 15, 15, 15, 3, 15, 15, 7
   };
   // clang-format on
-
-  Board board_backup = *this;
 
   int from_square = move.getFromSquare();
   int to_square = move.getToSquare();
@@ -508,12 +506,4 @@ bool Board::makeMove(Move move)
   _castling_rights &= castling_rights[to_square];
   _to_move = Utils::getOpponent(_to_move);
   this->updateOccupancies();
-
-  if (this->isSquareAttacked(Utils::bitScanForward(_pieces[Utils::getOpponent(_to_move)][KING]), _to_move))
-  {
-    *this = board_backup;
-    return false;
-  }
-
-  return true;
 }

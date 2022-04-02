@@ -34,7 +34,10 @@ unsigned long long Movegen::perft(const Board &board, int depth)
     for (auto move : Movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
-        if (backup.makeMove(move))
+        backup.makeMove(move);
+        int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
+        int attacker_side = backup.getSideToMove();
+        if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             nodes += perft(backup, depth - 1);
         }
@@ -119,8 +122,11 @@ std::vector<Move> Movegen::generateLegalMoves(const Board &board)
     std::vector<Move> legal_moves;
     for (Move move : Movegen::generatePseudoLegalMoves(board))
     {
-        Board board_copy = board;
-        if (board_copy.makeMove(move))
+        Board backup = board;
+        backup.makeMove(move);
+        int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
+        int attacker_side = backup.getSideToMove();
+        if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             legal_moves.push_back(move);
         }

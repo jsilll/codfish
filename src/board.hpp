@@ -56,14 +56,9 @@ public:
   // Modififiers
   void clear();
   void setStartingPosition();
-  void setFromFen(std::string piece_placements,
-                  std::string active_color,
-                  std::string castling_rights,
-                  std::string en_passant,
-                  std::string halfmove_clock,
-                  std::string fullmove_number);
+  void setFromFen(std::string piece_placements, std::string active_color, std::string castling_rights, std::string en_passant, std::string halfmove_clock, std::string fullmove_number);
   int switchSideToMove();
-  bool makeMove(Move move);
+  void makeMove(Move move);
 
   // Display
   void display(bool ascii = false) const;
