@@ -6,7 +6,6 @@
 #include "move.hpp"
 #include "board.hpp"
 
-unsigned long long Movegen::perft(const Board &board, int depth);
 std::vector<Move> Movegen::generateLegalMoves(const Board &board);
 std::vector<Move> Movegen::generatePseudoLegalMoves(const Board &board);
 void generateCastlingMoves(std::vector<Move> &moves_vec, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask);
@@ -21,30 +20,6 @@ void generateBishopMoves(std::vector<Move> &moves_vec, U64 to_move_bishops, U64 
 void generateRookMoves(std::vector<Move> &moves_vec, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
 void generateQueenMoves(std::vector<Move> &moves_vec, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
 void generateKingMoves(std::vector<Move> &moves_vec, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies);
-
-// TODO: move this to perft.cpp / perft.hpp??
-unsigned long long Movegen::perft(const Board &board, int depth)
-{
-    if (depth == 0)
-    {
-        return 1;
-    }
-
-    unsigned long long nodes = 0;
-    for (auto move : Movegen::generatePseudoLegalMoves(board))
-    {
-        Board backup = board;
-        backup.makeMove(move);
-        int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
-        {
-            nodes += perft(backup, depth - 1);
-        }
-    }
-
-    return nodes;
-}
 
 // TODO: improve correctness
 // TODO: improve performance 10M NPS -> ~ 20 NPS
@@ -62,7 +37,6 @@ std::vector<Move> Movegen::generatePseudoLegalMoves(const Board &board)
     U64 opponent_occupancies = board.getOccupancies(opponent);
     U64 both_occupancies = board.getOccupancies(BOTH);
 
-    // TODO: Improve this
     int castle_b_sq, castle_c_sq, castle_d_sq, castle_e_sq, castle_f_sq, castle_g_sq;
     int castle_king_mask, castle_queen_mask;
     int pawn_double_push_offset, pawn_single_push_offset;
@@ -100,7 +74,6 @@ std::vector<Move> Movegen::generatePseudoLegalMoves(const Board &board)
         pawn_single_pushes = Attacks::maskBlackPawnSinglePushes(to_move_pawns, ~both_occupancies);
     }
 
-    // TODO: Move ordering
     generatePawnCapturesWithPromotion(moves_vec, to_move, to_move_pawns, opponent_occupancies);
     generatePawnCapturesNoPromotion(moves_vec, to_move, to_move_pawns, opponent_occupancies);
     generateEnPassantCapture(moves_vec, to_move_pawns, board.getEnPassantSquare(), opponent);

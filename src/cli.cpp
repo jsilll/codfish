@@ -18,6 +18,7 @@
 #include "move.hpp"
 #include "board.hpp"
 #include "movegen.hpp"
+#include "perft.hpp"
 
 char *COMMAND{};
 bool ASCII{};
@@ -267,7 +268,7 @@ void movesCommand(Board &board)
 void perftCommand(Board &board, int depth)
 {
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-  unsigned long long nodes = Movegen::perft(board, depth);
+  unsigned long long nodes = Perft::perft(board, depth);
   std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = end - start;
@@ -293,7 +294,7 @@ void dperftCommand(Board &board, int depth)
     int attacker_side = backup.getSideToMove();
     if (!backup.isSquareAttacked(king_sq, attacker_side))
     {
-      unsigned long long nodes = Movegen::perft(backup, depth - 1);
+      unsigned long long nodes = Perft::perft(backup, depth - 1);
       std::cout << move.getUCI() << ": " << nodes << std::endl;
       total_nodes += nodes;
     }

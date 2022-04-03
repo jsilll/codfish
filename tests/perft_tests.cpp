@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "../src/defs.hpp"
+
 #include "../src/magics.hpp"
 #include "../src/tables.hpp"
 #include "../src/board.hpp"
-#include "../src/movegen.hpp"
+#include "../src/perft.hpp"
 
 void setup()
 {
@@ -26,37 +26,37 @@ TEST_CASE("Starting Board")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 20);
+        REQUIRE(Perft::perft(board, 1) == 20);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 400);
+        REQUIRE(Perft::perft(board, 2) == 400);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 8902);
+        REQUIRE(Perft::perft(board, 3) == 8902);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 197281);
+        REQUIRE(Perft::perft(board, 4) == 197281);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 4865609);
+        REQUIRE(Perft::perft(board, 5) == 4865609);
     }
 
     SECTION("Perft 6")
     {
-        REQUIRE(Movegen::perft(board, 6) == 119060324);
+        REQUIRE(Perft::perft(board, 6) == 119060324);
     }
 }
 
@@ -69,32 +69,32 @@ TEST_CASE("KiwiPete Board")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 48);
+        REQUIRE(Perft::perft(board, 1) == 48);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 2039);
+        REQUIRE(Perft::perft(board, 2) == 2039);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 97862);
+        REQUIRE(Perft::perft(board, 3) == 97862);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 4085603);
+        REQUIRE(Perft::perft(board, 4) == 4085603);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 193690690);
+        REQUIRE(Perft::perft(board, 5) == 193690690);
     }
 }
 
@@ -107,37 +107,37 @@ TEST_CASE("Chess Programming Wiki Board 3")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 14);
+        REQUIRE(Perft::perft(board, 1) == 14);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 191);
+        REQUIRE(Perft::perft(board, 2) == 191);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 2812);
+        REQUIRE(Perft::perft(board, 3) == 2812);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 43238);
+        REQUIRE(Perft::perft(board, 4) == 43238);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 674624);
+        REQUIRE(Perft::perft(board, 5) == 674624);
     }
 
     SECTION("Perft 6")
     {
-        REQUIRE(Movegen::perft(board, 6) == 11030083);
+        REQUIRE(Perft::perft(board, 6) == 11030083);
     }
 }
 
@@ -150,32 +150,32 @@ TEST_CASE("Chess Programming Wiki Board 4")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 6);
+        REQUIRE(Perft::perft(board, 1) == 6);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 264);
+        REQUIRE(Perft::perft(board, 2) == 264);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 9467);
+        REQUIRE(Perft::perft(board, 3) == 9467);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 422333);
+        REQUIRE(Perft::perft(board, 4) == 422333);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 15833292);
+        REQUIRE(Perft::perft(board, 5) == 15833292);
     }
 }
 
@@ -188,32 +188,32 @@ TEST_CASE("Chess Programming Wiki Board 5")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 44);
+        REQUIRE(Perft::perft(board, 1) == 44);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 1486);
+        REQUIRE(Perft::perft(board, 2) == 1486);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 62379);
+        REQUIRE(Perft::perft(board, 3) == 62379);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 2103487);
+        REQUIRE(Perft::perft(board, 4) == 2103487);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 89941194);
+        REQUIRE(Perft::perft(board, 5) == 89941194);
     }
 }
 
@@ -226,31 +226,31 @@ TEST_CASE("Chess Programming Wiki Board 6")
 
     SECTION("Perft 0")
     {
-        REQUIRE(Movegen::perft(board, 0) == 1);
+        REQUIRE(Perft::perft(board, 0) == 1);
     }
 
     SECTION("Perft 1")
     {
-        REQUIRE(Movegen::perft(board, 1) == 46);
+        REQUIRE(Perft::perft(board, 1) == 46);
     }
 
     SECTION("Perft 2")
     {
-        REQUIRE(Movegen::perft(board, 2) == 2079);
+        REQUIRE(Perft::perft(board, 2) == 2079);
     }
 
     SECTION("Perft 3")
     {
-        REQUIRE(Movegen::perft(board, 3) == 89890);
+        REQUIRE(Perft::perft(board, 3) == 89890);
     }
 
     SECTION("Perft 4")
     {
-        REQUIRE(Movegen::perft(board, 4) == 3894594);
+        REQUIRE(Perft::perft(board, 4) == 3894594);
     }
 
     SECTION("Perft 5")
     {
-        REQUIRE(Movegen::perft(board, 5) == 164075551);
+        REQUIRE(Perft::perft(board, 5) == 164075551);
     }
 }

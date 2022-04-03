@@ -8,14 +8,6 @@ class Board;
 namespace Movegen
 {
     /**
-     * @brief Perft Function
-     *
-     * @param depth
-     * @return long long
-     */
-    unsigned long long perft(const Board &board, int depth);
-
-    /**
      * @brief Generates all the pseudo-legal moves for a given board
      *
      * @param board
