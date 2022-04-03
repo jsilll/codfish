@@ -13,4 +13,4 @@ namespace Perft
      * @return long long
      */
     unsigned long long perft(const Board &board, int depth);
-}
+} // namespace Perft
