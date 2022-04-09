@@ -429,14 +429,14 @@ void Board::makeMove(Move move)
 {
   // clang-format off
   constexpr int castling_rights[64] = {
-      14, 15, 15, 15, 12, 15, 15, 13,
+      13, 15, 15, 12, 15, 15, 15, 14,
       15, 15, 15, 15, 15, 15, 15, 15,
       15, 15, 15, 15, 15, 15, 15, 15,
       15, 15, 15, 15, 15, 15, 15, 15,
       15, 15, 15, 15, 15, 15, 15, 15,
       15, 15, 15, 15, 15, 15, 15, 15,
       15, 15, 15, 15, 15, 15, 15, 15,
-      11, 15, 15, 15, 3, 15, 15, 7
+      7, 15, 15, 3, 15, 15, 15, 11
   };
   // clang-format on
 
@@ -484,14 +484,14 @@ void Board::makeMove(Move move)
     if (to_square - from_square > 0)
     {
       // King Side Caslting
-      rook_from_square = _to_move == WHITE ? H1 : Utils::mirrorRank(H1);
-      rook_to_square = _to_move == WHITE ? F1 : Utils::mirrorRank(F1);
+      rook_from_square = _to_move == WHITE ? H1 : H8;
+      rook_to_square = _to_move == WHITE ? F1 : F8;
     }
     else
     {
       // Queen Side Castling
-      rook_from_square = _to_move == WHITE ? A1 : Utils::mirrorRank(A1);
-      rook_to_square = _to_move == WHITE ? D1 : Utils::mirrorRank(D1);
+      rook_from_square = _to_move == WHITE ? A1 : A8;
+      rook_to_square = _to_move == WHITE ? D1 : D8;
     }
     _square[rook_from_square].type = EMPTY;
     _square[rook_from_square].color = BLACK;

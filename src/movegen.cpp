@@ -59,12 +59,12 @@ std::vector<Move> Movegen::generatePseudoLegalMoves(const Board &board)
     }
     else
     {
-        castle_b_sq = Utils::mirrorRank(B1);
-        castle_c_sq = Utils::mirrorRank(C1);
-        castle_d_sq = Utils::mirrorRank(D1);
-        castle_e_sq = Utils::mirrorRank(E1);
-        castle_f_sq = Utils::mirrorRank(F1);
-        castle_g_sq = Utils::mirrorRank(G1);
+        castle_b_sq = B8;
+        castle_c_sq = C8;
+        castle_d_sq = D8;
+        castle_e_sq = E8;
+        castle_f_sq = F8;
+        castle_g_sq = G8;
         castle_king_mask = CASTLE_KING_BLACK;
         castle_queen_mask = CASTLE_QUEEN_BLACK;
 

@@ -5,10 +5,12 @@
 namespace Utils
 {
 
-  inline int getSquare(const int rk, const int fl) { return 8 * rk + fl; }
+  inline int getSquare(const int rk, const int fl)
+  {
+    return 8 * rk + fl;
+  }
   inline int getFile(const int sq) { return sq & 7; }
   inline int getRank(const int sq) { return sq >> 3; }
-  inline int mirrorRank(int sq) { return Utils::getSquare(7 - Utils::getRank(sq), Utils::getFile(sq)); }
 
   inline int getOpponent(int to_move) { return to_move ^ 1; }
 
