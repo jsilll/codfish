@@ -88,24 +88,18 @@ void Magics::generate()
   std::cout << "Rook Magic Numbers" << std::endl;
   for (int sq = 0; sq < 64; sq++)
   {
-    printf("%d : 0x%llxULL\n",
-           sq,
-           generateMagicNumber(sq,
-                               Tables::RELEVANT_BITS_COUNT_ROOK[sq],
-                               &Attacks::maskRookAttackRays,
-                               &Attacks::maskRookAttacks));
+    int bit_count = Tables::RELEVANT_BITS_COUNT_ROOK[sq];
+    U64 magic = generateMagicNumber(sq, bit_count, &Attacks::maskRookAttackRays, &Attacks::maskRookAttacks);
+    printf("%d : 0x%llxULL\n", sq, magic);
   }
   std::cout << std::endl;
 
   std::cout << "Bishop Magic Numbers" << std::endl;
   for (int sq = 0; sq < 64; sq++)
   {
-    printf("%d : 0x%llxULL\n",
-           sq,
-           generateMagicNumber(sq,
-                               Tables::RELEVANT_BITS_COUNT_BISHOP[sq],
-                               &Attacks::maskBishopAttackRays,
-                               &Attacks::maskBishopAttacks));
+    int bit_count = Tables::RELEVANT_BITS_COUNT_BISHOP[sq];
+    U64 magic = generateMagicNumber(sq, bit_count, &Attacks::maskBishopAttackRays, &Attacks::maskBishopAttacks);
+    printf("%d : 0x%llxULL\n", sq, magic);
   }
   std::cout << std::endl;
 }

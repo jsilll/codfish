@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Move
 {
@@ -9,15 +10,7 @@ private:
   int _move_encoded;
 
 public:
-  Move(
-      int source_square,
-      int target_square,
-      int piece,
-      int promoted_piece,
-      bool capture,
-      bool double_push,
-      bool en_passant,
-      bool castle);
+  Move(int source_square, int target_square, int piece, int promoted_piece, bool capture, bool double_push, bool en_passant, bool castle);
 
   int getFromSquare() const;
   int getToSquare() const;

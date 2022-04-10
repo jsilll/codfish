@@ -2,10 +2,10 @@
 
 #include "utils.hpp"
 #include "move.hpp"
+#include "movelist.hpp"
 #include "board.hpp"
 #include "movegen.hpp"
 
-// TODO: move this to perft.cpp / perft.hpp??
 unsigned long long Perft::perft(const Board &board, int depth)
 {
     if (depth == 0)

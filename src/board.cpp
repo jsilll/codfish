@@ -6,11 +6,9 @@
 #include <string>
 
 #include "utils.hpp"
-#include "attacks.hpp"
 #include "magics.hpp"
 #include "move.hpp"
 #include "tables.hpp"
-#include "utils.hpp"
 
 // Constructors
 
@@ -39,15 +37,19 @@ void Board::updateOccupancies()
   _occupancies[BLACK] = ZERO;
   _occupancies[BOTH] = ZERO;
 
-  for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
-  {
-    _occupancies[WHITE] |= _pieces[WHITE][piece_type];
-  }
+  _occupancies[WHITE] |= _pieces[WHITE][PAWN];
+  _occupancies[WHITE] |= _pieces[WHITE][KNIGHT];
+  _occupancies[WHITE] |= _pieces[WHITE][BISHOP];
+  _occupancies[WHITE] |= _pieces[WHITE][ROOK];
+  _occupancies[WHITE] |= _pieces[WHITE][QUEEN];
+  _occupancies[WHITE] |= _pieces[WHITE][KING];
 
-  for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
-  {
-    _occupancies[BLACK] |= _pieces[BLACK][piece_type];
-  }
+  _occupancies[BLACK] |= _pieces[BLACK][PAWN];
+  _occupancies[BLACK] |= _pieces[BLACK][KNIGHT];
+  _occupancies[BLACK] |= _pieces[BLACK][BISHOP];
+  _occupancies[BLACK] |= _pieces[BLACK][ROOK];
+  _occupancies[BLACK] |= _pieces[BLACK][QUEEN];
+  _occupancies[BLACK] |= _pieces[BLACK][KING];
 
   _occupancies[BOTH] |= _occupancies[WHITE];
   _occupancies[BOTH] |= _occupancies[BLACK];
@@ -112,23 +114,28 @@ int Board::getFullMoveNumber() const
 
 bool Board::isSquareAttacked(const int sq, const int attacker_side) const
 {
-  if (Tables::getRookAttacks(sq, _occupancies[BOTH]) & (_pieces[attacker_side][ROOK] | _pieces[attacker_side][QUEEN]))
+  U64 pawns = _pieces[attacker_side][PAWN];
+  if (Tables::ATTACKS_PAWN[Utils::getOpponent(attacker_side)][sq] & pawns)
   {
     return true;
   }
-  else if (Tables::getBishopAttacks(sq, _occupancies[BOTH]) & (_pieces[attacker_side][BISHOP] | _pieces[attacker_side][QUEEN]))
+  U64 knights = _pieces[attacker_side][KNIGHT];
+  if (Tables::ATTACKS_KNIGHT[sq] & knights)
   {
     return true;
   }
-  else if (Tables::ATTACKS_KNIGHT[sq] & _pieces[attacker_side][KNIGHT])
+  U64 king = _pieces[attacker_side][KING];
+  if (Tables::ATTACKS_KING[sq] & king)
   {
     return true;
   }
-  else if (Tables::ATTACKS_PAWN[Utils::getOpponent(attacker_side)][sq] & _pieces[attacker_side][PAWN])
+  U64 bishopsQueens = _pieces[attacker_side][QUEEN] | _pieces[attacker_side][BISHOP];
+  if (Tables::getBishopAttacks(sq, _occupancies[BOTH]) & bishopsQueens)
   {
     return true;
   }
-  else if (Tables::ATTACKS_KING[sq] & _pieces[attacker_side][KING])
+  U64 rooksQueens = _pieces[attacker_side][QUEEN] | _pieces[attacker_side][ROOK];
+  if (Tables::getRookAttacks(sq, _occupancies[BOTH]) & rooksQueens)
   {
     return true;
   }
@@ -187,7 +194,13 @@ std::string Board::getFen() const
 
   // Castling Rights
   char castling_rights_buf[5];
-  snprintf(castling_rights_buf, 5, "%s%s%s%s", (_castling_rights & CASTLE_KING_WHITE) ? "K" : "", (_castling_rights & CASTLE_QUEEN_WHITE) ? "Q" : "", (_castling_rights & CASTLE_KING_BLACK) ? "k" : "", (_castling_rights & CASTLE_QUEEN_BLACK) ? "q" : "");
+  snprintf(castling_rights_buf,
+           5,
+           "%s%s%s%s",
+           (_castling_rights & CASTLE_KING_WHITE) ? "K" : "",
+           (_castling_rights & CASTLE_QUEEN_WHITE) ? "Q" : "",
+           (_castling_rights & CASTLE_KING_BLACK) ? "k" : "",
+           (_castling_rights & CASTLE_QUEEN_BLACK) ? "q" : "");
   castling_rights = std::string(castling_rights_buf);
   if (castling_rights == "")
   {
@@ -282,12 +295,7 @@ void Board::setStartingPosition()
   this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
 }
 
-void Board::setFromFen(std::string piece_placements,
-                       std::string active_color,
-                       std::string castling_rights,
-                       std::string en_passant,
-                       std::string half_move_clock,
-                       std::string full_move_number)
+void Board::setFromFen(std::string piece_placements, std::string active_color, std::string castling_rights, std::string en_passant, std::string half_move_clock, std::string full_move_number)
 {
   this->clear();
 
@@ -505,5 +513,6 @@ void Board::makeMove(Move move)
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
   _to_move = Utils::getOpponent(_to_move);
+
   this->updateOccupancies();
 }

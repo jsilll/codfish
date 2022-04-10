@@ -10,10 +10,7 @@ int Utils::bitScan(U64 bb)
   {
     return Utils::bitCount((bb & -bb) - 1);
   }
-  else
-  {
-    return -1;
-  }
+  return -1;
 }
 
 int Utils::bitScanForward(U64 bb)

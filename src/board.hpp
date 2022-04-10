@@ -6,10 +6,13 @@
 
 class Move;
 
-constexpr int CASTLE_KING_WHITE = 1;
-constexpr int CASTLE_QUEEN_WHITE = 2;
-constexpr int CASTLE_KING_BLACK = 4;
-constexpr int CASTLE_QUEEN_BLACK = 8;
+typedef enum : int
+{
+  CASTLE_KING_WHITE = 1,
+  CASTLE_QUEEN_WHITE = 2,
+  CASTLE_KING_BLACK = 4,
+  CASTLE_QUEEN_BLACK = 8
+} CastlingRight;
 
 struct Piece
 {

@@ -3,6 +3,7 @@
 #include <vector>
 
 class Move;
+class MoveList;
 class Board;
 
 namespace Movegen
@@ -11,15 +12,15 @@ namespace Movegen
      * @brief Generates all the pseudo-legal moves for a given board
      *
      * @param board
-     * @return std::vector<Move>
+     * @return MoveList
      */
-    std::vector<Move> generatePseudoLegalMoves(const Board &board);
+    MoveList generatePseudoLegalMoves(const Board &board);
 
     /**
      * @brief Generates all the legal moves for a given board
      *
      * @param board
-     * @return std::vector<Move>
+     * @return MoveList
      */
-    std::vector<Move> generateLegalMoves(const Board &board);
+    MoveList generateLegalMoves(const Board &board);
 } // namespace Movegen

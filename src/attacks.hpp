@@ -11,8 +11,8 @@ namespace Attacks
     U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty);
 
     // Used For Pre-Initialized Attack Tables
-    U64 maskRookAttackRays(int sq);   // helper
-    U64 maskBishopAttackRays(int sq); // helper
+    U64 maskRookAttackRays(int sq);   // helper function
+    U64 maskBishopAttackRays(int sq); // helper function
 
     U64 maskWhitePawnAnyAttacks(U64 wpawns);
     U64 maskBlackPawnAnyAttacks(U64 bpawns);

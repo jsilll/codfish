@@ -2,32 +2,17 @@
 
 std::string Move::getUCI()
 {
-  std::string uci = std::string(SQUARE_NAMES[this->getFromSquare()]) + std::string(SQUARE_NAMES[this->getToSquare()]);
-  if (this->getPromotedPiece())
-  {
-    uci += std::string(PIECE_REPR[this->getPromotedPiece() + 6]);
-  }
+  std::string from_square = std::string(SQUARE_NAMES[this->getFromSquare()]);
+  std::string to_square = std::string(SQUARE_NAMES[this->getToSquare()]);
+  std::string promoted_piece = std::string(PIECE_REPR[this->getPromotedPiece() + 6]);
+  std::string uci = from_square + to_square;
+  uci = this->getPromotedPiece() ? uci + promoted_piece : uci;
   return uci;
 }
 
-Move::Move(
-    int source_square,
-    int target_square,
-    int piece,
-    int promoted_piece,
-    bool capture,
-    bool double_push,
-    bool en_passant,
-    bool castle)
+Move::Move(int source_square, int target_square, int piece, int promoted_piece, bool capture, bool double_push, bool en_passant, bool castle)
 {
-  _move_encoded = source_square |
-                  (target_square << 6) |
-                  (piece << 12) |
-                  (promoted_piece << 16) |
-                  (capture << 20) |
-                  (double_push << 21) |
-                  (en_passant << 22) |
-                  (castle << 23);
+  _move_encoded = source_square | (target_square << 6) | (piece << 12) | (promoted_piece << 16) | (capture << 20) | (double_push << 21) | (en_passant << 22) | (castle << 23);
 }
 
 int Move::getFromSquare() const
