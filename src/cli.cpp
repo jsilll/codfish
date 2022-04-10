@@ -15,15 +15,16 @@
 #include "utils.hpp"
 #include "magics.hpp"
 #include "tables.hpp"
-#include "move.hpp"
 #include "board.hpp"
+#include "move.hpp"
+#include "movelist.hpp"
 #include "movegen.hpp"
 #include "perft.hpp"
 
 char *COMMAND{};
 bool ASCII{};
 
-bool parseCommand(std::string buf, Board &board);
+void parseCommand(std::string buf, Board &board);
 
 void helpCommand();
 
@@ -49,17 +50,13 @@ void Cli::init()
     if (*COMMAND)
     {
       add_history(COMMAND);
-      if (!parseCommand(std::string(COMMAND), board))
-      {
-        free(COMMAND);
-        return;
-      }
+      parseCommand(std::string(COMMAND), board);
       free(COMMAND);
     }
   }
 }
 
-bool parseCommand(std::string buf, Board &board)
+void parseCommand(std::string buf, Board &board)
 {
   std::vector<std::string> words = splitString(buf);
   if (words.size() == 0)
@@ -94,8 +91,7 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "readfen")
   {
-    static const std::regex piece_placements_regex(
-        R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
+    static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
     static const std::regex active_color_regex(R"(b|w)");
     static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
     static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
@@ -113,8 +109,7 @@ bool parseCommand(std::string buf, Board &board)
     }
     else
     {
-      board.setFromFen(words[1], words[2], words[3], words[4], words[5],
-                       words[6]);
+      board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
     }
   }
   else if (words[0] == "printfen")
@@ -140,13 +135,22 @@ bool parseCommand(std::string buf, Board &board)
   }
   else if (words[0] == "exit")
   {
-    return false;
+    exit(EXIT_SUCCESS);
   }
   else if (words[0] == "perft")
   {
     if (words.size() == 2)
     {
-      int depth = std::stoi(words[1]);
+      int depth{};
+      try
+      {
+        depth = std::stoi(words[1]);
+      }
+      catch (const std::exception &e)
+      {
+        std::cout << "invalid depth value." << std::endl;
+        return;
+      }
       if (depth >= 0)
       {
         perftCommand(board, depth);
@@ -165,7 +169,17 @@ bool parseCommand(std::string buf, Board &board)
   {
     if (words.size() == 2)
     {
-      int depth = std::stoi(words[1]);
+      int depth{};
+      try
+      {
+        depth = std::stoi(words[1]);
+      }
+      catch (const std::exception &e)
+      {
+        std::cout << "invalid depth value." << std::endl;
+        return;
+      }
+
       if (depth >= 0)
       {
         dperftCommand(board, depth);
@@ -185,7 +199,6 @@ bool parseCommand(std::string buf, Board &board)
     std::cout << "unknown command, type 'help' for more the available commands"
               << std::endl;
   }
-  return true;
 }
 
 void helpCommand()
@@ -246,23 +259,23 @@ std::vector<std::string> splitString(std::string &text)
 {
   std::vector<std::string> words{};
   std::istringstream iss(text);
-  copy(std::istream_iterator<std::string>(iss),
-       std::istream_iterator<std::string>(), std::back_inserter(words));
+  copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(words));
   return words;
 }
 
 void movesCommand(Board &board)
 {
-  std::vector<Move> moves = Movegen::generateLegalMoves(board);
-  for (auto move : moves)
+  int size = 0;
+  for (Move move : Movegen::generateLegalMoves(board))
   {
     std::cout << move.getUCI() << "\n";
     Board board_copy = board;
     board_copy.makeMove(move);
     board_copy.display();
     getchar();
+    size++;
   }
-  std::cout << "Total number of moves: " << moves.size() << std::endl;
+  std::cout << "Total number of moves: " << size << std::endl;
 }
 
 void perftCommand(Board &board, int depth)
