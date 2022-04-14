@@ -92,5 +92,27 @@ TEST_CASE("Test Knights Moves")
 }
 
 // Test Bishop
-// Test Rook
-// Test Queen
+
+TEST_CASE("Test Bishop Moves")
+{
+    setup();
+
+    SECTION("Corners")
+    {
+        REQUIRE(Tables::getBishopAttacks(A1, 0xa000008) == 0x8040200);
+        REQUIRE(Tables::getBishopAttacks(H1, 0xfefdfbf7efdfbfff) == 0x102040810204000);
+        REQUIRE(Tables::getBishopAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x102040810204000);
+        REQUIRE(Tables::getBishopAttacks(H8, 0x120000808000202) == 0x40201008000000);
+        REQUIRE(Tables::getBishopAttacks(A8, 0x8124000858204282) == 0x2040800000000);
+    }
+
+    SECTION("Middle of the Board")
+    {
+        REQUIRE(Tables::getBishopAttacks(D4, 0x8124000858204282) == 0x8041221400142240);
+        REQUIRE(Tables::getBishopAttacks(G6, 0x8124400858204282) == 0xa000a010000000);
+    }
+}
+
+// Test Rook    getRookAttacks
+
+// Test Queen   getQueenAttacks
