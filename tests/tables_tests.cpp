@@ -102,7 +102,7 @@ TEST_CASE("Test Bishop Moves")
         REQUIRE(Tables::getBishopAttacks(A1, 0xa000008) == 0x8040200);
         REQUIRE(Tables::getBishopAttacks(H1, 0xfefdfbf7efdfbfff) == 0x102040810204000);
         REQUIRE(Tables::getBishopAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x102040810204000);
-        REQUIRE(Tables::getBishopAttacks(H8, 0x120000808000202) == 0x40201008000000);
+        REQUIRE(Tables::getBishopAttacks(H8, 0x8120000808000202) == 0x40201008000000);
         REQUIRE(Tables::getBishopAttacks(A8, 0x8124000858204282) == 0x2040800000000);
     }
 
@@ -114,5 +114,25 @@ TEST_CASE("Test Bishop Moves")
 }
 
 // Test Rook    getRookAttacks
+
+TEST_CASE("Test Rook Moves")
+{
+    setup();
+
+    SECTION("Corners")
+    {
+        REQUIRE(Tables::getRookAttacks(A1, 0xa000009) == 0x10101010101010e);
+        REQUIRE(Tables::getRookAttacks(H1, 0xfefdfbf7efdfbfff) == 0x8040);
+        REQUIRE(Tables::getRookAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x8040);
+        REQUIRE(Tables::getRookAttacks(H8, 0x8120000808000202) == 0x7f80808080808080);
+        REQUIRE(Tables::getRookAttacks(A8, 0x8324000958a142ba) == 0x201010100000000);
+    }
+
+    SECTION("Middle of the Board")
+    {
+        REQUIRE(Tables::getRookAttacks(D4, 0x8124000858204282) == 0x817080808);
+        REQUIRE(Tables::getRookAttacks(F5, 0x8124002858204282) == 0x2020d820200000);
+    }
+}
 
 // Test Queen   getQueenAttacks
