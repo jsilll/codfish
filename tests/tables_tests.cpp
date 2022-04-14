@@ -135,4 +135,24 @@ TEST_CASE("Test Rook Moves")
     }
 }
 
-// Test Queen   getQueenAttacks
+// Test Queen
+
+TEST_CASE("Test Queen Moves")
+{
+    setup();
+
+    SECTION("Corners")
+    {
+        REQUIRE(Tables::getQueenAttacks(A1, 0xa000009) == 0x10101010905030e);
+        REQUIRE(Tables::getQueenAttacks(H1, 0xfefdfbf7efdfbfff) == 0x10204081020c040);
+        REQUIRE(Tables::getQueenAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x10204081020c040);
+        REQUIRE(Tables::getQueenAttacks(H8, 0x8120000808000202) == 0x7fc0a09088808080);
+        REQUIRE(Tables::getQueenAttacks(A8, 0x8324000958a142ba) == 0x203050900000000);
+    }
+
+    SECTION("Middle of the Board")
+    {
+        REQUIRE(Tables::getQueenAttacks(D4, 0x812402085a24428a) == 0x8040221c161c2848);
+        REQUIRE(Tables::getQueenAttacks(F6, 0x812432a8da245282) == 0x8870d07088000000);
+    }
+}
