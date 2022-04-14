@@ -2,7 +2,12 @@
 
 #include "tables.hpp"
 
+#include <string>
 #include <iostream>
+#include <iterator>
+#include <algorithm>
+#include <regex>
+#include <vector>
 
 int Utils::bitScan(U64 bb)
 {
@@ -58,4 +63,12 @@ void Utils::printBB(U64 bb)
   }
   std::cout << "\n   a b c d e f g h\n\n";
   printf("bitboard %llud\n", bb);
+}
+
+std::vector<std::string> Utils::tokenizeString(const std::string &text)
+{
+  std::vector<std::string> tokens{};
+  std::istringstream iss(text);
+  copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
+  return tokens;
 }

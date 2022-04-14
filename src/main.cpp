@@ -6,8 +6,8 @@
 
 typedef enum
 {
-  CLI,
   UCI,
+  CLI,
 } InterfaceMode;
 
 typedef struct
@@ -22,16 +22,13 @@ int main(int argc, char const *argv[])
   switch (parseOptions(argc, argv).interface)
   {
   case CLI:
-    std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
     Cli::init();
     break;
   case UCI:
-    std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
     Uci::init();
     break;
   default:
-    std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
-    Cli::init();
+    Uci::init();
     break;
   }
   return 0;

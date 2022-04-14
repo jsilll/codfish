@@ -2,6 +2,9 @@
 
 #include "defs.hpp"
 
+#include <string>
+#include <vector>
+
 namespace Utils
 {
 
@@ -46,5 +49,13 @@ namespace Utils
   U64 setOccupancy(int index, int bits_in_mask, U64 attack_mask);
 
   void printBB(U64 bb);
+
+  /**
+   * @brief Splits a string by spaces
+   *
+   * @param text
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> tokenizeString(const std::string &text);
 
 } // namespace Utils

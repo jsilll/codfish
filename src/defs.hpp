@@ -9,7 +9,7 @@ constexpr U64 ONE = 1ULL;
 constexpr U64 ZERO = 0ULL;
 
 // clang-format off
-enum Square {
+enum Square : int {
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
   A3, B3, C3, D3, E3, F3, G3, H3,
@@ -20,7 +20,9 @@ enum Square {
   A8, B8, C8, D8, E8, F8, G8, H8,
   N_SQUARES,
 };
+// clang-format on
 
+// clang-format off
 const std::string SQUARE_NAMES[] = {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
     "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
@@ -33,7 +35,7 @@ const std::string SQUARE_NAMES[] = {
     "-"};
 // clang-format off
 
-enum Directions {
+enum Directions : int {
   NORTH = 8,
   SOUTH = -8,
   WEST = -1,
@@ -45,13 +47,13 @@ enum Directions {
   N_DIRECTIONS = 8,
 };
 
-enum PieceColor {
+enum PieceColor : int {
   WHITE,
   BLACK,
   BOTH,
 };
 
-enum PieceType {
+enum PieceType : int {
   PAWN,
   KNIGHT,
   BISHOP,

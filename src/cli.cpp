@@ -1,12 +1,8 @@
 #include "cli.hpp"
 
-#include <readline/history.h>
-#include <readline/readline.h>
-
 #include <algorithm>
 #include <chrono>
 #include <iostream>
-#include <iterator>
 #include <regex>
 #include <string>
 #include <vector>
@@ -21,44 +17,36 @@
 #include "movegen.hpp"
 #include "perft.hpp"
 
-char *COMMAND{};
-bool ASCII{};
-
-void parseCommand(std::string buf, Board &board);
-
+void dperftCommand(Board &board, int depth);
 void helpCommand();
-
 void infoCommand(const Board &board);
-
+void moveCommand(Board &board, std::string move_uci);
 void movesCommand(Board &board);
-
+void parseCommand(std::string buf, Board &board);
 void perftCommand(Board &board, int depth);
 
-void dperftCommand(Board &board, int depth);
-
-void moveCommand(Board &board, std::string move_uci);
-
-std::vector<std::string> splitString(std::string &str);
+bool ASCII{};
 
 void Cli::init()
 {
   Magics::init();
   Tables::init();
-  Board board = Board(); // TODO: make this global
-  while ((COMMAND = readline("> ")) != nullptr)
+
+  Board board = Board();
+
+  std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
+  while (true)
   {
-    if (*COMMAND)
-    {
-      add_history(COMMAND);
-      parseCommand(std::string(COMMAND), board);
-      free(COMMAND);
-    }
+    std::cout << "> ";
+    std::string cmd;
+    std::getline(std::cin, cmd);
+    parseCommand(cmd, board);
   }
 }
 
 void parseCommand(std::string buf, Board &board)
 {
-  std::vector<std::string> words = splitString(buf);
+  std::vector<std::string> words = Utils::tokenizeString(buf);
   if (words.size() == 0)
   {
   }
@@ -89,7 +77,7 @@ void parseCommand(std::string buf, Board &board)
     std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom"
               << std::endl;
   }
-  else if (words[0] == "readfen")
+  else if (words[0] == "setfgen")
   {
     static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
     static const std::regex active_color_regex(R"(b|w)");
@@ -112,7 +100,7 @@ void parseCommand(std::string buf, Board &board)
       board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
     }
   }
-  else if (words[0] == "printfen")
+  else if (words[0] == "getfen")
   {
     std::cout << board.getFen();
   }
@@ -204,37 +192,34 @@ void parseCommand(std::string buf, Board &board)
 void helpCommand()
 {
   std::cout
-      << "ascii                 Toggles between ascii and utf-8 board "
-         "representation\n"
-      << "cc                    Play computer-to-computer \n"
-      << "d                     Display board \n"
-      << "eval                  Show static evaluation of this position\n"
-      << "exit                  Exit program \n"
-      << "game                  Show game moves \n"
-      << "go                    Computer next move \n"
-      << "help                  Show this help \n"
-      << "info                  Display variables (for testing purposes)\n"
-      << "magics                Generates magic numbers for the bishop and "
-         "rook pieces\n"
-      << "move e2e4, or h7h8q   Enter a move (use this format)\n"
-      << "moves                 Show all legal moves\n"
-      << "new                   Start new game\n"
-      << "perf                  Benchmark a number of key functions\n"
-      << "perft n               Calculate raw number of nodes from here, depth n\n"
-      << "dperft n              Perft function, divided\n"
-      << "r                     Rotate board \n"
-      << "readfen fen           Reads FEN position\n"
-      << "printfen              Print current position to FEN \n"
-      << "sd n                  Set the search depth to n\n"
-      << "undo                  Take back last move\n"
+      << "ascii                 Toggles between ascii and utf-8 board representation\n"
+      << "cc                    Plays computer-to-computer [TODO]\n"
+      << "display               Displays board \n"
+      << "dperft n              Divided perft\n"
+      << "eval                  Shows static evaluation of this position [TODO]\n"
+      << "exit                  Exits program\n"
+      << "go                    Computer plays his best move [TODO]\n"
+      << "help                  Shows this help \n"
+      << "info                  Displays variables (for testing purposes)\n"
+      << "magics                Generates magic numbers for the bishop and rook pieces\n"
+      << "move                  Plays a move (in uci format)\n"
+      << "moves                 Shows all legal moves\n"
+      << "new                   Starts new game\n"
+      << "perf                  Benchmarks a number of key functions [TODO]\n"
+      << "perft n               Calculates raw number of nodes from here, depth n\n"
+      << "getfen                Prints current position to in fen string format \n"
+      << "rotate                Rotates board \n"
+      << "setfgen fen           Reads fen string position and modifies board acoordingly\n"
+      << "sd n                  Sets the search depth to n [TODO]\n"
       << "switch                Switches the next side to move\n"
+      << "undo                  Takes back last move [TODO]\n"
       << std::endl;
 }
 
 void infoCommand(const Board &board)
 {
   std::string fen = board.getFen();
-  std::vector<std::string> splitted_fen = splitString(fen);
+  std::vector<std::string> splitted_fen = Utils::tokenizeString(fen);
   std::cout << "Side to Play                 = " << splitted_fen[1]
             << "\nCastling Rights              = " << splitted_fen[2]
             << "\nEn-passant Square            = " << splitted_fen[3]
@@ -242,9 +227,8 @@ void infoCommand(const Board &board)
             << "\nFull Move Number             = " << splitted_fen[5];
   std::cout << "\nOccupied Squares:\n";
   Utils::printBB(board.getOccupancies(BOTH));
-
   U64 attacked_squares = ZERO;
-  for (int sq = A1; sq < N_SQUARES; sq++) // generating a BB for all the attacked squares
+  for (int sq = A1; sq < N_SQUARES; sq++)
   {
     if (board.isSquareAttacked(sq, board.getSideToMove()))
     {
@@ -253,14 +237,6 @@ void infoCommand(const Board &board)
   }
   std::cout << "Attacked Squares:\n";
   Utils::printBB(attacked_squares);
-}
-
-std::vector<std::string> splitString(std::string &text)
-{
-  std::vector<std::string> words{};
-  std::istringstream iss(text);
-  copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(words));
-  return words;
 }
 
 void movesCommand(Board &board)

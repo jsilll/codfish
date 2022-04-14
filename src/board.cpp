@@ -139,6 +139,7 @@ bool Board::isSquareAttacked(const int sq, const int attacker_side) const
   {
     return true;
   }
+
   return false;
 }
 
@@ -283,6 +284,7 @@ void Board::clear()
   _full_move_number = 0;
 
   _white_on_bottom = true;
+
   for (int sq = A1; sq < N_SQUARES; sq++)
   {
     _square[sq].type = EMPTY; // needs to have this particular values set for correct printing

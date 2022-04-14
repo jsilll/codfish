@@ -99,7 +99,7 @@ MoveList Movegen::generateLegalMoves(const Board &board)
   {
     Board backup = board;
     backup.makeMove(move);
-    int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
+    int king_sq = Utils::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
     int attacker_side = backup.getSideToMove();
     if (!backup.isSquareAttacked(king_sq, attacker_side))
     {
