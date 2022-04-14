@@ -22,16 +22,16 @@ target_link_libraries(engine_exec engine)
 target_link_libraries(engine_exec readline)
 
 # Adding Tests
-add_executable(tables_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/tables_tests.cpp)
-target_link_libraries(tables_tests engine)
+add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp)
+target_link_libraries(test_board engine)
 
-add_executable(board_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/board_tests.cpp)
-target_link_libraries(board_tests engine)
+add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cpp)
+target_link_libraries(test_perft engine)
 
-add_executable(perft_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/perft_tests.cpp)
-target_link_libraries(perft_tests engine)
+add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cpp)
+target_link_libraries(test_tables engine)
 
 enable_testing()
-add_test(NAME tables_tests COMMAND tables_tests)
-add_test(NAME board_tests COMMAND board_tests)
-add_test(NAME perft_tests COMMAND perft_tests)
+add_test(NAME test_board COMMAND test_board)
+add_test(NAME test_perft COMMAND test_perft)
+add_test(NAME test_tables COMMAND test_tables)
