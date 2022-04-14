@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #include "defs.hpp"
 #include "utils.hpp"
 #include "magics.hpp"
@@ -34,13 +37,15 @@ void Cli::init()
 
   Board board = Board();
 
-  std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
-  while (true)
+  char *cmd;
+  while ((cmd = readline("> ")) != nullptr)
   {
-    std::cout << "> ";
-    std::string cmd;
-    std::getline(std::cin, cmd);
-    parseCommand(cmd, board);
+    if (*cmd)
+    {
+      add_history(cmd);
+      parseCommand(std::string(cmd), board);
+      free(cmd);
+    }
   }
 }
 
@@ -77,7 +82,7 @@ void parseCommand(std::string buf, Board &board)
     std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom"
               << std::endl;
   }
-  else if (words[0] == "setfgen")
+  else if (words[0] == "setfen")
   {
     static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
     static const std::regex active_color_regex(R"(b|w)");
@@ -195,22 +200,22 @@ void helpCommand()
       << "ascii                 Toggles between ascii and utf-8 board representation\n"
       << "cc                    Plays computer-to-computer [TODO]\n"
       << "display               Displays board \n"
-      << "dperft n              Divided perft\n"
+      << "dperft (n)            Divided perft\n"
       << "eval                  Shows static evaluation of this position [TODO]\n"
       << "exit                  Exits program\n"
       << "go                    Computer plays his best move [TODO]\n"
       << "help                  Shows this help \n"
       << "info                  Displays variables (for testing purposes)\n"
       << "magics                Generates magic numbers for the bishop and rook pieces\n"
-      << "move                  Plays a move (in uci format)\n"
+      << "move (move)           Plays a move (in uci format)\n"
       << "moves                 Shows all legal moves\n"
       << "new                   Starts new game\n"
       << "perf                  Benchmarks a number of key functions [TODO]\n"
       << "perft n               Calculates raw number of nodes from here, depth n\n"
       << "getfen                Prints current position to in fen string format \n"
       << "rotate                Rotates board \n"
-      << "setfgen fen           Reads fen string position and modifies board acoordingly\n"
-      << "sd n                  Sets the search depth to n [TODO]\n"
+      << "setfen (fen)          Reads fen string position and modifies board acoordingly\n"
+      << "sd (n)                Sets the search depth to n [TODO]\n"
       << "switch                Switches the next side to move\n"
       << "undo                  Takes back last move [TODO]\n"
       << std::endl;

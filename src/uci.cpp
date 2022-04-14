@@ -15,7 +15,7 @@
 #include <vector>
 
 // Modifies the board state
-void parseCommand(std::vector<std::string> &args, Board &board);
+void parseCommand(std::string &cmd, Board &board);
 void positionCommand(std::vector<std::string> &args, Board &board);
 void movesSubCommand(std::vector<std::string> moves, Board &board);
 void parseFen(std::string &piece_placements, std::string &active_color,
@@ -36,12 +36,10 @@ void Uci::init()
 
     Board board;
 
-    while (true)
+    std::string cmd;
+    while (std::getline(std::cin, cmd))
     {
-        std::string cmd;
-        std::getline(std::cin, cmd);
-        std::vector<std::string> cmd_tokens = Utils::tokenizeString(cmd);
-        parseCommand(cmd_tokens, board);
+        parseCommand(cmd, board);
     }
 }
 
@@ -51,8 +49,10 @@ void Uci::init()
  * @param args
  * @param board
  */
-void parseCommand(std::vector<std::string> &args, Board &board)
+void parseCommand(std::string &cmd, Board &board)
 {
+    std::vector<std::string> args = Utils::tokenizeString(cmd);
+
     if (args.size() == 0)
     {
         return;

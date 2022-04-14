@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 typedef enum
 {
@@ -15,11 +16,15 @@ typedef struct
   InterfaceMode interface;
 } ExecOptions;
 
-ExecOptions parseOptions(int argc, const char *argv[]);
+ExecOptions parseOptions(std::vector<std::string> arguments);
 
 int main(int argc, char const *argv[])
 {
-  switch (parseOptions(argc, argv).interface)
+  std::vector<std::string> arguments(argv + 1, argv + argc);
+
+  ExecOptions options = parseOptions(arguments);
+
+  switch (options.interface)
   {
   case CLI:
     std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
@@ -34,27 +39,29 @@ int main(int argc, char const *argv[])
     Uci::init();
     break;
   }
+
   return 0;
 }
 
-ExecOptions parseOptions(int argc, const char *argv[])
+ExecOptions parseOptions(std::vector<std::string> arguments)
 {
   ExecOptions options{};
-  for (int i = 1; i < argc; i++)
+
+  for (std::string arg : arguments)
   {
-    std::string option = std::string(argv[i]);
-    if (option == "--cli")
+    if (arg == "--cli")
     {
       options.interface = CLI;
     }
-    else if (option == "--uci")
+    else if (arg == "--uci")
     {
       options.interface = UCI;
     }
     else
     {
-      std::cerr << "Unknown Option: " << option << "\n";
+      std::cerr << "Unknown Option: " << arg << "\n";
     }
   }
+
   return options;
 }

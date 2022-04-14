@@ -19,6 +19,7 @@ add_library(engine ${ENGINE_SRC})
 # Adding Engine Executable
 add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
 target_link_libraries(engine_exec engine)
+target_link_libraries(engine_exec readline)
 
 # Adding Tests
 add_executable(tables_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/tables_tests.cpp)
