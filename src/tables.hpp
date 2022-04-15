@@ -69,6 +69,7 @@ constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {
     // clang-format on
 
     extern U64 SQUARE_BB[N_SQUARES];
+    
     extern U64 ATTACKS_PAWN[BOTH][N_SQUARES];  // Direct Access
     extern U64 ATTACKS_KNIGHT[N_SQUARES];      // Direct Access
     extern U64 ATTACKS_KING[N_SQUARES];        // Direct Access

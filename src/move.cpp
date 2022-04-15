@@ -1,6 +1,6 @@
 #include "move.hpp"
 
-std::string Move::getUCI()
+std::string Move::getUCI() const
 {
   std::string from_square = std::string(SQUARE_NAMES[this->getFromSquare()]);
   std::string to_square = std::string(SQUARE_NAMES[this->getToSquare()]);

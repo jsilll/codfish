@@ -95,7 +95,7 @@ MoveList Movegen::generatePseudoLegalMoves(const Board &board)
 MoveList Movegen::generateLegalMoves(const Board &board)
 {
   MoveList legal_moves;
-  for (Move move : Movegen::generatePseudoLegalMoves(board))
+  for (Move const &move : Movegen::generatePseudoLegalMoves(board))
   {
     Board backup = board;
     backup.makeMove(move);

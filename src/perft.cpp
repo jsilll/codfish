@@ -14,7 +14,7 @@ unsigned long long Perft::perft(const Board &board, int depth)
     }
 
     unsigned long long nodes = 0;
-    for (auto move : Movegen::generatePseudoLegalMoves(board))
+    for (Move const &move : Movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
         backup.makeMove(move);

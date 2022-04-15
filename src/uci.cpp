@@ -210,16 +210,18 @@ void goCommand(std::vector<std::string> args, Board &board)
                 return;
             }
 
-            if (depth > 0)
-            {
-                std::cout << depth << "\n";
-            }
-            else
+            if (depth < 0)
             {
                 return;
             }
+
+            std::cout << depth << "\n";
         }
         args.erase(args.begin());
+    }
+    else
+    {
+        int depth = 6;
     }
 }
 
@@ -232,7 +234,7 @@ void goCommand(std::vector<std::string> args, Board &board)
  */
 std::optional<Move> parseMove(std::string move_uci, Board &board)
 {
-    for (Move move : Movegen::generateLegalMoves(board))
+    for (Move const &move : Movegen::generateLegalMoves(board))
     {
         if (move.getUCI() == move_uci)
         {

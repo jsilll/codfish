@@ -21,5 +21,5 @@ public:
   bool isEnPassant() const;
   bool isCastle() const;
 
-  std::string getUCI();
+  std::string getUCI() const;
 };

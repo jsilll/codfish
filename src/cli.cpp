@@ -247,7 +247,7 @@ void infoCommand(const Board &board)
 void movesCommand(Board &board)
 {
   int size = 0;
-  for (Move move : Movegen::generateLegalMoves(board))
+  for (Move const &move : Movegen::generateLegalMoves(board))
   {
     std::cout << move.getUCI() << "\n";
     Board board_copy = board;
@@ -280,7 +280,7 @@ void dperftCommand(Board &board, int depth)
 
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
-  for (Move move : Movegen::generatePseudoLegalMoves(board))
+  for (Move const &move : Movegen::generatePseudoLegalMoves(board))
   {
     Board backup = board;
     backup.makeMove(move);
@@ -307,7 +307,7 @@ void dperftCommand(Board &board, int depth)
 
 void moveCommand(Board &board, std::string move_uci)
 {
-  for (Move move : Movegen::generateLegalMoves(board))
+  for (Move const &move : Movegen::generateLegalMoves(board))
   {
     if (move.getUCI() == move_uci)
     {

@@ -303,7 +303,7 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
 
   // Piece Placements Parsing
   int file = 0, rank = 7;
-  for (auto &c : piece_placements)
+  for (char const &c : piece_placements)
   {
     switch (c)
     {
@@ -388,7 +388,7 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
   }
 
   // Castling Rights Parsing
-  for (auto &c : castling_rights)
+  for (char const &c : castling_rights)
   {
     switch (c)
     {
