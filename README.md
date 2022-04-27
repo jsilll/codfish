@@ -4,12 +4,10 @@ C++ Chess engine that uses bitboard representation.
 
 Detailed Feature List
 ===
-
-- FEN support
-- UCI support
-- CLI interface
-- Bitboard representation
-- Pre-calculated attack tables
-- Magic Bitboards for sliding pieces's pre-calculated attacks
-- Pseudo-Legal move generation
-- Move ordering
+- UCI Interface
+- CLI Interface (Linux Only)
+- Bitboard Representation
+- Pre-calculated Attack Tables
+- Magic Bitboards
+- Pseudo-Legal Move Generation
+- Move Ordering
