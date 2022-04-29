@@ -2,6 +2,7 @@
 
 #include "move.hpp"
 #include "board.hpp"
+#include "eval.hpp"
 
 Move AI::find_best_move()
 {
