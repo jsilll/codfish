@@ -19,6 +19,8 @@
 #include "movelist.hpp"
 #include "movegen.hpp"
 #include "perft.hpp"
+#include "ai.hpp"
+#include "eval.hpp"
 
 void dperftCommand(Board &board, int depth);
 void helpCommand();

@@ -2,7 +2,7 @@
 
 class Board;
 
-namespace Evaluation
+namespace Eval
 {
     /**
      * @brief Evaluates a given board
@@ -12,4 +12,4 @@ namespace Evaluation
      */
     int eval(Board &board);
 
-} // namespace Evaluation
+} // namespace Eval

@@ -3,10 +3,13 @@
 #include "utils.hpp"
 #include "magics.hpp"
 #include "tables.hpp"
+#include "board.hpp"
 #include "move.hpp"
 #include "movelist.hpp"
-#include "board.hpp"
 #include "movegen.hpp"
+#include "perft.hpp"
+#include "ai.hpp"
+#include "eval.hpp"
 
 #include <iostream>
 #include <optional>
