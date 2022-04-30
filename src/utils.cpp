@@ -39,7 +39,7 @@ U64 Utils::setOccupancy(int index, int bits_in_mask, U64 attack_mask)
   U64 occupancy = ZERO;
   for (int bit = 0; bit < bits_in_mask; bit++)
   {
-    int lsb_sq = Utils::bitScan(attack_mask);
+    int lsb_sq = Utils::bitScanForward(attack_mask);
     Utils::popBit(attack_mask, lsb_sq);
     if (index & (1 << bit))
 
