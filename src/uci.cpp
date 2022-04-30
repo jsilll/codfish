@@ -301,5 +301,6 @@ void Uci::init()
 {
     Magics::init();
     Tables::init();
+    Eval::init();
     CommandProcessor::Instance().init();
 }

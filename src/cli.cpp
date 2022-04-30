@@ -36,6 +36,7 @@ void Cli::init()
 {
   Magics::init();
   Tables::init();
+  Eval::init();
 
   Board board = Board();
 
@@ -189,6 +190,10 @@ void parseCommand(std::string buf, Board &board)
       std::cout << "dperft command takes exactly one argument" << std::endl;
     }
   }
+  else if (words[0] == "eval")
+  {
+    std::cout << "Static Evaluation: " << Eval::eval(board) << std::endl;
+  }
   else
   {
     std::cout << "unknown command, type 'help' for more the available commands"
@@ -203,7 +208,7 @@ void helpCommand()
       << "cc                    Plays computer-to-computer [TODO]\n"
       << "display               Displays board \n"
       << "dperft (n)            Divided perft\n"
-      << "eval                  Shows static evaluation of this position [TODO]\n"
+      << "eval                  Shows static evaluation of this position\n"
       << "exit                  Exits program\n"
       << "go                    Computer plays his best move [TODO]\n"
       << "help                  Shows this help \n"

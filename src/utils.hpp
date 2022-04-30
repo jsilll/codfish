@@ -14,8 +14,12 @@ namespace Utils
   }
   inline int getFile(const int sq) { return sq & 7; }
   inline int getRank(const int sq) { return sq >> 3; }
+  inline int flipSquare(const int sq) { return sq ^ 56; }
 
-  inline int getOpponent(int to_move) { return to_move ^ 1; }
+  inline int getOpponent(int to_move)
+  {
+    return to_move ^ 1;
+  }
 
   inline void setBit(U64 &bb, int sq) { bb |= (1ULL << sq); }
   inline void popBit(U64 &bn, int sq) { bn &= ~(1ULL << sq); }
