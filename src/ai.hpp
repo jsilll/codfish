@@ -1,5 +1,7 @@
 #pragma once
 
+#include "defs.hpp"
+
 class Board;
 class Move;
 
