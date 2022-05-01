@@ -178,18 +178,17 @@ void Eval::init()
 
 int Eval::eval(Board &board)
 {
-    int mg[2]{};
-    int eg[2]{};
     int game_phase = 0;
-
+    int mg_white{}, mg_black{};
+    int eg_white{}, eg_black{};
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
         U64 pieces_white = board.getPieces(WHITE, piece_type);
         while (pieces_white)
         {
             int sq = Utils::bitScanForward(pieces_white);
-            mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
-            eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
+            mg_white += MG_TABLE[WHITE][piece_type][sq];
+            eg_white += EG_TABLE[WHITE][piece_type][sq];
             game_phase += GAME_PHASE_INC[piece_type];
             Utils::popBit(pieces_white, sq);
         }
@@ -198,20 +197,18 @@ int Eval::eval(Board &board)
         while (pieces_black)
         {
             int sq = Utils::bitScanForward(pieces_black);
-            mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
-            eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
+            mg_black += MG_TABLE[BLACK][piece_type][sq];
+            eg_black += EG_TABLE[BLACK][piece_type][sq];
             game_phase += GAME_PHASE_INC[piece_type];
             Utils::popBit(pieces_black, sq);
         }
     }
 
     int to_move = board.getSideToMove();
-    int opponent = Utils::getOpponent(to_move); // TODO: add this method to board
-
-    int mg_score = mg[to_move] - mg[opponent];
-    int eg_score = eg[to_move] - eg[opponent];
+    int opponent = Utils::getOpponent(to_move);
+    int mg_score = mg_white - mg_black;
+    int eg_score = eg_white - eg_black;
     int mg_phase = game_phase < 24 ? game_phase : 24;
     int eg_phase = 24 - mg_phase;
-
     return (mg_score * mg_phase + eg_score * eg_phase) / 24;
 }

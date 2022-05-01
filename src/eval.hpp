@@ -10,9 +10,11 @@ namespace Eval
 
     /**
      * @brief Evaluates a given board
+     * Positive values represent favorable position for white
+     * Negative values represent favourable position for black
      *
      * @param board
-     * @return int
+     * @return absolute evaluation
      */
     int eval(Board &board);
 
