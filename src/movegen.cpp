@@ -30,8 +30,8 @@ MoveList Movegen::generatePseudoLegalMoves(const Board &board)
 {
   MoveList move_list;
 
-  U64 to_move = board.getSideToMove();
-  int opponent = Utils::getOpponent(to_move);
+  int to_move = board.getSideToMove();
+  int opponent = board.getOpponent();
 
   U64 to_move_pawns = board.getPieces(to_move, PAWN);
 

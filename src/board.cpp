@@ -92,6 +92,11 @@ int Board::getSideToMove() const
   return _to_move;
 }
 
+int Board::getOpponent() const
+{
+  return Utils::getOpponent(_to_move);
+}
+
 int Board::getCastlingRights() const
 {
   return _castling_rights;
@@ -112,29 +117,29 @@ int Board::getFullMoveNumber() const
   return _full_move_number;
 }
 
-bool Board::isSquareAttacked(const int sq, const int attacker_side) const
+bool Board::isSquareAttacked(int sq, int attacker) const
 {
-  U64 pawns = _pieces[attacker_side][PAWN];
-  if (Tables::ATTACKS_PAWN[Utils::getOpponent(attacker_side)][sq] & pawns)
+  U64 pawns = _pieces[attacker][PAWN];
+  if (Tables::ATTACKS_PAWN[Utils::getOpponent(attacker)][sq] & pawns)
   {
     return true;
   }
-  U64 knights = _pieces[attacker_side][KNIGHT];
+  U64 knights = _pieces[attacker][KNIGHT];
   if (Tables::ATTACKS_KNIGHT[sq] & knights)
   {
     return true;
   }
-  U64 king = _pieces[attacker_side][KING];
+  U64 king = _pieces[attacker][KING];
   if (Tables::ATTACKS_KING[sq] & king)
   {
     return true;
   }
-  U64 bishopsQueens = _pieces[attacker_side][QUEEN] | _pieces[attacker_side][BISHOP];
+  U64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
   if (Tables::getBishopAttacks(sq, _occupancies[BOTH]) & bishopsQueens)
   {
     return true;
   }
-  U64 rooksQueens = _pieces[attacker_side][QUEEN] | _pieces[attacker_side][ROOK];
+  U64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
   if (Tables::getRookAttacks(sq, _occupancies[BOTH]) & rooksQueens)
   {
     return true;
@@ -432,7 +437,7 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
 
 int Board::switchSideToMove()
 {
-  return _to_move = Utils::getOpponent(_to_move);
+  return _to_move = this->getOpponent();
 }
 
 void Board::makeMove(Move move)
@@ -468,12 +473,12 @@ void Board::makeMove(Move move)
     int captured_piece_square = to_square + 8 * (((_to_move + 1) * 2) - 3);
     _square[captured_piece_square].type = EMPTY;
     _square[captured_piece_square].color = BLACK;
-    Utils::popBit(_pieces[Utils::getOpponent(_to_move)][PAWN], captured_piece_square);
+    Utils::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
   else if (is_capture)
   {
     int captured_piece_type = _square[to_square].type;
-    Utils::popBit(_pieces[Utils::getOpponent(_to_move)][captured_piece_type], to_square);
+    Utils::popBit(_pieces[this->getOpponent()][captured_piece_type], to_square);
   }
 
   if (promoted_piece)
@@ -514,7 +519,6 @@ void Board::makeMove(Move move)
   _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
-  _to_move = Utils::getOpponent(_to_move);
-
+  this->switchSideToMove();
   this->updateOccupancies();
 }

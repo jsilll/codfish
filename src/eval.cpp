@@ -204,8 +204,6 @@ int Eval::eval(Board &board)
         }
     }
 
-    int to_move = board.getSideToMove();
-    int opponent = Utils::getOpponent(to_move);
     int mg_score = mg_white - mg_black;
     int eg_score = eg_white - eg_black;
     int mg_phase = game_phase < 24 ? game_phase : 24;

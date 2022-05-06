@@ -47,11 +47,12 @@ public:
   U64 getOccupancies(int color) const;
 
   int getSideToMove() const;
+  int getOpponent() const;
   int getCastlingRights() const;
   int getEnPassantSquare() const;
   int getHalfMoveClock() const;
   int getFullMoveNumber() const;
-  bool isSquareAttacked(const int sq, const int attacker_side) const;
+  bool isSquareAttacked(int sq, int attacker_side) const;
 
   std::string getFen() const;
 

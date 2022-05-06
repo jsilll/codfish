@@ -239,16 +239,6 @@ void infoCommand(const Board &board)
             << "\nFull Move Number             = " << splitted_fen[5];
   std::cout << "\nOccupied Squares:\n";
   Utils::printBB(board.getOccupancies(BOTH));
-  U64 attacked_squares = ZERO;
-  for (int sq = A1; sq < N_SQUARES; sq++)
-  {
-    if (board.isSquareAttacked(sq, board.getSideToMove()))
-    {
-      attacked_squares |= Tables::SQUARE_BB[sq];
-    }
-  }
-  std::cout << "Attacked Squares:\n";
-  Utils::printBB(attacked_squares);
 }
 
 void movesCommand(Board &board)
@@ -291,7 +281,7 @@ void dperftCommand(Board &board, int depth)
   {
     Board backup = board;
     backup.makeMove(move);
-    int king_sq = Utils::bitScanForward(backup.getPieces(Utils::getOpponent(backup.getSideToMove()), KING));
+    int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
     int attacker_side = backup.getSideToMove();
     if (!backup.isSquareAttacked(king_sq, attacker_side))
     {
