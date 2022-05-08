@@ -224,11 +224,9 @@ public:
             args.erase(args.begin());
         }
 
-        for (Move move : Movegen::generateLegalMoves(board))
-        {
-            std::cout << "bestmove " << move.getUCI() << std::endl;
-            break;
-        }
+        // TODO: only instatiate AI once
+        AI ai = AI(board);
+        std::cout << "bestmove " << ai.find_best_move().getUCI() << std::endl;
     }
 };
 

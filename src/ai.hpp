@@ -7,13 +7,14 @@ class Move;
 
 class AI
 {
+private:
+    Board &_board;
+
 public:
-    AI(Board &board) : board(board) {}
+    AI(Board &board) : _board(board) {}
 
     Move find_best_move();
 
 private:
-    Board &board;
-
-    int search(int alpha, int beta, int level);
+    int search(int alpha, int beta, int depth, Board &board);
 };
