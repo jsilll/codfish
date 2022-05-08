@@ -25,6 +25,7 @@
 class Command
 {
 public:
+    virtual ~Command() {}
     virtual void execute(std::vector<std::string> &args, Board &board) = 0;
 };
 
@@ -42,7 +43,7 @@ public:
 };
 
 /**
- * @brief Handles 'the' UCI uci command
+ * @brief Handles the UCI 'uci' command
  *
  */
 class UCICommand : public Command
@@ -252,8 +253,8 @@ public:
 class CommandProcessor
 {
 private:
-    std::map<std::string, std::unique_ptr<Command>> _mapper;
-    Board _board;
+    std::unordered_map<std::string, std::unique_ptr<Command>> _mapper;
+    Board _board = Board();
 
 public:
     static CommandProcessor &Instance()
@@ -268,6 +269,7 @@ public:
         while (std::getline(std::cin, cmd))
         {
             std::vector<std::string> args = Utils::tokenizeString(cmd);
+
             if (args.size() == 0)
             {
                 continue;
@@ -292,8 +294,6 @@ private:
         _mapper["d"] = std::unique_ptr<Command>(new DisplayCommand());
         _mapper["go"] = std::unique_ptr<Command>(new GoCommand());
         _mapper["quit"] = std::unique_ptr<Command>(new QuitCommand());
-
-        _board.setStartingPosition();
     }
 };
 

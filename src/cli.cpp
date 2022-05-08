@@ -7,9 +7,6 @@
 #include <string>
 #include <vector>
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 #include "defs.hpp"
 #include "utils.hpp"
 #include "magics.hpp"
@@ -19,298 +16,468 @@
 #include "movelist.hpp"
 #include "movegen.hpp"
 #include "perft.hpp"
-#include "ai.hpp"
 #include "eval.hpp"
 
-void dperftCommand(Board &board, int depth);
-void helpCommand();
-void infoCommand(const Board &board);
-void moveCommand(Board &board, std::string move_uci);
-void movesCommand(Board &board);
-void parseCommand(std::string buf, Board &board);
-void perftCommand(Board &board, int depth);
-
-bool ASCII{};
-
-void Cli::init()
+/**
+ * @brief Command Abstract class
+ * All commands should implement this class
+ *
+ */
+class Command
 {
-  Magics::init();
-  Tables::init();
-  Eval::init();
+public:
+  virtual void execute(std::vector<std::string> &args, Board &board) = 0;
+};
 
-  Board board = Board();
-
-  char *cmd;
-  while ((cmd = readline("> ")) != nullptr)
+/**
+ * @brief Handles the 'dperft' command
+ *
+ */
+class DividedPerftCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    if (*cmd)
+    if (args.size() == 0)
     {
-      add_history(cmd);
-      parseCommand(std::string(cmd), board);
-      free(cmd);
+      std::cout << "dperft command takes exactly one argument" << std::endl;
+      return;
+    }
+
+    int depth = 0;
+    try
+    {
+      depth = std::stoi(args[0]);
+    }
+    catch (const std::exception &e)
+    {
+      std::cout << "invalid depth value." << std::endl;
+      return;
+    }
+
+    if (depth >= 0)
+    {
+      this->perft(depth, board);
+    }
+    else
+    {
+      std::cout << "invalid depth value." << std::endl;
     }
   }
-}
 
-void parseCommand(std::string buf, Board &board)
+private:
+  void perft(int depth, Board &board)
+  {
+    unsigned long long total_nodes = 0;
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+    for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+    {
+      Board backup = board;
+      backup.makeMove(move);
+      int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+      int attacker_side = backup.getSideToMove();
+      if (!backup.isSquareAttacked(king_sq, attacker_side))
+      {
+        unsigned long long nodes = Perft::perft(backup, depth - 1);
+        std::cout << move.getUCI() << ": " << nodes << std::endl;
+        total_nodes += nodes;
+      }
+    }
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+    std::cout << "Found " << total_nodes << " nodes." << std::endl;
+    std::cout << "Finished computation at " << std::ctime(&end_time);
+    std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+    std::cout << "Nodes Per Second: " << total_nodes / elapsed_seconds.count() << std::endl;
+  }
+} dperftCommand;
+
+/**
+ * @brief Handles the 'help' command
+ *
+ */
+class HelpCommand : public Command
 {
-  std::vector<std::string> words = Utils::tokenizeString(buf);
-  if (words.size() == 0)
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
+    std::cout
+        << "ascii                 Toggles between ascii and utf-8 board representation\n"
+        << "cc                    Plays computer-to-computer [TODO]\n"
+        << "display               Displays board \n"
+        << "dperft (n)            Divided perft\n"
+        << "eval                  Shows static evaluation of this position\n"
+        << "exit                  Exits program\n"
+        << "go                    Computer plays his best move [TODO]\n"
+        << "help                  Shows this help \n"
+        << "info                  Displays variables (for testing purposes)\n"
+        << "magics                Generates magic numbers for the bishop and rook pieces\n"
+        << "move (move)           Plays a move (in uci format)\n"
+        << "moves                 Shows all legal moves\n"
+        << "new                   Starts new game\n"
+        << "perf                  Benchmarks a number of key functions [TODO]\n"
+        << "perft n               Calculates raw number of nodes from here, depth n\n"
+        << "getfen                Prints current position to in fen string format \n"
+        << "rotate                Rotates board \n"
+        << "setfen (fen)          Reads fen string position and modifies board acoordingly\n"
+        << "sd (n)                Sets the search depth to n [TODO]\n"
+        << "switch                Switches the next side to move\n"
+        << "undo                  Takes back last move [TODO]\n"
+        << std::endl;
   }
-  else if (words[0] == "help" || words[0] == "h" || words[0] == "?")
+} helpCommand;
+
+/**
+ * @brief Handles the 'info' command
+ *
+ */
+class InfoCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    helpCommand();
+    std::string fen = board.getFen();
+    std::vector<std::string> splitted_fen = Utils::tokenizeString(fen);
+    std::cout << "Side to Play                 = " << splitted_fen[1]
+              << "\nCastling Rights              = " << splitted_fen[2]
+              << "\nEn-passant Square            = " << splitted_fen[3]
+              << "\nFifty Move Count             = " << splitted_fen[4]
+              << "\nFull Move Number             = " << splitted_fen[5];
+    std::cout << "\nOccupied Squares:\n";
+    Utils::printBB(board.getOccupancies(BOTH));
+    Utils::printBB(board.getOccupancies(WHITE));
+    Utils::printBB(board.getOccupancies(BLACK));
   }
-  else if (words[0] == "switch" || words[0] == "s")
+} infoCommand;
+
+/**
+ * @brief Handles the 'move' command
+ *
+ */
+class MoveCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    std::cout << "side to play is now "
-              << (board.switchSideToMove() == WHITE ? "white" : "black")
-              << std::endl;
+    if (args.size() == 0)
+    {
+      return;
+    }
+
+    for (Move const &move : Movegen::generateLegalMoves(board))
+    {
+      if (move.getUCI() == args[0])
+      {
+        board.makeMove(move);
+        return;
+      }
+    }
+
+    std::cout << "invalid move" << std::endl;
   }
-  else if (words[0] == "display" || words[0] == "d")
+} moveCommand;
+
+/**
+ * @brief Handles 'moves' command
+ *
+ */
+class MovesCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    board.display(ASCII);
+    MoveList moves = Movegen::generateLegalMoves(board);
+    for (Move const &move : moves)
+    {
+      std::cout << move.getUCI() << "\n";
+    }
+    std::cout << "Total number of moves: " << moves.size() << std::endl;
   }
-  else if (words[0] == "info" || words[0] == "i")
+} movesCommand;
+
+/**
+ * @brief Handles the 'perft' command
+ *
+ */
+class PerftCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    infoCommand(board);
+
+    if (args.size() == 0)
+    {
+      std::cout << "perft command takes exactly one argument" << std::endl;
+      return;
+    }
+
+    int depth = 0;
+    try
+    {
+      depth = std::stoi(args[0]);
+    }
+    catch (const std::exception &e)
+    {
+      std::cout << "invalid depth value." << std::endl;
+      return;
+    }
+    if (depth >= 0)
+    {
+      this->dperft(depth, board);
+    }
+    else
+    {
+      std::cout << "invalid depth value." << std::endl;
+    }
   }
-  else if (words[0] == "new" || words[0] == "n")
+
+private:
+  void dperft(int depth, Board board)
+  {
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+    unsigned long long nodes = Perft::perft(board, depth);
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+    std::cout << "Found " << nodes << " nodes." << std::endl;
+    std::cout << "Finished computation at " << std::ctime(&end_time);
+    std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
+    std::cout << "Nodes Per Second: " << nodes / elapsed_seconds.count() << std::endl;
+  }
+} perftCommand;
+
+/**
+ * @brief Handles the 'switch' command
+ *
+ */
+class SwitchCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
+  {
+    std::cout << "side to play is now " << (board.switchSideToMove() == WHITE ? "white" : "black") << std::endl;
+  }
+} switchCommand;
+
+/**
+ * @brief Executes the 'display' command
+ *
+ */
+class DisplayCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
+  {
+    board.display();
+  }
+} displayCommand;
+
+/**
+ * @brief Handles the 'new' command
+ *
+ */
+class NewCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
     board.setStartingPosition();
   }
-  else if (words[0] == "rotate" || words[0] == "r")
+} newCommand;
+
+/**
+ * @brief Handles the 'rotate' command
+ *
+ */
+class RotateCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom"
-              << std::endl;
+    std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom" << std::endl;
   }
-  else if (words[0] == "setfen")
+} rotateCommand;
+
+/**
+ * @brief Handles the 'setfen' command
+ *
+ */
+class SetFenCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
+    if (!this->isFenValid(args))
+    {
+      std::cout << "Invalid FEN String" << std::endl;
+      return;
+    }
+
+    board.setFromFen(args[1], args[2], args[3], args[4], args[5], args[6]);
+  }
+
+private:
+  bool isFenValid(std::vector<std::string> &args)
+  {
+    if (args.size() != 7)
+    {
+      return false;
+    }
+
     static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
     static const std::regex active_color_regex(R"(b|w)");
     static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
     static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
     static const std::regex halfmove_clock_regex(R"(\d+)");
     static const std::regex fullmove_number_regex(R"(\d+)");
-    if (words.size() != 7 ||
-        !std::regex_match(words[1], piece_placements_regex) ||
-        !std::regex_match(words[2], active_color_regex) ||
-        !std::regex_match(words[3], castling_rights_regex) ||
-        !std::regex_match(words[4], en_passant_regex) ||
-        !std::regex_match(words[5], halfmove_clock_regex) ||
-        !std::regex_match(words[6], fullmove_number_regex))
+    if (!std::regex_match(args[1], piece_placements_regex) ||
+        !std::regex_match(args[2], active_color_regex) ||
+        !std::regex_match(args[3], castling_rights_regex) ||
+        !std::regex_match(args[4], en_passant_regex) ||
+        !std::regex_match(args[5], halfmove_clock_regex) ||
+        !std::regex_match(args[6], fullmove_number_regex))
     {
-      std::cerr << "Invalid FEN String" << std::endl;
+      return false;
     }
-    else
-    {
-      board.setFromFen(words[1], words[2], words[3], words[4], words[5], words[6]);
-    }
+
+    return true;
   }
-  else if (words[0] == "getfen")
+} setFenCommand;
+
+/**
+ * @brief Handles the 'getfen' command
+ *
+ */
+class GetFenCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
     std::cout << board.getFen();
   }
-  else if (words[0] == "magics")
+} getFenCommand;
+
+/**
+ * @brief Handles the 'magics' command
+ *
+ */
+class MagicsCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
     Magics::generate();
   }
-  else if (words[0] == "move")
-  {
-    moveCommand(board, words[1]);
-  }
-  else if (words[0] == "moves")
-  {
-    movesCommand(board);
-  }
-  else if (words[0] == "ascii")
-  {
-    std::cout << "ascii mode toggled " << ((ASCII = !ASCII) ? "on" : "off")
-              << std::endl;
-  }
-  else if (words[0] == "exit")
-  {
-    exit(EXIT_SUCCESS);
-  }
-  else if (words[0] == "perft")
-  {
-    if (words.size() == 2)
-    {
-      int depth{};
-      try
-      {
-        depth = std::stoi(words[1]);
-      }
-      catch (const std::exception &e)
-      {
-        std::cout << "invalid depth value." << std::endl;
-        return;
-      }
-      if (depth >= 0)
-      {
-        perftCommand(board, depth);
-      }
-      else
-      {
-        std::cout << "invalid depth value." << std::endl;
-      }
-    }
-    else
-    {
-      std::cout << "perft command takes exactly one argument" << std::endl;
-    }
-  }
-  else if (words[0] == "dperft")
-  {
-    if (words.size() == 2)
-    {
-      int depth{};
-      try
-      {
-        depth = std::stoi(words[1]);
-      }
-      catch (const std::exception &e)
-      {
-        std::cout << "invalid depth value." << std::endl;
-        return;
-      }
+} magicsCommand;
 
-      if (depth >= 0)
-      {
-        dperftCommand(board, depth);
-      }
-      else
-      {
-        std::cout << "invalid depth value." << std::endl;
-      }
-    }
-    else
-    {
-      std::cout << "dperft command takes exactly one argument" << std::endl;
-    }
+/**
+ * @brief Handles the 'ascii' command
+ *
+ */
+class AsciiCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
+  {
+    std::cout << "ascii mode toggled " << (board.toggleAscii() ? "on" : "off") << std::endl;
   }
-  else if (words[0] == "eval")
+} asciiCommand;
+
+/**
+ * @brief Handles the 'eval' command
+ *
+ */
+class EvalCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
     std::cout << "Static Evaluation: " << Eval::eval(board) << std::endl;
   }
-  else
+} evalCommand;
+
+/**
+ * @brief Handles the 'exit' command
+ *
+ */
+class ExitCommand : public Command
+{
+public:
+  void execute(std::vector<std::string> &args, Board &board)
   {
-    std::cout << "unknown command, type 'help' for more the available commands"
-              << std::endl;
+    exit(EXIT_SUCCESS);
   }
-}
+} exitCommand;
 
-void helpCommand()
+/**
+ * @brief Processes incoming commands
+ *
+ */
+class CommandProcessor
 {
-  std::cout
-      << "ascii                 Toggles between ascii and utf-8 board representation\n"
-      << "cc                    Plays computer-to-computer [TODO]\n"
-      << "display               Displays board \n"
-      << "dperft (n)            Divided perft\n"
-      << "eval                  Shows static evaluation of this position\n"
-      << "exit                  Exits program\n"
-      << "go                    Computer plays his best move [TODO]\n"
-      << "help                  Shows this help \n"
-      << "info                  Displays variables (for testing purposes)\n"
-      << "magics                Generates magic numbers for the bishop and rook pieces\n"
-      << "move (move)           Plays a move (in uci format)\n"
-      << "moves                 Shows all legal moves\n"
-      << "new                   Starts new game\n"
-      << "perf                  Benchmarks a number of key functions [TODO]\n"
-      << "perft n               Calculates raw number of nodes from here, depth n\n"
-      << "getfen                Prints current position to in fen string format \n"
-      << "rotate                Rotates board \n"
-      << "setfen (fen)          Reads fen string position and modifies board acoordingly\n"
-      << "sd (n)                Sets the search depth to n [TODO]\n"
-      << "switch                Switches the next side to move\n"
-      << "undo                  Takes back last move [TODO]\n"
-      << std::endl;
-}
+  typedef std::map<std::string, std::unique_ptr<Command>> CommandMapper;
 
-void infoCommand(const Board &board)
-{
-  std::string fen = board.getFen();
-  std::vector<std::string> splitted_fen = Utils::tokenizeString(fen);
-  std::cout << "Side to Play                 = " << splitted_fen[1]
-            << "\nCastling Rights              = " << splitted_fen[2]
-            << "\nEn-passant Square            = " << splitted_fen[3]
-            << "\nFifty Move Count             = " << splitted_fen[4]
-            << "\nFull Move Number             = " << splitted_fen[5];
-  std::cout << "\nOccupied Squares:\n";
-  Utils::printBB(board.getOccupancies(BOTH));
-}
+private:
+  Board _board = Board();
+  CommandMapper _mapper = CommandMapper();
 
-void movesCommand(Board &board)
-{
-  int size = 0;
-  for (Move const &move : Movegen::generateLegalMoves(board))
+public:
+  static CommandProcessor &Instance()
   {
-    std::cout << move.getUCI() << "\n";
-    Board board_copy = board;
-    board_copy.makeMove(move);
-    board_copy.display();
-    getchar();
-    size++;
+    static CommandProcessor cp;
+    return cp;
   }
-  std::cout << "Total number of moves: " << size << std::endl;
-}
 
-void perftCommand(Board &board, int depth)
-{
-  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-  unsigned long long nodes = Perft::perft(board, depth);
-  std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-  std::cout << "Found " << nodes << " nodes." << std::endl;
-  std::cout << "Finished computation at " << std::ctime(&end_time);
-  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-  std::cout << "Nodes Per Second: " << nodes / elapsed_seconds.count() << std::endl;
-}
-
-void dperftCommand(Board &board, int depth)
-{
-  unsigned long long total_nodes = 0;
-
-  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-
-  for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+  void init()
   {
-    Board backup = board;
-    backup.makeMove(move);
-    int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-    int attacker_side = backup.getSideToMove();
-    if (!backup.isSquareAttacked(king_sq, attacker_side))
+    while (true)
     {
-      unsigned long long nodes = Perft::perft(backup, depth - 1);
-      std::cout << move.getUCI() << ": " << nodes << std::endl;
-      total_nodes += nodes;
+      std::cout << "> ";
+      std::string line;
+      std::getline(std::cin, line);
+      std::vector<std::string> args = Utils::tokenizeString(std::string(line));
+      std::string cmd = args[0];
+      auto it = _mapper.find(cmd);
+      if (it != _mapper.end())
+      {
+        args.erase(args.begin());
+      }
+      else
+      {
+        std::cout << "command not found" << std::endl;
+      }
+      it->second->execute(args, _board);
     }
   }
 
-  std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-  std::cout << "Found " << total_nodes << " nodes." << std::endl;
-  std::cout << "Finished computation at " << std::ctime(&end_time);
-  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-  std::cout << "Nodes Per Second: " << total_nodes / elapsed_seconds.count() << std::endl;
-}
-
-void moveCommand(Board &board, std::string move_uci)
-{
-  for (Move const &move : Movegen::generateLegalMoves(board))
+private:
+  CommandProcessor()
   {
-    if (move.getUCI() == move_uci)
-    {
-      board.makeMove(move);
-      return;
-    }
+    _mapper.insert(std::make_pair("help", new HelpCommand()));
+    _mapper.insert(std::make_pair("ascii", new AsciiCommand()));
+    _mapper.insert(std::make_pair("display", new DisplayCommand()));
+    _mapper.insert(std::make_pair("dperft", new DividedPerftCommand()));
+    _mapper.insert(std::make_pair("eval", new EvalCommand()));
+    _mapper.insert(std::make_pair("exit", new ExitCommand()));
+    _mapper.insert(std::make_pair("help", new HelpCommand()));
+    _mapper.insert(std::make_pair("info", new InfoCommand()));
+    _mapper.insert(std::make_pair("magics", new MagicsCommand()));
+    _mapper.insert(std::make_pair("move", new MoveCommand()));
+    _mapper.insert(std::make_pair("moves", new MovesCommand()));
+    _mapper.insert(std::make_pair("new", new NewCommand()));
+    _mapper.insert(std::make_pair("perft", new PerftCommand()));
+    _mapper.insert(std::make_pair("getfen", new GetFenCommand()));
+    _mapper.insert(std::make_pair("rotate", new RotateCommand()));
+    _mapper.insert(std::make_pair("setfen", new SetFenCommand()));
+    _mapper.insert(std::make_pair("switch", new SwitchCommand()));
   }
-  std::cout << "invalid move" << std::endl;
+};
+
+void Cli::init()
+{
+  Magics::init();
+  Tables::init();
+  Eval::init();
+  CommandProcessor::Instance().init();
 }

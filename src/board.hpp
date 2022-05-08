@@ -32,6 +32,7 @@ private:
   U64 _pieces[BOTH][EMPTY];
   U64 _occupancies[BOTH + 1];
 
+  bool _ascii;
   bool _white_on_bottom;
   Piece _square[N_SQUARES];
 
@@ -64,6 +65,7 @@ public:
   void makeMove(Move move);
 
   // Display
-  void display(bool ascii = false) const;
+  void display() const;
+  bool toggleAscii();
   bool rotateDisplay();
 };

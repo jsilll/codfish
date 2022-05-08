@@ -222,9 +222,9 @@ std::string Board::getFen() const
 
 // Display
 
-void Board::display(bool ascii) const
+void Board::display() const
 {
-  int offset = ascii ? 0 : 13;
+  int offset = _ascii ? 0 : 13;
   std::cout << '\n';
   if (!_white_on_bottom)
   {
@@ -260,6 +260,11 @@ void Board::display(bool ascii) const
               << "      a   b   c   d   e   f   g   h\n";
   }
   std::cout << std::endl;
+}
+
+bool Board::toggleAscii()
+{
+  return _ascii = !_ascii;
 }
 
 bool Board::rotateDisplay()
@@ -519,6 +524,7 @@ void Board::makeMove(Move move)
   _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
+
   this->switchSideToMove();
   this->updateOccupancies();
 }
