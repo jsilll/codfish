@@ -70,6 +70,5 @@ int AI::search(int alpha, int beta, int depth, Board &board)
             // }
         }
     }
-
     return best_val;
 }
