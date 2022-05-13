@@ -176,11 +176,24 @@ void Eval::init()
     }
 }
 
+int PIECE_SCORES[] = {
+    100,
+    280,
+    320,
+    479,
+    929,
+    60000,
+};
+
 int Eval::eval(Board &board)
 {
     int game_phase = 0;
+    int material[2]{};
     int mg[2]{};
     int eg[2]{};
+
+    // if is checkmate
+    // if is
 
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
@@ -190,6 +203,7 @@ int Eval::eval(Board &board)
             int sq = Utils::bitScanForward(pieces_white);
             mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
             eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
+            material[WHITE] += PIECE_SCORES[piece_type];
             game_phase += GAME_PHASE_INC[piece_type];
             Utils::popBit(pieces_white, sq);
         }
@@ -200,6 +214,7 @@ int Eval::eval(Board &board)
             int sq = Utils::bitScanForward(pieces_black);
             mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
             eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
+            material[BLACK] += PIECE_SCORES[piece_type];
             game_phase += GAME_PHASE_INC[piece_type];
             Utils::popBit(pieces_black, sq);
         }
@@ -210,7 +225,9 @@ int Eval::eval(Board &board)
 
     int mg_score = mg[to_move] - mg[opponent];
     int eg_score = eg[to_move] - eg[opponent];
+    int material_score = material[to_move] - material[opponent];
+
     int mg_phase = game_phase > 24 ? 24 : game_phase;
     int eg_phase = 24 - mg_phase;
-    return (mg_score * mg_phase + eg_score * eg_phase) / 24;
+    return ((mg_score * mg_phase + eg_score * eg_phase) / 24) + material_score;
 }
