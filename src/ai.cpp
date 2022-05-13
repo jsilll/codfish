@@ -11,7 +11,7 @@
 
 Move AI::find_best_move()
 {
-    int best_val = std::numeric_limits<int>::min();
+    int best_val = std::numeric_limits<int>::min() + 1;
     Move best_move = Move(0, 0, 0, 0, 0, 0, 0, 0);
 
     for (Move move : Movegen::generatePseudoLegalMoves(_board))
@@ -22,7 +22,7 @@ Move AI::find_best_move()
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
-            int score = -search(std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 4, backup);
+            int score = -search(std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max() - 1, 4, backup);
 
             if (score > best_val)
             {
@@ -42,8 +42,10 @@ int AI::search(int alpha, int beta, int depth, Board &board)
         return Eval::eval(board);
     }
 
-    int best_val = std::numeric_limits<int>::min();
-    for (const Move &move : Movegen::generatePseudoLegalMoves(board))
+    bool has_legal_moves = false;
+    int best_val = std::numeric_limits<int>::min() + 1;
+    MoveList moves = Movegen::generatePseudoLegalMoves(board);
+    for (const Move &move : moves)
     {
         Board backup = board;
         backup.makeMove(move);
@@ -51,6 +53,7 @@ int AI::search(int alpha, int beta, int depth, Board &board)
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
+            has_legal_moves = true;
             int score = -search(-beta, -alpha, depth - 1, backup);
             if (score > best_val)
             {
@@ -64,11 +67,8 @@ int AI::search(int alpha, int beta, int depth, Board &board)
             {
                 alpha = score;
             }
-            // if (alpha > beta)
-            // {
-            //     break;
-            // }
         }
     }
-    return best_val;
+
+    return has_legal_moves ? best_val : std::numeric_limits<int>::min() + 1;
 }
