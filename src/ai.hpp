@@ -7,13 +7,22 @@ class Move;
 
 class AI
 {
-public:
-    AI(Board &board) : board(board) {}
+private:
+    Board &_board;
 
-    Move find_best_move();
+public:
+    struct SearchResult
+    {
+        int score;
+        int bestmove_encoded;
+        unsigned long long nodes; // TODO
+    };
+
+public:
+    AI(Board &board) : _board(board) {}
+
+    SearchResult find_best_move(int depth);
 
 private:
-    Board &board;
-
-    int search(int alpha, int beta, int level);
+    int search(int alpha, int beta, int depth, Board &board);
 };

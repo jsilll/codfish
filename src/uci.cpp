@@ -225,11 +225,11 @@ public:
             args.erase(args.begin());
         }
 
-        for (Move move : Movegen::generateLegalMoves(board))
-        {
-            std::cout << "bestmove " << move.getUCI() << std::endl;
-            break;
-        }
+        // TODO: only instatiate AI once
+        AI ai = AI(board);
+        AI::SearchResult result = ai.find_best_move(4);
+        std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << "\n";
+        std::cout << "bestmove " << Move(result.bestmove_encoded).getUCI() << std::endl;
     }
 };
 

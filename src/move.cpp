@@ -54,3 +54,8 @@ bool Move::isCastle() const
 {
   return (_move_encoded & 0x800000);
 }
+
+int Move::getEncoded() const
+{
+  return _move_encoded;
+}
