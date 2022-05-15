@@ -226,7 +226,9 @@ public:
 
         // TODO: only instatiate AI once
         AI ai = AI(board);
-        std::cout << "bestmove " << ai.find_best_move().getUCI() << std::endl;
+        AI::SearchResult result = ai.find_best_move(4);
+        std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << "\n";
+        std::cout << "bestmove " << Move(result.bestmove_encoded).getUCI() << std::endl;
     }
 };
 

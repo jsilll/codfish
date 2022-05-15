@@ -9,12 +9,11 @@
 
 #include <limits>
 
-Move AI::find_best_move()
+AI::SearchResult AI::find_best_move(int depth)
 {
-    int best_val = std::numeric_limits<int>::min() + 1;
-    Move best_move = Move(0, 0, 0, 0, 0, 0, 0, 0);
-
-    for (Move move : Movegen::generatePseudoLegalMoves(_board))
+    Move bestmove = Move(0, 0, 0, 0, 0, 0, 0, 0);
+    int alpha = std::numeric_limits<int>::min() + 1;
+    for (const Move &move : Movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
         backup.makeMove(move);
@@ -22,17 +21,17 @@ Move AI::find_best_move()
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
-            int score = -search(std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max() - 1, 4, backup);
+            int score = -search(std::numeric_limits<int>::min() + 1, -alpha, depth, backup);
 
-            if (score > best_val)
+            if (score > alpha)
             {
-                best_val = score;
-                best_move = move;
+                alpha = score;
+                bestmove = move;
             }
         }
     }
 
-    return best_move;
+    return SearchResult{alpha, bestmove.getEncoded(), 10};
 }
 
 int AI::search(int alpha, int beta, int depth, Board &board)
@@ -43,25 +42,19 @@ int AI::search(int alpha, int beta, int depth, Board &board)
     }
 
     bool has_legal_moves = false;
-    int best_val = std::numeric_limits<int>::min() + 1;
     MoveList moves = Movegen::generatePseudoLegalMoves(board);
     for (const Move &move : moves)
     {
         Board backup = board;
         backup.makeMove(move);
         int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
             has_legal_moves = true;
             int score = -search(-beta, -alpha, depth - 1, backup);
-            if (score > best_val)
-            {
-                best_val = score;
-            }
             if (score >= beta)
             {
-                break;
+                return beta;
             }
             if (score > alpha)
             {
@@ -70,5 +63,16 @@ int AI::search(int alpha, int beta, int depth, Board &board)
         }
     }
 
-    return has_legal_moves ? best_val : std::numeric_limits<int>::min() + 1;
+    if (!has_legal_moves)
+    {
+        int king_sq = Utils::bitScanForward(board.getPieces(board.getOpponent(), KING));
+        if (board.isSquareAttacked(king_sq, board.getOpponent()))
+        {
+            return std::numeric_limits<int>::min() + 2;
+        }
+
+        return 0;
+    }
+
+    return alpha;
 }

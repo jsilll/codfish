@@ -139,6 +139,14 @@ int EG_KING_TABLE[64] = {
 int MG_TABLE[2][6][64];
 int EG_TABLE[2][6][64];
 int GAME_PHASE_INC[6] = {0, 1, 1, 2, 4, 0};
+int PIECE_SCORES[] = {
+    100,
+    280,
+    320,
+    479,
+    929,
+    60000,
+};
 
 void Eval::init()
 {
@@ -176,24 +184,12 @@ void Eval::init()
     }
 }
 
-int PIECE_SCORES[] = {
-    100,
-    280,
-    320,
-    479,
-    929,
-    60000,
-};
-
 int Eval::eval(Board &board)
 {
     int game_phase = 0;
     int material[2]{};
     int mg[2]{};
     int eg[2]{};
-
-    // if is checkmate
-    // if is
 
     for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
     {
