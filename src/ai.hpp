@@ -8,8 +8,9 @@ class Move;
 class AI
 {
 private:
-    int _depth;
     Board &_board;
+    int _depth;
+    unsigned long long _nodes;
 
 public:
     struct SearchResult
@@ -20,13 +21,12 @@ public:
     };
 
 public:
-    AI(Board &board) : _board(board) {}
-
-    void setDepth(int depth);
+    AI(Board &board) : _board(board), _depth(1), _nodes(0) {}
 
     int getDepth() const;
-    SearchResult find_best_move() const;
+    void setDepth(int depth);
+    SearchResult find_best_move();
 
 private:
-    int search(int alpha, int beta, int depth, Board &board) const;
+    int search(int alpha, int beta, int depth, Board &board);
 };

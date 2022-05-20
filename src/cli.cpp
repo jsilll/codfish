@@ -1,12 +1,5 @@
 #include "cli.hpp"
 
-#include <algorithm>
-#include <chrono>
-#include <iostream>
-#include <regex>
-#include <string>
-#include <vector>
-
 #include "defs.hpp"
 #include "utils.hpp"
 #include "magics.hpp"
@@ -17,6 +10,13 @@
 #include "movegen.hpp"
 #include "perft.hpp"
 #include "eval.hpp"
+
+#include <algorithm>
+#include <chrono>
+#include <iostream>
+#include <regex>
+#include <string>
+#include <vector>
 
 namespace Cli
 {

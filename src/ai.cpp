@@ -21,10 +21,13 @@ int AI::getDepth() const
     return _depth;
 }
 
-AI::SearchResult AI::find_best_move() const
+AI::SearchResult AI::find_best_move()
 {
     int alpha = MIN_EVAL;
     Move best_move = Move();
+
+    _nodes = 0;
+
     for (const Move &move : Movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
@@ -42,11 +45,13 @@ AI::SearchResult AI::find_best_move() const
         }
     }
 
-    return SearchResult{alpha, best_move.getEncoded(), 10};
+    return SearchResult{alpha, best_move.getEncoded(), _nodes};
 }
 
-int AI::search(int alpha, int beta, int depth, Board &board) const
+int AI::search(int alpha, int beta, int depth, Board &board)
 {
+    _nodes++;
+
     if (depth == 0)
     {
         return Eval::eval(board);

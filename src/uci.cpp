@@ -10,6 +10,7 @@
 #include "ai.hpp"
 #include "eval.hpp"
 
+#include <chrono>
 #include <iostream>
 #include <optional>
 #include <regex>
@@ -228,8 +229,11 @@ namespace Uci
             // TODO: only instatiate AI once
             AI ai = AI(board);
             ai.setDepth(depth);
+            std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
             AI::SearchResult result = ai.find_best_move();
-            std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << "\n";
+            std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+            std::chrono::duration<double> elapsed = end - start;
+            std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << elapsed / std::chrono::milliseconds(1) << "\n";
             std::cout << "bestmove " << Move(result.best_move_encoded).getUCI() << std::endl;
         }
     } goCommand;
