@@ -7,8 +7,8 @@
 
 typedef enum
 {
-  CLI,
   UCI,
+  CLI,
 } InterfaceMode;
 
 typedef struct

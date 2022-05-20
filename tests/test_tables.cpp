@@ -9,7 +9,6 @@ void setup()
 {
     Magics::init();
     Tables::init();
-    init = true;
 }
 
 // Test Pawn
