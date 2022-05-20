@@ -10,7 +10,6 @@ void setup()
 {
     Magics::init();
     Tables::init();
-    init = true;
 }
 
 TEST_CASE("Starting Board")
