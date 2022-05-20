@@ -8,14 +8,9 @@
 
 void setup()
 {
-    static bool init = false;
-
-    if (!init)
-    {
-        Magics::init();
-        Tables::init();
-        init = true;
-    }
+    Magics::init();
+    Tables::init();
+    init = true;
 }
 
 TEST_CASE("Starting Board")

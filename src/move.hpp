@@ -10,6 +10,7 @@ private:
   int _move_encoded;
 
 public:
+  Move() : _move_encoded(0){};
   Move(int move_encoded) : _move_encoded(move_encoded){};
   Move(int source_square, int target_square, int piece, int promoted_piece, bool capture, bool double_push, bool en_passant, bool castle);
 

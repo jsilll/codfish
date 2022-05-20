@@ -7,12 +7,24 @@
 #include "movegen.hpp"
 #include "eval.hpp"
 
-#include <limits>
+#include <climits>
 
-AI::SearchResult AI::find_best_move(int depth)
+#define MIN_EVAL (INT_MIN + 1)
+
+void AI::setDepth(int depth)
 {
-    Move bestmove = Move(0, 0, 0, 0, 0, 0, 0, 0);
-    int alpha = std::numeric_limits<int>::min() + 1;
+    _depth = depth;
+}
+
+int AI::getDepth() const
+{
+    return _depth;
+}
+
+AI::SearchResult AI::find_best_move() const
+{
+    int alpha = MIN_EVAL;
+    Move best_move = Move();
     for (const Move &move : Movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
@@ -21,20 +33,19 @@ AI::SearchResult AI::find_best_move(int depth)
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
-            int score = -search(std::numeric_limits<int>::min() + 1, -alpha, depth, backup);
-
+            int score = -search(MIN_EVAL, -alpha, _depth, backup);
             if (score > alpha)
             {
                 alpha = score;
-                bestmove = move;
+                best_move = move;
             }
         }
     }
 
-    return SearchResult{alpha, bestmove.getEncoded(), 10};
+    return SearchResult{alpha, best_move.getEncoded(), 10};
 }
 
-int AI::search(int alpha, int beta, int depth, Board &board)
+int AI::search(int alpha, int beta, int depth, Board &board) const
 {
     if (depth == 0)
     {
@@ -42,8 +53,7 @@ int AI::search(int alpha, int beta, int depth, Board &board)
     }
 
     bool has_legal_moves = false;
-    MoveList moves = Movegen::generatePseudoLegalMoves(board);
-    for (const Move &move : moves)
+    for (const Move &move : Movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
         backup.makeMove(move);
@@ -65,10 +75,10 @@ int AI::search(int alpha, int beta, int depth, Board &board)
 
     if (!has_legal_moves)
     {
-        int king_sq = Utils::bitScanForward(board.getPieces(board.getOpponent(), KING));
+        int king_sq = Utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
         if (board.isSquareAttacked(king_sq, board.getOpponent()))
         {
-            return std::numeric_limits<int>::min() + 2;
+            return MIN_EVAL + _depth - depth;
         }
 
         return 0;

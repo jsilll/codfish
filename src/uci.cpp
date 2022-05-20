@@ -196,7 +196,7 @@ class GoCommand : public Command
 public:
     void execute(std::vector<std::string> &args, Board &board)
     {
-        int depth = 6;
+        int depth = 4;
 
         if (args.size() != 0 && args[0] == "depth")
         {
@@ -226,9 +226,10 @@ public:
 
         // TODO: only instatiate AI once
         AI ai = AI(board);
-        AI::SearchResult result = ai.find_best_move(5);
+        ai.setDepth(depth);
+        AI::SearchResult result = ai.find_best_move();
         std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << "\n";
-        std::cout << "bestmove " << Move(result.bestmove_encoded).getUCI() << std::endl;
+        std::cout << "best_move " << Move(result.best_move_encoded).getUCI() << std::endl;
     }
 };
 
