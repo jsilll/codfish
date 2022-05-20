@@ -7,7 +7,6 @@
 #include "move.hpp"
 #include "movelist.hpp"
 #include "movegen.hpp"
-#include "perft.hpp"
 #include "ai.hpp"
 #include "eval.hpp"
 
@@ -227,7 +226,7 @@ public:
 
         // TODO: only instatiate AI once
         AI ai = AI(board);
-        AI::SearchResult result = ai.find_best_move(4);
+        AI::SearchResult result = ai.find_best_move(5);
         std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << "\n";
         std::cout << "bestmove " << Move(result.bestmove_encoded).getUCI() << std::endl;
     }
