@@ -15,7 +15,7 @@ public:
     struct SearchResult
     {
         int score;
-        int bestmove_encoded;
+        int best_move_encoded;
         unsigned long long nodes;
     };
 

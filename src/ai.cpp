@@ -24,7 +24,7 @@ int AI::getDepth() const
 AI::SearchResult AI::find_best_move() const
 {
     int alpha = MIN_EVAL;
-    Move bestmove = Move();
+    Move best_move = Move();
     for (const Move &move : Movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
@@ -34,16 +34,15 @@ AI::SearchResult AI::find_best_move() const
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             int score = -search(MIN_EVAL, -alpha, _depth, backup);
-
             if (score > alpha)
             {
                 alpha = score;
-                bestmove = move;
+                best_move = move;
             }
         }
     }
 
-    return SearchResult{alpha, bestmove.getEncoded(), 10};
+    return SearchResult{alpha, best_move.getEncoded(), 10};
 }
 
 int AI::search(int alpha, int beta, int depth, Board &board) const
