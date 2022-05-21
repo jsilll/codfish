@@ -2,7 +2,10 @@
 #include "board.hpp"
 #include "eval.hpp"
 
-// clang-format off
+namespace Eval
+{
+
+    // clang-format off
 int MG_PAWN_TABLE[64] = {
       0,   0,   0,   0,   0,   0,  0,   0,
      98, 134,  61,  95,  68, 126, 34, -11,
@@ -134,96 +137,98 @@ int EG_KING_TABLE[64] = {
     -27, -11,   4,  13,  14,   4,  -5, -17,
     -53, -34, -21, -11, -28, -14, -24, -43
 };
-// clang-format on
+    // clang-format on
 
-int MG_TABLE[2][6][64];
-int EG_TABLE[2][6][64];
-int GAME_PHASE_INC[6] = {0, 1, 1, 2, 4, 0};
-int PIECE_SCORES[] = {
-    100,
-    280,
-    320,
-    479,
-    929,
-    60000,
-};
+    int MG_TABLE[2][6][64];
+    int EG_TABLE[2][6][64];
+    int GAME_PHASE_INC[6] = {0, 1, 1, 2, 4, 0};
+    int PIECE_SCORES[] = {
+        100,
+        280,
+        320,
+        479,
+        929,
+        60000,
+    };
 
-void Eval::init()
-{
-    for (int sq = A1; sq < N_SQUARES; sq++)
+    void init()
     {
-        int sq_flipped = Utils::flipSquare(sq);
-
-        MG_TABLE[WHITE][PAWN][sq] = MG_PAWN_TABLE[sq_flipped];
-        MG_TABLE[WHITE][KNIGHT][sq] = MG_KNIGHT_TABLE[sq_flipped];
-        MG_TABLE[WHITE][BISHOP][sq] = MG_BISHOP_TABLE[sq_flipped];
-        MG_TABLE[WHITE][ROOK][sq] = MG_ROOK_TABLE[sq_flipped];
-        MG_TABLE[WHITE][QUEEN][sq] = MG_QUEEN_TABLE[sq_flipped];
-        MG_TABLE[WHITE][KING][sq] = MG_KING_TABLE[sq_flipped];
-
-        MG_TABLE[BLACK][PAWN][sq] = MG_PAWN_TABLE[sq];
-        MG_TABLE[BLACK][KNIGHT][sq] = MG_KNIGHT_TABLE[sq];
-        MG_TABLE[BLACK][BISHOP][sq] = MG_BISHOP_TABLE[sq];
-        MG_TABLE[BLACK][ROOK][sq] = MG_ROOK_TABLE[sq];
-        MG_TABLE[BLACK][QUEEN][sq] = MG_QUEEN_TABLE[sq];
-        MG_TABLE[BLACK][KING][sq] = MG_KING_TABLE[sq];
-
-        EG_TABLE[WHITE][PAWN][sq] = EG_PAWN_TABLE[sq_flipped];
-        EG_TABLE[WHITE][KNIGHT][sq] = EG_KNIGHT_TABLE[sq_flipped];
-        EG_TABLE[WHITE][BISHOP][sq] = EG_BISHOP_TABLE[sq_flipped];
-        EG_TABLE[WHITE][ROOK][sq] = EG_ROOK_TABLE[sq_flipped];
-        EG_TABLE[WHITE][QUEEN][sq] = EG_QUEEN_TABLE[sq_flipped];
-        EG_TABLE[WHITE][KING][sq] = EG_KING_TABLE[sq_flipped];
-
-        EG_TABLE[BLACK][PAWN][sq] = EG_PAWN_TABLE[sq];
-        EG_TABLE[BLACK][KNIGHT][sq] = EG_KNIGHT_TABLE[sq];
-        EG_TABLE[BLACK][BISHOP][sq] = EG_BISHOP_TABLE[sq];
-        EG_TABLE[BLACK][ROOK][sq] = EG_ROOK_TABLE[sq];
-        EG_TABLE[BLACK][QUEEN][sq] = EG_QUEEN_TABLE[sq];
-        EG_TABLE[BLACK][KING][sq] = EG_KING_TABLE[sq];
-    }
-}
-
-int Eval::eval(Board &board)
-{
-    int game_phase = 0;
-    int material[2]{};
-    int mg[2]{};
-    int eg[2]{};
-
-    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
-    {
-        U64 pieces_white = board.getPieces(WHITE, piece_type);
-        while (pieces_white)
+        for (int sq = A1; sq < N_SQUARES; sq++)
         {
-            int sq = Utils::bitScanForward(pieces_white);
-            mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
-            eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
-            material[WHITE] += PIECE_SCORES[piece_type];
-            game_phase += GAME_PHASE_INC[piece_type];
-            Utils::popBit(pieces_white, sq);
-        }
+            int sq_flipped = Utils::flipSquare(sq);
 
-        U64 pieces_black = board.getPieces(BLACK, piece_type);
-        while (pieces_black)
-        {
-            int sq = Utils::bitScanForward(pieces_black);
-            mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
-            eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
-            material[BLACK] += PIECE_SCORES[piece_type];
-            game_phase += GAME_PHASE_INC[piece_type];
-            Utils::popBit(pieces_black, sq);
+            MG_TABLE[WHITE][PAWN][sq] = MG_PAWN_TABLE[sq_flipped];
+            MG_TABLE[WHITE][KNIGHT][sq] = MG_KNIGHT_TABLE[sq_flipped];
+            MG_TABLE[WHITE][BISHOP][sq] = MG_BISHOP_TABLE[sq_flipped];
+            MG_TABLE[WHITE][ROOK][sq] = MG_ROOK_TABLE[sq_flipped];
+            MG_TABLE[WHITE][QUEEN][sq] = MG_QUEEN_TABLE[sq_flipped];
+            MG_TABLE[WHITE][KING][sq] = MG_KING_TABLE[sq_flipped];
+
+            MG_TABLE[BLACK][PAWN][sq] = MG_PAWN_TABLE[sq];
+            MG_TABLE[BLACK][KNIGHT][sq] = MG_KNIGHT_TABLE[sq];
+            MG_TABLE[BLACK][BISHOP][sq] = MG_BISHOP_TABLE[sq];
+            MG_TABLE[BLACK][ROOK][sq] = MG_ROOK_TABLE[sq];
+            MG_TABLE[BLACK][QUEEN][sq] = MG_QUEEN_TABLE[sq];
+            MG_TABLE[BLACK][KING][sq] = MG_KING_TABLE[sq];
+
+            EG_TABLE[WHITE][PAWN][sq] = EG_PAWN_TABLE[sq_flipped];
+            EG_TABLE[WHITE][KNIGHT][sq] = EG_KNIGHT_TABLE[sq_flipped];
+            EG_TABLE[WHITE][BISHOP][sq] = EG_BISHOP_TABLE[sq_flipped];
+            EG_TABLE[WHITE][ROOK][sq] = EG_ROOK_TABLE[sq_flipped];
+            EG_TABLE[WHITE][QUEEN][sq] = EG_QUEEN_TABLE[sq_flipped];
+            EG_TABLE[WHITE][KING][sq] = EG_KING_TABLE[sq_flipped];
+
+            EG_TABLE[BLACK][PAWN][sq] = EG_PAWN_TABLE[sq];
+            EG_TABLE[BLACK][KNIGHT][sq] = EG_KNIGHT_TABLE[sq];
+            EG_TABLE[BLACK][BISHOP][sq] = EG_BISHOP_TABLE[sq];
+            EG_TABLE[BLACK][ROOK][sq] = EG_ROOK_TABLE[sq];
+            EG_TABLE[BLACK][QUEEN][sq] = EG_QUEEN_TABLE[sq];
+            EG_TABLE[BLACK][KING][sq] = EG_KING_TABLE[sq];
         }
     }
 
-    int to_move = board.getSideToMove();
-    int opponent = board.getOpponent();
+    int eval(Board &board)
+    {
+        int game_phase = 0;
+        int material[2]{};
+        int mg[2]{};
+        int eg[2]{};
 
-    int mg_score = mg[to_move] - mg[opponent];
-    int eg_score = eg[to_move] - eg[opponent];
-    int material_score = material[to_move] - material[opponent];
+        for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+        {
+            U64 pieces_white = board.getPieces(WHITE, piece_type);
+            while (pieces_white)
+            {
+                int sq = Utils::bitScanForward(pieces_white);
+                mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
+                eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
+                material[WHITE] += PIECE_SCORES[piece_type];
+                game_phase += GAME_PHASE_INC[piece_type];
+                Utils::popBit(pieces_white, sq);
+            }
 
-    int mg_phase = game_phase > 24 ? 24 : game_phase;
-    int eg_phase = 24 - mg_phase;
-    return ((mg_score * mg_phase + eg_score * eg_phase) / 24) + material_score;
+            U64 pieces_black = board.getPieces(BLACK, piece_type);
+            while (pieces_black)
+            {
+                int sq = Utils::bitScanForward(pieces_black);
+                mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
+                eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
+                material[BLACK] += PIECE_SCORES[piece_type];
+                game_phase += GAME_PHASE_INC[piece_type];
+                Utils::popBit(pieces_black, sq);
+            }
+        }
+
+        int to_move = board.getSideToMove();
+        int opponent = board.getOpponent();
+
+        int mg_score = mg[to_move] - mg[opponent];
+        int eg_score = eg[to_move] - eg[opponent];
+        int material_score = material[to_move] - material[opponent];
+
+        int mg_phase = game_phase > 24 ? 24 : game_phase;
+        int eg_phase = 24 - mg_phase;
+        return ((mg_score * mg_phase + eg_score * eg_phase) / 24) + material_score;
+    }
+
 }

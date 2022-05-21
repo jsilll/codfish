@@ -6,25 +6,30 @@
 #include "board.hpp"
 #include "movegen.hpp"
 
-unsigned long long Perft::perft(const Board &board, int depth)
+namespace Perft
 {
-    if (depth == 0)
-    {
-        return 1;
-    }
 
-    unsigned long long nodes = 0;
-    for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+    unsigned long long perft(const Board &board, int depth)
     {
-        Board backup = board;
-        backup.makeMove(move);
-        int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        if (depth == 0)
         {
-            nodes += perft(backup, depth - 1);
+            return 1;
         }
+
+        unsigned long long nodes = 0;
+        for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+        {
+            Board backup = board;
+            backup.makeMove(move);
+            int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+            int attacker_side = backup.getSideToMove();
+            if (!backup.isSquareAttacked(king_sq, attacker_side))
+            {
+                nodes += perft(backup, depth - 1);
+            }
+        }
+
+        return nodes;
     }
 
-    return nodes;
 }
