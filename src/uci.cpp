@@ -37,7 +37,7 @@ namespace Uci
     class DisplayCommand : public Command
     {
     public:
-        void execute(std::vector<std::string> &args, Board &board)
+        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
         {
             board.display();
         }
@@ -50,7 +50,7 @@ namespace Uci
     class UCICommand : public Command
     {
     public:
-        void execute(std::vector<std::string> &args, Board &board)
+        void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
         {
             std::cout << "id name Chess Engine\n";
             std::cout << "id name Chess Engine\n";
@@ -65,7 +65,7 @@ namespace Uci
     class IsReadyCommand : public Command
     {
     public:
-        void execute(std::vector<std::string> &args, Board &board)
+        void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
         {
             std::cout << "readyok" << std::endl;
         }
@@ -78,7 +78,7 @@ namespace Uci
     class UCINewGameCommand : public Command
     {
     public:
-        void execute(std::vector<std::string> &args, Board &board)
+        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
         {
             board.setStartingPosition();
         }
@@ -198,7 +198,7 @@ namespace Uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int depth = 4;
+            int depth = 5;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -229,9 +229,11 @@ namespace Uci
             // TODO: only instatiate AI once
             AI ai = AI(board);
             ai.setDepth(depth);
+
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
             AI::SearchResult result = ai.find_best_move();
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+
             std::chrono::duration<double> elapsed = end - start;
             std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << elapsed / std::chrono::milliseconds(1) << "\n";
             std::cout << "bestmove " << Move(result.best_move_encoded).getUCI() << std::endl;
@@ -245,7 +247,7 @@ namespace Uci
     class QuitCommand : public Command
     {
     public:
-        void execute(std::vector<std::string> &args, Board &board)
+        void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
         {
             exit(EXIT_SUCCESS);
         }

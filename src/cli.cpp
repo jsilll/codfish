@@ -53,7 +53,7 @@ namespace Cli
       }
       catch (const std::exception &e)
       {
-        std::cout << "invalid depth value." << std::endl;
+        std::cout << "invalid depth value1." << std::endl;
         return;
       }
 
@@ -91,7 +91,7 @@ namespace Cli
       std::cout << "Found " << total_nodes << " nodes." << std::endl;
       std::cout << "Finished computation at " << std::ctime(&end_time);
       std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-      std::cout << "Nodes Per Second: " << total_nodes / elapsed_seconds.count() << std::endl;
+      std::cout << "Nodes Per Second: " << (double)total_nodes / elapsed_seconds.count() << std::endl;
     }
   } dperftCommand;
 
@@ -102,7 +102,7 @@ namespace Cli
   class HelpCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
     {
       std::cout
           << "ascii                 Toggles between ascii and utf-8 board representation\n"
@@ -137,7 +137,7 @@ namespace Cli
   class InfoCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::string fen = board.getFen();
       std::vector<std::string> splitted_fen = Utils::tokenizeString(fen);
@@ -187,7 +187,7 @@ namespace Cli
   class MovesCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       MoveList moves = Movegen::generateLegalMoves(board);
       for (Move const &move : moves)
@@ -245,7 +245,7 @@ namespace Cli
       std::cout << "Found " << nodes << " nodes." << std::endl;
       std::cout << "Finished computation at " << std::ctime(&end_time);
       std::cout << "Elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
-      std::cout << "Nodes Per Second: " << nodes / elapsed_seconds.count() << std::endl;
+      std::cout << "Nodes Per Second: " << (double)nodes / elapsed_seconds.count() << std::endl;
     }
   } perftCommand;
 
@@ -256,7 +256,7 @@ namespace Cli
   class SwitchCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::cout << "side to play is now " << (board.switchSideToMove() == WHITE ? "white" : "black") << std::endl;
     }
@@ -269,7 +269,7 @@ namespace Cli
   class DisplayCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       board.display();
     }
@@ -282,7 +282,7 @@ namespace Cli
   class NewCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       board.setStartingPosition();
     }
@@ -295,7 +295,7 @@ namespace Cli
   class RotateCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::cout << (board.rotateDisplay() ? "white" : "black") << " is now on bottom" << std::endl;
     }
@@ -354,7 +354,7 @@ namespace Cli
   class GetFenCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::cout << board.getFen();
     }
@@ -367,7 +367,7 @@ namespace Cli
   class MagicsCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
     {
       Magics::generate();
     }
@@ -380,7 +380,7 @@ namespace Cli
   class AsciiCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::cout << "ascii mode toggled " << (board.toggleAscii() ? "on" : "off") << std::endl;
     }
@@ -393,7 +393,7 @@ namespace Cli
   class EvalCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::cout << "Static Evaluation: " << Eval::eval(board) << std::endl;
     }
@@ -406,7 +406,7 @@ namespace Cli
   class ExitCommand : public Command
   {
   public:
-    void execute(std::vector<std::string> &args, Board &board)
+    void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
     {
       exit(EXIT_SUCCESS);
     }
@@ -427,6 +427,7 @@ namespace Cli
       std::getline(std::cin, line);
       std::vector<std::string> args = Utils::tokenizeString(std::string(line));
       std::string cmd = args[0];
+      args.erase(args.begin());
       if (cmd == "help")
       {
         helpCommand.execute(args, board);

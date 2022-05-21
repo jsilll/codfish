@@ -18,7 +18,7 @@ public:
 
   void push_back(const Move &move);
 
-  [[nodiscard]] unsigned int size() const;
+  [[nodiscard]] MoveVector::size_type size() const;
   [[nodiscard]] const_iterator begin() const { return _moves.begin(); }
   [[nodiscard]] const_iterator cbegin() const { return _moves.cbegin(); }
   [[nodiscard]] const_iterator end() const { return _moves.end(); }

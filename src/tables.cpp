@@ -46,7 +46,7 @@ namespace Tables
       for (int i = 0; i < occupancy_indices; i++)
       {
         U64 occupancy = Utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], Magics::MAGIC_TABLE_BISHOP[sq].mask);
-        int magic = (occupancy * Magics::MAGIC_TABLE_BISHOP[sq].magic) >> Magics::MAGIC_TABLE_BISHOP[sq].shift;
+        int magic = (int)((occupancy * Magics::MAGIC_TABLE_BISHOP[sq].magic) >> Magics::MAGIC_TABLE_BISHOP[sq].shift);
         ATTACKS_BISHOP[sq][magic] = Attacks::maskBishopAttacks(sq, occupancy);
       }
     }
@@ -57,7 +57,7 @@ namespace Tables
       for (int i = 0; i < occupancy_indices; i++)
       {
         U64 occupancy = Utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], Magics::MAGIC_TABLE_ROOK[sq].mask);
-        int magic = (occupancy * Magics::MAGIC_TABLE_ROOK[sq].magic) >> Magics::MAGIC_TABLE_ROOK[sq].shift;
+        int magic = (int)((occupancy * Magics::MAGIC_TABLE_ROOK[sq].magic) >> Magics::MAGIC_TABLE_ROOK[sq].shift);
         ATTACKS_ROOK[sq][magic] = Attacks::maskRookAttacks(sq, occupancy);
       }
     }
