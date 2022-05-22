@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace Tables
+namespace tables
 {
     constexpr U64 MASK_RANK[] = {
         0xFF,
@@ -69,7 +69,7 @@ constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {
     // clang-format on
 
     extern U64 SQUARE_BB[N_SQUARES];
-    
+
     extern U64 ATTACKS_PAWN[BOTH][N_SQUARES];  // Direct Access
     extern U64 ATTACKS_KNIGHT[N_SQUARES];      // Direct Access
     extern U64 ATTACKS_KING[N_SQUARES];        // Direct Access
@@ -81,4 +81,4 @@ constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {
     U64 getBishopAttacks(const int &sq, U64 occ);
     U64 getRookAttacks(const int &sq, U64 occ);
     U64 getQueenAttacks(const int &sq, U64 occ);
-} // namespace Tables
+} // namespace tables

@@ -6,10 +6,6 @@
 #include "../src/tables.hpp"
 #include "../src/board.hpp"
 
-// Bla Bla Board Tests
-
-TEST_CASE("Perft")
+TEST_CASE("")
 {
-    // perft(3) == 8600...
-    // perft(4) == 8600...
 }

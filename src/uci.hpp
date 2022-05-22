@@ -2,11 +2,11 @@
 
 #include "defs.hpp"
 
-namespace Uci
+namespace uci
 {
     /**
      * @brief Initializes the uci command line mode
      *
      */
     void init();
-} // namespace Uci
+} // namespace uci

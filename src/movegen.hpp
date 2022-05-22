@@ -6,7 +6,7 @@ class Move;
 class MoveList;
 class Board;
 
-namespace Movegen
+namespace movegen
 {
     /**
      * @brief Generates all the pseudo-legal moves for a given board
@@ -23,4 +23,4 @@ namespace Movegen
      * @return MoveList
      */
     MoveList generateLegalMoves(const Board &board);
-} // namespace Movegen
+} // namespace movegen

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-namespace Magics
+namespace magics
 {
 
   Magic MAGIC_TABLE_BISHOP[N_SQUARES];
@@ -47,7 +47,7 @@ namespace Magics
 
     for (int i = 0; i < occupancy_indices; i++)
     {
-      occupancies[i] = Utils::setOccupancy(i, relevant_bits, attack_mask);
+      occupancies[i] = utils::setOccupancy(i, relevant_bits, attack_mask);
       attacks[i] = maskAttacksOccFun(sq, occupancies[i]);
     }
 
@@ -55,7 +55,7 @@ namespace Magics
     {
       U64 candidate = getMagicNumberCandidate();
 
-      if (Utils::bitCount((attack_mask * candidate) & 0xFF00000000000000) < 6)
+      if (utils::bitCount((attack_mask * candidate) & 0xFF00000000000000) < 6)
       {
         continue;
       }
@@ -91,8 +91,8 @@ namespace Magics
     std::cout << "Rook Magic Numbers" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-      int bit_count = Tables::RELEVANT_BITS_COUNT_ROOK[sq];
-      U64 magic = generateMagicNumber(sq, bit_count, &Attacks::maskRookAttackRays, &Attacks::maskRookAttacks);
+      int bit_count = tables::RELEVANT_BITS_COUNT_ROOK[sq];
+      U64 magic = generateMagicNumber(sq, bit_count, &attacks::maskRookAttackRays, &attacks::maskRookAttacks);
       printf("%d : 0x%llxULL\n", sq, magic);
     }
     std::cout << std::endl;
@@ -100,8 +100,8 @@ namespace Magics
     std::cout << "Bishop Magic Numbers" << std::endl;
     for (int sq = 0; sq < 64; sq++)
     {
-      int bit_count = Tables::RELEVANT_BITS_COUNT_BISHOP[sq];
-      U64 magic = generateMagicNumber(sq, bit_count, &Attacks::maskBishopAttackRays, &Attacks::maskBishopAttacks);
+      int bit_count = tables::RELEVANT_BITS_COUNT_BISHOP[sq];
+      U64 magic = generateMagicNumber(sq, bit_count, &attacks::maskBishopAttackRays, &attacks::maskBishopAttacks);
       printf("%d : 0x%llxULL\n", sq, magic);
     }
     std::cout << std::endl;
@@ -111,16 +111,16 @@ namespace Magics
   {
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      MAGIC_TABLE_BISHOP[sq].mask = Attacks::maskBishopAttackRays(sq);
+      MAGIC_TABLE_BISHOP[sq].mask = attacks::maskBishopAttackRays(sq);
       MAGIC_TABLE_BISHOP[sq].magic = MAGICS_BISHOP[sq];
-      MAGIC_TABLE_BISHOP[sq].shift = 64 - Tables::RELEVANT_BITS_COUNT_BISHOP[sq];
+      MAGIC_TABLE_BISHOP[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_BISHOP[sq];
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      MAGIC_TABLE_ROOK[sq].mask = Attacks::maskRookAttackRays(sq);
+      MAGIC_TABLE_ROOK[sq].mask = attacks::maskRookAttackRays(sq);
       MAGIC_TABLE_ROOK[sq].magic = MAGICS_ROOK[sq];
-      MAGIC_TABLE_ROOK[sq].shift = 64 - Tables::RELEVANT_BITS_COUNT_ROOK[sq];
+      MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
     }
   }
 

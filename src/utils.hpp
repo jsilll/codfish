@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Utils
+namespace utils
 {
 
   inline int getSquare(const int rk, const int fl)

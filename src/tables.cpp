@@ -4,7 +4,7 @@
 #include "magics.hpp"
 #include "attacks.hpp"
 
-namespace Tables
+namespace tables
 {
 
   U64 SQUARE_BB[N_SQUARES];
@@ -25,18 +25,18 @@ namespace Tables
     // Initializing Leaper Piece Attack Tables
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_PAWN[WHITE][sq] = Attacks::maskWhitePawnAnyAttacks(SQUARE_BB[sq]);
-      ATTACKS_PAWN[BLACK][sq] = Attacks::maskBlackPawnAnyAttacks(SQUARE_BB[sq]);
+      ATTACKS_PAWN[WHITE][sq] = attacks::maskWhitePawnAnyAttacks(SQUARE_BB[sq]);
+      ATTACKS_PAWN[BLACK][sq] = attacks::maskBlackPawnAnyAttacks(SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_KNIGHT[sq] = Attacks::maskKnightAttacks(SQUARE_BB[sq]);
+      ATTACKS_KNIGHT[sq] = attacks::maskKnightAttacks(SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_KING[sq] = Attacks::maskKingAttacks(SQUARE_BB[sq]);
+      ATTACKS_KING[sq] = attacks::maskKingAttacks(SQUARE_BB[sq]);
     }
 
     // Initialize Slider Piece Attack Tables
@@ -45,9 +45,9 @@ namespace Tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_BISHOP[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = Utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], Magics::MAGIC_TABLE_BISHOP[sq].mask);
-        int magic = (int)((occupancy * Magics::MAGIC_TABLE_BISHOP[sq].magic) >> Magics::MAGIC_TABLE_BISHOP[sq].shift);
-        ATTACKS_BISHOP[sq][magic] = Attacks::maskBishopAttacks(sq, occupancy);
+        U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
+        int magic = (int)((occupancy * magics::MAGIC_TABLE_BISHOP[sq].magic) >> magics::MAGIC_TABLE_BISHOP[sq].shift);
+        ATTACKS_BISHOP[sq][magic] = attacks::maskBishopAttacks(sq, occupancy);
       }
     }
 
@@ -56,26 +56,26 @@ namespace Tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_ROOK[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = Utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], Magics::MAGIC_TABLE_ROOK[sq].mask);
-        int magic = (int)((occupancy * Magics::MAGIC_TABLE_ROOK[sq].magic) >> Magics::MAGIC_TABLE_ROOK[sq].shift);
-        ATTACKS_ROOK[sq][magic] = Attacks::maskRookAttacks(sq, occupancy);
+        U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
+        int magic = (int)((occupancy * magics::MAGIC_TABLE_ROOK[sq].magic) >> magics::MAGIC_TABLE_ROOK[sq].shift);
+        ATTACKS_ROOK[sq][magic] = attacks::maskRookAttacks(sq, occupancy);
       }
     }
   }
 
   U64 getBishopAttacks(const int &sq, U64 occ)
   {
-    occ &= Magics::MAGIC_TABLE_BISHOP[sq].mask;
-    occ *= Magics::MAGIC_TABLE_BISHOP[sq].magic;
-    occ >>= Magics::MAGIC_TABLE_BISHOP[sq].shift;
+    occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
+    occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
+    occ >>= magics::MAGIC_TABLE_BISHOP[sq].shift;
     return ATTACKS_BISHOP[sq][occ];
   }
 
   U64 getRookAttacks(const int &sq, U64 occ)
   {
-    occ &= Magics::MAGIC_TABLE_ROOK[sq].mask;
-    occ *= Magics::MAGIC_TABLE_ROOK[sq].magic;
-    occ >>= Magics::MAGIC_TABLE_ROOK[sq].shift;
+    occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
+    occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
+    occ >>= magics::MAGIC_TABLE_ROOK[sq].shift;
     return ATTACKS_ROOK[sq][occ];
   }
 

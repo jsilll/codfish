@@ -25,7 +25,7 @@ public:
 
     int getDepth() const;
     void setDepth(int depth);
-    SearchResult find_best_move();
+    SearchResult findBestMove();
 
 private:
     int search(int alpha, int beta, int depth, Board &board);

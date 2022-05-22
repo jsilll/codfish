@@ -28,15 +28,15 @@ int main(int argc, char const *argv[])
   {
   case CLI:
     std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
-    Cli::init();
+    cli::init();
     break;
   case UCI:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    Uci::init();
+    uci::init();
     break;
   default:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    Uci::init();
+    uci::init();
     break;
   }
 

@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace Uci
+namespace uci
 {
     /**
      * @brief Command Abstract class
@@ -177,7 +177,7 @@ namespace Uci
 
         std::optional<Move> parseMove(std::string move_uci, Board &board)
         {
-            for (Move const &move : Movegen::generateLegalMoves(board))
+            for (Move const &move : movegen::generateLegalMoves(board))
             {
                 if (move.getUCI() == move_uci)
                 {
@@ -231,7 +231,7 @@ namespace Uci
             ai.setDepth(depth);
 
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-            AI::SearchResult result = ai.find_best_move();
+            AI::SearchResult result = ai.findBestMove();
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
             std::chrono::duration<double> elapsed = end - start;
@@ -255,16 +255,16 @@ namespace Uci
 
     void init()
     {
-        Magics::init();
-        Tables::init();
-        Eval::init();
+        magics::init();
+        tables::init();
+        eval::init();
 
         Board board = Board();
 
         std::string line;
         while (std::getline(std::cin, line))
         {
-            std::vector<std::string> args = Utils::tokenizeString(line);
+            std::vector<std::string> args = utils::tokenizeString(line);
             std::string cmd = args[0];
             args.erase(args.begin());
             if (cmd == "uci")

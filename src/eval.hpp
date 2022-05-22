@@ -4,7 +4,7 @@
 
 class Board;
 
-namespace Eval
+namespace eval
 {
     void init();
 
@@ -18,4 +18,4 @@ namespace Eval
      */
     int eval(Board &board);
 
-} // namespace Eval
+} // namespace eval

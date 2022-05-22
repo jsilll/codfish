@@ -9,7 +9,7 @@
 #include <regex>
 #include <vector>
 
-namespace Utils
+namespace utils
 {
 
   int bitScan(U64 bb)
@@ -47,7 +47,7 @@ namespace Utils
       if (index & (1 << bit))
 
       {
-        occupancy |= Tables::SQUARE_BB[lsb_sq];
+        occupancy |= tables::SQUARE_BB[lsb_sq];
       }
     }
     return occupancy;

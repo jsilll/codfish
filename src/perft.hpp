@@ -4,13 +4,13 @@
 
 class Board;
 
-namespace Perft
+namespace perft
 {
     /**
-     * @brief Perft Function
+     * @brief perft Function
      *
      * @param depth
      * @return long long
      */
     unsigned long long perft(const Board &board, int depth);
-} // namespace Perft
+} // namespace perft

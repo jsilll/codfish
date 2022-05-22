@@ -2,7 +2,7 @@
 #include "board.hpp"
 #include "eval.hpp"
 
-namespace Eval
+namespace eval
 {
 
     // clang-format off
@@ -155,7 +155,7 @@ int EG_KING_TABLE[64] = {
     {
         for (int sq = A1; sq < N_SQUARES; sq++)
         {
-            int sq_flipped = Utils::flipSquare(sq);
+            int sq_flipped = utils::flipSquare(sq);
 
             MG_TABLE[WHITE][PAWN][sq] = MG_PAWN_TABLE[sq_flipped];
             MG_TABLE[WHITE][KNIGHT][sq] = MG_KNIGHT_TABLE[sq_flipped];
@@ -199,23 +199,23 @@ int EG_KING_TABLE[64] = {
             U64 pieces_white = board.getPieces(WHITE, piece_type);
             while (pieces_white)
             {
-                int sq = Utils::bitScanForward(pieces_white);
+                int sq = utils::bitScanForward(pieces_white);
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
                 eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
                 material[WHITE] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                Utils::popBit(pieces_white, sq);
+                utils::popBit(pieces_white, sq);
             }
 
             U64 pieces_black = board.getPieces(BLACK, piece_type);
             while (pieces_black)
             {
-                int sq = Utils::bitScanForward(pieces_black);
+                int sq = utils::bitScanForward(pieces_black);
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
                 eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
                 material[BLACK] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                Utils::popBit(pieces_black, sq);
+                utils::popBit(pieces_black, sq);
             }
         }
 

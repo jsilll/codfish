@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace Cli
+namespace cli
 {
   /**
    * @brief Command Abstract class
@@ -72,15 +72,15 @@ namespace Cli
     {
       unsigned long long total_nodes = 0;
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-      for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+      for (Move const &move : movegen::generatePseudoLegalMoves(board))
       {
         Board backup = board;
         backup.makeMove(move);
-        int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
-          unsigned long long nodes = Perft::perft(backup, depth - 1);
+          unsigned long long nodes = perft::perft(backup, depth - 1);
           std::cout << move.getUCI() << ": " << nodes << std::endl;
           total_nodes += nodes;
         }
@@ -140,16 +140,16 @@ namespace Cli
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::string fen = board.getFen();
-      std::vector<std::string> splitted_fen = Utils::tokenizeString(fen);
+      std::vector<std::string> splitted_fen = utils::tokenizeString(fen);
       std::cout << "Side to Play                 = " << splitted_fen[1]
                 << "\nCastling Rights              = " << splitted_fen[2]
                 << "\nEn-passant Square            = " << splitted_fen[3]
                 << "\nFifty Move Count             = " << splitted_fen[4]
                 << "\nFull Move Number             = " << splitted_fen[5];
       std::cout << "\nOccupied Squares:\n";
-      Utils::printBB(board.getOccupancies(BOTH));
-      Utils::printBB(board.getOccupancies(WHITE));
-      Utils::printBB(board.getOccupancies(BLACK));
+      utils::printBB(board.getOccupancies(BOTH));
+      utils::printBB(board.getOccupancies(WHITE));
+      utils::printBB(board.getOccupancies(BLACK));
     }
   } infoCommand;
 
@@ -167,7 +167,7 @@ namespace Cli
         return;
       }
 
-      for (Move const &move : Movegen::generateLegalMoves(board))
+      for (Move const &move : movegen::generateLegalMoves(board))
       {
         if (move.getUCI() == args[0])
         {
@@ -189,7 +189,7 @@ namespace Cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      MoveList moves = Movegen::generateLegalMoves(board);
+      MoveList moves = movegen::generateLegalMoves(board);
       for (Move const &move : moves)
       {
         std::cout << move.getUCI() << "\n";
@@ -238,7 +238,7 @@ namespace Cli
     void dperft(int depth, Board board)
     {
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-      unsigned long long nodes = Perft::perft(board, depth);
+      unsigned long long nodes = perft::perft(board, depth);
       std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
       std::time_t end_time = std::chrono::system_clock::to_time_t(end);
@@ -369,7 +369,7 @@ namespace Cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
     {
-      Magics::generate();
+      magics::generate();
     }
   } magicsCommand;
 
@@ -395,7 +395,7 @@ namespace Cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      std::cout << "Static Evaluation: " << Eval::eval(board) << std::endl;
+      std::cout << "Static Evaluation: " << eval::eval(board) << std::endl;
     }
   } evalCommand;
 
@@ -414,9 +414,9 @@ namespace Cli
 
   void init()
   {
-    Magics::init();
-    Tables::init();
-    Eval::init();
+    magics::init();
+    tables::init();
+    eval::init();
 
     Board board = Board();
 
@@ -425,7 +425,7 @@ namespace Cli
       std::cout << "> ";
       std::string line;
       std::getline(std::cin, line);
-      std::vector<std::string> args = Utils::tokenizeString(std::string(line));
+      std::vector<std::string> args = utils::tokenizeString(std::string(line));
       std::string cmd = args[0];
       args.erase(args.begin());
       if (cmd == "help")

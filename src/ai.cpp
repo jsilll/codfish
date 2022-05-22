@@ -21,18 +21,17 @@ int AI::getDepth() const
     return _depth;
 }
 
-AI::SearchResult AI::find_best_move()
+AI::SearchResult AI::findBestMove()
 {
-    int alpha = MIN_EVAL;
-    Move best_move = Move();
-
     _nodes = 0;
 
-    for (const Move &move : Movegen::generatePseudoLegalMoves(_board))
+    int alpha = MIN_EVAL;
+    Move best_move = Move();
+    for (const Move &move : movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
         backup.makeMove(move);
-        int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
@@ -54,15 +53,15 @@ int AI::search(int alpha, int beta, int depth, Board &board)
 
     if (depth == 0)
     {
-        return Eval::eval(board);
+        return eval::eval(board);
     }
 
     bool has_legal_moves = false;
-    for (const Move &move : Movegen::generatePseudoLegalMoves(board))
+    for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
         backup.makeMove(move);
-        int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
             has_legal_moves = true;
@@ -80,7 +79,7 @@ int AI::search(int alpha, int beta, int depth, Board &board)
 
     if (!has_legal_moves)
     {
-        int king_sq = Utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+        int king_sq = utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
         if (board.isSquareAttacked(king_sq, board.getOpponent()))
         {
             return MIN_EVAL + _depth - depth;

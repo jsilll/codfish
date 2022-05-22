@@ -7,7 +7,7 @@
 #include "move.hpp"
 #include "movelist.hpp"
 
-namespace Movegen
+namespace movegen
 {
   inline void generateCastlingMoves(MoveList &move_list, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask);
 
@@ -48,8 +48,8 @@ namespace Movegen
     U64 both_occupancies = board.getOccupancies(BOTH);
 
     U64 to_move_pawns = board.getPieces(to_move, PAWN);
-    U64 pawn_double_pushes = to_move == WHITE ? Attacks::maskWhitePawnDoublePushes(to_move_pawns, ~both_occupancies) : Attacks::maskBlackPawnDoublePushes(to_move_pawns, ~both_occupancies);
-    U64 pawn_single_pushes = to_move == WHITE ? Attacks::maskWhitePawnSinglePushes(to_move_pawns, ~both_occupancies) : Attacks::maskBlackPawnSinglePushes(to_move_pawns, ~both_occupancies);
+    U64 pawn_double_pushes = to_move == WHITE ? attacks::maskWhitePawnDoublePushes(to_move_pawns, ~both_occupancies) : attacks::maskBlackPawnDoublePushes(to_move_pawns, ~both_occupancies);
+    U64 pawn_single_pushes = to_move == WHITE ? attacks::maskWhitePawnSinglePushes(to_move_pawns, ~both_occupancies) : attacks::maskBlackPawnSinglePushes(to_move_pawns, ~both_occupancies);
 
     MoveList move_list = MoveList();
 
@@ -79,11 +79,11 @@ namespace Movegen
   MoveList generateLegalMoves(const Board &board)
   {
     MoveList legal_moves;
-    for (Move const &move : Movegen::generatePseudoLegalMoves(board))
+    for (Move const &move : movegen::generatePseudoLegalMoves(board))
     {
       Board backup = board;
       backup.makeMove(move);
-      int king_sq = Utils::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
+      int king_sq = utils::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
       int attacker_side = backup.getSideToMove();
       if (!backup.isSquareAttacked(king_sq, attacker_side))
       {
@@ -97,14 +97,14 @@ namespace Movegen
   {
     if (!board.isSquareAttacked(castle_e_sq, opponent))
     {
-      if ((board.getCastlingRights() & castle_king_mask) && !Utils::getBit(board.getOccupancies(BOTH), castle_f_sq) && !Utils::getBit(board.getOccupancies(BOTH), castle_g_sq))
+      if ((board.getCastlingRights() & castle_king_mask) && !utils::getBit(board.getOccupancies(BOTH), castle_f_sq) && !utils::getBit(board.getOccupancies(BOTH), castle_g_sq))
       {
         if (!board.isSquareAttacked(castle_f_sq, opponent && !board.isSquareAttacked(castle_g_sq, opponent)))
         {
           move_list.push_back(Move(castle_e_sq, castle_g_sq, KING, 0, false, false, false, true));
         }
       }
-      if ((board.getCastlingRights() & castle_queen_mask) && !Utils::getBit(board.getOccupancies(BOTH), castle_d_sq) && !Utils::getBit(board.getOccupancies(BOTH), castle_c_sq) && !Utils::getBit(board.getOccupancies(BOTH), castle_b_sq))
+      if ((board.getCastlingRights() & castle_queen_mask) && !utils::getBit(board.getOccupancies(BOTH), castle_d_sq) && !utils::getBit(board.getOccupancies(BOTH), castle_c_sq) && !utils::getBit(board.getOccupancies(BOTH), castle_b_sq))
       {
         if (!board.isSquareAttacked(castle_d_sq, opponent) && !board.isSquareAttacked(castle_c_sq, opponent))
         {
@@ -118,74 +118,74 @@ namespace Movegen
   {
     while (pawn_double_pushes)
     {
-      int to_square = Utils::bitScanForward(pawn_double_pushes);
+      int to_square = utils::bitScanForward(pawn_double_pushes);
       int from_square = to_square + pawn_double_push_offset;
       move_list.push_back(Move(from_square, to_square, PAWN, 0, false, true, false, false));
-      Utils::popLastBit(pawn_double_pushes);
+      utils::popLastBit(pawn_double_pushes);
     }
   }
 
   void generatePawnSinglePushWithPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset)
   {
-    U64 pawn_single_pushes_promo = pawn_single_pushes & (Tables::MASK_RANK[0] | Tables::MASK_RANK[7]);
+    U64 pawn_single_pushes_promo = pawn_single_pushes & (tables::MASK_RANK[0] | tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
-      int to_square = Utils::bitScanForward(pawn_single_pushes_promo);
+      int to_square = utils::bitScanForward(pawn_single_pushes_promo);
       int from_square = to_square + pawn_single_push_offset;
       move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, ROOK, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, QUEEN, false, false, false, false));
-      Utils::popLastBit(pawn_single_pushes_promo);
+      utils::popLastBit(pawn_single_pushes_promo);
     }
   }
 
   void generatePawnSinglePushNoPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset)
   {
-    U64 pawn_single_pushes_no_promo = pawn_single_pushes & Tables::MASK_CLEAR_RANK[0] & Tables::MASK_CLEAR_RANK[7];
+    U64 pawn_single_pushes_no_promo = pawn_single_pushes & tables::MASK_CLEAR_RANK[0] & tables::MASK_CLEAR_RANK[7];
     while (pawn_single_pushes_no_promo)
     {
-      int to_square = Utils::bitScanForward(pawn_single_pushes_no_promo);
+      int to_square = utils::bitScanForward(pawn_single_pushes_no_promo);
       int from_square = to_square + pawn_single_push_offset;
       move_list.push_back(Move(from_square, to_square, PAWN, 0, false, false, false, false));
-      Utils::popLastBit(pawn_single_pushes_no_promo);
+      utils::popLastBit(pawn_single_pushes_no_promo);
     }
   }
 
   void generatePawnCapturesWithPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
   {
-    U64 pawns_can_capture_with_promo = to_move_pawns & Tables::MASK_RANK[6 - (5 * to_move)];
+    U64 pawns_can_capture_with_promo = to_move_pawns & tables::MASK_RANK[6 - (5 * to_move)];
     while (pawns_can_capture_with_promo)
     {
-      int from_square = Utils::bitScanForward(pawns_can_capture_with_promo);
-      U64 pawn_captures_promo = Tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
+      int from_square = utils::bitScanForward(pawns_can_capture_with_promo);
+      U64 pawn_captures_promo = tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
       while (pawn_captures_promo)
       {
-        int to_square = Utils::bitScanForward(pawn_captures_promo);
+        int to_square = utils::bitScanForward(pawn_captures_promo);
         move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, true, false, false, false));
         move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, true, false, false, false));
         move_list.push_back(Move(from_square, to_square, PAWN, ROOK, true, false, false, false));
         move_list.push_back(Move(from_square, to_square, PAWN, QUEEN, true, false, false, false));
-        Utils::popLastBit(pawn_captures_promo);
+        utils::popLastBit(pawn_captures_promo);
       }
-      Utils::popLastBit(pawns_can_capture_with_promo);
+      utils::popLastBit(pawns_can_capture_with_promo);
     }
   }
 
   void generatePawnCapturesNoPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
   {
-    U64 pawns_can_capture_no_promo = to_move_pawns & Tables::MASK_CLEAR_RANK[6 - (5 * to_move)];
+    U64 pawns_can_capture_no_promo = to_move_pawns & tables::MASK_CLEAR_RANK[6 - (5 * to_move)];
     while (pawns_can_capture_no_promo)
     {
-      int from_square = Utils::bitScanForward(pawns_can_capture_no_promo);
-      U64 pawn_captures_no_promo = Tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
+      int from_square = utils::bitScanForward(pawns_can_capture_no_promo);
+      U64 pawn_captures_no_promo = tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
       while (pawn_captures_no_promo)
       {
-        int to_square = Utils::bitScanForward(pawn_captures_no_promo);
+        int to_square = utils::bitScanForward(pawn_captures_no_promo);
         move_list.push_back(Move(from_square, to_square, PAWN, 0, true, false, false, false));
-        Utils::popLastBit(pawn_captures_no_promo);
+        utils::popLastBit(pawn_captures_no_promo);
       }
-      Utils::popLastBit(pawns_can_capture_no_promo);
+      utils::popLastBit(pawns_can_capture_no_promo);
     }
   }
 
@@ -193,12 +193,12 @@ namespace Movegen
   {
     if (en_passant_square != -1)
     {
-      U64 pawns_can_en_passant = Tables::ATTACKS_PAWN[opponent][en_passant_square] & to_move_pawns;
+      U64 pawns_can_en_passant = tables::ATTACKS_PAWN[opponent][en_passant_square] & to_move_pawns;
       while (pawns_can_en_passant)
       {
-        int from_square = Utils::bitScanForward(pawns_can_en_passant);
+        int from_square = utils::bitScanForward(pawns_can_en_passant);
         move_list.push_back(Move(from_square, en_passant_square, PAWN, 0, true, false, true, false));
-        Utils::popLastBit(pawns_can_en_passant);
+        utils::popLastBit(pawns_can_en_passant);
       }
     }
   }
@@ -207,15 +207,15 @@ namespace Movegen
   {
     while (to_move_knights)
     {
-      int from_square = Utils::bitScanForward(to_move_knights);
-      U64 moves = Tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
+      int from_square = utils::bitScanForward(to_move_knights);
+      U64 moves = tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
       while (moves)
       {
-        int to_square = Utils::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, KNIGHT, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
-        Utils::popLastBit(moves);
+        int to_square = utils::bitScanForward(moves);
+        move_list.push_back(Move(from_square, to_square, KNIGHT, 0, utils::getBit(opponent_occupancies, to_square), false, false, false));
+        utils::popLastBit(moves);
       }
-      Utils::popLastBit(to_move_knights);
+      utils::popLastBit(to_move_knights);
     }
   }
 
@@ -223,15 +223,15 @@ namespace Movegen
   {
     while (to_move_bishops)
     {
-      int from_square = Utils::bitScanForward(to_move_bishops);
-      U64 moves = Tables::getBishopAttacks(from_square, both_occupancies) & ~to_move_occupancies;
+      int from_square = utils::bitScanForward(to_move_bishops);
+      U64 moves = tables::getBishopAttacks(from_square, both_occupancies) & ~to_move_occupancies;
       while (moves)
       {
-        int to_square = Utils::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, BISHOP, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
-        Utils::popLastBit(moves);
+        int to_square = utils::bitScanForward(moves);
+        move_list.push_back(Move(from_square, to_square, BISHOP, 0, utils::getBit(opponent_occupancies, to_square), false, false, false));
+        utils::popLastBit(moves);
       }
-      Utils::popLastBit(to_move_bishops);
+      utils::popLastBit(to_move_bishops);
     }
   }
 
@@ -239,15 +239,15 @@ namespace Movegen
   {
     while (to_move_rooks)
     {
-      int from_square = Utils::bitScanForward(to_move_rooks);
-      U64 moves = Tables::getRookAttacks(from_square, both_occupancies) & ~to_move_occupancies;
+      int from_square = utils::bitScanForward(to_move_rooks);
+      U64 moves = tables::getRookAttacks(from_square, both_occupancies) & ~to_move_occupancies;
       while (moves)
       {
-        int to_square = Utils::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, ROOK, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
-        Utils::popLastBit(moves);
+        int to_square = utils::bitScanForward(moves);
+        move_list.push_back(Move(from_square, to_square, ROOK, 0, utils::getBit(opponent_occupancies, to_square), false, false, false));
+        utils::popLastBit(moves);
       }
-      Utils::popLastBit(to_move_rooks);
+      utils::popLastBit(to_move_rooks);
     }
   }
 
@@ -255,27 +255,27 @@ namespace Movegen
   {
     while (to_move_queens)
     {
-      int from_square = Utils::bitScanForward(to_move_queens);
-      U64 moves = Tables::getQueenAttacks(from_square, both_occupancies) & ~to_move_occupancies;
+      int from_square = utils::bitScanForward(to_move_queens);
+      U64 moves = tables::getQueenAttacks(from_square, both_occupancies) & ~to_move_occupancies;
       while (moves)
       {
-        int to_square = Utils::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, QUEEN, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
-        Utils::popLastBit(moves);
+        int to_square = utils::bitScanForward(moves);
+        move_list.push_back(Move(from_square, to_square, QUEEN, 0, utils::getBit(opponent_occupancies, to_square), false, false, false));
+        utils::popLastBit(moves);
       }
-      Utils::popLastBit(to_move_queens);
+      utils::popLastBit(to_move_queens);
     }
   }
 
   void generateKingMoves(MoveList &move_list, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies)
   {
-    int from_square = Utils::bitScanForward(to_move_king);
-    U64 moves = Tables::ATTACKS_KING[from_square] & ~to_move_occupancies;
+    int from_square = utils::bitScanForward(to_move_king);
+    U64 moves = tables::ATTACKS_KING[from_square] & ~to_move_occupancies;
     while (moves)
     {
-      int to_square = Utils::bitScanForward(moves);
-      move_list.push_back(Move(from_square, to_square, KING, 0, Utils::getBit(opponent_occupancies, to_square), false, false, false));
-      Utils::popLastBit(moves);
+      int to_square = utils::bitScanForward(moves);
+      move_list.push_back(Move(from_square, to_square, KING, 0, utils::getBit(opponent_occupancies, to_square), false, false, false));
+      utils::popLastBit(moves);
     }
   }
 

@@ -2,7 +2,7 @@
 
 #include "defs.hpp"
 
-namespace Attacks
+namespace attacks
 {
     // Used For On-the Fly Attacks
     U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty);
@@ -21,4 +21,4 @@ namespace Attacks
     U64 maskBishopAttacks(int sq, U64 block);
     U64 maskRookAttacks(int sq, U64 block);
 
-} // namespace Attacks
+} // namespace attacks

@@ -2,8 +2,8 @@
 
 #include "defs.hpp"
 
-namespace Cli
+namespace cli
 {
     void init();
 
-} // namespace Cli
+} // namespace cli
