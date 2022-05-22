@@ -5,7 +5,6 @@
 
 namespace attacks
 {
-
   U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty)
   {
     return utils::nortOne(wpawns) & empty;
@@ -196,4 +195,4 @@ namespace attacks
     }
     return attacks;
   }
-}
+} // namespace attacks

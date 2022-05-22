@@ -9,7 +9,6 @@
 
 namespace magics
 {
-
   Magic MAGIC_TABLE_BISHOP[N_SQUARES];
   Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
@@ -123,5 +122,4 @@ namespace magics
       MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
     }
   }
-
-}
+} // namespace magics

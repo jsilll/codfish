@@ -278,5 +278,4 @@ namespace movegen
       utils::popLastBit(moves);
     }
   }
-
-}
+} // namespace movegen

@@ -6,7 +6,6 @@
 
 namespace tables
 {
-
   U64 SQUARE_BB[N_SQUARES];
   U64 ATTACKS_PAWN[BOTH][N_SQUARES];
   U64 ATTACKS_KNIGHT[N_SQUARES];
@@ -83,5 +82,4 @@ namespace tables
   {
     return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
   }
-
-}
+} // namespace tables

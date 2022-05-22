@@ -8,7 +8,6 @@
 
 namespace perft
 {
-
     unsigned long long perft(const Board &board, int depth)
     {
         if (depth == 0)
@@ -31,5 +30,4 @@ namespace perft
 
         return nodes;
     }
-
-}
+} // namespace perft

@@ -47,7 +47,7 @@ AI::SearchResult AI::findBestMove()
     return SearchResult{alpha, best_move.getEncoded(), _nodes};
 }
 
-int AI::search(int alpha, int beta, int depth, Board &board)
+int AI::search(int alpha, int beta, int depth, const Board &board)
 {
     _nodes++;
 

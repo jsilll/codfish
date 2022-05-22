@@ -502,4 +502,4 @@ namespace cli
       }
     }
   }
-}
+} // namespace cli

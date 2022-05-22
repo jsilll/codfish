@@ -297,4 +297,4 @@ namespace uci
             }
         }
     }
-}
+} // namespace uci

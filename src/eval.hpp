@@ -16,6 +16,6 @@ namespace eval
      * @param board
      * @return absolute evaluation
      */
-    int eval(Board &board);
+    int eval(const Board &board);
 
 } // namespace eval

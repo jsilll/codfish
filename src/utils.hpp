@@ -7,7 +7,6 @@
 
 namespace utils
 {
-
   inline int getSquare(const int rk, const int fl)
   {
     return 8 * rk + fl;
@@ -62,4 +61,4 @@ namespace utils
    */
   std::vector<std::string> tokenizeString(const std::string &text);
 
-} // namespace Utils
+} // namespace utils
