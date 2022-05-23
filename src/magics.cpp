@@ -1,6 +1,7 @@
 #include "magics.hpp"
 
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "tables.hpp"
 #include "attacks.hpp"
 
@@ -46,7 +47,7 @@ namespace magics
 
     for (int i = 0; i < occupancy_indices; i++)
     {
-      occupancies[i] = utils::setOccupancy(i, relevant_bits, attack_mask);
+      occupancies[i] = bitboard::setOccupancy(i, relevant_bits, attack_mask);
       attacks[i] = maskAttacksOccFun(sq, occupancies[i]);
     }
 
@@ -54,7 +55,7 @@ namespace magics
     {
       U64 candidate = getMagicNumberCandidate();
 
-      if (utils::bitCount((attack_mask * candidate) & 0xFF00000000000000) < 6)
+      if (bitboard::bitCount((attack_mask * candidate) & 0xFF00000000000000) < 6)
       {
         continue;
       }

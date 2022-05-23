@@ -1,6 +1,7 @@
 #include "tables.hpp"
 
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "magics.hpp"
 #include "attacks.hpp"
 
@@ -44,7 +45,7 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_BISHOP[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
+        U64 occupancy = bitboard::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_BISHOP[sq].magic) >> magics::MAGIC_TABLE_BISHOP[sq].shift);
         ATTACKS_BISHOP[sq][magic] = attacks::maskBishopAttacks(sq, occupancy);
       }
@@ -55,7 +56,7 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_ROOK[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = utils::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
+        U64 occupancy = bitboard::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_ROOK[sq].magic) >> magics::MAGIC_TABLE_ROOK[sq].shift);
         ATTACKS_ROOK[sq][magic] = attacks::maskRookAttacks(sq, occupancy);
       }

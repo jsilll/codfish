@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "board.hpp"
 #include "eval.hpp"
 
@@ -198,23 +199,23 @@ namespace eval
             U64 pieces_white = board.getPieces(WHITE, piece_type);
             while (pieces_white)
             {
-                int sq = utils::bitScanForward(pieces_white);
+                int sq = bitboard::bitScanForward(pieces_white);
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
                 eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
                 material[WHITE] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                utils::popBit(pieces_white, sq);
+                bitboard::popBit(pieces_white, sq);
             }
 
             U64 pieces_black = board.getPieces(BLACK, piece_type);
             while (pieces_black)
             {
-                int sq = utils::bitScanForward(pieces_black);
+                int sq = bitboard::bitScanForward(pieces_black);
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
                 eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
                 material[BLACK] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                utils::popBit(pieces_black, sq);
+                bitboard::popBit(pieces_black, sq);
             }
         }
 

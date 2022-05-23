@@ -22,6 +22,7 @@ struct Piece
 
 class Board
 {
+
 private:
   int _to_move;
   int _castling_rights;

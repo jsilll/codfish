@@ -6,6 +6,7 @@
 #include <string>
 
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "magics.hpp"
 #include "move.hpp"
 #include "tables.hpp"
@@ -469,7 +470,7 @@ void Board::makeMove(Move move)
   bool is_en_passant = move.isEnPassant();
   bool is_castle = move.isCastle();
 
-  utils::popBit(_pieces[_to_move][piece], from_square);
+  bitboard::popBit(_pieces[_to_move][piece], from_square);
   _square[from_square].type = EMPTY;
   _square[from_square].color = BLACK;
 
@@ -478,23 +479,23 @@ void Board::makeMove(Move move)
     int captured_piece_square = to_square + 8 * (((_to_move + 1) * 2) - 3);
     _square[captured_piece_square].type = EMPTY;
     _square[captured_piece_square].color = BLACK;
-    utils::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
+    bitboard::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
   else if (is_capture)
   {
     int captured_piece_type = _square[to_square].type;
-    utils::popBit(_pieces[this->getOpponent()][captured_piece_type], to_square);
+    bitboard::popBit(_pieces[this->getOpponent()][captured_piece_type], to_square);
   }
 
   if (promoted_piece)
   {
     _square[to_square].type = promoted_piece;
-    utils::setBit(_pieces[_to_move][promoted_piece], to_square);
+    bitboard::setBit(_pieces[_to_move][promoted_piece], to_square);
   }
   else
   {
     _square[to_square].type = piece;
-    utils::setBit(_pieces[_to_move][piece], to_square);
+    bitboard::setBit(_pieces[_to_move][piece], to_square);
   }
   _square[to_square].color = _to_move;
 
@@ -517,8 +518,8 @@ void Board::makeMove(Move move)
     _square[rook_from_square].color = BLACK;
     _square[rook_to_square].type = ROOK;
     _square[rook_to_square].color = _to_move;
-    utils::popBit(_pieces[_to_move][ROOK], rook_from_square);
-    utils::setBit(_pieces[_to_move][ROOK], rook_to_square);
+    bitboard::popBit(_pieces[_to_move][ROOK], rook_from_square);
+    bitboard::setBit(_pieces[_to_move][ROOK], rook_to_square);
   }
 
   _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;

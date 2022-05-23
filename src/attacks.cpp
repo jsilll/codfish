@@ -1,38 +1,39 @@
 #include "attacks.hpp"
 
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "tables.hpp"
 
 namespace attacks
 {
   U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty)
   {
-    return utils::nortOne(wpawns) & empty;
+    return bitboard::nortOne(wpawns) & empty;
   }
 
   U64 maskBlackPawnSinglePushes(U64 bpawns, U64 empty)
   {
-    return utils::soutOne(bpawns) & empty;
+    return bitboard::soutOne(bpawns) & empty;
   }
 
   U64 maskWhitePawnDoublePushes(U64 wpawns, U64 empty)
   {
     static const U64 rank4 = 0x00000000FF000000;
     U64 singlePushs = maskWhitePawnSinglePushes(wpawns, empty);
-    return utils::nortOne(singlePushs) & empty & rank4;
+    return bitboard::nortOne(singlePushs) & empty & rank4;
   }
 
   U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty)
   {
     static const U64 rank5 = 0x000000FF00000000;
     U64 singlePushs = maskBlackPawnSinglePushes(bpawns, empty);
-    return utils::soutOne(singlePushs) & empty & rank5;
+    return bitboard::soutOne(singlePushs) & empty & rank5;
   }
 
-  inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return utils::noEaOne(wpawns); }
-  inline U64 maskWhitePawnWestAttacks(U64 wpawns) { return utils::noWeOne(wpawns); }
-  inline U64 maskBlackPawnEastAttacks(U64 bpawns) { return utils::soEaOne(bpawns); }
-  inline U64 maskBlackPawnWestAttacks(U64 bpawns) { return utils::soWeOne(bpawns); }
+  inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return bitboard::noEaOne(wpawns); }
+  inline U64 maskWhitePawnWestAttacks(U64 wpawns) { return bitboard::noWeOne(wpawns); }
+  inline U64 maskBlackPawnEastAttacks(U64 bpawns) { return bitboard::soEaOne(bpawns); }
+  inline U64 maskBlackPawnWestAttacks(U64 bpawns) { return bitboard::soWeOne(bpawns); }
 
   U64 maskWhitePawnAnyAttacks(U64 wpawns)
   {
@@ -62,9 +63,9 @@ namespace attacks
 
   U64 maskKingAttacks(U64 kings)
   {
-    U64 attacks = utils::eastOne(kings) | utils::westOne(kings);
+    U64 attacks = bitboard::eastOne(kings) | bitboard::westOne(kings);
     kings |= attacks;
-    attacks |= utils::nortOne(kings) | utils::soutOne(kings);
+    attacks |= bitboard::nortOne(kings) | bitboard::soutOne(kings);
     return attacks;
   }
 

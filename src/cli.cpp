@@ -2,6 +2,7 @@
 
 #include "defs.hpp"
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "magics.hpp"
 #include "tables.hpp"
 #include "board.hpp"
@@ -76,7 +77,7 @@ namespace cli
       {
         Board backup = board;
         backup.makeMove(move);
-        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
@@ -147,9 +148,9 @@ namespace cli
                 << "\nFifty Move Count             = " << splitted_fen[4]
                 << "\nFull Move Number             = " << splitted_fen[5];
       std::cout << "\nOccupied Squares:\n";
-      utils::printBB(board.getOccupancies(BOTH));
-      utils::printBB(board.getOccupancies(WHITE));
-      utils::printBB(board.getOccupancies(BLACK));
+      bitboard::printBB(board.getOccupancies(BOTH));
+      bitboard::printBB(board.getOccupancies(WHITE));
+      bitboard::printBB(board.getOccupancies(BLACK));
     }
   } infoCommand;
 

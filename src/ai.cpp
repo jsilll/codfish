@@ -1,6 +1,7 @@
 #include "ai.hpp"
 
 #include "utils.hpp"
+#include "bitboard.hpp"
 #include "move.hpp"
 #include "board.hpp"
 #include "movelist.hpp"
@@ -31,7 +32,7 @@ AI::SearchResult AI::findBestMove()
     {
         Board backup = _board;
         backup.makeMove(move);
-        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         int attacker_side = backup.getSideToMove();
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
@@ -61,7 +62,7 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
     {
         Board backup = board;
         backup.makeMove(move);
-        int king_sq = utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
             has_legal_moves = true;
@@ -79,7 +80,7 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
 
     if (!has_legal_moves)
     {
-        int king_sq = utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+        int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
         if (board.isSquareAttacked(king_sq, board.getOpponent()))
         {
             return MIN_EVAL + _depth - depth;
