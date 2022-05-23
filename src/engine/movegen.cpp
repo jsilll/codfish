@@ -48,8 +48,8 @@ namespace movegen
       generatePawnCapturesNoPromotion<WHITE>(move_list, board);
       generateEnPassantCapture<WHITE>(move_list, board);
       generatePawnSinglePushWithPromotion<WHITE>(move_list, board);
-      generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
       generatePawnDoublePushes<WHITE>(move_list, board);
+      generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
       generateLeaperMoves<WHITE, KNIGHT>(move_list, board);
       generateLeaperMoves<WHITE, KING>(move_list, board);
       generateSliderMoves<WHITE, BISHOP>(move_list, board);
@@ -63,8 +63,8 @@ namespace movegen
       generatePawnCapturesNoPromotion<BLACK>(move_list, board);
       generateEnPassantCapture<BLACK>(move_list, board);
       generatePawnSinglePushWithPromotion<BLACK>(move_list, board);
-      generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
       generatePawnDoublePushes<BLACK>(move_list, board);
+      generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
       generateLeaperMoves<BLACK, KNIGHT>(move_list, board);
       generateLeaperMoves<BLACK, KING>(move_list, board);
       generateSliderMoves<BLACK, BISHOP>(move_list, board);
