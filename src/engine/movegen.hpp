@@ -14,6 +14,7 @@ namespace movegen
      * @param board
      * @return MoveList
      */
+    template <PieceColor ToMove>
     MoveList generatePseudoLegalMoves(const Board &board);
 
     /**

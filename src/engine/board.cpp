@@ -83,6 +83,7 @@ U64 Board::getPieces(int color, int type) const
 {
   return _pieces[color][type];
 }
+
 U64 Board::getOccupancies(int color) const
 {
   return _occupancies[color];

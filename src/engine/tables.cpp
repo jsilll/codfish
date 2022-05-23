@@ -63,7 +63,7 @@ namespace tables
     }
   }
 
-  U64 getBishopAttacks(const int &sq, U64 occ)
+  U64 getBishopAttacks(const int sq, U64 occ)
   {
     occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
     occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
@@ -71,7 +71,7 @@ namespace tables
     return ATTACKS_BISHOP[sq][occ];
   }
 
-  U64 getRookAttacks(const int &sq, U64 occ)
+  U64 getRookAttacks(const int sq, U64 occ)
   {
     occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
     occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
@@ -79,7 +79,7 @@ namespace tables
     return ATTACKS_ROOK[sq][occ];
   }
 
-  U64 getQueenAttacks(const int &sq, U64 occ)
+  U64 getQueenAttacks(const int sq, U64 occ)
   {
     return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
   }
