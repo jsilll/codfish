@@ -1,5 +1,7 @@
 #include "cli.hpp"
 
+#include "utils.hpp"
+
 #include "engine/defs.hpp"
 #include "engine/utils.hpp"
 #include "engine/bitboard.hpp"

@@ -16,11 +16,4 @@ namespace utils
   // Flipping Side to Move
   inline int getOpponent(int to_move) { return to_move ^ 1; }
 
-  /**
-   * @brief Splits a string by spaces
-   *
-   * @param text
-   * @return std::vector<std::string>
-   */
-  std::vector<std::string> tokenizeString(const std::string &text);
 } // namespace utils

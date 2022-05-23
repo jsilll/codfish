@@ -1,5 +1,7 @@
 #include "uci.hpp"
 
+#include "utils.hpp"
+
 #include "engine/utils.hpp"
 #include "engine/magics.hpp"
 #include "engine/tables.hpp"

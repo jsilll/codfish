@@ -1,7 +1,5 @@
 #include "utils.hpp"
 
-#include "tables.hpp"
-
 #include <string>
 #include <iostream>
 #include <iterator>
