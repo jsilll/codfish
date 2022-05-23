@@ -14,34 +14,34 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # libengine
-file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.hpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.hpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.hpp)
+file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cc)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cc)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.h)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cc)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.h)
 add_library(engine ${ENGINE_SRC})
 
 # engine_exec
-add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
+add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cc)
 target_link_libraries(engine_exec engine)
 target_link_libraries(engine_exec readline)
 
 # tests
 enable_testing()
 
-add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp)
+add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cc)
 target_link_libraries(test_board engine)
 add_test(NAME test_board COMMAND test_board)
 
-add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cpp)
+add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cc)
 target_link_libraries(test_perft engine)
 add_test(NAME test_perft COMMAND test_perft)
 
-add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cpp)
+add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cc)
 target_link_libraries(test_tables engine)
 add_test(NAME test_tables COMMAND test_tables)
 
-add_executable(test_ai ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ai.cpp)
+add_executable(test_ai ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ai.cc)
 target_link_libraries(test_ai engine)
 add_test(NAME test_ai COMMAND test_ai)
