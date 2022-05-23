@@ -13,33 +13,22 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-# libengine
-file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
-add_library(engine ${ENGINE_SRC})
+# Engine Library
+file(GLOB ENGINE_LIB_SRC ${PROJECT_SOURCE_DIR}/src/engine/*.cpp)
+add_library(engine ${ENGINE_LIB_SRC})
 
-# engine_exec
-add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
-target_link_libraries(engine_exec engine)
+# Engine Executable
+file(GLOB ENGINE_EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+add_executable(engine_exec ${ENGINE_EXEC_SRC})
 target_link_libraries(engine_exec readline)
+target_link_libraries(engine_exec engine)
 
-# tests
+# Engine Unit Tests
 enable_testing()
-
-add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp)
-target_link_libraries(test_board engine)
-add_test(NAME test_board COMMAND test_board)
-
-add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cpp)
-target_link_libraries(test_perft engine)
-add_test(NAME test_perft COMMAND test_perft)
-
-add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cpp)
-target_link_libraries(test_tables engine)
-add_test(NAME test_tables COMMAND test_tables)
-
-add_executable(test_ai ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ai.cpp)
-target_link_libraries(test_ai engine)
-add_test(NAME test_ai COMMAND test_ai)
+file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+foreach (TEST_SRC ${TESTS_SRC})
+    get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
+    add_executable(${TEST_NAME} ${TEST_SRC})
+    target_link_libraries(${TEST_NAME} engine)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach ()

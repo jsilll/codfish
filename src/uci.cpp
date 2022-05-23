@@ -1,14 +1,14 @@
 #include "uci.hpp"
 
-#include "utils.hpp"
-#include "magics.hpp"
-#include "tables.hpp"
-#include "board.hpp"
-#include "move.hpp"
-#include "movelist.hpp"
-#include "movegen.hpp"
-#include "ai.hpp"
-#include "eval.hpp"
+#include "engine/utils.hpp"
+#include "engine/magics.hpp"
+#include "engine/tables.hpp"
+#include "engine/board.hpp"
+#include "engine/move.hpp"
+#include "engine/movelist.hpp"
+#include "engine/movegen.hpp"
+#include "engine/ai.hpp"
+#include "engine/eval.hpp"
 
 #include <chrono>
 #include <iostream>

@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "../src/defs.hpp"
-#include "../src/magics.hpp"
-#include "../src/tables.hpp"
-#include "../src/board.hpp"
+#include "../src/engine/defs.hpp"
+#include "../src/engine/magics.hpp"
+#include "../src/engine/tables.hpp"
+#include "../src/engine/board.hpp"
 
 TEST_CASE("")
 {
