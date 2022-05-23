@@ -14,34 +14,32 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # libengine
-file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cc)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cc)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.h)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cc)
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.h)
+file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp)
+list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
 add_library(engine ${ENGINE_SRC})
 
 # engine_exec
-add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cc)
+add_executable(engine_exec ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
 target_link_libraries(engine_exec engine)
 target_link_libraries(engine_exec readline)
 
 # tests
 enable_testing()
 
-add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cc)
+add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp)
 target_link_libraries(test_board engine)
 add_test(NAME test_board COMMAND test_board)
 
-add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cc)
+add_executable(test_perft ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_perft.cpp)
 target_link_libraries(test_perft engine)
 add_test(NAME test_perft COMMAND test_perft)
 
-add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cc)
+add_executable(test_tables ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tables.cpp)
 target_link_libraries(test_tables engine)
 add_test(NAME test_tables COMMAND test_tables)
 
-add_executable(test_ai ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ai.cc)
+add_executable(test_ai ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ai.cpp)
 target_link_libraries(test_ai engine)
 add_test(NAME test_ai COMMAND test_ai)
