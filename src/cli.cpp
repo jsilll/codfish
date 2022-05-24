@@ -75,8 +75,7 @@ namespace cli
     {
       unsigned long long total_nodes = 0;
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-      MoveList move_list = board.getSideToMove() == WHITE ? movegen::generatePseudoLegalMoves<WHITE>(board) : movegen::generatePseudoLegalMoves<BLACK>(board);
-      for (Move const &move : move_list)
+      for (Move const &move : movegen::generatePseudoLegalMoves(board))
       {
         Board backup = board;
         backup.makeMove(move);

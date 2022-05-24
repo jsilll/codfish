@@ -28,8 +28,7 @@ AI::SearchResult AI::findBestMove()
 
     int alpha = MIN_EVAL;
     Move best_move = Move();
-    MoveList move_list = _board.getSideToMove() == WHITE ? movegen::generatePseudoLegalMoves<WHITE>(_board) : movegen::generatePseudoLegalMoves<BLACK>(_board);
-    for (const Move &move : move_list)
+    for (const Move &move : movegen::generatePseudoLegalMoves(_board))
     {
         Board backup = _board;
         backup.makeMove(move);
@@ -59,8 +58,7 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
     }
 
     bool has_legal_moves = false;
-    MoveList move_list = board.getSideToMove() == WHITE ? movegen::generatePseudoLegalMoves<WHITE>(board) : movegen::generatePseudoLegalMoves<BLACK>(board);
-    for (const Move &move : move_list)
+    for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
         Board backup = board;
         backup.makeMove(move);

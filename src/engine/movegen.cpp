@@ -37,12 +37,10 @@ namespace movegen
   void generateSliderMoves(MoveList &move_list, const Board &board);
 
   // All Pseudo Legal Moves
-  template <PieceColor ToMove>
   MoveList generatePseudoLegalMoves(const Board &board)
   {
     MoveList move_list = MoveList();
-
-    if constexpr (ToMove == WHITE)
+    if (board.getSideToMove() == WHITE)
     {
       generatePawnCapturesWithPromotion<WHITE>(move_list, board);
       generatePawnCapturesNoPromotion<WHITE>(move_list, board);
@@ -72,15 +70,13 @@ namespace movegen
       generateSliderMoves<BLACK, QUEEN>(move_list, board);
       generateCastlingMoves<BLACK>(move_list, board);
     }
-
     return move_list;
   }
 
   MoveList generateLegalMoves(const Board &board)
   {
     MoveList legal_moves;
-    MoveList move_list = board.getSideToMove() == WHITE ? movegen::generatePseudoLegalMoves<WHITE>(board) : movegen::generatePseudoLegalMoves<BLACK>(board);
-    for (Move const &move : move_list)
+    for (Move const &move : movegen::generatePseudoLegalMoves(board))
     {
       Board backup = board;
       backup.makeMove(move);
@@ -97,15 +93,15 @@ namespace movegen
   template <PieceColor ToMove>
   void generateCastlingMoves(MoveList &move_list, const Board &board)
   {
-    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr int Castle_B_Sq = ToMove == WHITE ? B1 : B8;
-    constexpr int Castle_C_Sq = ToMove == WHITE ? C1 : C8;
-    constexpr int Castle_D_Sq = ToMove == WHITE ? D1 : D8;
-    constexpr int Castle_E_Sq = ToMove == WHITE ? E1 : E8;
-    constexpr int Castle_F_Sq = ToMove == WHITE ? F1 : F8;
-    constexpr int Castle_G_Sq = ToMove == WHITE ? G1 : G8;
-    constexpr int Castle_King_Mask = ToMove == WHITE ? CASTLE_KING_WHITE : CASTLE_KING_BLACK;
-    constexpr int Castle_Queen_Mask = ToMove == WHITE ? CASTLE_QUEEN_WHITE : CASTLE_QUEEN_BLACK;
+    constexpr PieceColor Opponent = (ToMove == WHITE ? BLACK : WHITE);
+    constexpr int Castle_B_Sq = (ToMove == WHITE ? B1 : B8);
+    constexpr int Castle_C_Sq = (ToMove == WHITE ? C1 : C8);
+    constexpr int Castle_D_Sq = (ToMove == WHITE ? D1 : D8);
+    constexpr int Castle_E_Sq = (ToMove == WHITE ? E1 : E8);
+    constexpr int Castle_F_Sq = (ToMove == WHITE ? F1 : F8);
+    constexpr int Castle_G_Sq = (ToMove == WHITE ? G1 : G8);
+    constexpr int Castle_King_Mask = (ToMove == WHITE ? CASTLE_KING_WHITE : CASTLE_KING_BLACK);
+    constexpr int Castle_Queen_Mask = (ToMove == WHITE ? CASTLE_QUEEN_WHITE : CASTLE_QUEEN_BLACK);
     if (!board.isSquareAttacked(Castle_E_Sq, Opponent))
     {
       if ((board.getCastlingRights() & Castle_King_Mask) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_F_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_G_Sq))
@@ -129,7 +125,8 @@ namespace movegen
   void generatePawnDoublePushes(MoveList &move_list, const Board &board)
   {
     constexpr int Pawn_Double_Push_Offset = ToMove == WHITE ? -16 : 16;
-    U64 pawn_double_pushes = ToMove == WHITE ? attacks::maskWhitePawnDoublePushes(board.getPieces(WHITE, PAWN), ~board.getOccupancies(BOTH)) : attacks::maskBlackPawnDoublePushes(board.getPieces(BLACK, PAWN), ~board.getOccupancies(BOTH));
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnDoublePushes : attacks::maskBlackPawnDoublePushes;
+    U64 pawn_double_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     while (pawn_double_pushes)
     {
       int to_square = bitboard::bitScanForward(pawn_double_pushes);
@@ -143,7 +140,8 @@ namespace movegen
   void generatePawnSinglePushWithPromotion(MoveList &move_list, const Board &board)
   {
     constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
-    U64 pawn_single_pushes = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes(board.getPieces(WHITE, PAWN), ~board.getOccupancies(BOTH)) : attacks::maskBlackPawnSinglePushes(board.getPieces(BLACK, PAWN), ~board.getOccupancies(BOTH));
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
+    U64 pawn_single_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     U64 pawn_single_pushes_promo = pawn_single_pushes & (tables::MASK_RANK[0] | tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
@@ -161,7 +159,8 @@ namespace movegen
   void generatePawnSinglePushNoPromotion(MoveList &move_list, const Board &board)
   {
     constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
-    U64 pawn_single_pushes = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH)) : attacks::maskBlackPawnSinglePushes(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
+    U64 pawn_single_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     U64 pawn_single_pushes_no_promo = pawn_single_pushes & tables::MASK_CLEAR_RANK[0] & tables::MASK_CLEAR_RANK[7];
     while (pawn_single_pushes_no_promo)
     {
@@ -176,7 +175,8 @@ namespace movegen
   void generatePawnCapturesWithPromotion(MoveList &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
-    U64 pawns_can_capture_with_promo = board.getPieces(ToMove, PAWN) & tables::MASK_RANK[6 - (5 * ToMove)];
+    constexpr int mask_index = 6 - (5 * ToMove);
+    U64 pawns_can_capture_with_promo = board.getPieces(ToMove, PAWN) & tables::MASK_RANK[mask_index];
     while (pawns_can_capture_with_promo)
     {
       int from_square = bitboard::bitScanForward(pawns_can_capture_with_promo);
@@ -198,7 +198,8 @@ namespace movegen
   void generatePawnCapturesNoPromotion(MoveList &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
-    U64 pawns_can_capture_no_promo = board.getPieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[6 - (5 * ToMove)];
+    constexpr int mask_index = 6 - (5 * ToMove);
+    U64 pawns_can_capture_no_promo = board.getPieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[mask_index];
     while (pawns_can_capture_no_promo)
     {
       int from_square = bitboard::bitScanForward(pawns_can_capture_no_promo);
@@ -232,10 +233,13 @@ namespace movegen
   template <PieceColor ToMove, PieceType PType>
   void generateLeaperMoves(MoveList &move_list, const Board &board)
   {
-    U64 to_move_occupancies = ToMove == WHITE ? board.getOccupancies(WHITE) : board.getOccupancies(BLACK);
-    U64 opponent_occupancies = ToMove == WHITE ? board.getOccupancies(BLACK) : board.getOccupancies(WHITE);
-    U64 to_move_pieces = ToMove == WHITE ? board.getPieces(WHITE, PType) : board.getPieces(BLACK, PType);
+    static_assert(PType == KNIGHT || PType == KING, "Unsupported piece type in generateLeaperMoves()");
+
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
     constexpr U64 *attacks_table = PType == KNIGHT ? tables::ATTACKS_KNIGHT : tables::ATTACKS_KING;
+    U64 to_move_occupancies = board.getOccupancies(ToMove);
+    U64 opponent_occupancies = board.getOccupancies(Opponent);
+    U64 to_move_pieces = board.getPieces(ToMove, PType);
     while (to_move_pieces)
     {
       int from_square = bitboard::bitScanForward(to_move_pieces);
@@ -253,10 +257,14 @@ namespace movegen
   template <PieceColor ToMove, PieceType PType>
   void generateSliderMoves(MoveList &move_list, const Board &board)
   {
-    constexpr U64 (*attacks_getter)(int sq, U64 occ) = PType == BISHOP ? tables::getBishopAttacks : PType == ROOK ? tables::getRookAttacks
-                                                                                                                  : tables::getQueenAttacks;
-    U64 to_move_occupancies = ToMove == WHITE ? board.getOccupancies(WHITE) : board.getOccupancies(BLACK);
-    U64 opponent_occupancies = ToMove == WHITE ? board.getOccupancies(BLACK) : board.getOccupancies(WHITE);
+    static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generateSliderMoves()");
+
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr U64 (*attacks_getter)(int sq, U64 occ) = (PType == BISHOP ? tables::getBishopAttacks
+                                                        : PType == ROOK ? tables::getRookAttacks
+                                                                        : tables::getQueenAttacks);
+    U64 to_move_occupancies = board.getOccupancies(ToMove);
+    U64 opponent_occupancies = board.getOccupancies(Opponent);
     U64 to_move_pieces = board.getPieces(ToMove, PType);
     while (to_move_pieces)
     {

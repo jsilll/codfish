@@ -17,8 +17,7 @@ namespace perft
         }
 
         unsigned long long nodes = 0;
-        MoveList move_list = board.getSideToMove() == WHITE ? movegen::generatePseudoLegalMoves<WHITE>(board) : movegen::generatePseudoLegalMoves<BLACK>(board);
-        for (Move const &move : move_list)
+        for (Move const &move : movegen::generatePseudoLegalMoves(board))
         {
             Board backup = board;
             backup.makeMove(move);
