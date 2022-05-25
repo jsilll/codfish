@@ -62,7 +62,7 @@ namespace cli
 
       if (depth >= 0)
       {
-        this->perft(depth, board);
+        this->dperft(depth, board);
       }
       else
       {
@@ -71,7 +71,7 @@ namespace cli
     }
 
   private:
-    void perft(int depth, Board &board)
+    void dperft(int depth, Board &board)
     {
       unsigned long long total_nodes = 0;
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();

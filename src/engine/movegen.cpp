@@ -10,70 +10,110 @@
 
 namespace movegen
 {
-  inline void generateCastlingMoves(MoveList &move_list, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask);
+  enum GenType
+  {
+    ALL,
+    CAPTURES
+  };
 
-  inline void generatePawnDoublePushes(MoveList &move_list, U64 pawn_double_pushes, int pawn_double_push_offset);
-  inline void generatePawnSinglePushWithPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset);
-  inline void generatePawnSinglePushNoPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset);
-  inline void generatePawnCapturesWithPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies);
-  inline void generatePawnCapturesNoPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies);
-  inline void generateEnPassantCapture(MoveList &move_list, U64 to_move_pawns, int en_passant_square, int opponent);
+  // Castling
+  template <PieceColor ToMove>
+  void generateCastlingMoves(MoveList &move_list, const Board &board);
 
-  inline void generateKnightMoves(MoveList &move_list, U64 to_move_knights, U64 to_move_occupancies, U64 opponent_occupancies);
-  inline void generateKingMoves(MoveList &move_list, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies);
+  // Pawns
+  template <PieceColor ToMove>
+  void generateEnPassantCapture(MoveList &move_list, const Board &board);
+  template <PieceColor ToMove>
+  void generatePawnSinglePushWithPromotion(MoveList &move_list, const Board &board);
+  template <PieceColor ToMove>
+  void generatePawnSinglePushNoPromotion(MoveList &move_list, const Board &board);
+  template <PieceColor ToMove>
+  void generatePawnCapturesWithPromotion(MoveList &move_list, const Board &board);
+  template <PieceColor ToMove>
+  void generatePawnCapturesNoPromotion(MoveList &move_list, const Board &board);
+  template <PieceColor ToMove>
+  void generatePawnDoublePushes(MoveList &move_list, const Board &board);
 
-  inline void generateBishopMoves(MoveList &move_list, U64 to_move_bishops, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
-  inline void generateRookMoves(MoveList &move_list, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
-  inline void generateQueenMoves(MoveList &move_list, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies);
+  // Leaper Pieces
+  template <PieceColor ToMove, PieceType PType, GenType GType>
+  void generateLeaperMoves(MoveList &move_list, const Board &board);
 
+  // Slider Pieces
+  template <PieceColor ToMove, PieceType PType, GenType GType>
+  void generateSliderMoves(MoveList &move_list, const Board &board);
+
+  // All Pseudo Legal Moves
   MoveList generatePseudoLegalMoves(const Board &board)
   {
-    int to_move = board.getSideToMove();
-    int opponent = board.getOpponent();
-
-    int castle_b_sq = to_move == WHITE ? B1 : B8;
-    int castle_c_sq = to_move == WHITE ? C1 : C8;
-    int castle_d_sq = to_move == WHITE ? D1 : D8;
-    int castle_e_sq = to_move == WHITE ? E1 : E8;
-    int castle_f_sq = to_move == WHITE ? F1 : F8;
-    int castle_g_sq = to_move == WHITE ? G1 : G8;
-
-    int castle_king_mask = to_move == WHITE ? CASTLE_KING_WHITE : CASTLE_KING_BLACK;
-    int castle_queen_mask = to_move == WHITE ? CASTLE_QUEEN_WHITE : CASTLE_QUEEN_BLACK;
-
-    int pawn_double_push_offset = to_move == WHITE ? -16 : 16;
-    int pawn_single_push_offset = to_move == WHITE ? pawn_double_push_offset / 2 : pawn_double_push_offset / 2;
-
-    U64 to_move_occupancies = board.getOccupancies(to_move);
-    U64 opponent_occupancies = board.getOccupancies(opponent);
-    U64 both_occupancies = board.getOccupancies(BOTH);
-
-    U64 to_move_pawns = board.getPieces(to_move, PAWN);
-    U64 pawn_double_pushes = to_move == WHITE ? attacks::maskWhitePawnDoublePushes(to_move_pawns, ~both_occupancies) : attacks::maskBlackPawnDoublePushes(to_move_pawns, ~both_occupancies);
-    U64 pawn_single_pushes = to_move == WHITE ? attacks::maskWhitePawnSinglePushes(to_move_pawns, ~both_occupancies) : attacks::maskBlackPawnSinglePushes(to_move_pawns, ~both_occupancies);
-
     MoveList move_list = MoveList();
+    if (board.getSideToMove() == WHITE)
+    {
+      generatePawnCapturesWithPromotion<WHITE>(move_list, board);
+      generatePawnCapturesNoPromotion<WHITE>(move_list, board);
+      generateEnPassantCapture<WHITE>(move_list, board);
+      generatePawnSinglePushWithPromotion<WHITE>(move_list, board);
+      generatePawnDoublePushes<WHITE>(move_list, board);
+      generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
 
-    // Pawn Moves
-    generatePawnCapturesWithPromotion(move_list, to_move, to_move_pawns, opponent_occupancies);
-    generatePawnCapturesNoPromotion(move_list, to_move, to_move_pawns, opponent_occupancies);
-    generateEnPassantCapture(move_list, to_move_pawns, board.getEnPassantSquare(), opponent);
-    generatePawnSinglePushWithPromotion(move_list, pawn_single_pushes, pawn_single_push_offset);
-    generatePawnDoublePushes(move_list, pawn_double_pushes, pawn_double_push_offset);
-    generatePawnSinglePushNoPromotion(move_list, pawn_single_pushes, pawn_single_push_offset);
+      generateLeaperMoves<WHITE, KNIGHT, ALL>(move_list, board);
+      generateLeaperMoves<WHITE, KING, ALL>(move_list, board);
 
-    // Leaper Pieces
-    generateKnightMoves(move_list, board.getPieces(to_move, KNIGHT), to_move_occupancies, opponent_occupancies);
-    generateKingMoves(move_list, board.getPieces(to_move, KING), to_move_occupancies, opponent_occupancies);
+      generateSliderMoves<WHITE, BISHOP, ALL>(move_list, board);
+      generateSliderMoves<WHITE, ROOK, ALL>(move_list, board);
+      generateSliderMoves<WHITE, QUEEN, ALL>(move_list, board);
 
-    // Slider Pieces
-    generateBishopMoves(move_list, board.getPieces(to_move, BISHOP), to_move_occupancies, opponent_occupancies, both_occupancies);
-    generateRookMoves(move_list, board.getPieces(to_move, ROOK), to_move_occupancies, opponent_occupancies, both_occupancies);
-    generateQueenMoves(move_list, board.getPieces(to_move, QUEEN), to_move_occupancies, opponent_occupancies, both_occupancies);
+      generateCastlingMoves<WHITE>(move_list, board);
+    }
+    else
+    {
+      generatePawnCapturesWithPromotion<BLACK>(move_list, board);
+      generatePawnCapturesNoPromotion<BLACK>(move_list, board);
+      generateEnPassantCapture<BLACK>(move_list, board);
+      generatePawnSinglePushWithPromotion<BLACK>(move_list, board);
+      generatePawnDoublePushes<BLACK>(move_list, board);
+      generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
 
-    // Castling Moves
-    generateCastlingMoves(move_list, board, opponent, castle_b_sq, castle_c_sq, castle_d_sq, castle_e_sq, castle_f_sq, castle_g_sq, castle_queen_mask, castle_king_mask);
+      generateLeaperMoves<BLACK, KNIGHT, ALL>(move_list, board);
+      generateLeaperMoves<BLACK, KING, ALL>(move_list, board);
 
+      generateSliderMoves<BLACK, BISHOP, ALL>(move_list, board);
+      generateSliderMoves<BLACK, ROOK, ALL>(move_list, board);
+      generateSliderMoves<BLACK, QUEEN, ALL>(move_list, board);
+
+      generateCastlingMoves<BLACK>(move_list, board);
+    }
+    return move_list;
+  }
+
+  MoveList generatePseudoLegalCaptures(const Board &board)
+  {
+    MoveList move_list = MoveList();
+    if (board.getSideToMove() == WHITE)
+    {
+      generatePawnCapturesWithPromotion<WHITE>(move_list, board);
+      generatePawnCapturesNoPromotion<WHITE>(move_list, board);
+      generateEnPassantCapture<WHITE>(move_list, board);
+
+      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(move_list, board);
+      generateLeaperMoves<WHITE, KING, CAPTURES>(move_list, board);
+
+      generateSliderMoves<WHITE, BISHOP, CAPTURES>(move_list, board);
+      generateSliderMoves<WHITE, ROOK, CAPTURES>(move_list, board);
+      generateSliderMoves<WHITE, QUEEN, CAPTURES>(move_list, board);
+    }
+    else
+    {
+      generatePawnCapturesWithPromotion<BLACK>(move_list, board);
+      generatePawnCapturesNoPromotion<BLACK>(move_list, board);
+      generateEnPassantCapture<BLACK>(move_list, board);
+
+      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(move_list, board);
+      generateLeaperMoves<BLACK, KING, CAPTURES>(move_list, board);
+
+      generateSliderMoves<BLACK, BISHOP, CAPTURES>(move_list, board);
+      generateSliderMoves<BLACK, ROOK, CAPTURES>(move_list, board);
+      generateSliderMoves<BLACK, QUEEN, CAPTURES>(move_list, board);
+    }
     return move_list;
   }
 
@@ -94,45 +134,63 @@ namespace movegen
     return legal_moves;
   }
 
-  void generateCastlingMoves(MoveList &move_list, const Board &board, int opponent, int castle_b_sq, int castle_c_sq, int castle_d_sq, int castle_e_sq, int castle_f_sq, int castle_g_sq, int castle_queen_mask, int castle_king_mask)
+  template <PieceColor ToMove>
+  void generateCastlingMoves(MoveList &move_list, const Board &board)
   {
-    if (!board.isSquareAttacked(castle_e_sq, opponent))
+    constexpr PieceColor Opponent = (ToMove == WHITE ? BLACK : WHITE);
+    constexpr int Castle_B_Sq = (ToMove == WHITE ? B1 : B8);
+    constexpr int Castle_C_Sq = (ToMove == WHITE ? C1 : C8);
+    constexpr int Castle_D_Sq = (ToMove == WHITE ? D1 : D8);
+    constexpr int Castle_E_Sq = (ToMove == WHITE ? E1 : E8);
+    constexpr int Castle_F_Sq = (ToMove == WHITE ? F1 : F8);
+    constexpr int Castle_G_Sq = (ToMove == WHITE ? G1 : G8);
+    constexpr int Castle_King_Mask = (ToMove == WHITE ? CASTLE_KING_WHITE : CASTLE_KING_BLACK);
+    constexpr int Castle_Queen_Mask = (ToMove == WHITE ? CASTLE_QUEEN_WHITE : CASTLE_QUEEN_BLACK);
+    if (!board.isSquareAttacked(Castle_E_Sq, Opponent))
     {
-      if ((board.getCastlingRights() & castle_king_mask) && !bitboard::getBit(board.getOccupancies(BOTH), castle_f_sq) && !bitboard::getBit(board.getOccupancies(BOTH), castle_g_sq))
+      if ((board.getCastlingRights() & Castle_King_Mask) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_F_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_G_Sq))
       {
-        if (!board.isSquareAttacked(castle_f_sq, opponent && !board.isSquareAttacked(castle_g_sq, opponent)))
+        if (!board.isSquareAttacked(Castle_F_Sq, Opponent && !board.isSquareAttacked(Castle_G_Sq, Opponent)))
         {
-          move_list.push_back(Move(castle_e_sq, castle_g_sq, KING, 0, false, false, false, true));
+          move_list.push_back(Move(Castle_E_Sq, Castle_G_Sq, KING, 0, false, false, false, true));
         }
       }
-      if ((board.getCastlingRights() & castle_queen_mask) && !bitboard::getBit(board.getOccupancies(BOTH), castle_d_sq) && !bitboard::getBit(board.getOccupancies(BOTH), castle_c_sq) && !bitboard::getBit(board.getOccupancies(BOTH), castle_b_sq))
+      if ((board.getCastlingRights() & Castle_Queen_Mask) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_D_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_C_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_B_Sq))
       {
-        if (!board.isSquareAttacked(castle_d_sq, opponent) && !board.isSquareAttacked(castle_c_sq, opponent))
+        if (!board.isSquareAttacked(Castle_D_Sq, Opponent) && !board.isSquareAttacked(Castle_C_Sq, Opponent))
         {
-          move_list.push_back(Move(castle_e_sq, castle_c_sq, KING, 0, false, false, false, true));
+          move_list.push_back(Move(Castle_E_Sq, Castle_C_Sq, KING, 0, false, false, false, true));
         }
       }
     }
   }
 
-  void generatePawnDoublePushes(MoveList &move_list, U64 pawn_double_pushes, int pawn_double_push_offset)
+  template <PieceColor ToMove>
+  void generatePawnDoublePushes(MoveList &move_list, const Board &board)
   {
+    constexpr int Pawn_Double_Push_Offset = ToMove == WHITE ? -16 : 16;
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnDoublePushes : attacks::maskBlackPawnDoublePushes;
+    U64 pawn_double_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     while (pawn_double_pushes)
     {
       int to_square = bitboard::bitScanForward(pawn_double_pushes);
-      int from_square = to_square + pawn_double_push_offset;
+      int from_square = to_square + Pawn_Double_Push_Offset;
       move_list.push_back(Move(from_square, to_square, PAWN, 0, false, true, false, false));
       bitboard::popLastBit(pawn_double_pushes);
     }
   }
 
-  void generatePawnSinglePushWithPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset)
+  template <PieceColor ToMove>
+  void generatePawnSinglePushWithPromotion(MoveList &move_list, const Board &board)
   {
+    constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
+    U64 pawn_single_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     U64 pawn_single_pushes_promo = pawn_single_pushes & (tables::MASK_RANK[0] | tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_promo);
-      int from_square = to_square + pawn_single_push_offset;
+      int from_square = to_square + Pawn_Single_Push_Offset;
       move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, ROOK, false, false, false, false));
@@ -141,25 +199,32 @@ namespace movegen
     }
   }
 
-  void generatePawnSinglePushNoPromotion(MoveList &move_list, U64 pawn_single_pushes, int pawn_single_push_offset)
+  template <PieceColor ToMove>
+  void generatePawnSinglePushNoPromotion(MoveList &move_list, const Board &board)
   {
+    constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
+    constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
+    U64 pawn_single_pushes = mask_func(board.getPieces(ToMove, PAWN), ~board.getOccupancies(BOTH));
     U64 pawn_single_pushes_no_promo = pawn_single_pushes & tables::MASK_CLEAR_RANK[0] & tables::MASK_CLEAR_RANK[7];
     while (pawn_single_pushes_no_promo)
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_no_promo);
-      int from_square = to_square + pawn_single_push_offset;
+      int from_square = to_square + Pawn_Single_Push_Offset;
       move_list.push_back(Move(from_square, to_square, PAWN, 0, false, false, false, false));
       bitboard::popLastBit(pawn_single_pushes_no_promo);
     }
   }
 
-  void generatePawnCapturesWithPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
+  template <PieceColor ToMove>
+  void generatePawnCapturesWithPromotion(MoveList &move_list, const Board &board)
   {
-    U64 pawns_can_capture_with_promo = to_move_pawns & tables::MASK_RANK[6 - (5 * to_move)];
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr int mask_index = 6 - (5 * ToMove);
+    U64 pawns_can_capture_with_promo = board.getPieces(ToMove, PAWN) & tables::MASK_RANK[mask_index];
     while (pawns_can_capture_with_promo)
     {
       int from_square = bitboard::bitScanForward(pawns_can_capture_with_promo);
-      U64 pawn_captures_promo = tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
+      U64 pawn_captures_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.getOccupancies(Opponent);
       while (pawn_captures_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_promo);
@@ -173,13 +238,16 @@ namespace movegen
     }
   }
 
-  void generatePawnCapturesNoPromotion(MoveList &move_list, int to_move, U64 to_move_pawns, U64 opponent_occupancies)
+  template <PieceColor ToMove>
+  void generatePawnCapturesNoPromotion(MoveList &move_list, const Board &board)
   {
-    U64 pawns_can_capture_no_promo = to_move_pawns & tables::MASK_CLEAR_RANK[6 - (5 * to_move)];
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr int mask_index = 6 - (5 * ToMove);
+    U64 pawns_can_capture_no_promo = board.getPieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[mask_index];
     while (pawns_can_capture_no_promo)
     {
       int from_square = bitboard::bitScanForward(pawns_can_capture_no_promo);
-      U64 pawn_captures_no_promo = tables::ATTACKS_PAWN[to_move][from_square] & opponent_occupancies;
+      U64 pawn_captures_no_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.getOccupancies(Opponent);
       while (pawn_captures_no_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_no_promo);
@@ -190,93 +258,85 @@ namespace movegen
     }
   }
 
-  void generateEnPassantCapture(MoveList &move_list, U64 to_move_pawns, int en_passant_square, int opponent)
+  template <PieceColor ToMove>
+  void generateEnPassantCapture(MoveList &move_list, const Board &board)
   {
-    if (en_passant_square != -1)
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    if (board.getEnPassantSquare() != -1)
     {
-      U64 pawns_can_en_passant = tables::ATTACKS_PAWN[opponent][en_passant_square] & to_move_pawns;
+      U64 pawns_can_en_passant = tables::ATTACKS_PAWN[Opponent][board.getEnPassantSquare()] & board.getPieces(ToMove, PAWN);
       while (pawns_can_en_passant)
       {
         int from_square = bitboard::bitScanForward(pawns_can_en_passant);
-        move_list.push_back(Move(from_square, en_passant_square, PAWN, 0, true, false, true, false));
+        move_list.push_back(Move(from_square, board.getEnPassantSquare(), PAWN, 0, true, false, true, false));
         bitboard::popLastBit(pawns_can_en_passant);
       }
     }
   }
 
-  void generateKnightMoves(MoveList &move_list, U64 to_move_knights, U64 to_move_occupancies, U64 opponent_occupancies)
+  template <PieceColor ToMove, PieceType PType, GenType GType>
+  void generateLeaperMoves(MoveList &move_list, const Board &board)
   {
-    while (to_move_knights)
+    static_assert(PType == KNIGHT || PType == KING, "Unsupported piece type in generateLeaperMoves()");
+
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr U64 *attacks_table = PType == KNIGHT ? tables::ATTACKS_KNIGHT : tables::ATTACKS_KING;
+    U64 to_move_occupancies = board.getOccupancies(ToMove);
+    U64 opponent_occupancies = board.getOccupancies(Opponent);
+    U64 to_move_pieces = board.getPieces(ToMove, PType);
+    while (to_move_pieces)
     {
-      int from_square = bitboard::bitScanForward(to_move_knights);
-      U64 moves = tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
+      int from_square = bitboard::bitScanForward(to_move_pieces);
+      U64 moves;
+      if constexpr (GType == ALL)
+      {
+        moves = attacks_table[from_square] & ~to_move_occupancies;
+      }
+      else
+      {
+        moves = attacks_table[from_square] & ~to_move_occupancies & opponent_occupancies;
+      }
       while (moves)
       {
         int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, KNIGHT, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
+        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false)); // TODO: this needs to know if it's a capture or not
         bitboard::popLastBit(moves);
       }
-      bitboard::popLastBit(to_move_knights);
+      bitboard::popLastBit(to_move_pieces);
     }
   }
 
-  void generateBishopMoves(MoveList &move_list, U64 to_move_bishops, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
+  template <PieceColor ToMove, PieceType PType, GenType GType>
+  void generateSliderMoves(MoveList &move_list, const Board &board)
   {
-    while (to_move_bishops)
+    static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generateSliderMoves()");
+
+    constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr U64 (*attacks_getter)(int sq, U64 occ) = (PType == BISHOP ? tables::getBishopAttacks
+                                                        : PType == ROOK ? tables::getRookAttacks
+                                                                        : tables::getQueenAttacks);
+    U64 to_move_occupancies = board.getOccupancies(ToMove);
+    U64 opponent_occupancies = board.getOccupancies(Opponent);
+    U64 to_move_pieces = board.getPieces(ToMove, PType);
+    while (to_move_pieces)
     {
-      int from_square = bitboard::bitScanForward(to_move_bishops);
-      U64 moves = tables::getBishopAttacks(from_square, both_occupancies) & ~to_move_occupancies;
+      int from_square = bitboard::bitScanForward(to_move_pieces);
+      U64 moves;
+      if constexpr (GType == ALL)
+      {
+        moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies;
+      }
+      else
+      {
+        moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies & opponent_occupancies;
+      }
       while (moves)
       {
         int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, BISHOP, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
+        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false)); // TODO: this needs to know if it's a capture or not
         bitboard::popLastBit(moves);
       }
-      bitboard::popLastBit(to_move_bishops);
-    }
-  }
-
-  void generateRookMoves(MoveList &move_list, U64 to_move_rooks, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
-  {
-    while (to_move_rooks)
-    {
-      int from_square = bitboard::bitScanForward(to_move_rooks);
-      U64 moves = tables::getRookAttacks(from_square, both_occupancies) & ~to_move_occupancies;
-      while (moves)
-      {
-        int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, ROOK, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
-        bitboard::popLastBit(moves);
-      }
-      bitboard::popLastBit(to_move_rooks);
-    }
-  }
-
-  void generateQueenMoves(MoveList &move_list, U64 to_move_queens, U64 to_move_occupancies, U64 opponent_occupancies, U64 both_occupancies)
-  {
-    while (to_move_queens)
-    {
-      int from_square = bitboard::bitScanForward(to_move_queens);
-      U64 moves = tables::getQueenAttacks(from_square, both_occupancies) & ~to_move_occupancies;
-      while (moves)
-      {
-        int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, QUEEN, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
-        bitboard::popLastBit(moves);
-      }
-      bitboard::popLastBit(to_move_queens);
-    }
-  }
-
-  void generateKingMoves(MoveList &move_list, U64 to_move_king, U64 to_move_occupancies, U64 opponent_occupancies)
-  {
-    int from_square = bitboard::bitScanForward(to_move_king);
-    U64 moves = tables::ATTACKS_KING[from_square] & ~to_move_occupancies;
-    while (moves)
-    {
-      int to_square = bitboard::bitScanForward(moves);
-      move_list.push_back(Move(from_square, to_square, KING, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
-      bitboard::popLastBit(moves);
+      bitboard::popLastBit(to_move_pieces);
     }
   }
 } // namespace movegen

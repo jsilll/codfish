@@ -79,7 +79,7 @@ namespace tables
 
     void init();
 
-    U64 getBishopAttacks(const int &sq, U64 occ);
-    U64 getRookAttacks(const int &sq, U64 occ);
-    U64 getQueenAttacks(const int &sq, U64 occ);
+    U64 getBishopAttacks(const int sq, U64 occ);
+    U64 getRookAttacks(const int sq, U64 occ);
+    U64 getQueenAttacks(const int sq, U64 occ);
 } // namespace tables
