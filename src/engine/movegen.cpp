@@ -35,11 +35,11 @@ namespace movegen
   void generatePawnDoublePushes(MoveList &move_list, const Board &board);
 
   // Leaper Pieces
-  template <PieceColor ToMove, PieceType PType>
+  template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateLeaperMoves(MoveList &move_list, const Board &board);
 
   // Slider Pieces
-  template <PieceColor ToMove, PieceType PType>
+  template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateSliderMoves(MoveList &move_list, const Board &board);
 
   // All Pseudo Legal Moves
@@ -55,12 +55,12 @@ namespace movegen
       generatePawnDoublePushes<WHITE>(move_list, board);
       generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
 
-      generateLeaperMoves<WHITE, KNIGHT>(move_list, board);
-      generateLeaperMoves<WHITE, KING>(move_list, board);
+      generateLeaperMoves<WHITE, KNIGHT, ALL>(move_list, board);
+      generateLeaperMoves<WHITE, KING, ALL>(move_list, board);
 
-      generateSliderMoves<WHITE, BISHOP>(move_list, board);
-      generateSliderMoves<WHITE, ROOK>(move_list, board);
-      generateSliderMoves<WHITE, QUEEN>(move_list, board);
+      generateSliderMoves<WHITE, BISHOP, ALL>(move_list, board);
+      generateSliderMoves<WHITE, ROOK, ALL>(move_list, board);
+      generateSliderMoves<WHITE, QUEEN, ALL>(move_list, board);
 
       generateCastlingMoves<WHITE>(move_list, board);
     }
@@ -73,14 +73,46 @@ namespace movegen
       generatePawnDoublePushes<BLACK>(move_list, board);
       generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
 
-      generateLeaperMoves<BLACK, KNIGHT>(move_list, board);
-      generateLeaperMoves<BLACK, KING>(move_list, board);
+      generateLeaperMoves<BLACK, KNIGHT, ALL>(move_list, board);
+      generateLeaperMoves<BLACK, KING, ALL>(move_list, board);
 
-      generateSliderMoves<BLACK, BISHOP>(move_list, board);
-      generateSliderMoves<BLACK, ROOK>(move_list, board);
-      generateSliderMoves<BLACK, QUEEN>(move_list, board);
+      generateSliderMoves<BLACK, BISHOP, ALL>(move_list, board);
+      generateSliderMoves<BLACK, ROOK, ALL>(move_list, board);
+      generateSliderMoves<BLACK, QUEEN, ALL>(move_list, board);
 
       generateCastlingMoves<BLACK>(move_list, board);
+    }
+    return move_list;
+  }
+
+  MoveList generatePseudoLegalCaptures(const Board &board)
+  {
+    MoveList move_list = MoveList();
+    if (board.getSideToMove() == WHITE)
+    {
+      generatePawnCapturesWithPromotion<WHITE>(move_list, board);
+      generatePawnCapturesNoPromotion<WHITE>(move_list, board);
+      generateEnPassantCapture<WHITE>(move_list, board);
+
+      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(move_list, board);
+      generateLeaperMoves<WHITE, KING, CAPTURES>(move_list, board);
+
+      generateSliderMoves<WHITE, BISHOP, CAPTURES>(move_list, board);
+      generateSliderMoves<WHITE, ROOK, CAPTURES>(move_list, board);
+      generateSliderMoves<WHITE, QUEEN, CAPTURES>(move_list, board);
+    }
+    else
+    {
+      generatePawnCapturesWithPromotion<BLACK>(move_list, board);
+      generatePawnCapturesNoPromotion<BLACK>(move_list, board);
+      generateEnPassantCapture<BLACK>(move_list, board);
+
+      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(move_list, board);
+      generateLeaperMoves<BLACK, KING, CAPTURES>(move_list, board);
+
+      generateSliderMoves<BLACK, BISHOP, CAPTURES>(move_list, board);
+      generateSliderMoves<BLACK, ROOK, CAPTURES>(move_list, board);
+      generateSliderMoves<BLACK, QUEEN, CAPTURES>(move_list, board);
     }
     return move_list;
   }
@@ -242,7 +274,7 @@ namespace movegen
     }
   }
 
-  template <PieceColor ToMove, PieceType PType>
+  template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateLeaperMoves(MoveList &move_list, const Board &board)
   {
     static_assert(PType == KNIGHT || PType == KING, "Unsupported piece type in generateLeaperMoves()");
@@ -255,18 +287,26 @@ namespace movegen
     while (to_move_pieces)
     {
       int from_square = bitboard::bitScanForward(to_move_pieces);
-      U64 moves = attacks_table[from_square] & ~to_move_occupancies;
+      U64 moves;
+      if constexpr (GType == ALL)
+      {
+        moves = attacks_table[from_square] & ~to_move_occupancies;
+      }
+      else
+      {
+        moves = attacks_table[from_square] & ~to_move_occupancies & opponent_occupancies;
+      }
       while (moves)
       {
         int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
+        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false)); // TODO: this needs to know if it's a capture or not
         bitboard::popLastBit(moves);
       }
       bitboard::popLastBit(to_move_pieces);
     }
   }
 
-  template <PieceColor ToMove, PieceType PType>
+  template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateSliderMoves(MoveList &move_list, const Board &board)
   {
     static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generateSliderMoves()");
@@ -281,11 +321,19 @@ namespace movegen
     while (to_move_pieces)
     {
       int from_square = bitboard::bitScanForward(to_move_pieces);
-      U64 moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies;
+      U64 moves;
+      if constexpr (GType == ALL)
+      {
+        moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies;
+      }
+      else
+      {
+        moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies & opponent_occupancies;
+      }
       while (moves)
       {
         int to_square = bitboard::bitScanForward(moves);
-        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false));
+        move_list.push_back(Move(from_square, to_square, PType, 0, bitboard::getBit(opponent_occupancies, to_square), false, false, false)); // TODO: this needs to know if it's a capture or not
         bitboard::popLastBit(moves);
       }
       bitboard::popLastBit(to_move_pieces);

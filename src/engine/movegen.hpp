@@ -17,6 +17,14 @@ namespace movegen
     MoveList generatePseudoLegalMoves(const Board &board);
 
     /**
+     * @brief Generates all the pseudo-legal captures for a given board
+     *
+     * @param board
+     * @return MoveList
+     */
+    MoveList generatePseudoLegalCaptures(const Board &board);
+
+    /**
      * @brief Generates all the legal moves for a given board
      *
      * @param board
