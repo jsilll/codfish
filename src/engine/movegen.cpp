@@ -10,6 +10,12 @@
 
 namespace movegen
 {
+  enum GenType
+  {
+    ALL,
+    CAPTURES
+  };
+
   // Castling
   template <PieceColor ToMove>
   void generateCastlingMoves(MoveList &move_list, const Board &board);
@@ -48,11 +54,14 @@ namespace movegen
       generatePawnSinglePushWithPromotion<WHITE>(move_list, board);
       generatePawnDoublePushes<WHITE>(move_list, board);
       generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
+
       generateLeaperMoves<WHITE, KNIGHT>(move_list, board);
       generateLeaperMoves<WHITE, KING>(move_list, board);
+
       generateSliderMoves<WHITE, BISHOP>(move_list, board);
       generateSliderMoves<WHITE, ROOK>(move_list, board);
       generateSliderMoves<WHITE, QUEEN>(move_list, board);
+
       generateCastlingMoves<WHITE>(move_list, board);
     }
     else
@@ -63,11 +72,14 @@ namespace movegen
       generatePawnSinglePushWithPromotion<BLACK>(move_list, board);
       generatePawnDoublePushes<BLACK>(move_list, board);
       generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
+
       generateLeaperMoves<BLACK, KNIGHT>(move_list, board);
       generateLeaperMoves<BLACK, KING>(move_list, board);
+
       generateSliderMoves<BLACK, BISHOP>(move_list, board);
       generateSliderMoves<BLACK, ROOK>(move_list, board);
       generateSliderMoves<BLACK, QUEEN>(move_list, board);
+
       generateCastlingMoves<BLACK>(move_list, board);
     }
     return move_list;
