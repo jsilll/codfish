@@ -119,7 +119,8 @@ namespace cli
           << "info                  Displays variables (for testing purposes)\n"
           << "magics                Generates magic numbers for the bishop and rook pieces\n"
           << "move (move)           Plays a move (in uci format)\n"
-          << "moves                 Shows all legal moves\n"
+          << "moves                 Shows all pseudo legal moves\n"
+          << "captures                 Shows all pseudo legal captures\n"
           << "new                   Starts new game\n"
           << "perf                  Benchmarks a number of key functions [TODO]\n"
           << "perft n               Calculates raw number of nodes from here, depth n\n"
@@ -192,7 +193,7 @@ namespace cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      MoveList moves = movegen::generateLegalMoves(board);
+      MoveList moves = movegen::generatePseudoLegalMoves(board);
       for (Move const &move : moves)
       {
         std::cout << move.getUCI() << "\n";
@@ -200,6 +201,24 @@ namespace cli
       std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
   } movesCommand;
+
+  /**
+   * @brief Handles 'captures' command
+   *
+   */
+  class CapturesCommand : public Command
+  {
+  public:
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+    {
+      MoveList captures = movegen::generatePseudoLegalCaptures(board);
+      for (Move const &move : captures)
+      {
+        std::cout << move.getUCI() << "\n";
+      }
+      std::cout << "Total number of captures: " << captures.size() << std::endl;
+    }
+  } capturesCommand;
 
   /**
    * @brief Handles the 'perft' command
@@ -474,6 +493,10 @@ namespace cli
       else if (cmd == "moves")
       {
         movesCommand.execute(args, board);
+      }
+      else if (cmd == "captures")
+      {
+        capturesCommand.execute(args, board);
       }
       else if (cmd == "new")
       {
