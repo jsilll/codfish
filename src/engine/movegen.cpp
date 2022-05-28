@@ -206,10 +206,10 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_promo);
       int from_square = to_square + Pawn_Single_Push_Offset;
-      move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
-      move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
-      move_list.push_back(Move(from_square, to_square, PAWN, ROOK, false, false, false, false));
       move_list.push_back(Move(from_square, to_square, PAWN, QUEEN, false, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, false, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, ROOK, false, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, false, false, false, false));
       bitboard::popLastBit(pawn_single_pushes_promo);
     }
   }
@@ -243,10 +243,10 @@ namespace movegen
       while (pawn_captures_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_promo);
-        move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, true, false, false, false));
-        move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, true, false, false, false));
-        move_list.push_back(Move(from_square, to_square, PAWN, ROOK, true, false, false, false));
         move_list.push_back(Move(from_square, to_square, PAWN, QUEEN, true, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, KNIGHT, true, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, ROOK, true, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, BISHOP, true, false, false, false));
         bitboard::popLastBit(pawn_captures_promo);
       }
       bitboard::popLastBit(pawns_can_capture_with_promo);
