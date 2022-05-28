@@ -2,15 +2,18 @@
 
 #include "utils.hpp"
 
-#include "engine/utils.hpp"
-#include "engine/magics.hpp"
-#include "engine/tables.hpp"
-#include "engine/board.hpp"
-#include "engine/move.hpp"
-#include "engine/movelist.hpp"
-#include "engine/movegen.hpp"
-#include "engine/ai.hpp"
-#include "engine/eval.hpp"
+#include "engine/defs.hpp"
+
+#include "engine/movegen/utils.hpp"
+#include "engine/movegen/magics.hpp"
+#include "engine/movegen/tables.hpp"
+#include "engine/movegen/board.hpp"
+#include "engine/movegen/move.hpp"
+#include "engine/movegen/movelist.hpp"
+#include "engine/movegen/movegen.hpp"
+
+#include "engine/movepicker/movepicker.hpp"
+#include "engine/movepicker/eval.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -228,11 +231,11 @@ namespace uci
             }
 
             // TODO: only instatiate AI once
-            AI ai = AI(board);
+            MovePicker ai = MovePicker(board);
             ai.setDepth(depth);
 
             std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-            AI::SearchResult result = ai.findBestMove();
+            MovePicker::SearchResult result = ai.findBestMove();
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
             std::chrono::duration<double> elapsed = end - start;

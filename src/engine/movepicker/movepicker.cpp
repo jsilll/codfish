@@ -1,28 +1,27 @@
-#include "ai.hpp"
+#include "movepicker.hpp"
 
-#include "utils.hpp"
-#include "bitboard.hpp"
-#include "move.hpp"
-#include "board.hpp"
-#include "movelist.hpp"
-#include "movegen.hpp"
+#include "../movegen/bitboard.hpp"
+#include "../movegen/move.hpp"
+#include "../movegen/board.hpp"
+#include "../movegen/movelist.hpp"
+#include "../movegen/movegen.hpp"
 #include "eval.hpp"
 
 #include <climits>
 
 #define MIN_EVAL (INT_MIN + 1)
 
-void AI::setDepth(int depth)
+void MovePicker::setDepth(int depth)
 {
     _depth = depth;
 }
 
-int AI::getDepth() const
+int MovePicker::getDepth() const
 {
     return _depth;
 }
 
-AI::SearchResult AI::findBestMove()
+MovePicker::SearchResult MovePicker::findBestMove()
 {
     _nodes = 0;
 
@@ -48,7 +47,7 @@ AI::SearchResult AI::findBestMove()
     return SearchResult{alpha, best_move.getEncoded(), _nodes};
 }
 
-int AI::search(int alpha, int beta, int depth, const Board &board)
+int MovePicker::search(int alpha, int beta, int depth, const Board &board)
 {
     _nodes++;
 
@@ -92,7 +91,7 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
     return alpha;
 }
 
-int AI::quiescence(int alpha, int beta, int depth, const Board &board)
+int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
 {
     _nodes++;
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "defs.hpp"
+#include "../defs.hpp"
 
 class Board;
 class Move;
 
-class AI
+class MovePicker
 {
 private:
     Board &_board;
@@ -21,7 +21,7 @@ public:
     };
 
 public:
-    AI(Board &board) : _board(board), _depth(1), _nodes(0) {}
+    MovePicker(Board &board) : _board(board), _depth(1), _nodes(0) {}
 
     int getDepth() const;
 

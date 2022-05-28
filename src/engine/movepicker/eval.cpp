@@ -1,7 +1,8 @@
-#include "utils.hpp"
-#include "bitboard.hpp"
-#include "board.hpp"
 #include "eval.hpp"
+
+#include "../movegen/utils.hpp"
+#include "../movegen/bitboard.hpp"
+#include "../movegen/board.hpp"
 
 namespace eval
 {

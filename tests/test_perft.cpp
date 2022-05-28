@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "../src/engine/magics.hpp"
-#include "../src/engine/tables.hpp"
-#include "../src/engine/board.hpp"
-#include "../src/engine/perft.hpp"
+#include "../src/engine/movegen/magics.hpp"
+#include "../src/engine/movegen/tables.hpp"
+#include "../src/engine/movegen/board.hpp"
+#include "../src/engine/movegen/perft.hpp"
 
 void setup()
 {

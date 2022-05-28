@@ -3,16 +3,17 @@
 #include "utils.hpp"
 
 #include "engine/defs.hpp"
-#include "engine/utils.hpp"
-#include "engine/bitboard.hpp"
-#include "engine/magics.hpp"
-#include "engine/tables.hpp"
-#include "engine/board.hpp"
-#include "engine/move.hpp"
-#include "engine/movelist.hpp"
-#include "engine/movegen.hpp"
-#include "engine/perft.hpp"
-#include "engine/eval.hpp"
+
+#include "engine/movegen/utils.hpp"
+#include "engine/movegen/bitboard.hpp"
+#include "engine/movegen/magics.hpp"
+#include "engine/movegen/tables.hpp"
+#include "engine/movegen/board.hpp"
+#include "engine/movegen/move.hpp"
+#include "engine/movegen/movelist.hpp"
+#include "engine/movegen/movegen.hpp"
+#include "engine/movegen/perft.hpp"
+#include "engine/movepicker/eval.hpp"
 
 #include <algorithm>
 #include <chrono>

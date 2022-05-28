@@ -14,12 +14,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Engine Library
-file(GLOB ENGINE_LIB_SRC ${PROJECT_SOURCE_DIR}/src/engine/*.cpp)
-add_library(engine ${ENGINE_LIB_SRC})
+file(GLOB AI_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
+file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
+add_library(engine ${MOVEGEN_SRC} ${AI_SRC})
 
 # Engine Executable
-file(GLOB ENGINE_EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_executable(engine_exec ${ENGINE_EXEC_SRC})
+file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+add_executable(engine_exec ${EXEC_SRC})
 target_link_libraries(engine_exec readline)
 target_link_libraries(engine_exec engine)
 
