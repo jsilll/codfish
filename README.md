@@ -10,6 +10,7 @@ Detailed Feature List
 - Pre-calculated Attack Tables
 - Magic Bitboards
 - Pseudo-Legal Move Generation
-- Move Ordering
 - PeSTO's Evaluation Function by Ronald Friederich
 - NegaMax Search
+- Quiescense Search with Null Move Pruning
+- Move Ordering
