@@ -42,6 +42,21 @@ namespace movegen
   template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateSliderMoves(MoveList &move_list, const Board &board);
 
+  bool hasLegalMoves(const Board &board) // TODO: performance can be improved
+  {
+    for (const Move &move : movegen::generatePseudoLegalMoves(board))
+    {
+      Board backup = board;
+      backup.makeMove(move);
+      int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+      if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // All Pseudo Legal Moves
   MoveList generatePseudoLegalMoves(const Board &board)
   {
@@ -132,20 +147,6 @@ namespace movegen
       }
     }
     return legal_moves;
-  }
-
-  bool hasLegalMoves(const Board &board)
-  {
-    for (const Move &move : Movegen::generatePseudoLegalMoves(board))
-    {
-      Board backup = board;
-      backup.makeMove(move);
-      int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-      if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
-      {
-        return true;
-      }
-    }
   }
 
   template <PieceColor ToMove>

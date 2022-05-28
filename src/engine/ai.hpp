@@ -31,4 +31,5 @@ public:
 
 private:
     int search(int alpha, int beta, int depth, const Board &board);
+    int quiescence(int alpha, int beta, int depth, const Board &board);
 };

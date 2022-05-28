@@ -200,12 +200,11 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int depth = 4;
+            int depth = 2;
 
             if (args.size() != 0 && args[0] == "depth")
             {
                 args.erase(args.begin());
-                int depth = 1;
 
                 if (args.size() != 0)
                 {

@@ -52,9 +52,9 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
 {
     _nodes++;
 
-    if (depth == 0)
+    if (depth <= 0)
     {
-        return eval::eval(board);
+        return quiescence(alpha, beta, depth, board);
     }
 
     bool has_legal_moves = false;
@@ -92,57 +92,51 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
     return alpha;
 }
 
-int AI::quiescence(int alpha, int beta, int depth, Board &board)
+int AI::quiescence(int alpha, int beta, int depth, const Board &board)
 {
     _nodes++;
 
-    if (Movegen::hasLegalMoves(board))
+    if (!movegen::hasLegalMoves(board))
     {
-        int stand_pat = Eval::eval(board);
-
-        if (stand_pat >= beta)
+        int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+        if (board.isSquareAttacked(king_sq, board.getOpponent()))
         {
-            return beta;
-        }
-        if (stand_pat > alpha)
-        {
-            alpha = stand_pat;
+            return MIN_EVAL + _depth - depth;
         }
 
-        bool quiet = true;
-        for (const Move &move : Attackgen::generatePseudoAttacks(board))
+        return 0;
+    }
+
+    int stand_pat = eval::eval(board);
+
+    if (stand_pat >= beta)
+    {
+        return beta;
+    }
+
+    if (stand_pat > alpha)
+    {
+        alpha = stand_pat;
+    }
+
+    for (const Move &capture : movegen::generatePseudoLegalCaptures(board))
+    {
+        Board backup = board;
+        backup.makeMove(capture);
+        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+        if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
-            quiet = false;
-            Board backup = board;
-            backup.makeMove(move);
-            int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-            if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+            int score = -quiescence(-beta, -alpha, depth - 1, backup);
+            if (score >= beta)
             {
-                int score = -search(-beta, -alpha, depth - 1, backup);
-                if (score >= beta)
-                {
-                    return beta;
-                }
-                if (score > alpha)
-                {
-                    alpha = score;
-                }
+                return beta;
+            }
+            if (score > alpha)
+            {
+                alpha = score;
             }
         }
-
-        if (quiet)
-        {
-            return Eval::eval(board);
-        }
-
-        return alpha;
     }
 
-    int king_sq = Utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
-    if (board.isSquareAttacked(king_sq, board.getOpponent()))
-    {
-        return MIN_EVAL + _depth - depth;
-    }
-
-    return 0;
+    return alpha;
 }

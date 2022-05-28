@@ -31,4 +31,14 @@ namespace movegen
      * @return MoveList
      */
     MoveList generateLegalMoves(const Board &board);
+
+    /**
+     * @brief Checks whether a given board as has legal moves
+     *
+     * @param board
+     * @return true
+     * @return false
+     */
+    bool hasLegalMoves(const Board &board); // TODO: performance can be improved (quiescence usage)
+
 } // namespace movegen
