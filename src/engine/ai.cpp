@@ -91,3 +91,58 @@ int AI::search(int alpha, int beta, int depth, const Board &board)
 
     return alpha;
 }
+
+int AI::quiescence(int alpha, int beta, int depth, Board &board)
+{
+    _nodes++;
+
+    if (Movegen::hasLegalMoves(board))
+    {
+        int stand_pat = Eval::eval(board);
+
+        if (stand_pat >= beta)
+        {
+            return beta;
+        }
+        if (stand_pat > alpha)
+        {
+            alpha = stand_pat;
+        }
+
+        bool quiet = true;
+        for (const Move &move : Attackgen::generatePseudoAttacks(board))
+        {
+            quiet = false;
+            Board backup = board;
+            backup.makeMove(move);
+            int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+            if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+            {
+                int score = -search(-beta, -alpha, depth - 1, backup);
+                if (score >= beta)
+                {
+                    return beta;
+                }
+                if (score > alpha)
+                {
+                    alpha = score;
+                }
+            }
+        }
+
+        if (quiet)
+        {
+            return Eval::eval(board);
+        }
+
+        return alpha;
+    }
+
+    int king_sq = Utils::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+    if (board.isSquareAttacked(king_sq, board.getOpponent()))
+    {
+        return MIN_EVAL + _depth - depth;
+    }
+
+    return 0;
+}

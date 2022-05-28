@@ -134,6 +134,20 @@ namespace movegen
     return legal_moves;
   }
 
+  bool hasLegalMoves(const Board &board)
+  {
+    for (const Move &move : Movegen::generatePseudoLegalMoves(board))
+    {
+      Board backup = board;
+      backup.makeMove(move);
+      int king_sq = Utils::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
+      if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+      {
+        return true;
+      }
+    }
+  }
+
   template <PieceColor ToMove>
   void generateCastlingMoves(MoveList &move_list, const Board &board)
   {
