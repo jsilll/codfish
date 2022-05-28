@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['ucicommand_0',['UCICommand',['../classuci_1_1UCICommand.html',1,'uci']]],
-  ['ucinewgamecommand_1',['UCINewGameCommand',['../classuci_1_1UCINewGameCommand.html',1,'uci']]]
+  ['searchresult_0',['SearchResult',['../structMovePicker_1_1SearchResult.html',1,'MovePicker']]],
+  ['setfencommand_1',['SetFenCommand',['../classcli_1_1SetFenCommand.html',1,'cli']]],
+  ['switchcommand_2',['SwitchCommand',['../classcli_1_1SwitchCommand.html',1,'cli']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Chess Engine: src/engine/movegen/attacks.hpp Source File</title>
+<title>Chess Engine: src/engine/movegen/utils.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -66,33 +66,28 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">attacks.hpp</div></div>
+  <div class="headertitle"><div class="title">utils.hpp</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;../defs.hpp&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>attacks</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="comment">// Used For On-the Fly Attacks</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty);</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    U64 maskBlackPawnSinglePushes(U64 bpawns, U64 empty);</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    U64 maskWhitePawnDoublePushes(U64 wpawns, U64 empty);</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty);</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="comment">// Used For Pre-Initialized Attack Tables</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    U64 maskRookAttackRays(<span class="keywordtype">int</span> sq);   <span class="comment">// helper function</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    U64 maskBishopAttackRays(<span class="keywordtype">int</span> sq); <span class="comment">// helper function</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    U64 maskWhitePawnAnyAttacks(U64 wpawns);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    U64 maskBlackPawnAnyAttacks(U64 bpawns);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    U64 maskKnightAttacks(U64 knights);</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    U64 maskKingAttacks(U64 kings);</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    U64 maskBishopAttacks(<span class="keywordtype">int</span> sq, U64 block);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    U64 maskRookAttacks(<span class="keywordtype">int</span> sq, U64 block);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>} <span class="comment">// namespace attacks</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>utils</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  <span class="comment">// Common square operations</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> getSquare(<span class="keyword">const</span> <span class="keywordtype">int</span> rk, <span class="keyword">const</span> <span class="keywordtype">int</span> fl) { <span class="keywordflow">return</span> 8 * rk + fl; }</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> getFile(<span class="keyword">const</span> <span class="keywordtype">int</span> sq) { <span class="keywordflow">return</span> sq &amp; 7; }</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> getRank(<span class="keyword">const</span> <span class="keywordtype">int</span> sq) { <span class="keywordflow">return</span> sq &gt;&gt; 3; }</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> flipSquare(<span class="keyword">const</span> <span class="keywordtype">int</span> sq) { <span class="keywordflow">return</span> sq ^ 56; }</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="comment">// Flipping Side to Move</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> getOpponent(<span class="keywordtype">int</span> to_move) { <span class="keywordflow">return</span> to_move ^ 1; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>} <span class="comment">// namespace utils</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

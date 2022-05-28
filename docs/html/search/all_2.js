@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['displaycommand_0',['DisplayCommand',['../classcli_1_1DisplayCommand.html',1,'cli::DisplayCommand'],['../classuci_1_1DisplayCommand.html',1,'uci::DisplayCommand']]],
-  ['dividedperftcommand_1',['DividedPerftCommand',['../classcli_1_1DividedPerftCommand.html',1,'cli']]]
+  ['capturescommand_0',['CapturesCommand',['../classcli_1_1CapturesCommand.html',1,'cli']]],
+  ['command_1',['Command',['../classcli_1_1Command.html',1,'cli::Command'],['../classuci_1_1Command.html',1,'uci::Command']]]
 ];
