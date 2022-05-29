@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../defs.hpp"
+
 #include <vector>
 
 class Move;

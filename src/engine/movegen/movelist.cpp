@@ -1,6 +1,6 @@
-#include "move.hpp"
-
 #include "movelist.hpp"
+
+#include "move.hpp"
 
 MoveList::MoveList()
 {

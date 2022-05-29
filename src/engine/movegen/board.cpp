@@ -1,15 +1,15 @@
 #include "board.hpp"
 
-#include <algorithm>
-#include <cstring>
-#include <iomanip>
-#include <string>
-
 #include "utils.hpp"
 #include "bitboard.hpp"
 #include "magics.hpp"
 #include "move.hpp"
 #include "tables.hpp"
+
+#include <algorithm>
+#include <cstring>
+#include <iomanip>
+#include <string>
 
 // Constructors
 

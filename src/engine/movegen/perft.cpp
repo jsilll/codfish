@@ -1,10 +1,9 @@
 #include "perft.hpp"
 
-#include "utils.hpp"
 #include "bitboard.hpp"
+#include "board.hpp"
 #include "move.hpp"
 #include "movelist.hpp"
-#include "board.hpp"
 #include "movegen.hpp"
 
 namespace perft

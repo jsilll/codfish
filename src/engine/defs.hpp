@@ -35,7 +35,7 @@ const std::string SQUARE_NAMES[] = {
     "-"};
 // clang-format off
 
-enum Directions : int {
+enum Directions : int { // TODO: use this in attacks.cpp
   NORTH = 8,
   SOUTH = -8,
   WEST = -1,

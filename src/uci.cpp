@@ -4,7 +4,6 @@
 
 #include "engine/defs.hpp"
 
-#include "engine/movegen/utils.hpp"
 #include "engine/movegen/magics.hpp"
 #include "engine/movegen/tables.hpp"
 #include "engine/movegen/board.hpp"

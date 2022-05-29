@@ -1,6 +1,5 @@
 #include "tables.hpp"
 
-#include "utils.hpp"
 #include "bitboard.hpp"
 #include "magics.hpp"
 #include "attacks.hpp"
