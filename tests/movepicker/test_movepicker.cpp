@@ -1,12 +1,13 @@
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
 
-#include "../src/engine/defs.hpp"
-#include "../src/engine/movegen/magics.hpp"
-#include "../src/engine/movegen/tables.hpp"
-#include "../src/engine/movegen/board.hpp"
-#include "../src/engine/movegen/move.hpp"
-#include "../src/engine/movepicker/movepicker.hpp"
+#include "../catch.hpp"
+
+#include "../../src/engine/defs.hpp"
+#include "../../src/engine/movegen/magics.hpp"
+#include "../../src/engine/movegen/tables.hpp"
+#include "../../src/engine/movegen/board.hpp"
+#include "../../src/engine/movegen/move.hpp"
+#include "../../src/engine/movepicker/movepicker.hpp"
 
 void setup()
 {

@@ -26,7 +26,17 @@ target_link_libraries(engine_exec engine)
 
 # Engine Unit Tests
 enable_testing()
-file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+
+file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/*.cpp)
+foreach (TEST_SRC ${TESTS_SRC})
+    get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
+    add_executable(${TEST_NAME} ${TEST_SRC})
+    target_link_libraries(${TEST_NAME} engine)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach ()
+
+
+file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movepicker/*.cpp)
 foreach (TEST_SRC ${TESTS_SRC})
     get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
     add_executable(${TEST_NAME} ${TEST_SRC})

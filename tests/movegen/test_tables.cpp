@@ -1,9 +1,10 @@
 #define CATCH_CONFIG_MAIN
 
-#include "catch.hpp"
-#include "../src/engine/defs.hpp"
-#include "../src/engine/movegen/magics.hpp"
-#include "../src/engine/movegen/tables.hpp"
+#include "../catch.hpp"
+
+#include "../../src/engine/defs.hpp"
+#include "../../src/engine/movegen/magics.hpp"
+#include "../../src/engine/movegen/tables.hpp"
 
 void setup()
 {
