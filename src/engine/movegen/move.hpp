@@ -23,6 +23,7 @@ public:
   bool isEnPassant() const;
   bool isCastle() const;
   int getEncoded() const;
+  int scoreMove() const;
 
   std::string getUCI() const;
 };

@@ -119,6 +119,26 @@ int Board::getFullMoveNumber() const
   return _full_move_number;
 }
 
+int Board::getPieceFromSquare(int sq) const
+{
+  U64 position = ONE << sq;
+  for (int piece = PAWN; piece < EMPTY; piece++)
+  {
+    if (_pieces[this->getOpponent()][piece] & position)
+    {
+      return piece;
+    }
+  }
+  for (int piece = PAWN; piece < EMPTY; piece++)
+  {
+    if (_pieces[this->getSideToMove()][piece] & position)
+    {
+      return piece;
+    }
+  }
+  return EMPTY;
+}
+
 bool Board::isSquareAttacked(int sq, int attacker) const
 {
   U64 pawns = _pieces[attacker][PAWN];
