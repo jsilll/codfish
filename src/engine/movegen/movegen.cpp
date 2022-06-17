@@ -181,14 +181,14 @@ namespace movegen
       {
         if (!board.isSquareAttacked(Castle_F_Sq, Opponent && !board.isSquareAttacked(Castle_G_Sq, Opponent)))
         {
-          move_list.push_back(Move(Castle_E_Sq, Castle_G_Sq, KING, 0, 0, false, false, false, true));
+          move_list.push_back(Move(Castle_E_Sq, Castle_G_Sq, KING, EMPTY, EMPTY, false, false, true));
         }
       }
       if ((board.getCastlingRights() & Castle_Queen_Mask) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_D_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_C_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_B_Sq))
       {
         if (!board.isSquareAttacked(Castle_D_Sq, Opponent) && !board.isSquareAttacked(Castle_C_Sq, Opponent))
         {
-          move_list.push_back(Move(Castle_E_Sq, Castle_C_Sq, KING, 0, 0, false, false, false, true));
+          move_list.push_back(Move(Castle_E_Sq, Castle_C_Sq, KING, EMPTY, EMPTY, false, false, true));
         }
       }
     }
@@ -204,7 +204,7 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_double_pushes);
       int from_square = to_square + Pawn_Double_Push_Offset;
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, 0, false, true, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, EMPTY, true, false, false));
       bitboard::popLastBit(pawn_double_pushes);
     }
   }
@@ -220,10 +220,10 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_promo);
       int from_square = to_square + Pawn_Single_Push_Offset;
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, QUEEN, false, false, false, false));
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, KNIGHT, false, false, false, false));
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, ROOK, false, false, false, false));
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, BISHOP, false, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, QUEEN, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, KNIGHT, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, ROOK, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, BISHOP, false, false, false));
       bitboard::popLastBit(pawn_single_pushes_promo);
     }
   }
@@ -239,7 +239,7 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_no_promo);
       int from_square = to_square + Pawn_Single_Push_Offset;
-      move_list.push_back(Move(from_square, to_square, PAWN, 0, 0, false, false, false, false));
+      move_list.push_back(Move(from_square, to_square, PAWN, EMPTY, EMPTY, false, false, false));
       bitboard::popLastBit(pawn_single_pushes_no_promo);
     }
   }
@@ -257,10 +257,10 @@ namespace movegen
       while (pawn_captures_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_promo);
-        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, QUEEN, true, false, false, false));
-        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, KNIGHT, true, false, false, false));
-        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, ROOK, true, false, false, false));
-        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, BISHOP, true, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, QUEEN, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, KNIGHT, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, ROOK, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, BISHOP, false, false, false));
         bitboard::popLastBit(pawn_captures_promo);
       }
       bitboard::popLastBit(pawns_can_capture_with_promo);
@@ -280,7 +280,7 @@ namespace movegen
       while (pawn_captures_no_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_no_promo);
-        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, 0, true, false, false, false));
+        move_list.push_back(Move(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false));
         bitboard::popLastBit(pawn_captures_no_promo);
       }
       bitboard::popLastBit(pawns_can_capture_no_promo);
@@ -297,7 +297,7 @@ namespace movegen
       while (pawns_can_en_passant)
       {
         int from_square = bitboard::bitScanForward(pawns_can_en_passant);
-        move_list.push_back(Move(from_square, board.getEnPassantSquare(), PAWN, board.getPieceFromSquare(board.getEnPassantSquare()).type, 0, true, false, true, false));
+        move_list.push_back(Move(from_square, board.getEnPassantSquare(), PAWN, board.getPieceFromSquare(board.getEnPassantSquare()).type, EMPTY, false, true, false));
         bitboard::popLastBit(pawns_can_en_passant);
       }
     }
@@ -320,22 +320,23 @@ namespace movegen
       if constexpr (GType == QUIETS)
       {
         moves = attacks_table[from_square] & ~to_move_occupancies & ~opponent_occupancies;
-        while (moves)
-        {
-          int to_square = bitboard::bitScanForward(moves);
-          move_list.push_back(Move(from_square, to_square, PType, 0, 0, false, false, false, false));
-          bitboard::popLastBit(moves);
-        }
       }
       else
       {
         moves = attacks_table[from_square] & ~to_move_occupancies & opponent_occupancies;
-        while (moves)
+      }
+      while (moves)
+      {
+        int to_square = bitboard::bitScanForward(moves);
+        if constexpr (GType == QUIETS)
         {
-          int to_square = bitboard::bitScanForward(moves);
-          move_list.push_back(Move(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, 0, true, false, false, false));
-          bitboard::popLastBit(moves);
+          move_list.push_back(Move(from_square, to_square, PType, EMPTY, EMPTY, false, false, false));
         }
+        else
+        {
+          move_list.push_back(Move(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false));
+        }
+        bitboard::popLastBit(moves);
       }
       bitboard::popLastBit(to_move_pieces);
     }
@@ -360,22 +361,23 @@ namespace movegen
       if constexpr (GType == QUIETS)
       {
         moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies & ~opponent_occupancies;
-        while (moves)
-        {
-          int to_square = bitboard::bitScanForward(moves);
-          move_list.push_back(Move(from_square, to_square, PType, 0, 0, false, false, false, false));
-          bitboard::popLastBit(moves);
-        }
       }
       else
       {
         moves = attacks_getter(from_square, board.getOccupancies(BOTH)) & ~to_move_occupancies & opponent_occupancies;
-        while (moves)
+      }
+      while (moves)
+      {
+        int to_square = bitboard::bitScanForward(moves);
+        if constexpr (GType == QUIETS)
         {
-          int to_square = bitboard::bitScanForward(moves);
-          move_list.push_back(Move(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, 0, true, false, false, false));
-          bitboard::popLastBit(moves);
+          move_list.push_back(Move(from_square, to_square, PType, EMPTY, EMPTY, false, false, false));
         }
+        else
+        {
+          move_list.push_back(Move(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false));
+        }
+        bitboard::popLastBit(moves);
       }
       bitboard::popLastBit(to_move_pieces);
     }

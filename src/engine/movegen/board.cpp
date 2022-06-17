@@ -470,11 +470,15 @@ void Board::makeMove(Move move)
   int from_square = move.getFromSquare();
   int to_square = move.getToSquare();
   int piece = move.getPiece();
+  int captured_piece = move.getCapturedPiece();
   int promoted_piece = move.getPromotedPiece();
   bool is_capture = move.isCapture();
+  bool is_promotion = move.isPromotion();
   bool is_double_push = move.isDoublePush();
   bool is_en_passant = move.isEnPassant();
   bool is_castle = move.isCastle();
+
+  int pawn_push_en_passant_offset = _to_move == WHITE ? -8 : 8;
 
   bitboard::popBit(_pieces[_to_move][piece], from_square);
   _square[from_square].type = EMPTY;
@@ -482,18 +486,17 @@ void Board::makeMove(Move move)
 
   if (is_en_passant)
   {
-    int captured_piece_square = to_square + 8 * (((_to_move + 1) * 2) - 3);
+    int captured_piece_square = to_square + pawn_push_en_passant_offset;
     _square[captured_piece_square].type = EMPTY;
     _square[captured_piece_square].color = BLACK;
     bitboard::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
   else if (is_capture)
   {
-    int captured_piece_type = _square[to_square].type;
-    bitboard::popBit(_pieces[this->getOpponent()][captured_piece_type], to_square);
+    bitboard::popBit(_pieces[this->getOpponent()][captured_piece], to_square);
   }
 
-  if (promoted_piece)
+  if (is_promotion)
   {
     _square[to_square].type = promoted_piece;
     bitboard::setBit(_pieces[_to_move][promoted_piece], to_square);
@@ -503,20 +506,19 @@ void Board::makeMove(Move move)
     _square[to_square].type = piece;
     bitboard::setBit(_pieces[_to_move][piece], to_square);
   }
+
   _square[to_square].color = _to_move;
 
-  if (is_castle) // move corresponding rook piece
+  if (is_castle)
   {
     int rook_from_square, rook_to_square;
     if (to_square - from_square > 0)
     {
-      // King Side Caslting
       rook_from_square = _to_move == WHITE ? H1 : H8;
       rook_to_square = _to_move == WHITE ? F1 : F8;
     }
     else
     {
-      // Queen Side Castling
       rook_from_square = _to_move == WHITE ? A1 : A8;
       rook_to_square = _to_move == WHITE ? D1 : D8;
     }
@@ -528,7 +530,7 @@ void Board::makeMove(Move move)
     bitboard::setBit(_pieces[_to_move][ROOK], rook_to_square);
   }
 
-  _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;
+  _en_passant_square = is_double_push ? to_square + pawn_push_en_passant_offset : -1;
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
 
