@@ -28,4 +28,6 @@ public:
 
   iterator begin() { return _moves.begin(); }
   iterator end() { return _moves.end(); }
+
+  void sort();
 };

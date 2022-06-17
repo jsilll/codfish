@@ -54,7 +54,7 @@ public:
   int getEnPassantSquare() const;
   int getHalfMoveClock() const;
   int getFullMoveNumber() const;
-  int getPieceFromSquare(int sq) const;
+  Piece getPieceFromSquare(int sq) const;
   bool isSquareAttacked(int sq, int attacker_side) const;
 
   std::string getFen() const;

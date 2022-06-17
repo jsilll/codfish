@@ -21,7 +21,7 @@ namespace bitboard
             count++;
             bb &= bb - 1;
         }
-        return count;
+        return (int)count;
     }
 
     int bitScan(U64 bb)
