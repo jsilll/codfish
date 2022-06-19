@@ -3,6 +3,7 @@
 #include "../defs.hpp"
 
 #include <vector>
+#include <algorithm>
 
 class Move;
 
@@ -29,5 +30,9 @@ public:
   iterator begin() { return _moves.begin(); }
   iterator end() { return _moves.end(); }
 
-  void sort();
+  template <typename _Compare>
+  void sort(const _Compare compare)
+  {
+    std::sort(_moves.begin(), _moves.end(), compare);
+  }
 };

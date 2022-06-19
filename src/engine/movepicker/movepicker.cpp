@@ -12,6 +12,36 @@
 
 #define MIN_EVAL (INT_MIN + 1)
 
+// clang-format off
+const int MVV_LVA[6][6] = {
+    {105, 205, 305, 405, 505, 605}, 
+    {104, 204, 304, 404, 504, 604},
+    {103, 203, 303, 403, 503, 603},
+    {102, 202, 302, 402, 502, 602},
+    {101, 201, 301, 401, 501, 601},
+    {100, 200, 300, 400, 500, 600}
+};
+// clang-format on
+
+int score(const Move &move)
+{
+
+    if (move.isCapture())
+    {
+        return MVV_LVA[move.getPiece()][move.getCapturedPiece()];
+    }
+
+    return 0;
+}
+
+struct MoveMoreThanKey
+{
+    inline bool operator()(const Move &move1, const Move &move2)
+    {
+        return (score(move1) > score(move2));
+    }
+} moreThanKey;
+
 void MovePicker::setDepth(int depth)
 {
     _depth = depth;
@@ -28,7 +58,9 @@ MovePicker::SearchResult MovePicker::findBestMove()
 
     int alpha = MIN_EVAL;
     Move best_move = Move();
-    for (const Move &move : movegen::generatePseudoLegalMoves(_board))
+    MoveList moves = movegen::generatePseudoLegalMoves(_board);
+    moves.sort<MoveMoreThanKey>(moreThanKey);
+    for (const Move &move : moves)
     {
         Board backup = _board;
         backup.makeMove(move);
@@ -119,7 +151,9 @@ int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
         alpha = stand_pat;
     }
 
-    for (const Move &capture : movegen::generatePseudoLegalCaptures(board))
+    MoveList captures = movegen::generatePseudoLegalCaptures(board);
+    captures.sort<MoveMoreThanKey>(moreThanKey);
+    for (const Move &capture : captures)
     {
         Board backup = board;
         backup.makeMove(capture);

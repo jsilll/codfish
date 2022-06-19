@@ -1,16 +1,5 @@
 #include "move.hpp"
 
-// clang-format off
-int mvv_lva[6][6] = {
-    {105, 205, 305, 405, 505, 605}, 
-    {104, 204, 304, 404, 504, 604},
-    {103, 203, 303, 403, 503, 603},
-    {102, 202, 302, 402, 502, 602},
-    {101, 201, 301, 401, 501, 601},
-    {100, 200, 300, 400, 500, 600}
-};
-// clang-format on
-
 std::string Move::getUCI() const
 {
   std::string from_square = std::string(SQUARE_NAMES[this->getFromSquare()]);
@@ -78,18 +67,4 @@ bool Move::isPromotion() const
 int Move::getEncoded() const
 {
   return _move_encoded;
-}
-
-int Move::score() const
-{
-  if (this->isCapture())
-  {
-    return mvv_lva[this->getPiece()][this->getCapturedPiece()];
-  }
-  return 0;
-}
-
-bool Move::operator>(const Move &move) const
-{
-  return (this->score() > move.score());
 }

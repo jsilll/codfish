@@ -26,8 +26,5 @@ public:
   bool isPromotion() const;
   int getEncoded() const;
 
-  int score() const;
-  bool operator>(const Move &move) const;
-
   std::string getUCI() const;
 };

@@ -108,7 +108,6 @@ namespace movegen
       generateCastlingMoves<BLACK>(move_list, board);
     }
 
-    move_list.sort();
     return move_list;
   }
 
@@ -142,7 +141,6 @@ namespace movegen
       generateSliderMoves<BLACK, QUEEN, CAPTURES>(move_list, board);
     }
 
-    move_list.sort();
     return move_list;
   }
 
