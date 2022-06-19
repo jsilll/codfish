@@ -90,7 +90,9 @@ int MovePicker::search(int alpha, int beta, int depth, const Board &board)
     }
 
     bool has_legal_moves = false;
-    for (const Move &move : movegen::generatePseudoLegalMoves(board))
+    MoveList moves = movegen::generatePseudoLegalMoves(board);
+    moves.sort<MoveMoreThanKey>(moreThanKey);
+    for (const Move &move : moves)
     {
         Board backup = board;
         backup.makeMove(move);
