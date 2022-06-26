@@ -240,7 +240,7 @@ namespace uci
 
             std::chrono::duration<double> elapsed = end - start;
             // TODO: Correct displaying of elapsed time, when it's too small cutechess doesn't display it
-            std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << elapsed / std::chrono::milliseconds(1) << "\n";
+            std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << (int)(elapsed / std::chrono::milliseconds(1)) << "\n";
             std::cout << "bestmove " << Move(result.best_move_encoded).getUCI() << std::endl;
         }
     } goCommand;

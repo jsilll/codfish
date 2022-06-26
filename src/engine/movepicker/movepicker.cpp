@@ -82,7 +82,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
         }
     }
 
-    return SearchResult{_current_nodes, alpha, best_move.getEncoded()};
+    return SearchResult{alpha, _current_nodes, best_move.getEncoded()};
 }
 
 int MovePicker::search(int alpha, int beta, int depth, const Board &board)
@@ -111,15 +111,24 @@ int MovePicker::search(int alpha, int beta, int depth, const Board &board)
             if (score >= beta)
             {
                 // Killer Move Heuristic
-                _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
-                _killer_moves[0][_current_depth] = move.getEncoded();
+                if (!move.isCapture())
+                {
+                    if (move.getEncoded() != _killer_moves[0][_current_depth])
+                    {
+                        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
+                    }
+                    _killer_moves[0][_current_depth] = move.getEncoded();
+                }
 
                 return beta;
             }
             if (score > alpha)
             {
                 // History Move Heuristic
-                _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+                if (!move.isCapture())
+                {
+                    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+                }
 
                 alpha = score;
             }
