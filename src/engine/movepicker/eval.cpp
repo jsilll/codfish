@@ -195,7 +195,7 @@ namespace eval
         int mg[2]{};
         int eg[2]{};
 
-        for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+        for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
             U64 pieces_white = board.getPieces(WHITE, piece_type);
             while (pieces_white)

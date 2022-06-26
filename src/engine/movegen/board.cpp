@@ -11,8 +11,6 @@
 #include <iomanip>
 #include <string>
 
-// Constructors
-
 Board::Board() { this->setStartingPosition(); }
 
 Board::Board(const Board &board)
@@ -29,8 +27,6 @@ Board::Board(const Board &board)
   _white_on_bottom = board._white_on_bottom;
   memcpy(_square, board._square, sizeof(_square));
 }
-
-// Private Methods
 
 void Board::updateOccupancies()
 {
@@ -58,7 +54,7 @@ void Board::updateOccupancies()
 
 void Board::updateBBFromSquares()
 {
-  for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+  for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
   {
     _pieces[WHITE][piece_type] = ZERO;
     _pieces[BLACK][piece_type] = ZERO;
@@ -74,10 +70,6 @@ void Board::updateBBFromSquares()
 
   this->updateOccupancies();
 }
-
-// Public Methods
-
-// Getters
 
 U64 Board::getPieces(int color, int type) const
 {
@@ -117,6 +109,11 @@ int Board::getHalfMoveClock() const
 int Board::getFullMoveNumber() const
 {
   return _full_move_number;
+}
+
+Piece Board::getPieceFromSquare(int sq) const
+{
+  return _square[sq];
 }
 
 bool Board::isSquareAttacked(int sq, int attacker) const
@@ -159,7 +156,6 @@ std::string Board::getFen() const
   std::string half_move_clock;
   std::string full_move_number;
 
-  // Piece Placements
   int empty_squares = 0;
   for (int rank = 7; rank >= 0; rank--)
   {
@@ -197,10 +193,8 @@ std::string Board::getFen() const
     }
   }
 
-  // Active Color
   active_color = _to_move == WHITE ? "w" : "b";
 
-  // Castling Rights
   char castling_rights_buf[5];
   snprintf(castling_rights_buf,
            5,
@@ -215,14 +209,19 @@ std::string Board::getFen() const
     castling_rights = "-";
   }
 
-  // En Passant Square
-  std::string fen = piece_placements + " " + active_color + " " + castling_rights + " " + SQUARE_NAMES[this->getEnPassantSquare() == -1 ? 64 : this->getEnPassantSquare()] + " " + std::to_string(_half_move_clock) + " " + // Halfmove Clock
-                    std::to_string(_full_move_number) + "\n";                                                                                                                                                               // Fullmove Number
+  std::string fen = piece_placements +
+                    " " +
+                    active_color +
+                    " " +
+                    castling_rights +
+                    " " +
+                    SQUARE_NAMES[this->getEnPassantSquare() == -1 ? 64 : this->getEnPassantSquare()] +
+                    " " +
+                    std::to_string(_half_move_clock) + " " +
+                    std::to_string(_full_move_number) + "\n";
 
   return fen.substr(1, std::string::npos);
 }
-
-// Display
 
 void Board::display() const
 {
@@ -274,13 +273,11 @@ bool Board::rotateDisplay()
   return _white_on_bottom = !_white_on_bottom;
 }
 
-// Modifiers
-
 void Board::clear()
 {
   for (int color = WHITE; color < BOTH; color++)
   {
-    for (int piece_type = PAWN; piece_type < EMPTY; piece_type++)
+    for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
     {
       _pieces[color][piece_type] = ZERO;
     }
@@ -299,7 +296,7 @@ void Board::clear()
 
   for (int sq = A1; sq < N_SQUARES; sq++)
   {
-    _square[sq].type = EMPTY; // needs to have this particular values set for correct printing
+    _square[sq].type = EMPTY;
     _square[sq].color = BLACK;
   }
 }
@@ -309,11 +306,15 @@ void Board::setStartingPosition()
   this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
 }
 
-void Board::setFromFen(std::string piece_placements, std::string active_color, std::string castling_rights, std::string en_passant, std::string half_move_clock, std::string full_move_number)
+void Board::setFromFen(std::string const &piece_placements,
+                       std::string const &active_color,
+                       std::string const &castling_rights,
+                       std::string const &en_passant,
+                       std::string const &half_move_clock,
+                       std::string const &full_move_number)
 {
   this->clear();
 
-  // Piece Placements Parsing
   int file = 0, rank = 7;
   for (char const &c : piece_placements)
   {
@@ -389,7 +390,6 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
     }
   }
 
-  // Active Color Parsing
   if (active_color == "w")
   {
     _to_move = WHITE;
@@ -399,7 +399,6 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
     _to_move = BLACK;
   }
 
-  // Castling Rights Parsing
   for (char const &c : castling_rights)
   {
     switch (c)
@@ -421,7 +420,6 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
     }
   }
 
-  // En Passant Square Parsing
   if (en_passant != "-")
   {
     int en_passant_file = en_passant[0] - 'a';
@@ -433,10 +431,8 @@ void Board::setFromFen(std::string piece_placements, std::string active_color, s
     _en_passant_square = -1;
   }
 
-  // Halfmove Clock Parsing
   _half_move_clock = std::stoi(half_move_clock);
 
-  // Fullmove Number Parsing
   _full_move_number = std::stoi(full_move_number);
 
   this->updateBBFromSquares();
@@ -447,10 +443,10 @@ int Board::switchSideToMove()
   return _to_move = this->getOpponent();
 }
 
-void Board::makeMove(Move move)
+void Board::makeMove(Move const &move)
 {
   // clang-format off
-  constexpr int castling_rights[64] = {
+  static const int castling_rights[64] = {
     13, 15, 15, 15, 12, 15, 15, 14,
     15, 15, 15, 15, 15, 15, 15, 15,
     15, 15, 15, 15, 15, 15, 15, 15,
@@ -465,11 +461,15 @@ void Board::makeMove(Move move)
   int from_square = move.getFromSquare();
   int to_square = move.getToSquare();
   int piece = move.getPiece();
+  int captured_piece = move.getCapturedPiece();
   int promoted_piece = move.getPromotedPiece();
   bool is_capture = move.isCapture();
+  bool is_promotion = move.isPromotion();
   bool is_double_push = move.isDoublePush();
   bool is_en_passant = move.isEnPassant();
   bool is_castle = move.isCastle();
+
+  int pawn_push_en_passant_offset = _to_move == WHITE ? -8 : 8;
 
   bitboard::popBit(_pieces[_to_move][piece], from_square);
   _square[from_square].type = EMPTY;
@@ -477,18 +477,17 @@ void Board::makeMove(Move move)
 
   if (is_en_passant)
   {
-    int captured_piece_square = to_square + 8 * (((_to_move + 1) * 2) - 3);
+    int captured_piece_square = to_square + pawn_push_en_passant_offset;
     _square[captured_piece_square].type = EMPTY;
     _square[captured_piece_square].color = BLACK;
     bitboard::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
   else if (is_capture)
   {
-    int captured_piece_type = _square[to_square].type;
-    bitboard::popBit(_pieces[this->getOpponent()][captured_piece_type], to_square);
+    bitboard::popBit(_pieces[this->getOpponent()][captured_piece], to_square);
   }
 
-  if (promoted_piece)
+  if (is_promotion)
   {
     _square[to_square].type = promoted_piece;
     bitboard::setBit(_pieces[_to_move][promoted_piece], to_square);
@@ -498,34 +497,49 @@ void Board::makeMove(Move move)
     _square[to_square].type = piece;
     bitboard::setBit(_pieces[_to_move][piece], to_square);
   }
+
   _square[to_square].color = _to_move;
 
-  if (is_castle) // move corresponding rook piece
+  if (is_castle)
   {
     int rook_from_square, rook_to_square;
     if (to_square - from_square > 0)
     {
-      // King Side Caslting
       rook_from_square = _to_move == WHITE ? H1 : H8;
       rook_to_square = _to_move == WHITE ? F1 : F8;
     }
     else
     {
-      // Queen Side Castling
       rook_from_square = _to_move == WHITE ? A1 : A8;
       rook_to_square = _to_move == WHITE ? D1 : D8;
     }
+
     _square[rook_from_square].type = EMPTY;
     _square[rook_from_square].color = BLACK;
     _square[rook_to_square].type = ROOK;
     _square[rook_to_square].color = _to_move;
+
     bitboard::popBit(_pieces[_to_move][ROOK], rook_from_square);
     bitboard::setBit(_pieces[_to_move][ROOK], rook_to_square);
   }
 
-  _en_passant_square = is_double_push ? to_square + 8 * (((_to_move + 1) * 2) - 3) : -1;
+  _en_passant_square = is_double_push ? to_square + pawn_push_en_passant_offset : -1;
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
+
+  if (move.getPiece() == PAWN || move.getCapturedPiece() == EMPTY)
+  {
+    _half_move_clock++;
+  }
+  else
+  {
+    _half_move_clock = 0;
+  }
+
+  if (_to_move == BLACK)
+  {
+    _full_move_number++;
+  }
 
   this->switchSideToMove();
   this->updateOccupancies();

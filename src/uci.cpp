@@ -202,7 +202,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int depth = 3;
+            int depth = 5;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -230,6 +230,7 @@ namespace uci
             }
 
             // TODO: only instatiate AI once
+            // TODO: Refactor AI class to inherit from Board
             MovePicker ai = MovePicker(board);
             ai.setDepth(depth);
 
@@ -238,6 +239,7 @@ namespace uci
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
             std::chrono::duration<double> elapsed = end - start;
+            // TODO: Correct displaying of elapsed time, when it's too small cutechess doesn't display it
             std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << elapsed / std::chrono::milliseconds(1) << "\n";
             std::cout << "bestmove " << Move(result.best_move_encoded).getUCI() << std::endl;
         }

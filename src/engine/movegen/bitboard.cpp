@@ -14,14 +14,13 @@ namespace bitboard
 {
     int bitCount(U64 bb)
     {
-        // Brian Kernighan's way
         unsigned int count = 0;
         while (bb)
         {
             count++;
             bb &= bb - 1;
         }
-        return count;
+        return (int)count;
     }
 
     int bitScan(U64 bb)

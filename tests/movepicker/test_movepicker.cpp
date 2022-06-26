@@ -28,7 +28,7 @@ TEST_CASE("Checkmate in one move")
         board.setFromFen("1k6/p6p/K6P/8/8/8/8/1q4q1", "b", "-", "-", "0", "1");
         MovePicker::SearchResult result = ai.findBestMove();
         Move best_move = Move(result.best_move_encoded);
-        REQUIRE(best_move.getUCI() == "b1b6");
+        REQUIRE(best_move.getUCI() == "g1b6");
     }
 
     SECTION("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1")

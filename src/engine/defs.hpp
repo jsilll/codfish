@@ -4,7 +4,6 @@
 
 typedef unsigned long long U64;
 
-// TODO: add other handy constexprs like white/black squares ...
 constexpr U64 ONE = 1ULL;
 constexpr U64 ZERO = 0ULL;
 
@@ -33,9 +32,10 @@ const std::string SQUARE_NAMES[] = {
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
     "-"};
-// clang-format off
+// clang-format on
 
-enum Directions : int { // TODO: use this in attacks.cpp
+enum Directions : int
+{
   NORTH = 8,
   SOUTH = -8,
   WEST = -1,
@@ -47,22 +47,27 @@ enum Directions : int { // TODO: use this in attacks.cpp
   N_DIRECTIONS = 8,
 };
 
-enum PieceColor : int {
-  WHITE,
-  BLACK,
-  BOTH,
+enum PieceColor : int
+{
+  WHITE = 0,
+  BLACK = 1,
+  N_SIDES = 2,
+  BOTH = 2,
 };
 
-enum PieceType : int {
-  PAWN,
-  KNIGHT,
-  BISHOP,
-  ROOK,
-  QUEEN,
-  KING,
-  EMPTY,
+enum PieceType : int
+{
+  PAWN = 0,
+  KNIGHT = 1,
+  BISHOP = 2,
+  ROOK = 3,
+  QUEEN = 4,
+  KING = 5,
+  N_PIECES = 6,
+  EMPTY = 6,
 };
 
+// clang-format off
 const std::string PIECE_REPR[26] = {
     "P", "N", "B", "R", "Q", "K",
     "p", "n", "b", "r", "q", "k",
@@ -71,3 +76,4 @@ const std::string PIECE_REPR[26] = {
     "♟︎", "♞", "♝", "♜", "♛", "♚",
     " ",
 };
+// clang-format on
