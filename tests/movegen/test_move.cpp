@@ -20,7 +20,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == true);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 505);
+        REQUIRE(move.getUCI() == "a1h8q");
     }
 
     SECTION("Pawn Takes King")
@@ -31,11 +31,13 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == KING);
         REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 605);
+        REQUIRE(move.isPromotion() == false);
+        REQUIRE(move.isPromotion() == false);
     }
 
     SECTION("Pawn Takes Queen")
@@ -46,11 +48,12 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == QUEEN);
         REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 505);
+        REQUIRE(move.getUCI() == "a1b1");
     }
 
     SECTION("Pawn Takes Rook")
@@ -61,11 +64,12 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == ROOK);
         REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 405);
+        REQUIRE(move.isPromotion() == false);
     }
 
     SECTION("Pawn Takes Bishop")
@@ -76,11 +80,12 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == BISHOP);
         REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 305);
+        REQUIRE(move.getUCI() == "a1b1");
     }
 
     SECTION("Pawn Takes Knight")
@@ -91,11 +96,12 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == KNIGHT);
         REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 205);
+        REQUIRE(move.getUCI() == "a1b1");
     }
 
     SECTION("Pawn Takes Pawn")
@@ -105,11 +111,11 @@ TEST_CASE("Test Moves")
         REQUIRE(move.getToSquare() == 1);
         REQUIRE(move.getPiece() == PAWN);
         REQUIRE(move.getCapturedPiece() == PAWN);
-        REQUIRE(move.getPromotedPiece() == EMPTY);
+        REQUIRE(move.isPromotion() == false);
         REQUIRE(move.isDoublePush() == false);
         REQUIRE(move.isEnPassant() == false);
         REQUIRE(move.isCastle() == false);
         REQUIRE(move.isCapture() == true);
-        // REQUIRE(move.score() == 105);
+        REQUIRE(move.getUCI() == "a1b1");
     }
 }

@@ -6,7 +6,7 @@ std::string Move::getUCI() const
   std::string to_square = std::string(SQUARE_NAMES[this->getToSquare()]);
   std::string promoted_piece = std::string(PIECE_REPR[this->getPromotedPiece() + 6]);
   std::string uci = from_square + to_square;
-  return this->getPromotedPiece() != EMPTY ? uci + promoted_piece : uci;
+  return this->isPromotion() ? uci + promoted_piece : uci;
 }
 
 Move::Move(int source_square, int target_square, int piece, int captured_piece, int promoted_piece, bool is_double_push, bool is_en_passant, bool is_castle)

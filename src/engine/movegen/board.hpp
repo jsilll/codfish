@@ -2,8 +2,6 @@
 
 #include "../defs.hpp"
 
-#include <iostream>
-
 class Move;
 
 typedef enum : int
@@ -30,8 +28,8 @@ private:
   int _half_move_clock;
   int _full_move_number;
 
-  U64 _pieces[BOTH][EMPTY];
-  U64 _occupancies[BOTH + 1];
+  U64 _pieces[N_SIDES][N_PIECES];
+  U64 _occupancies[N_SIDES + 1];
 
   bool _ascii;
   bool _white_on_bottom;
@@ -62,9 +60,14 @@ public:
   // Modififiers
   void clear();
   void setStartingPosition();
-  void setFromFen(std::string piece_placements, std::string active_color, std::string castling_rights, std::string en_passant, std::string halfmove_clock, std::string fullmove_number);
+  void setFromFen(std::string const &piece_placements,
+                  std::string const &active_color,
+                  std::string const &castling_rights,
+                  std::string const &en_passant,
+                  std::string const &halfmove_clock,
+                  std::string const &fullmove_number);
   int switchSideToMove();
-  void makeMove(Move move);
+  void makeMove(Move const &move);
 
   // Display
   void display() const;

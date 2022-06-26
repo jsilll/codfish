@@ -12,7 +12,7 @@ void MoveList::push_back(const Move &move)
   _moves.push_back(move);
 }
 
-MoveList::MoveVector::size_type MoveList::size() const
+MoveList::Moves::size_type MoveList::size() const
 {
   return _moves.size();
 }

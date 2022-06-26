@@ -14,7 +14,6 @@ namespace bitboard
 {
     int bitCount(U64 bb)
     {
-        // Brian Kernighan's way
         unsigned int count = 0;
         while (bb)
         {
