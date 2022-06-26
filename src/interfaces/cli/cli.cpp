@@ -1,19 +1,19 @@
 #include "cli.hpp"
 
-#include "utils.hpp"
+#include "../utils.hpp"
 
-#include "engine/defs.hpp"
+#include "../../engine/defs.hpp"
 
-#include "engine/movegen/bitboard.hpp"
-#include "engine/movegen/magics.hpp"
-#include "engine/movegen/tables.hpp"
-#include "engine/movegen/board.hpp"
-#include "engine/movegen/move.hpp"
-#include "engine/movegen/movelist.hpp"
-#include "engine/movegen/movegen.hpp"
-#include "engine/movegen/perft.hpp"
+#include "../../engine/movegen/bitboard.hpp"
+#include "../../engine/movegen/magics.hpp"
+#include "../../engine/movegen/tables.hpp"
+#include "../../engine/movegen/board.hpp"
+#include "../../engine/movegen/move.hpp"
+#include "../../engine/movegen/movelist.hpp"
+#include "../../engine/movegen/movegen.hpp"
+#include "../../engine/movegen/perft.hpp"
 
-#include "engine/movepicker/eval.hpp"
+#include "../../engine/movepicker/eval.hpp"
 
 #include <algorithm>
 #include <chrono>

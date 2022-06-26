@@ -1,5 +1,5 @@
-#include "cli.hpp"
-#include "uci.hpp"
+#include "interfaces/cli/cli.hpp"
+#include "interfaces/uci/uci.hpp"
 
 #include <iostream>
 #include <string>

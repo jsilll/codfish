@@ -19,7 +19,11 @@ file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
 add_library(engine ${MOVEGEN_SRC} ${AI_SRC})
 
 # Engine Executable
-file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
+)
 add_executable(engine_exec ${EXEC_SRC})
 target_link_libraries(engine_exec readline)
 target_link_libraries(engine_exec engine)
