@@ -4,11 +4,14 @@ C++ Chess engine that uses bitboard representation.
 
 Engine Features
 ===
+
+### Interfaces
 - UCI Interface
 - CLI Mode for Humans
 
 ---
 
+### Move Generation
 - Bitboard Representation
 - Pre-calculated Attack Tables
 - Magic Bitboards
@@ -16,6 +19,7 @@ Engine Features
 
 ---
 
+### Move Picker
 - PeSTO's Evaluation Function by Ronald Friederich
 - NegaMax Search
 - Quiescense Search with Null Move Pruning
