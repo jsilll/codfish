@@ -66,5 +66,9 @@ public:
 
     void setDepth(int depth);
 
+    void addToKillerMoves(Move const &move);
+    void addToHistoryMoves(Move const &move);
+    void addToPrincipalVariation(Move const &move);
+
     SearchResult findBestMove();
 };

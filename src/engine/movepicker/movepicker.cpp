@@ -23,6 +23,34 @@ int MovePicker::getDepth() const
     return _max_depth;
 }
 
+void MovePicker::addToKillerMoves(Move const &move)
+{
+    // Killer Move Heuristic
+    if (move.getEncoded() != _killer_moves[0][_current_depth])
+    {
+        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
+    }
+    _killer_moves[0][_current_depth] = move.getEncoded();
+}
+
+void MovePicker::addToHistoryMoves(Move const &move)
+{
+    // History Move Heuristic
+    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+}
+
+void MovePicker::addToPrincipalVariation(Move const &move)
+{
+    // Write Principal Variation Move
+    _pv_table[_current_depth][_current_depth] = move.getEncoded();
+
+    // Copy moves from deeper depth into current depths line
+    memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
+
+    // Adjust Principal Variation Length
+    _pv_length[_current_depth] = _pv_length[_current_depth + 1];
+}
+
 int MovePicker::score(const Move &move) const
 {
     // clang-format off
@@ -80,23 +108,16 @@ MovePicker::SearchResult MovePicker::findBestMove()
                 // History Move Heuristic
                 if (!move.isCapture())
                 {
-                    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+                    addToHistoryMoves(move);
                 }
-
-                // Write Principal Variation Move
-                _pv_table[_current_depth][_current_depth] = move.getEncoded();
-
-                // Copy moves from deeper depth into current depths line
-                memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
-
-                // Adjust Principal Variation Length
-                _pv_length[_current_depth] = _pv_length[_current_depth + 1];
 
                 alpha = score;
                 best_move = move;
             }
         }
     }
+
+    addToPrincipalVariation(best_move);
 
     SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
     for (int i = 0; i < res.pv_length; i++)
@@ -110,13 +131,14 @@ MovePicker::SearchResult MovePicker::findBestMove()
 int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 {
     _current_nodes++;
-    _pv_length[_current_depth] = _current_depth;
 
-    if (depth <= 0)
+    if (depth == 0)
     {
+        _pv_length[_current_depth] = _current_depth;
         return quiescence(alpha, beta, depth, board);
     }
 
+    Move best_move = Move();
     bool has_legal_moves = false;
     MoveList moves = movegen::generatePseudoLegalMoves(board);
     moves.sort(_move_more_than_key);
@@ -136,11 +158,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 // Killer Move Heuristic
                 if (!move.isCapture())
                 {
-                    if (move.getEncoded() != _killer_moves[0][_current_depth])
-                    {
-                        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
-                    }
-                    _killer_moves[0][_current_depth] = move.getEncoded();
+                    addToKillerMoves(move);
                 }
 
                 return beta;
@@ -150,19 +168,11 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 // History Move Heuristic
                 if (!move.isCapture())
                 {
-                    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+                    addToHistoryMoves(move);
                 }
 
-                // Write Principal Variation Move
-                _pv_table[_current_depth][_current_depth] = move.getEncoded();
-
-                // Copy moves from deeper depth into current depths line
-                memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
-
-                // Adjust Principal Variation Length
-                _pv_length[_current_depth] = _pv_length[_current_depth + 1];
-
                 alpha = score;
+                best_move = move;
             }
         }
     }
@@ -177,6 +187,8 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 
         return 0;
     }
+
+    addToPrincipalVariation(best_move);
 
     return alpha;
 }
