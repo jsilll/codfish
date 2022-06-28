@@ -16,6 +16,7 @@ Engine Features
 - Pre-calculated Attack Tables
 - Magic Bitboards
 - Pseudo-Legal Move Generation
+- Copy Make Approach
 
 ---
 
