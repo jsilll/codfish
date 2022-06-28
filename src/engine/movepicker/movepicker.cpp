@@ -59,7 +59,6 @@ MovePicker::SearchResult MovePicker::findBestMove()
 {
     _current_nodes = 0;
     _current_depth = 0;
-    _pv_length[0] = 0;
 
     int alpha = MIN_EVAL;
     Move best_move = Move();
