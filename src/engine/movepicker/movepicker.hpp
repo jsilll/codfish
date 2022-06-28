@@ -5,6 +5,8 @@
 class Board;
 class Move;
 
+// TODO: move the 64 on the arrays to some kind of constant with a name
+
 class MovePicker
 {
 private:
@@ -14,8 +16,8 @@ private:
     int _current_nodes;
     int _current_depth;
 
-    int _killer_moves[2][64]{};
-    int _history_moves[N_SIDES][N_PIECES][N_SQUARES]{};
+    int _killer_moves[2][64];
+    int _history_moves[N_SIDES][N_PIECES][N_SQUARES];
 
     struct MoveMoreThanKey
     {
@@ -25,6 +27,9 @@ private:
             return (move_picker.score(move1) > move_picker.score(move2));
         }
     } _move_more_than_key;
+
+    int _pv_length[64];
+    int _pv_table[64][64];
 
 private:
     /**
@@ -40,8 +45,7 @@ private:
      * @return move score
      */
     int score(const Move &move) const;
-    int score(const Move &move);
-    int search(int alpha, int beta, int depth, const Board &board);
+    int negamax(int alpha, int beta, int depth, const Board &board);
     int quiescence(int alpha, int beta, int depth, const Board &board);
 
 public:
@@ -49,7 +53,8 @@ public:
     {
         int score;
         int nodes;
-        int best_move_encoded;
+        int pv_length;
+        int pv[64]{};
     };
 
 public:

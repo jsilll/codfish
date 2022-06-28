@@ -25,3 +25,5 @@ Engine Features
 - Quiescense Search with Null Move Pruning
 - MVV LVA
 - Killer Move Heuristic
+- History Move Heuristic
+- Triangular PV-Table
