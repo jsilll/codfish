@@ -40,8 +40,8 @@ int MovePicker::score(const Move &move)
         return 8000;
     }
 
-    return 0;
-    // TODO: return _history_moves[current_board.getSideToMove()][move.getPiece()][move.getToSquare()];
+    // TODO: can be improved after adding unmake move function
+    return _history_moves[_current_depth % 2 ? !_board.getSideToMove() : _board.getSideToMove()][move.getPiece()][move.getToSquare()];
 }
 
 void MovePicker::setDepth(int depth)
