@@ -58,7 +58,7 @@ public:
     };
 
 public:
-    MovePicker(Board &board) : _board(board), _max_depth(1), _current_nodes(0), _move_more_than_key{*this}
+    MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this}
     {
     }
 

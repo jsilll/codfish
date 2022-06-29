@@ -15,6 +15,11 @@
 
 void MovePicker::setDepth(int depth)
 {
+    if (depth <= 0)
+    {
+        throw std::invalid_argument("Depth argument must be positive integer.");
+    }
+
     _max_depth = depth;
 }
 
@@ -89,6 +94,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
     _current_depth = 0;
 
     int alpha = MIN_EVAL;
+
     Move best_move = Move();
     MoveList moves = movegen::generatePseudoLegalMoves(_board);
     moves.sort(_move_more_than_key);
@@ -101,7 +107,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
-            int score = -negamax(MIN_EVAL, -alpha, _max_depth, backup);
+            int score = -negamax(MIN_EVAL, -alpha, _max_depth - 1, backup);
             _current_depth--;
             if (score > alpha)
             {
@@ -135,7 +141,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     if (depth == 0)
     {
         _pv_length[_current_depth] = _current_depth;
-        return quiescence(alpha, beta, depth, board);
+        return quiescence(alpha, beta, -1, board);
     }
 
     Move best_move = Move();
