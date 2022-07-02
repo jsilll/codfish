@@ -28,3 +28,4 @@ Engine Features
 - Killer Move Heuristic
 - History Move Heuristic
 - Triangular PV-Table
+- Iterative Deepening
