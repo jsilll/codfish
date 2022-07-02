@@ -239,9 +239,19 @@ namespace uci
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
             std::chrono::duration<double> elapsed = end - start;
-            // TODO: Correct displaying of elapsed time, when it's too small cutechess doesn't display it
-            std::cout << "info score cp " << result.score << " depth " << depth << " nodes " << result.nodes << " time " << (int)(elapsed / std::chrono::milliseconds(1)) << "\n";
-            std::cout << "bestmove " << Move(result.best_move_encoded).getUCI() << std::endl;
+            std::cout << "info score cp " << result.score
+                      << " depth " << depth
+                      << " nodes " << result.nodes
+                      << " time " << (int)(elapsed / std::chrono::milliseconds(1))
+                      << " pv ";
+
+            for (int i = 0; i < result.pv_length; i++)
+            {
+                std::cout << Move(result.pv[i]).getUCI() << " ";
+            }
+            std::cout << "\n";
+
+            std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
         }
     } goCommand;
 
