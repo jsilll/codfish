@@ -90,9 +90,32 @@ int MovePicker::score(const Move &move) const
 
 MovePicker::SearchResult MovePicker::findBestMove()
 {
-    _current_nodes = 0;
-    _current_depth = 0;
+    memset(_history_moves, 0, sizeof(_history_moves));
+    memset(_killer_moves, 0, sizeof(_killer_moves));
+    memset(_killer_moves, 0, sizeof(_killer_moves));
+    memset(_pv_table, 0, sizeof(_pv_table));
 
+    // Iterative Deepening
+    int alpha = 0;
+    for (int depth = 1; depth <= _max_depth; depth++)
+    {
+        _current_nodes = 0;
+        _current_depth = 0;
+        alpha = search(depth);
+    }
+
+    // Search Result
+    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
+    for (int i = 0; i < res.pv_length; i++)
+    {
+        res.pv[i] = _pv_table[0][i];
+    }
+
+    return res;
+}
+
+int MovePicker::search(int depth)
+{
     int alpha = MIN_EVAL;
 
     Move best_move = Move();
@@ -107,7 +130,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
-            int score = -negamax(MIN_EVAL, -alpha, _max_depth - 1, backup);
+            int score = -negamax(MIN_EVAL, -alpha, depth - 1, backup);
             _current_depth--;
             if (score > alpha)
             {
@@ -125,13 +148,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
 
     addToPrincipalVariation(best_move);
 
-    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
-    for (int i = 0; i < res.pv_length; i++)
-    {
-        res.pv[i] = _pv_table[0][i];
-    }
-
-    return res;
+    return alpha;
 }
 
 int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)

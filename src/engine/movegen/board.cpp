@@ -527,7 +527,7 @@ void Board::makeMove(Move const &move)
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
 
-  if (move.getPiece() == PAWN || move.getCapturedPiece() == EMPTY)
+  if (move.getPiece() == PAWN || (!move.isCapture()))
   {
     _half_move_clock++;
   }
