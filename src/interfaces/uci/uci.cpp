@@ -202,7 +202,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int depth = 7;
+            int depth = 6;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -230,26 +230,29 @@ namespace uci
             }
 
             // TODO: only instatiate AI once
-            // TODO: Refactor AI class to inherit from Board
+            // TODO: Refactor AI class to inherit from Board ??
             MovePicker ai = MovePicker(board);
-            ai.setDepth(depth);
+            ai.setMaxDepth(depth);
+            ai.clearState();
 
-            std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-            MovePicker::SearchResult result = ai.findBestMove();
-            std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-
-            std::chrono::duration<double> elapsed = end - start;
-            std::cout << "info score cp " << result.score
-                      << " depth " << depth
-                      << " nodes " << result.nodes
-                      << " time " << (int)(elapsed / std::chrono::milliseconds(1))
-                      << " pv ";
-
-            for (int i = 0; i < result.pv_length; i++)
+            MovePicker::SearchResult result;
+            for (int depth = 1; depth <= ai.getMaxDepth(); depth++)
             {
-                std::cout << Move(result.pv[i]).getUCI() << " ";
+                std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+                result = ai.findBestMove(depth);
+                std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+                std::chrono::duration<double> elapsed = end - start;
+                std::cout << "info score cp " << result.score
+                          << " depth " << depth
+                          << " nodes " << result.nodes
+                          << " time " << (int)(elapsed / std::chrono::milliseconds(1))
+                          << " pv ";
+                for (int i = 0; i < result.pv_length; i++)
+                {
+                    std::cout << Move(result.pv[i]).getUCI() << " ";
+                }
+                std::cout << std::endl;
             }
-            std::cout << "\n";
 
             std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
         }

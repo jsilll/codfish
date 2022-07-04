@@ -13,49 +13,6 @@
 
 #define MIN_EVAL (INT_MIN + 1)
 
-void MovePicker::setDepth(int depth)
-{
-    if (depth <= 0)
-    {
-        throw std::invalid_argument("Depth argument must be positive integer.");
-    }
-
-    _max_depth = depth;
-}
-
-int MovePicker::getDepth() const
-{
-    return _max_depth;
-}
-
-void MovePicker::addToKillerMoves(Move const &move)
-{
-    // Killer Move Heuristic
-    if (move.getEncoded() != _killer_moves[0][_current_depth])
-    {
-        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
-    }
-    _killer_moves[0][_current_depth] = move.getEncoded();
-}
-
-void MovePicker::addToHistoryMoves(Move const &move)
-{
-    // History Move Heuristic
-    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
-}
-
-void MovePicker::addToPrincipalVariation(Move const &move)
-{
-    // Write Principal Variation Move
-    _pv_table[_current_depth][_current_depth] = move.getEncoded();
-
-    // Copy moves from deeper depth into current depths line
-    memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
-
-    // Adjust Principal Variation Length
-    _pv_length[_current_depth] = _pv_length[_current_depth + 1];
-}
-
 int MovePicker::score(const Move &move) const
 {
     // clang-format off
@@ -88,32 +45,6 @@ int MovePicker::score(const Move &move) const
     return _history_moves[_current_depth % 2 ? !_board.getSideToMove() : _board.getSideToMove()][move.getPiece()][move.getToSquare()];
 }
 
-MovePicker::SearchResult MovePicker::findBestMove()
-{
-    memset(_history_moves, 0, sizeof(_history_moves));
-    memset(_killer_moves, 0, sizeof(_killer_moves));
-    memset(_killer_moves, 0, sizeof(_killer_moves));
-    memset(_pv_table, 0, sizeof(_pv_table));
-
-    // Iterative Deepening
-    int alpha = 0;
-    for (int depth = 1; depth <= _max_depth; depth++)
-    {
-        _current_nodes = 0;
-        _current_depth = 0;
-        alpha = search(depth);
-    }
-
-    // Search Result
-    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
-    for (int i = 0; i < res.pv_length; i++)
-    {
-        res.pv[i] = _pv_table[0][i];
-    }
-
-    return res;
-}
-
 int MovePicker::search(int depth)
 {
     int alpha = MIN_EVAL;
@@ -137,7 +68,7 @@ int MovePicker::search(int depth)
                 // History Move Heuristic
                 if (!move.isCapture())
                 {
-                    addToHistoryMoves(move);
+                    this->addToHistoryMoves(move);
                 }
 
                 alpha = score;
@@ -146,7 +77,7 @@ int MovePicker::search(int depth)
         }
     }
 
-    addToPrincipalVariation(best_move);
+    this->addToPrincipalVariation(best_move);
 
     return alpha;
 }
@@ -181,7 +112,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 // Killer Move Heuristic
                 if (!move.isCapture())
                 {
-                    addToKillerMoves(move);
+                    this->addToKillerMoves(move);
                 }
 
                 return beta;
@@ -191,7 +122,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 // History Move Heuristic
                 if (!move.isCapture())
                 {
-                    addToHistoryMoves(move);
+                    this->addToHistoryMoves(move);
                 }
 
                 alpha = score;
@@ -211,7 +142,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         return 0;
     }
 
-    addToPrincipalVariation(best_move);
+    this->addToPrincipalVariation(best_move);
 
     return alpha;
 }
@@ -267,4 +198,87 @@ int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
     }
 
     return alpha;
+}
+
+void MovePicker::addToKillerMoves(Move const &move)
+{
+    // Killer Move Heuristic
+    if (move.getEncoded() != _killer_moves[0][_current_depth])
+    {
+        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
+    }
+    _killer_moves[0][_current_depth] = move.getEncoded();
+}
+
+void MovePicker::addToHistoryMoves(Move const &move)
+{
+    // History Move Heuristic
+    _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
+}
+
+void MovePicker::addToPrincipalVariation(Move const &move)
+{
+    // Write Principal Variation Move
+    _pv_table[_current_depth][_current_depth] = move.getEncoded();
+
+    // Copy moves from deeper depth into current depths line
+    memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
+
+    // Adjust Principal Variation Length
+    _pv_length[_current_depth] = _pv_length[_current_depth + 1];
+}
+
+// Public Methods
+
+int MovePicker::getMaxDepth() const
+{
+    return _max_depth;
+}
+
+void MovePicker::setMaxDepth(int depth)
+{
+    if (depth <= 0)
+    {
+        throw std::invalid_argument("Depth argument must be positive integer.");
+    }
+
+    _max_depth = depth;
+}
+
+MovePicker::SearchResult MovePicker::findBestMove()
+{
+    this->clearState();
+
+    // Iterative Deepening
+    int alpha = 0;
+    for (int depth = 1; depth <= _max_depth; depth++)
+    {
+        _current_nodes = 0;
+        _current_depth = 0;
+        alpha = search(depth);
+    }
+
+    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
+    memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
+    return res;
+}
+
+MovePicker::SearchResult MovePicker::findBestMove(int depth)
+{
+    int alpha = 0;
+    _current_nodes = 0;
+    _current_depth = 0;
+    alpha = search(depth);
+
+    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
+    memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
+    return res;
+}
+
+void MovePicker::clearState()
+{
+    memset(_history_moves, 0, sizeof(_history_moves));
+    memset(_killer_moves, 0, sizeof(_killer_moves));
+    memset(_killer_moves, 0, sizeof(_killer_moves));
+    memset(_pv_table, 0, sizeof(_pv_table));
 }

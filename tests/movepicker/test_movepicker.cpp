@@ -21,7 +21,7 @@ TEST_CASE("Checkmate in one move")
 
     Board board = Board();
     MovePicker ai = MovePicker(board);
-    ai.setDepth(3);
+    ai.setMaxDepth(3);
 
     SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1")
     {

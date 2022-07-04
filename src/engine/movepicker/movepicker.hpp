@@ -10,7 +10,7 @@ class Move;
 class MovePicker
 {
 private:
-    static constexpr int MAX_DEPTH = 64;
+    static const int MAX_DEPTH = 64;
 
     Board &_board;
     int _max_depth;
@@ -21,6 +21,9 @@ private:
     int _killer_moves[2][MAX_DEPTH];
     int _history_moves[N_SIDES][N_PIECES][N_SQUARES];
 
+    int _pv_length[MAX_DEPTH];
+    int _pv_table[MAX_DEPTH][MAX_DEPTH];
+
     struct MoveMoreThanKey
     {
         MovePicker &move_picker;
@@ -29,9 +32,6 @@ private:
             return (move_picker.score(move1) > move_picker.score(move2));
         }
     } _move_more_than_key;
-
-    int _pv_length[MAX_DEPTH];
-    int _pv_table[MAX_DEPTH][MAX_DEPTH];
 
 public:
     struct SearchResult
@@ -70,9 +70,27 @@ public:
     {
     }
 
-    int getDepth() const;
+    int getMaxDepth() const;
 
-    void setDepth(int depth);
+    void setMaxDepth(int depth);
 
+    void clearState();
+
+    /**
+     * @brief Searches the current position with max_depth
+     *
+     * @return SearchResult
+     */
     SearchResult findBestMove();
+
+    /**
+     * @brief Searches the current position with the given depth
+     *
+     * It can also be used to implement iterative deepening outside
+     * of the ai class (for uci prints, for example)
+     *
+     * @param depth
+     * @return SearchResult
+     */
+    SearchResult findBestMove(int depth);
 };
