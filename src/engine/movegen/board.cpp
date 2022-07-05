@@ -111,7 +111,7 @@ int Board::getFullMoveNumber() const
   return _full_move_number;
 }
 
-Piece Board::getPieceFromSquare(int sq) const
+Board::Piece Board::getPieceFromSquare(int sq) const
 {
   return _square[sq];
 }

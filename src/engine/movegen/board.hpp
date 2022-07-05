@@ -4,22 +4,14 @@
 
 class Move;
 
-typedef enum : int
-{
-  CASTLE_KING_WHITE = 1,
-  CASTLE_QUEEN_WHITE = 2,
-  CASTLE_KING_BLACK = 4,
-  CASTLE_QUEEN_BLACK = 8
-} CastlingRight;
-
-struct Piece
-{
-  int type;
-  int color;
-};
-
 class Board
 {
+public:
+  struct Piece
+  {
+    int type;
+    int color;
+  };
 
 private:
   int _to_move;

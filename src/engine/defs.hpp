@@ -34,7 +34,7 @@ const std::string SQUARE_NAMES[] = {
     "-"};
 // clang-format on
 
-enum Directions : int
+enum Direction : int
 {
   NORTH = 8,
   SOUTH = -8,
@@ -77,3 +77,11 @@ const std::string PIECE_REPR[26] = {
     " ",
 };
 // clang-format on
+
+enum CastlingRight : int
+{
+  CASTLE_KING_WHITE = 1,
+  CASTLE_QUEEN_WHITE = 2,
+  CASTLE_KING_BLACK = 4,
+  CASTLE_QUEEN_BLACK = 8
+};

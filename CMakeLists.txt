@@ -23,7 +23,8 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
-)
+                   )
+                   
 add_executable(engine_exec ${EXEC_SRC})
 target_link_libraries(engine_exec readline)
 target_link_libraries(engine_exec engine)
@@ -31,16 +32,9 @@ target_link_libraries(engine_exec engine)
 # Engine Unit Tests
 enable_testing()
 
-file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/*.cpp)
-
-foreach(TEST_SRC ${TESTS_SRC})
-  get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
-  add_executable(${TEST_NAME} ${TEST_SRC})
-  target_link_libraries(${TEST_NAME} engine)
-  add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
-endforeach()
-
-file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movepicker/*.cpp)
+file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/test_*.cpp 
+                    ${PROJECT_SOURCE_DIR}/tests/movepicker/test_*.cpp
+                    )
 
 foreach(TEST_SRC ${TESTS_SRC})
   get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)

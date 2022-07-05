@@ -190,11 +190,6 @@ namespace eval
 
     int eval(const Board &board)
     {
-        if (board.getHalfMoveClock() == 100)
-        {
-            return 0;
-        }
-
         int game_phase = 0;
         int material[2]{};
         int mg[2]{};

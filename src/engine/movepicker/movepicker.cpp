@@ -86,6 +86,11 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 {
     _current_nodes++;
 
+    if (board.getHalfMoveClock() == 100)
+    {
+        return 0;
+    }
+
     if (depth == 0)
     {
         _pv_length[_current_depth] = _current_depth;
@@ -150,6 +155,11 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
 {
     _current_nodes++;
+
+    if (board.getHalfMoveClock() == 100)
+    {
+        return 0;
+    }
 
     if (!movegen::hasLegalMoves(board))
     {
