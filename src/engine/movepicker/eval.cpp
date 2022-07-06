@@ -143,14 +143,9 @@ namespace eval
     int MG_TABLE[2][6][64];
     int EG_TABLE[2][6][64];
     int GAME_PHASE_INC[6] = {0, 1, 1, 2, 4, 0};
-    int PIECE_SCORES[] = {
-        100,
-        280,
-        320,
-        479,
-        929,
-        60000,
-    };
+    // clang-format off
+    int PIECE_SCORES[] = {100, 280, 320, 479, 929, 60000};
+    // clang-format on
 
     void init()
     {
