@@ -6,6 +6,11 @@
 
 namespace attacks
 {
+  inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return bitboard::noEaOne(wpawns); }
+  inline U64 maskWhitePawnWestAttacks(U64 wpawns) { return bitboard::noWeOne(wpawns); }
+  inline U64 maskBlackPawnEastAttacks(U64 bpawns) { return bitboard::soEaOne(bpawns); }
+  inline U64 maskBlackPawnWestAttacks(U64 bpawns) { return bitboard::soWeOne(bpawns); }
+
   U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty)
   {
     return bitboard::nortOne(wpawns) & empty;
@@ -29,11 +34,6 @@ namespace attacks
     U64 singlePushes = maskBlackPawnSinglePushes(bpawns, empty);
     return bitboard::soutOne(singlePushes) & empty & rank5;
   }
-
-  inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return bitboard::noEaOne(wpawns); }
-  inline U64 maskWhitePawnWestAttacks(U64 wpawns) { return bitboard::noWeOne(wpawns); }
-  inline U64 maskBlackPawnEastAttacks(U64 bpawns) { return bitboard::soEaOne(bpawns); }
-  inline U64 maskBlackPawnWestAttacks(U64 bpawns) { return bitboard::soWeOne(bpawns); }
 
   U64 maskWhitePawnAnyAttacks(U64 wpawns)
   {

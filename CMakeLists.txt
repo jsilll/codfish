@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.2...3.15)
 
+#-------------------Setup-------------------
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,13 +14,13 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-# Engine Library
+#-------------------Library-------------------
 file(GLOB AI_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
 file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
 add_library(engine ${MOVEGEN_SRC} ${AI_SRC})
 target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
-# Engine Executable
+#-------------------Executable-------------------
 file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
@@ -29,7 +30,7 @@ add_executable(engine_exec ${EXEC_SRC})
 target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(engine_exec engine)
 
-# Engine Unit Tests
+#-------------------Unit Tests-------------------
 enable_testing()
 
 file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/test_*.cpp 
