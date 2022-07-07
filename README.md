@@ -2,6 +2,11 @@ chess-engine
 ===
 C++ Chess engine that uses bitboard representation.
 
+Build Dependencies
+===
+- C++ Standard Library
+- Catch2 (header included) for Unit Tests
+
 Engine Features
 ===
 

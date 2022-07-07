@@ -26,7 +26,6 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    )
                    
 add_executable(engine_exec ${EXEC_SRC})
-target_link_libraries(engine_exec readline)
 target_link_libraries(engine_exec engine)
 
 # Engine Unit Tests
