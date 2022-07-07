@@ -1,9 +1,9 @@
-#include "perft.hpp"
+#include <engine/movegen/perft.hpp>
 
-#include "bitboard.hpp"
-#include "board.hpp"
-#include "move.hpp"
-#include "movegen.hpp"
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movegen/movegen.hpp>
 
 namespace perft
 {
@@ -29,4 +29,5 @@ namespace perft
 
         return nodes;
     }
+
 } // namespace perft

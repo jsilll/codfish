@@ -1,9 +1,9 @@
-#include "magics.hpp"
+#include <engine/movegen/magics.hpp>
 
-#include "utils.hpp"
-#include "bitboard.hpp"
-#include "tables.hpp"
-#include "attacks.hpp"
+#include <engine/movegen/utils.hpp>
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/tables.hpp>
+#include <engine/movegen/attacks.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -70,7 +70,7 @@ namespace magics
         {
           used_attacks[magic_index] = attacks[index];
         }
-        else // alternatively, else if (used_attacks[magic_index] != attacks[index])
+        else
         {
           fail = 1;
           break;
@@ -123,4 +123,5 @@ namespace magics
       MAGIC_TABLE_ROOK[sq].shift = 64 - tables::RELEVANT_BITS_COUNT_ROOK[sq];
     }
   }
+
 } // namespace magics

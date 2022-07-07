@@ -1,18 +1,18 @@
-#include "cli.hpp"
+#include <interfaces/cli/cli.hpp>
 
-#include "../utils.hpp"
+#include <interfaces/utils.hpp>
 
-#include "../../engine/defs.hpp"
+#include <engine/defs.hpp>
 
-#include "../../engine/movegen/bitboard.hpp"
-#include "../../engine/movegen/magics.hpp"
-#include "../../engine/movegen/tables.hpp"
-#include "../../engine/movegen/board.hpp"
-#include "../../engine/movegen/move.hpp"
-#include "../../engine/movegen/movegen.hpp"
-#include "../../engine/movegen/perft.hpp"
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movegen/movegen.hpp>
+#include <engine/movegen/perft.hpp>
 
-#include "../../engine/movepicker/eval.hpp"
+#include <engine/movepicker/eval.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -126,7 +126,7 @@ namespace cli
           << "perft n               Calculates raw number of nodes from here, depth n\n"
           << "getfen                Prints current position to in fen string format \n"
           << "rotate                Rotates board \n"
-          << "setfen (fen)          Reads fen string position and modifies board acoordingly\n"
+          << "setfen (fen)          Reads fen string position and modifies board accordingly\n"
           << "sd (n)                Sets the search depth to n [TODO]\n"
           << "switch                Switches the next side to move\n"
           << "undo                  Takes back last move [TODO]\n"
@@ -144,12 +144,12 @@ namespace cli
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::string fen = board.getFen();
-      std::vector<std::string> splitted_fen = utils::tokenizeString(fen);
-      std::cout << "Side to Play                 = " << splitted_fen[1]
-                << "\nCastling Rights              = " << splitted_fen[2]
-                << "\nEn-passant Square            = " << splitted_fen[3]
-                << "\nFifty Move Count             = " << splitted_fen[4]
-                << "\nFull Move Number             = " << splitted_fen[5];
+      std::vector<std::string> split_fen = utils::tokenizeString(fen);
+      std::cout << "Side to Play                 = " << split_fen[1]
+                << "\nCastling Rights              = " << split_fen[2]
+                << "\nEn-passant Square            = " << split_fen[3]
+                << "\nFifty Move Count             = " << split_fen[4]
+                << "\nFull Move Number             = " << split_fen[5];
       std::cout << "\nOccupied Squares:\n";
       bitboard::printBB(board.getOccupancies(BOTH));
       bitboard::printBB(board.getOccupancies(WHITE));
@@ -438,7 +438,7 @@ namespace cli
 
     Board board = Board();
 
-    while (true)
+    for (;;)
     {
       std::cout << "> ";
       std::string line;
@@ -524,4 +524,5 @@ namespace cli
       }
     }
   }
+
 } // namespace cli

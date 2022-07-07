@@ -12,4 +12,5 @@ namespace utils
      * @return std::vector<std::string>
      */
     std::vector<std::string> tokenizeString(const std::string &text);
+
 } // namespace utils

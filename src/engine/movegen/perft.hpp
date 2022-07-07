@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 class Board;
 
@@ -13,4 +13,5 @@ namespace perft
      * @return long long
      */
     unsigned long long perft(const Board &board, int depth);
+
 } // namespace perft

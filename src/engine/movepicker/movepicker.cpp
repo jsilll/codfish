@@ -1,11 +1,11 @@
-#include "movepicker.hpp"
+#include <engine/movepicker/movepicker.hpp>
 
-#include "eval.hpp"
+#include <engine/movepicker/eval.hpp>
 
-#include "../movegen/bitboard.hpp"
-#include "../movegen/board.hpp"
-#include "../movegen/move.hpp"
-#include "../movegen/movegen.hpp"
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movegen/movegen.hpp>
 
 #include <algorithm>
 #include <climits>
@@ -268,18 +268,17 @@ MovePicker::SearchResult MovePicker::findBestMove()
         alpha = search(depth);
     }
 
-    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
+    auto res = SearchResult{alpha, _current_nodes, _pv_length[0]};
     memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
     return res;
 }
 
 MovePicker::SearchResult MovePicker::findBestMove(int depth)
 {
-    int alpha = 0;
     _current_nodes = 0;
     _current_depth = 0;
-    alpha = search(depth);
 
+    int alpha = search(depth);
     SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
     memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
     return res;

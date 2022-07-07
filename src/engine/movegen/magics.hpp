@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 namespace magics
 {
@@ -148,4 +148,5 @@ namespace magics
 
   void generate();
   void init();
+
 } // namespace magics

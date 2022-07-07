@@ -1,12 +1,12 @@
-#include "move.hpp"
+#include <engine/movegen/move.hpp>
 
 std::string Move::getUCI() const
 {
-  std::string from_square = std::string(SQUARE_NAMES[this->getFromSquare()]);
-  std::string to_square = std::string(SQUARE_NAMES[this->getToSquare()]);
-  std::string promoted_piece = std::string(PIECE_REPR[this->getPromotedPiece() + 6]);
-  std::string uci = from_square + to_square;
-  return this->isPromotion() ? uci + promoted_piece : uci;
+  if (this->isPromotion())
+  {
+   return SQUARE_NAMES[this->getFromSquare()] + SQUARE_NAMES[this->getToSquare()] + PIECE_REPR[this->getPromotedPiece() + 6];
+  }
+  return SQUARE_NAMES[this->getFromSquare()] + SQUARE_NAMES[this->getToSquare()];
 }
 
 Move::Move(int source_square, int target_square, int piece, int captured_piece, int promoted_piece, bool is_double_push, bool is_en_passant, bool is_castle)

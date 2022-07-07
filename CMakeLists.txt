@@ -17,6 +17,7 @@ endif()
 file(GLOB AI_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
 file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
 add_library(engine ${MOVEGEN_SRC} ${AI_SRC})
+target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 # Engine Executable
 file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -24,8 +25,8 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
                    )
-                   
 add_executable(engine_exec ${EXEC_SRC})
+target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(engine_exec engine)
 
 # Engine Unit Tests
@@ -38,6 +39,7 @@ file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/test_*.cpp
 foreach(TEST_SRC ${TESTS_SRC})
   get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
   add_executable(${TEST_NAME} ${TEST_SRC})
+  target_include_directories(${TEST_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
   target_link_libraries(${TEST_NAME} engine)
   add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 endforeach()

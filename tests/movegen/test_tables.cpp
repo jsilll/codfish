@@ -2,9 +2,9 @@
 
 #include "../catch.hpp"
 
-#include "../../src/engine/defs.hpp"
-#include "../../src/engine/movegen/magics.hpp"
-#include "../../src/engine/movegen/tables.hpp"
+#include <engine/defs.hpp>
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
 
 void setup()
 {

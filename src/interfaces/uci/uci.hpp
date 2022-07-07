@@ -7,4 +7,5 @@ namespace uci
      *
      */
     void init();
+
 } // namespace uci

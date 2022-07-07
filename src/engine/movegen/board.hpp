@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 class Move;
 
@@ -49,7 +49,7 @@ public:
 
   std::string getFen() const;
 
-  // Modififiers
+  // Modifiers
   void clear();
   void setStartingPosition();
   void setFromFen(std::string const &piece_placements,

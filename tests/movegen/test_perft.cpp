@@ -2,10 +2,10 @@
 
 #include "../catch.hpp"
 
-#include "../../src/engine/movegen/magics.hpp"
-#include "../../src/engine/movegen/tables.hpp"
-#include "../../src/engine/movegen/board.hpp"
-#include "../../src/engine/movegen/perft.hpp"
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/perft.hpp>
 
 void setup()
 {

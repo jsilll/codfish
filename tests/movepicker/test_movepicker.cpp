@@ -2,12 +2,12 @@
 
 #include "../catch.hpp"
 
-#include "../../src/engine/defs.hpp"
-#include "../../src/engine/movegen/magics.hpp"
-#include "../../src/engine/movegen/tables.hpp"
-#include "../../src/engine/movegen/board.hpp"
-#include "../../src/engine/movegen/move.hpp"
-#include "../../src/engine/movepicker/movepicker.hpp"
+#include <engine/defs.hpp>
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movepicker/movepicker.hpp>
 
 void setup()
 {

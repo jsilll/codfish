@@ -1,17 +1,15 @@
-#include "uci.hpp"
+#include <interfaces/uci/uci.hpp>
 
-#include "../utils.hpp"
+#include <interfaces/utils.hpp>
 
-#include "../../engine/defs.hpp"
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
+#include <engine/movegen/board.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movegen/movegen.hpp>
 
-#include "../../engine/movegen/magics.hpp"
-#include "../../engine/movegen/tables.hpp"
-#include "../../engine/movegen/board.hpp"
-#include "../../engine/movegen/move.hpp"
-#include "../../engine/movegen/movegen.hpp"
-
-#include "../../engine/movepicker/movepicker.hpp"
-#include "../../engine/movepicker/eval.hpp"
+#include <engine/movepicker/movepicker.hpp>
+#include <engine/movepicker/eval.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -201,7 +199,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int depth = 6;
+            int max_depth = 7;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -211,27 +209,26 @@ namespace uci
                 {
                     try
                     {
-                        depth = std::stoi(args[0]);
+                        max_depth = std::stoi(args[0]);
                     }
                     catch (const std::exception &e)
                     {
                         return;
                     }
 
-                    if (depth < 0)
+                    if (max_depth < 0)
                     {
                         return;
                     }
-
-                    std::cout << depth << "\n";
                 }
+
                 args.erase(args.begin());
             }
 
             // TODO: only instatiate AI once
             // TODO: Refactor AI class to inherit from Board ??
             MovePicker ai = MovePicker(board);
-            ai.setMaxDepth(depth);
+            ai.setMaxDepth(max_depth);
             ai.clearState();
 
             MovePicker::SearchResult result;
@@ -314,4 +311,5 @@ namespace uci
             }
         }
     }
+
 } // namespace uci

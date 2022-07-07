@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 namespace bitboard
 {
@@ -56,9 +56,9 @@ namespace bitboard
 
     /**
      * @brief Prints a bitboard
-     * TODO: make this use std::cout
      *
      * @param bb
      */
     void printBB(U64 bb);
+
 } // namespace bitboard

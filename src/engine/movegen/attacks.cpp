@@ -1,8 +1,8 @@
-#include "attacks.hpp"
+#include <engine/movegen/attacks.hpp>
 
-#include "utils.hpp"
-#include "bitboard.hpp"
-#include "tables.hpp"
+#include <engine/movegen/utils.hpp>
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/tables.hpp>
 
 namespace attacks
 {
@@ -19,15 +19,15 @@ namespace attacks
   U64 maskWhitePawnDoublePushes(U64 wpawns, U64 empty)
   {
     static const U64 rank4 = 0x00000000FF000000;
-    U64 singlePushs = maskWhitePawnSinglePushes(wpawns, empty);
-    return bitboard::nortOne(singlePushs) & empty & rank4;
+    U64 singlePushes = maskWhitePawnSinglePushes(wpawns, empty);
+    return bitboard::nortOne(singlePushes) & empty & rank4;
   }
 
   U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty)
   {
     static const U64 rank5 = 0x000000FF00000000;
-    U64 singlePushs = maskBlackPawnSinglePushes(bpawns, empty);
-    return bitboard::soutOne(singlePushs) & empty & rank5;
+    U64 singlePushes = maskBlackPawnSinglePushes(bpawns, empty);
+    return bitboard::soutOne(singlePushes) & empty & rank5;
   }
 
   inline U64 maskWhitePawnEastAttacks(U64 wpawns) { return bitboard::noEaOne(wpawns); }
@@ -196,4 +196,5 @@ namespace attacks
     }
     return attacks;
   }
+
 } // namespace attacks

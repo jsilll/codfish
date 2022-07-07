@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 class Board;
 class Move;
@@ -16,18 +16,18 @@ private:
     int _max_depth;
 
     int _current_nodes;
-    int _current_depth;
+    int _current_depth{};
 
-    int _killer_moves[2][MAX_DEPTH];
-    int _history_moves[N_SIDES][N_PIECES][N_SQUARES];
+    int _killer_moves[2][MAX_DEPTH]{};
+    int _history_moves[N_SIDES][N_PIECES][N_SQUARES]{};
 
-    int _pv_length[MAX_DEPTH];
-    int _pv_table[MAX_DEPTH][MAX_DEPTH];
+    int _pv_length[MAX_DEPTH]{};
+    int _pv_table[MAX_DEPTH][MAX_DEPTH]{};
 
     struct MoveMoreThanKey
     {
         MovePicker &move_picker;
-        inline bool operator()(const Move &move1, const Move &move2)
+        inline bool operator()(const Move &move1, const Move &move2) const
         {
             return (move_picker.score(move1) > move_picker.score(move2));
         }
@@ -36,9 +36,9 @@ private:
 public:
     struct SearchResult
     {
-        int score;
-        int nodes;
-        int pv_length;
+        int score{};
+        int nodes{};
+        int pv_length{};
         int pv[MAX_DEPTH]{};
     };
 
@@ -66,11 +66,11 @@ private:
     void addToPrincipalVariation(Move const &move);
 
 public:
-    MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this}
+    explicit MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this}
     {
     }
 
-    int getMaxDepth() const;
+    [[nodiscard]] int getMaxDepth() const;
 
     void setMaxDepth(int depth);
 

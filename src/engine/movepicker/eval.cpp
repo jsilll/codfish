@@ -1,8 +1,8 @@
 #include "eval.hpp"
 
-#include "../movegen/utils.hpp"
-#include "../movegen/bitboard.hpp"
-#include "../movegen/board.hpp"
+#include <engine/movegen/utils.hpp>
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/board.hpp>
 
 namespace eval
 {
@@ -226,4 +226,5 @@ namespace eval
         int eg_phase = 24 - mg_phase;
         return ((mg_score * mg_phase + eg_score * eg_phase) / 24) + material_score;
     }
+
 } // namespace eval

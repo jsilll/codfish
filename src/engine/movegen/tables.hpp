@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defs.hpp"
+#include <engine/defs.hpp>
 
 namespace tables
 {
@@ -70,7 +70,7 @@ namespace tables
 
     extern U64 SQUARE_BB[N_SQUARES];
 
-    extern U64 ATTACKS_PAWN[BOTH][N_SQUARES]; // Direct Access
+    extern U64 ATTACKS_PAWN[BOTH][N_SQUARES]; // Direct Access TODO: make this accessible through function only?
     extern U64 ATTACKS_KNIGHT[N_SQUARES];     // Direct Access
     extern U64 ATTACKS_KING[N_SQUARES];       // Direct Access
 
@@ -82,4 +82,5 @@ namespace tables
     U64 getBishopAttacks(const int sq, U64 occ);
     U64 getRookAttacks(const int sq, U64 occ);
     U64 getQueenAttacks(const int sq, U64 occ);
+
 } // namespace tables

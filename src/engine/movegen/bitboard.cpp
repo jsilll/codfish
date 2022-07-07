@@ -1,14 +1,11 @@
-#include "bitboard.hpp"
+#include <engine/movegen/bitboard.hpp>
 
-#include "utils.hpp"
-#include "tables.hpp"
+#include <engine/movegen/utils.hpp>
+#include <engine/movegen/tables.hpp>
 
 #include <string>
 #include <iostream>
-#include <iterator>
 #include <algorithm>
-#include <regex>
-#include <vector>
 
 namespace bitboard
 {

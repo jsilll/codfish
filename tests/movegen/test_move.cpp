@@ -2,7 +2,7 @@
 
 #include "../catch.hpp"
 
-#include "../../src/engine/movegen/move.hpp"
+#include <engine/movegen/move.hpp>
 
 // TODO: Missing tests for getUCI()
 

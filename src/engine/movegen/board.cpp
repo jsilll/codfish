@@ -1,10 +1,9 @@
-#include "board.hpp"
+#include <engine/movegen/board.hpp>
 
-#include "utils.hpp"
-#include "bitboard.hpp"
-#include "magics.hpp"
-#include "move.hpp"
-#include "tables.hpp"
+#include <engine/movegen/utils.hpp>
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/move.hpp>
+#include <engine/movegen/tables.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -12,7 +11,6 @@
 #include <string>
 
 Board::Board() { this->setStartingPosition(); }
-
 Board::Board(const Board &board)
 {
   memcpy(_pieces, board._pieces, sizeof(_pieces));
@@ -204,7 +202,7 @@ std::string Board::getFen() const
            (_castling_rights & CASTLE_KING_BLACK) ? "k" : "",
            (_castling_rights & CASTLE_QUEEN_BLACK) ? "q" : "");
   castling_rights = std::string(castling_rights_buf);
-  if (castling_rights == "")
+  if (castling_rights.empty())
   {
     castling_rights = "-";
   }
@@ -303,7 +301,12 @@ void Board::clear()
 
 void Board::setStartingPosition()
 {
-  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
+  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+                   "w",
+                   "KQkq",
+                   "-",
+                   "0",
+                   "1");
 }
 
 void Board::setFromFen(std::string const &piece_placements,

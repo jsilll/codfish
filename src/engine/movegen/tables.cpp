@@ -1,8 +1,8 @@
-#include "tables.hpp"
+#include <engine/movegen/tables.hpp>
 
-#include "bitboard.hpp"
-#include "magics.hpp"
-#include "attacks.hpp"
+#include <engine/movegen/bitboard.hpp>
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/attacks.hpp>
 
 namespace tables
 {
@@ -82,4 +82,5 @@ namespace tables
   {
     return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
   }
+
 } // namespace tables
