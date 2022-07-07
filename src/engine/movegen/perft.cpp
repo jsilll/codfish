@@ -3,7 +3,6 @@
 #include "bitboard.hpp"
 #include "board.hpp"
 #include "move.hpp"
-#include "movelist.hpp"
 #include "movegen.hpp"
 
 namespace perft

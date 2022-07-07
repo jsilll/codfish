@@ -6,7 +6,6 @@
 
 class Board;
 class Move;
-class MoveList;
 
 namespace movegen
 {
@@ -14,33 +13,40 @@ namespace movegen
      * @brief Generates all the pseudo-legal moves for a given board
      *
      * @param board
-     * @return MoveList
+     * @return std::vector<Move>
      */
-    MoveList generatePseudoLegalMoves(const Board &board);
+    std::vector<Move> generatePseudoLegalMoves(const Board &board);
 
     /**
      * @brief Generates all the pseudo-legal captures for a given board
      *
      * @param board
-     * @return MoveList
+     * @return std::vector<Move>
      */
-    MoveList generatePseudoLegalCaptures(const Board &board);
+    std::vector<Move> generatePseudoLegalCaptures(const Board &board);
 
     /**
      * @brief Generates all the legal moves for a given board
      *
      * @param board
-     * @return MoveList
+     * @return std::vector<Move>
      */
-    MoveList generateLegalMoves(const Board &board);
+    std::vector<Move> generateLegalMoves(const Board &board);
+
+    /**
+     * @brief Generates all the legal moves for a given board
+     *
+     * @param board
+     * @return std::vector<Move>
+     */
+    std::vector<Move> generateLegalCaptures(const Board &board);
 
     /**
      * @brief Checks whether a given board as has legal moves
      *
      * @param board
-     * @return true
-     * @return false
+     * @return bool
      */
-    bool hasLegalMoves(const Board &board); // TODO: performance can be improved (quiescence usage)
+    bool hasLegalMoves(const Board &board);
 
 } // namespace movegen

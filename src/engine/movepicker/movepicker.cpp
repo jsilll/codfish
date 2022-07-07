@@ -5,11 +5,11 @@
 #include "../movegen/bitboard.hpp"
 #include "../movegen/board.hpp"
 #include "../movegen/move.hpp"
-#include "../movegen/movelist.hpp"
 #include "../movegen/movegen.hpp"
 
-#include <cstring>
+#include <algorithm>
 #include <climits>
+#include <cstring>
 
 #define MIN_EVAL (INT_MIN + 1)
 
@@ -50,8 +50,8 @@ int MovePicker::search(int depth)
     int alpha = MIN_EVAL;
 
     Move best_move = Move();
-    MoveList moves = movegen::generatePseudoLegalMoves(_board);
-    moves.sort(_move_more_than_key);
+    std::vector<Move> moves = movegen::generatePseudoLegalMoves(_board);
+    std::sort(moves.begin(), moves.end(), _move_more_than_key);
     for (const Move &move : moves)
     {
         Board backup = _board;
@@ -99,8 +99,8 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 
     Move best_move = Move();
     bool has_legal_moves = false;
-    MoveList moves = movegen::generatePseudoLegalMoves(board);
-    moves.sort(_move_more_than_key);
+    std::vector<Move> moves = movegen::generatePseudoLegalMoves(board);
+    std::sort(moves.begin(), moves.end(), _move_more_than_key);
     for (const Move &move : moves)
     {
         Board backup = board;
@@ -184,8 +184,8 @@ int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
         alpha = stand_pat;
     }
 
-    MoveList captures = movegen::generatePseudoLegalCaptures(board);
-    captures.sort(_move_more_than_key);
+    std::vector<Move> captures = movegen::generatePseudoLegalCaptures(board);
+    std::sort(captures.begin(), captures.end(), _move_more_than_key);
     for (const Move &capture : captures)
     {
         Board backup = board;

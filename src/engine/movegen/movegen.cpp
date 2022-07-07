@@ -6,7 +6,8 @@
 #include "tables.hpp"
 #include "board.hpp"
 #include "move.hpp"
-#include "movelist.hpp"
+
+#define MAX_SIZE_MOVES_ARRAY 256
 
 namespace movegen
 {
@@ -18,29 +19,29 @@ namespace movegen
 
   // Castling
   template <PieceColor ToMove>
-  void generateCastlingMoves(MoveList &move_list, const Board &board);
+  void generateCastlingMoves(std::vector<Move> &move_list, const Board &board);
 
   // Pawns
   template <PieceColor ToMove>
-  void generateEnPassantCapture(MoveList &move_list, const Board &board);
+  void generateEnPassantCapture(std::vector<Move> &move_list, const Board &board);
   template <PieceColor ToMove>
-  void generatePawnSinglePushWithPromotion(MoveList &move_list, const Board &board);
+  void generatePawnSinglePushWithPromotion(std::vector<Move> &move_list, const Board &board);
   template <PieceColor ToMove>
-  void generatePawnSinglePushNoPromotion(MoveList &move_list, const Board &board);
+  void generatePawnSinglePushNoPromotion(std::vector<Move> &move_list, const Board &board);
   template <PieceColor ToMove>
-  void generatePawnCapturesWithPromotion(MoveList &move_list, const Board &board);
+  void generatePawnCapturesWithPromotion(std::vector<Move> &move_list, const Board &board);
   template <PieceColor ToMove>
-  void generatePawnCapturesNoPromotion(MoveList &move_list, const Board &board);
+  void generatePawnCapturesNoPromotion(std::vector<Move> &move_list, const Board &board);
   template <PieceColor ToMove>
-  void generatePawnDoublePushes(MoveList &move_list, const Board &board);
+  void generatePawnDoublePushes(std::vector<Move> &move_list, const Board &board);
 
   // Leaper Pieces
   template <PieceColor ToMove, PieceType PType, GenType GType>
-  void generateLeaperMoves(MoveList &move_list, const Board &board);
+  void generateLeaperMoves(std::vector<Move> &move_list, const Board &board);
 
   // Slider Pieces
   template <PieceColor ToMove, PieceType PType, GenType GType>
-  void generateSliderMoves(MoveList &move_list, const Board &board);
+  void generateSliderMoves(std::vector<Move> &move_list, const Board &board);
 
   bool hasLegalMoves(const Board &board) // TODO: performance can be improved
   {
@@ -58,95 +59,98 @@ namespace movegen
   }
 
   // All Pseudo Legal Moves
-  MoveList generatePseudoLegalMoves(const Board &board)
+  std::vector<Move> generatePseudoLegalMoves(const Board &board)
   {
-    MoveList move_list = MoveList();
+    std::vector<Move> moves;
+    moves.reserve(MAX_SIZE_MOVES_ARRAY);
     if (board.getSideToMove() == WHITE)
     {
-      generatePawnCapturesWithPromotion<WHITE>(move_list, board);
-      generatePawnCapturesNoPromotion<WHITE>(move_list, board);
-      generateEnPassantCapture<WHITE>(move_list, board);
-      generatePawnSinglePushWithPromotion<WHITE>(move_list, board);
-      generatePawnDoublePushes<WHITE>(move_list, board);
-      generatePawnSinglePushNoPromotion<WHITE>(move_list, board);
+      generatePawnCapturesWithPromotion<WHITE>(moves, board);
+      generatePawnCapturesNoPromotion<WHITE>(moves, board);
+      generateEnPassantCapture<WHITE>(moves, board);
+      generatePawnSinglePushWithPromotion<WHITE>(moves, board);
+      generatePawnDoublePushes<WHITE>(moves, board);
+      generatePawnSinglePushNoPromotion<WHITE>(moves, board);
 
-      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(move_list, board);
-      generateLeaperMoves<WHITE, KING, CAPTURES>(move_list, board);
-      generateSliderMoves<WHITE, BISHOP, CAPTURES>(move_list, board);
-      generateSliderMoves<WHITE, ROOK, CAPTURES>(move_list, board);
-      generateSliderMoves<WHITE, QUEEN, CAPTURES>(move_list, board);
+      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(moves, board);
+      generateLeaperMoves<WHITE, KING, CAPTURES>(moves, board);
+      generateSliderMoves<WHITE, BISHOP, CAPTURES>(moves, board);
+      generateSliderMoves<WHITE, ROOK, CAPTURES>(moves, board);
+      generateSliderMoves<WHITE, QUEEN, CAPTURES>(moves, board);
 
-      generateLeaperMoves<WHITE, KNIGHT, QUIETS>(move_list, board);
-      generateLeaperMoves<WHITE, KING, QUIETS>(move_list, board);
-      generateSliderMoves<WHITE, BISHOP, QUIETS>(move_list, board);
-      generateSliderMoves<WHITE, ROOK, QUIETS>(move_list, board);
-      generateSliderMoves<WHITE, QUEEN, QUIETS>(move_list, board);
+      generateLeaperMoves<WHITE, KNIGHT, QUIETS>(moves, board);
+      generateLeaperMoves<WHITE, KING, QUIETS>(moves, board);
+      generateSliderMoves<WHITE, BISHOP, QUIETS>(moves, board);
+      generateSliderMoves<WHITE, ROOK, QUIETS>(moves, board);
+      generateSliderMoves<WHITE, QUEEN, QUIETS>(moves, board);
 
-      generateCastlingMoves<WHITE>(move_list, board);
+      generateCastlingMoves<WHITE>(moves, board);
     }
     else
     {
-      generatePawnCapturesWithPromotion<BLACK>(move_list, board);
-      generatePawnCapturesNoPromotion<BLACK>(move_list, board);
-      generateEnPassantCapture<BLACK>(move_list, board);
-      generatePawnSinglePushWithPromotion<BLACK>(move_list, board);
-      generatePawnDoublePushes<BLACK>(move_list, board);
-      generatePawnSinglePushNoPromotion<BLACK>(move_list, board);
+      generatePawnCapturesWithPromotion<BLACK>(moves, board);
+      generatePawnCapturesNoPromotion<BLACK>(moves, board);
+      generateEnPassantCapture<BLACK>(moves, board);
+      generatePawnSinglePushWithPromotion<BLACK>(moves, board);
+      generatePawnDoublePushes<BLACK>(moves, board);
+      generatePawnSinglePushNoPromotion<BLACK>(moves, board);
 
-      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(move_list, board);
-      generateLeaperMoves<BLACK, KING, CAPTURES>(move_list, board);
-      generateSliderMoves<BLACK, BISHOP, CAPTURES>(move_list, board);
-      generateSliderMoves<BLACK, ROOK, CAPTURES>(move_list, board);
-      generateSliderMoves<BLACK, QUEEN, CAPTURES>(move_list, board);
+      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(moves, board);
+      generateLeaperMoves<BLACK, KING, CAPTURES>(moves, board);
+      generateSliderMoves<BLACK, BISHOP, CAPTURES>(moves, board);
+      generateSliderMoves<BLACK, ROOK, CAPTURES>(moves, board);
+      generateSliderMoves<BLACK, QUEEN, CAPTURES>(moves, board);
 
-      generateLeaperMoves<BLACK, KNIGHT, QUIETS>(move_list, board);
-      generateLeaperMoves<BLACK, KING, QUIETS>(move_list, board);
-      generateSliderMoves<BLACK, BISHOP, QUIETS>(move_list, board);
-      generateSliderMoves<BLACK, ROOK, QUIETS>(move_list, board);
-      generateSliderMoves<BLACK, QUEEN, QUIETS>(move_list, board);
+      generateLeaperMoves<BLACK, KNIGHT, QUIETS>(moves, board);
+      generateLeaperMoves<BLACK, KING, QUIETS>(moves, board);
+      generateSliderMoves<BLACK, BISHOP, QUIETS>(moves, board);
+      generateSliderMoves<BLACK, ROOK, QUIETS>(moves, board);
+      generateSliderMoves<BLACK, QUEEN, QUIETS>(moves, board);
 
-      generateCastlingMoves<BLACK>(move_list, board);
+      generateCastlingMoves<BLACK>(moves, board);
     }
 
-    return move_list;
+    return moves;
   }
 
-  MoveList generatePseudoLegalCaptures(const Board &board)
+  std::vector<Move> generatePseudoLegalCaptures(const Board &board)
   {
-    MoveList move_list = MoveList();
+    std::vector<Move> moves;
+    moves.reserve(MAX_SIZE_MOVES_ARRAY);
     if (board.getSideToMove() == WHITE)
     {
-      generatePawnCapturesWithPromotion<WHITE>(move_list, board);
-      generatePawnCapturesNoPromotion<WHITE>(move_list, board);
-      generateEnPassantCapture<WHITE>(move_list, board);
+      generatePawnCapturesWithPromotion<WHITE>(moves, board);
+      generatePawnCapturesNoPromotion<WHITE>(moves, board);
+      generateEnPassantCapture<WHITE>(moves, board);
 
-      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(move_list, board);
-      generateLeaperMoves<WHITE, KING, CAPTURES>(move_list, board);
+      generateLeaperMoves<WHITE, KNIGHT, CAPTURES>(moves, board);
+      generateLeaperMoves<WHITE, KING, CAPTURES>(moves, board);
 
-      generateSliderMoves<WHITE, BISHOP, CAPTURES>(move_list, board);
-      generateSliderMoves<WHITE, ROOK, CAPTURES>(move_list, board);
-      generateSliderMoves<WHITE, QUEEN, CAPTURES>(move_list, board);
+      generateSliderMoves<WHITE, BISHOP, CAPTURES>(moves, board);
+      generateSliderMoves<WHITE, ROOK, CAPTURES>(moves, board);
+      generateSliderMoves<WHITE, QUEEN, CAPTURES>(moves, board);
     }
     else
     {
-      generatePawnCapturesWithPromotion<BLACK>(move_list, board);
-      generatePawnCapturesNoPromotion<BLACK>(move_list, board);
-      generateEnPassantCapture<BLACK>(move_list, board);
+      generatePawnCapturesWithPromotion<BLACK>(moves, board);
+      generatePawnCapturesNoPromotion<BLACK>(moves, board);
+      generateEnPassantCapture<BLACK>(moves, board);
 
-      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(move_list, board);
-      generateLeaperMoves<BLACK, KING, CAPTURES>(move_list, board);
+      generateLeaperMoves<BLACK, KNIGHT, CAPTURES>(moves, board);
+      generateLeaperMoves<BLACK, KING, CAPTURES>(moves, board);
 
-      generateSliderMoves<BLACK, BISHOP, CAPTURES>(move_list, board);
-      generateSliderMoves<BLACK, ROOK, CAPTURES>(move_list, board);
-      generateSliderMoves<BLACK, QUEEN, CAPTURES>(move_list, board);
+      generateSliderMoves<BLACK, BISHOP, CAPTURES>(moves, board);
+      generateSliderMoves<BLACK, ROOK, CAPTURES>(moves, board);
+      generateSliderMoves<BLACK, QUEEN, CAPTURES>(moves, board);
     }
 
-    return move_list;
+    return moves;
   }
 
-  MoveList generateLegalMoves(const Board &board)
+  std::vector<Move> generateLegalMoves(const Board &board)
   {
-    MoveList legal_moves;
+    std::vector<Move> moves;
+    moves.reserve(MAX_SIZE_MOVES_ARRAY);
     for (Move const &move : movegen::generatePseudoLegalMoves(board))
     {
       Board backup = board;
@@ -155,14 +159,32 @@ namespace movegen
       int attacker_side = backup.getSideToMove();
       if (!backup.isSquareAttacked(king_sq, attacker_side))
       {
-        legal_moves.push_back(move);
+        moves.push_back(move);
       }
     }
-    return legal_moves;
+    return moves;
+  }
+
+  std::vector<Move> generateLegalCaptures(const Board &board)
+  {
+    std::vector<Move> captures;
+    captures.reserve(MAX_SIZE_MOVES_ARRAY);
+    for (Move const &move : movegen::generatePseudoLegalCaptures(board))
+    {
+      Board backup = board;
+      backup.makeMove(move);
+      int king_sq = bitboard::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
+      int attacker_side = backup.getSideToMove();
+      if (!backup.isSquareAttacked(king_sq, attacker_side))
+      {
+        captures.push_back(move);
+      }
+    }
+    return captures;
   }
 
   template <PieceColor ToMove>
-  void generateCastlingMoves(MoveList &move_list, const Board &board)
+  void generateCastlingMoves(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = (ToMove == WHITE ? BLACK : WHITE);
     constexpr int Castle_B_Sq = (ToMove == WHITE ? B1 : B8);
@@ -193,7 +215,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generatePawnDoublePushes(MoveList &move_list, const Board &board)
+  void generatePawnDoublePushes(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int Pawn_Double_Push_Offset = ToMove == WHITE ? -16 : 16;
     constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnDoublePushes : attacks::maskBlackPawnDoublePushes;
@@ -208,7 +230,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generatePawnSinglePushWithPromotion(MoveList &move_list, const Board &board)
+  void generatePawnSinglePushWithPromotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
     constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
@@ -227,7 +249,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generatePawnSinglePushNoPromotion(MoveList &move_list, const Board &board)
+  void generatePawnSinglePushNoPromotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int Pawn_Single_Push_Offset = ToMove == WHITE ? -8 : 8;
     constexpr U64 (*mask_func)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::maskWhitePawnSinglePushes : attacks::maskBlackPawnSinglePushes;
@@ -243,7 +265,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generatePawnCapturesWithPromotion(MoveList &move_list, const Board &board)
+  void generatePawnCapturesWithPromotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
     constexpr int mask_index = 6 - (5 * ToMove);
@@ -266,7 +288,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generatePawnCapturesNoPromotion(MoveList &move_list, const Board &board)
+  void generatePawnCapturesNoPromotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
     constexpr int mask_index = 6 - (5 * ToMove);
@@ -286,7 +308,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove>
-  void generateEnPassantCapture(MoveList &move_list, const Board &board)
+  void generateEnPassantCapture(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor Opponent = ToMove == WHITE ? BLACK : WHITE;
     if (board.getEnPassantSquare() != -1)
@@ -302,7 +324,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove, PieceType PType, GenType GType>
-  void generateLeaperMoves(MoveList &move_list, const Board &board)
+  void generateLeaperMoves(std::vector<Move> &move_list, const Board &board)
   {
     static_assert(PType == KNIGHT || PType == KING, "Unsupported piece type in generateLeaperMoves()");
 
@@ -341,7 +363,7 @@ namespace movegen
   }
 
   template <PieceColor ToMove, PieceType PType, GenType GType>
-  void generateSliderMoves(MoveList &move_list, const Board &board)
+  void generateSliderMoves(std::vector<Move> &move_list, const Board &board)
   {
     static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generateSliderMoves()");
 

@@ -9,7 +9,6 @@
 #include "../../engine/movegen/tables.hpp"
 #include "../../engine/movegen/board.hpp"
 #include "../../engine/movegen/move.hpp"
-#include "../../engine/movegen/movelist.hpp"
 #include "../../engine/movegen/movegen.hpp"
 #include "../../engine/movegen/perft.hpp"
 
@@ -194,11 +193,9 @@ namespace cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      MoveList moves = movegen::generatePseudoLegalMoves(board);
-      for (Move const &move : moves)
-      {
-        std::cout << move.getUCI() << "\n";
-      }
+      std::vector<Move> moves = movegen::generateLegalMoves(board);
+      std::for_each(moves.begin(), moves.end(), [](Move const &move)
+                    { std::cout << move.getUCI() << "\n"; });
       std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
   } movesCommand;
@@ -212,11 +209,9 @@ namespace cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      MoveList captures = movegen::generatePseudoLegalCaptures(board);
-      for (Move const &move : captures)
-      {
-        std::cout << move.getUCI() << "\n";
-      }
+      std::vector<Move> captures = movegen::generateLegalCaptures(board);
+      std::for_each(captures.begin(), captures.end(), [](Move const &capture)
+                    { std::cout << capture.getUCI() << "\n"; });
       std::cout << "Total number of captures: " << captures.size() << std::endl;
     }
   } capturesCommand;

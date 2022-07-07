@@ -8,7 +8,6 @@
 #include "../../engine/movegen/tables.hpp"
 #include "../../engine/movegen/board.hpp"
 #include "../../engine/movegen/move.hpp"
-#include "../../engine/movegen/movelist.hpp"
 #include "../../engine/movegen/movegen.hpp"
 
 #include "../../engine/movepicker/movepicker.hpp"
