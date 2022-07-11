@@ -199,7 +199,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 7;
+            int max_depth = 6;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -229,7 +229,7 @@ namespace uci
             // TODO: Refactor AI class to inherit from Board ??
             MovePicker ai = MovePicker(board);
             ai.setMaxDepth(max_depth);
-            ai.clearState();
+            ai.clearTables();
 
             MovePicker::SearchResult result;
             for (int depth = 1; depth <= ai.getMaxDepth(); depth++)

@@ -13,7 +13,7 @@
 
 #define MIN_EVAL (INT_MIN + 1)
 
-int MovePicker::score(const Move &move) const
+int MovePicker::score(const Move &move)
 {
     // clang-format off
     static const int MVV_LVA[6][6] = {
@@ -25,6 +25,11 @@ int MovePicker::score(const Move &move) const
         {10100, 10200, 10300, 10400, 10500, 10600}
     };
     // clang-format on
+
+    if (_pv_table[0][_current_depth] == move.getEncoded())
+    {
+        return 20000;
+    }
 
     if (move.isCapture())
     {
@@ -238,6 +243,12 @@ void MovePicker::addToPrincipalVariation(Move const &move)
     _pv_length[_current_depth] = _pv_length[_current_depth + 1];
 }
 
+void MovePicker::clearSearchCounters()
+{
+    _current_nodes = 0;
+    _current_depth = 0;
+}
+
 // Public Methods
 
 int MovePicker::getMaxDepth() const
@@ -257,14 +268,13 @@ void MovePicker::setMaxDepth(int depth)
 
 MovePicker::SearchResult MovePicker::findBestMove()
 {
-    this->clearState();
+    this->clearTables();
 
     // Iterative Deepening
-    int alpha = 0;
+    int alpha;
     for (int depth = 1; depth <= _max_depth; depth++)
     {
-        _current_nodes = 0;
-        _current_depth = 0;
+        this->clearSearchCounters();
         alpha = search(depth);
     }
 
@@ -273,18 +283,23 @@ MovePicker::SearchResult MovePicker::findBestMove()
     return res;
 }
 
+/**
+ * @brief This function corresponds to one of
+ * the loops of findBestMove()
+ *
+ * @param depth
+ * @return MovePicker::SearchResult
+ */
 MovePicker::SearchResult MovePicker::findBestMove(int depth)
 {
-    _current_nodes = 0;
-    _current_depth = 0;
-
+    this->clearSearchCounters();
     int alpha = search(depth);
     SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
     memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
     return res;
 }
 
-void MovePicker::clearState()
+void MovePicker::clearTables()
 {
     memset(_history_moves, 0, sizeof(_history_moves));
     memset(_killer_moves, 0, sizeof(_killer_moves));
