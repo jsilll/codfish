@@ -199,7 +199,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 6;
+            int max_depth = 7;
 
             if (args.size() != 0 && args[0] == "depth")
             {

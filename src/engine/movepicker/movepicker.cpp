@@ -91,19 +91,24 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 {
     _current_nodes++;
 
+    // Terminal Node
     if (board.getHalfMoveClock() == 100)
     {
+        // Draw
         return 0;
     }
 
+    // Forced Terminal Node
     if (depth == 0)
     {
         _pv_length[_current_depth] = _current_depth;
         return quiescence(alpha, beta, -1, board);
     }
 
-    Move best_move = Move();
+    bool first_node = true;
     bool has_legal_moves = false;
+
+    Move best_move = Move();
     std::vector<Move> moves = movegen::generatePseudoLegalMoves(board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
     for (const Move &move : moves)
@@ -113,10 +118,34 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
+            int score;
             has_legal_moves = true;
-            _current_depth++;
-            int score = -negamax(-beta, -alpha, depth - 1, backup);
-            _current_depth--;
+
+            if (first_node)
+            {
+                first_node = false;
+
+                _current_depth++;
+                score = -negamax(-beta, -alpha, depth - 1, backup);
+                _current_depth--;
+            }
+            else
+            {
+                // Perform a Null Window Search
+                _current_depth++;
+                score = -negamax(-alpha - 1, -alpha, depth - 1, backup);
+                _current_depth--;
+
+                // If this move failed to prove to be bad,
+                // re-search with normal bounds
+                if ((score > alpha) && (score < beta))
+                {
+                    _current_depth++;
+                    score = -negamax(-beta, -alpha, depth - 1, backup);
+                    _current_depth--;
+                }
+            }
+
             if (score >= beta)
             {
                 // Killer Move Heuristic
@@ -141,14 +170,17 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         }
     }
 
+    // Terminal Node
     if (!has_legal_moves)
     {
+        // Check Mate
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
         if (board.isSquareAttacked(king_sq, board.getOpponent()))
         {
             return MIN_EVAL + _current_depth;
         }
 
+        // Stale Mate
         return 0;
     }
 
