@@ -303,7 +303,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
     this->clearTables();
 
     // Iterative Deepening
-    int alpha;
+    int alpha{};
     for (int depth = 1; depth <= _max_depth; depth++)
     {
         this->clearSearchCounters();
