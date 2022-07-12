@@ -2,6 +2,8 @@
 
 #include <engine/defs.hpp>
 
+#include <vector>
+
 class Board;
 class Move;
 
@@ -16,7 +18,7 @@ private:
     int _max_depth;
 
     int _current_nodes;
-    int _current_depth{};
+    int _current_depth;
 
     int _killer_moves[2][MAX_DEPTH]{};
     int _history_moves[N_SIDES][N_PIECES][N_SQUARES]{};
@@ -55,7 +57,7 @@ private:
      * @param move
      * @return move score
      */
-    int score(const Move &move) const;
+    int score(const Move &move);
 
     int search(int depth);
     int negamax(int alpha, int beta, int depth, const Board &board);
@@ -64,6 +66,8 @@ private:
     void addToKillerMoves(Move const &move);
     void addToHistoryMoves(Move const &move);
     void addToPrincipalVariation(Move const &move);
+
+    void clearSearchCounters();
 
 public:
     explicit MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this}
@@ -74,7 +78,7 @@ public:
 
     void setMaxDepth(int depth);
 
-    void clearState();
+    void clearTables();
 
     /**
      * @brief Searches the current position with max_depth

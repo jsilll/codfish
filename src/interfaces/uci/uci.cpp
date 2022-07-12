@@ -229,7 +229,7 @@ namespace uci
             // TODO: Refactor AI class to inherit from Board ??
             MovePicker ai = MovePicker(board);
             ai.setMaxDepth(max_depth);
-            ai.clearState();
+            ai.clearTables();
 
             MovePicker::SearchResult result;
             for (int depth = 1; depth <= ai.getMaxDepth(); depth++)

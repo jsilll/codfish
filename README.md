@@ -34,3 +34,4 @@ Engine Features
 - History Move Heuristic
 - Triangular PV-Table
 - Iterative Deepening
+- PV Sorting
