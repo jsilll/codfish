@@ -50,6 +50,13 @@ int MovePicker::score(const Move &move)
     return _history_moves[_current_depth % 2 ? !_board.getSideToMove() : _board.getSideToMove()][move.getPiece()][move.getToSquare()];
 }
 
+bool MovePicker::canLMR(const Move &move)
+{
+    // Move can't be a capture nor a promotion for LMR to happen
+    /* TODO: missing check moves and in check moves*/
+    return !move.isCapture() && !move.isPromotion();
+}
+
 int MovePicker::search(int depth)
 {
     int alpha = MIN_EVAL;
@@ -89,6 +96,9 @@ int MovePicker::search(int depth)
 
 int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 {
+    const int REDUCTION_LIMIT = 3;
+    const int FULL_DEPTH_MOVES = 4;
+
     _current_nodes++;
 
     // Terminal Node
@@ -105,12 +115,12 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         return quiescence(alpha, beta, -1, board);
     }
 
-    bool first_node = true;
-    bool has_legal_moves = false;
-
     Move best_move = Move();
     std::vector<Move> moves = movegen::generatePseudoLegalMoves(board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
+
+    int n_moves_searched = 0;
+    bool has_legal_moves = false;
     for (const Move &move : moves)
     {
         Board backup = board;
@@ -118,31 +128,45 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
         if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
-            int score;
             has_legal_moves = true;
 
-            if (first_node)
-            {
-                first_node = false;
+            int score;
 
+            // First move, use Full Window Search
+            if (n_moves_searched == 0)
+            {
                 _current_depth++;
                 score = -negamax(-beta, -alpha, depth - 1, backup);
                 _current_depth--;
             }
             else
             {
-                // Perform a Null Window Search
-                _current_depth++;
-                score = -negamax(-alpha - 1, -alpha, depth - 1, backup);
-                _current_depth--;
+                // For all the others moves, we assume they are worse moves than
+                // the first one, so let's try to use Null Window Search first
 
-                // If this move failed to prove to be bad,
-                // re-search with normal bounds
-                if ((score > alpha) && (score < beta))
+                if (n_moves_searched >= FULL_DEPTH_MOVES && depth >= REDUCTION_LIMIT && this->canLMR(move))
                 {
+                    // Perform a Null Window Search
                     _current_depth++;
-                    score = -negamax(-beta, -alpha, depth - 1, backup);
+                    score = -negamax(-(alpha + 1), -alpha, depth - 2, backup);
                     _current_depth--;
+                }
+                else
+                {
+                    score = alpha + 1; // Hack to ensure that Full Depth Search is done
+                }
+
+                // If this move failed to prove to be bad, re-search with normal bounds
+                if (score > alpha)
+                {
+                    score = -negamax(-(alpha + 1), -alpha, depth - 1, backup);
+
+                    if ((score > alpha) && (score < beta))
+                    {
+                        _current_depth++;
+                        score = -negamax(-beta, -alpha, depth - 1, backup);
+                        _current_depth--;
+                    }
                 }
             }
 
@@ -156,7 +180,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 
                 return beta;
             }
-            if (score > alpha)
+            else if (score > alpha)
             {
                 // History Move Heuristic
                 if (!move.isCapture())
@@ -167,6 +191,8 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 alpha = score;
                 best_move = move;
             }
+
+            n_moves_searched++;
         }
     }
 

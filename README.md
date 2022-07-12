@@ -29,9 +29,8 @@ Engine Features
 - PeSTO's Evaluation Function by Ronald Friederich
 - NegaMax Search
 - Quiescense Search with Null Move Pruning
-- MVV LVA
-- Killer Move Heuristic
-- History Move Heuristic
+- Move Sorting with PV, Killer, History and MVV LVA moves
 - Triangular PV-Table
 - Iterative Deepening
-- PV Sorting
+- Principal Variation Search
+- Late Move Reduction

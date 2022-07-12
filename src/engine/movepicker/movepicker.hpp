@@ -58,6 +58,7 @@ private:
      * @return move score
      */
     int score(const Move &move);
+    bool canLMR(const Move &move);
 
     int search(int depth);
     int negamax(int alpha, int beta, int depth, const Board &board);
