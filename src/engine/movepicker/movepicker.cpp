@@ -87,11 +87,10 @@ int MovePicker::search(int depth, int alpha, int beta)
 
                 alpha = score;
                 best_move = move;
+                this->addToPrincipalVariation(best_move);
             }
         }
     }
-
-    this->addToPrincipalVariation(best_move);
 
     return alpha;
 }
@@ -206,6 +205,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 
                 alpha = score;
                 best_move = move;
+                this->addToPrincipalVariation(best_move);
             }
 
             n_moves_searched++;
@@ -225,8 +225,6 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         // Stale Mate
         return 0;
     }
-
-    this->addToPrincipalVariation(best_move);
 
     return alpha;
 }
