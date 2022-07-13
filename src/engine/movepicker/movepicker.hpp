@@ -60,7 +60,7 @@ private:
     int score(const Move &move);
     bool canLMR(const Move &move);
 
-    int search(int depth);
+    int search(int depth, int alpha, int beta);
     int negamax(int alpha, int beta, int depth, const Board &board);
     int quiescence(int alpha, int beta, const Board &board);
 
@@ -97,5 +97,5 @@ public:
      * @param depth
      * @return SearchResult
      */
-    SearchResult findBestMove(int depth);
+    SearchResult findBestMove(int depth, int alpha, int beta);
 };

@@ -2,6 +2,8 @@
 
 #include <interfaces/utils.hpp>
 
+#include <engine/defs.hpp>
+
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/tables.hpp>
 #include <engine/movegen/board.hpp>
@@ -12,11 +14,15 @@
 #include <engine/movepicker/eval.hpp>
 
 #include <chrono>
+#include <climits>
 #include <iostream>
 #include <optional>
 #include <regex>
 #include <string>
 #include <vector>
+
+#define WINDOW_EXPANSION 50
+#define MIN_EVAL (INT_MIN + 1)
 
 namespace uci
 {
@@ -199,7 +205,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 8;
+            int max_depth = 9;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -232,11 +238,32 @@ namespace uci
             ai.clearTables();
 
             MovePicker::SearchResult result;
+
+            int alpha = MIN_EVAL;
+            int beta = -MIN_EVAL;
+
+            // This is a re-implementation of the iterative deepening of movepicker.cpp merely for UCI prints
             for (int depth = 1; depth <= ai.getMaxDepth(); depth++)
             {
                 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-                result = ai.findBestMove(depth);
+                result = ai.findBestMove(depth, alpha, beta);
                 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+
+                // Aspiration Window TODO: move this logic to the engine??
+                if ((result.score <= alpha) || (result.score >= beta))
+                {
+                    // We fall outside the window, so the next search
+                    // iteration is going to have a full width window and same depth
+                    alpha = MIN_EVAL;
+                    beta = -MIN_EVAL;
+
+                    depth--;
+                    continue;
+                }
+
+                alpha = result.score - WINDOW_EXPANSION;
+                beta = result.score + WINDOW_EXPANSION;
+
                 std::chrono::duration<double> elapsed = end - start;
                 std::cout << "info score cp " << result.score
                           << " depth " << depth

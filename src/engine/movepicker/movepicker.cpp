@@ -11,11 +11,11 @@
 #include <climits>
 #include <cstring>
 
-#define MIN_EVAL (INT_MIN + 1)
-
 #define R 2
 #define REDUCTION_LIMIT 3
 #define FULL_DEPTH_MOVES 4
+#define WINDOW_EXPANSION 50
+#define MIN_EVAL (INT_MIN + 1)
 
 int MovePicker::score(const Move &move)
 {
@@ -61,10 +61,8 @@ bool MovePicker::canLMR(const Move &move)
     return !move.isCapture() && !move.isPromotion();
 }
 
-int MovePicker::search(int depth)
+int MovePicker::search(int depth, int alpha, int beta)
 {
-    int alpha = MIN_EVAL;
-
     Move best_move = Move();
     std::vector<Move> moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
@@ -77,7 +75,7 @@ int MovePicker::search(int depth)
         if (!backup.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
-            int score = -negamax(MIN_EVAL, -alpha, depth - 1, backup);
+            int score = -negamax(-beta, -alpha, depth - 1, backup);
             _current_depth--;
             if (score > alpha)
             {
@@ -117,13 +115,18 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     }
 
     // Null Move Pruning (TODO: Zugzwang checking??)
-    Board backup = board;
-    backup.switchSideToMove();
-    backup.setEnPassantSquare(EMPTY_SQUARE);
-    int score = -negamax(-beta, -beta + 1, depth - 1 - R, backup);
-    if (score >= beta)
+    if (depth >= 3)
     {
-        return beta;
+        Board backup = board;
+        backup.switchSideToMove();
+        backup.setEnPassantSquare(EMPTY_SQUARE);
+        _current_depth += 2;
+        int score = -negamax(-beta, -beta + 1, depth - 1 - R, backup);
+        _current_depth -= 2;
+        if (score >= beta)
+        {
+            return beta;
+        }
     }
 
     Move best_move = Move();
@@ -170,7 +173,9 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                 // If this move failed to prove to be bad, re-search with normal bounds
                 if (score > alpha)
                 {
+                    _current_depth++;
                     score = -negamax(-(alpha + 1), -alpha, depth - 1, backup);
+                    _current_depth--;
 
                     if ((score > alpha) && (score < beta))
                     {
@@ -339,12 +344,29 @@ MovePicker::SearchResult MovePicker::findBestMove()
 {
     this->clearTables();
 
+    int alpha = MIN_EVAL;
+    int beta = -MIN_EVAL;
+
     // Iterative Deepening
-    int alpha{};
     for (int depth = 1; depth <= _max_depth; depth++)
     {
         this->clearSearchCounters();
-        alpha = search(depth);
+        int score = search(depth, alpha, beta);
+
+        // Aspiration Window
+        if ((score <= alpha) || (score >= beta))
+        {
+            // We fall outside the window, so the next search
+            // iteration is going to have a full width window and same depth
+            alpha = MIN_EVAL;
+            beta = -MIN_EVAL;
+
+            depth--;
+            continue;
+        }
+
+        alpha = score - WINDOW_EXPANSION;
+        beta = score + WINDOW_EXPANSION;
     }
 
     auto res = SearchResult{alpha, _current_nodes, _pv_length[0]};
@@ -359,11 +381,11 @@ MovePicker::SearchResult MovePicker::findBestMove()
  * @param depth
  * @return MovePicker::SearchResult
  */
-MovePicker::SearchResult MovePicker::findBestMove(int depth)
+MovePicker::SearchResult MovePicker::findBestMove(int depth, int alpha, int beta)
 {
     this->clearSearchCounters();
-    int alpha = search(depth);
-    SearchResult res = SearchResult{alpha, _current_nodes, _pv_length[0]};
+    int score = search(depth, alpha, beta);
+    SearchResult res = SearchResult{score, _current_nodes, _pv_length[0]};
     memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
     return res;
 }
