@@ -200,14 +200,14 @@ namespace movegen
       {
         if (!board.isSquareAttacked(Castle_F_Sq, Opponent) && !board.isSquareAttacked(Castle_G_Sq, Opponent))
         {
-          move_list.emplace_back(Castle_E_Sq, Castle_G_Sq, KING, EMPTY, EMPTY, false, false, true);
+          move_list.emplace_back(Castle_E_Sq, Castle_G_Sq, KING, EMPTY_PIECE, EMPTY_PIECE, false, false, true);
         }
       }
       if ((board.getCastlingRights() & Castle_Queen_Mask) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_D_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_C_Sq) && !bitboard::getBit(board.getOccupancies(BOTH), Castle_B_Sq))
       {
         if (!board.isSquareAttacked(Castle_D_Sq, Opponent) && !board.isSquareAttacked(Castle_C_Sq, Opponent))
         {
-          move_list.emplace_back(Castle_E_Sq, Castle_C_Sq, KING, EMPTY, EMPTY, false, false, true);
+          move_list.emplace_back(Castle_E_Sq, Castle_C_Sq, KING, EMPTY_PIECE, EMPTY_PIECE, false, false, true);
         }
       }
     }
@@ -223,7 +223,7 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_double_pushes);
       int from_square = to_square + Pawn_Double_Push_Offset;
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, EMPTY, true, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
       bitboard::popLastBit(pawn_double_pushes);
     }
   }
@@ -239,10 +239,10 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_promo);
       int from_square = to_square + Pawn_Single_Push_Offset;
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, QUEEN, false, false, false);
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, KNIGHT, false, false, false);
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, ROOK, false, false, false);
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, BISHOP, false, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, QUEEN, false, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, KNIGHT, false, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, ROOK, false, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, BISHOP, false, false, false);
       bitboard::popLastBit(pawn_single_pushes_promo);
     }
   }
@@ -258,7 +258,7 @@ namespace movegen
     {
       int to_square = bitboard::bitScanForward(pawn_single_pushes_no_promo);
       int from_square = to_square + Pawn_Single_Push_Offset;
-      move_list.emplace_back(from_square, to_square, PAWN, EMPTY, EMPTY, false, false, false);
+      move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, EMPTY_PIECE, false, false, false);
       bitboard::popLastBit(pawn_single_pushes_no_promo);
     }
   }
@@ -299,7 +299,7 @@ namespace movegen
       while (pawn_captures_no_promo)
       {
         int to_square = bitboard::bitScanForward(pawn_captures_no_promo);
-        move_list.emplace_back(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false);
+        move_list.emplace_back(from_square, to_square, PAWN, board.getPieceFromSquare(to_square).type, EMPTY_PIECE, false, false, false);
         bitboard::popLastBit(pawn_captures_no_promo);
       }
       bitboard::popLastBit(pawns_can_capture_no_promo);
@@ -316,7 +316,7 @@ namespace movegen
       while (pawns_can_en_passant)
       {
         int from_square = bitboard::bitScanForward(pawns_can_en_passant);
-        move_list.emplace_back(from_square, board.getEnPassantSquare(), PAWN, board.getPieceFromSquare(board.getEnPassantSquare()).type, EMPTY, false, true, false);
+        move_list.emplace_back(from_square, board.getEnPassantSquare(), PAWN, board.getPieceFromSquare(board.getEnPassantSquare()).type, EMPTY_PIECE, false, true, false);
         bitboard::popLastBit(pawns_can_en_passant);
       }
     }
@@ -349,11 +349,11 @@ namespace movegen
         int to_square = bitboard::bitScanForward(moves);
         if constexpr (GType == QUIETS)
         {
-          move_list.emplace_back(from_square, to_square, PType, EMPTY, EMPTY, false, false, false);
+          move_list.emplace_back(from_square, to_square, PType, EMPTY_PIECE, EMPTY_PIECE, false, false, false);
         }
         else
         {
-          move_list.emplace_back(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false);
+          move_list.emplace_back(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY_PIECE, false, false, false);
         }
         bitboard::popLastBit(moves);
       }
@@ -390,11 +390,11 @@ namespace movegen
         int to_square = bitboard::bitScanForward(moves);
         if constexpr (GType == QUIETS)
         {
-          move_list.emplace_back(from_square, to_square, PType, EMPTY, EMPTY, false, false, false);
+          move_list.emplace_back(from_square, to_square, PType, EMPTY_PIECE, EMPTY_PIECE, false, false, false);
         }
         else
         {
-          move_list.emplace_back(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY, false, false, false);
+          move_list.emplace_back(from_square, to_square, PType, board.getPieceFromSquare(to_square).type, EMPTY_PIECE, false, false, false);
         }
         bitboard::popLastBit(moves);
       }

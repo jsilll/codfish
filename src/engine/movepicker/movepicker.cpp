@@ -13,6 +13,10 @@
 
 #define MIN_EVAL (INT_MIN + 1)
 
+#define R 2
+#define REDUCTION_LIMIT 3
+#define FULL_DEPTH_MOVES 4
+
 int MovePicker::score(const Move &move)
 {
     // clang-format off
@@ -96,9 +100,6 @@ int MovePicker::search(int depth)
 
 int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 {
-    const int REDUCTION_LIMIT = 3;
-    const int FULL_DEPTH_MOVES = 4;
-
     _current_nodes++;
 
     // Terminal Node
@@ -109,10 +110,20 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     }
 
     // Forced Terminal Node
-    if (depth == 0)
+    if (depth <= 0)
     {
         _pv_length[_current_depth] = _current_depth;
-        return quiescence(alpha, beta, -1, board);
+        return quiescence(alpha, beta, board);
+    }
+
+    // Null Move Pruning (TODO: Zugzwang checking??)
+    Board backup = board;
+    backup.switchSideToMove();
+    backup.setEnPassantSquare(EMPTY_SQUARE);
+    int score = -negamax(-beta, -beta + 1, depth - 1 - R, backup);
+    if (score >= beta)
+    {
+        return beta;
     }
 
     Move best_move = Move();
@@ -215,7 +226,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     return alpha;
 }
 
-int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
+int MovePicker::quiescence(int alpha, int beta, const Board &board)
 {
     _current_nodes++;
 
@@ -257,7 +268,7 @@ int MovePicker::quiescence(int alpha, int beta, int depth, const Board &board)
         if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
         {
             _current_depth++;
-            int score = -quiescence(-beta, -alpha, depth - 1, backup);
+            int score = -quiescence(-beta, -alpha, backup);
             _current_depth--;
             if (score >= beta)
             {

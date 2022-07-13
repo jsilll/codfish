@@ -60,7 +60,7 @@ void Board::updateBBFromSquares()
 
   for (int sq = A1; sq < N_SQUARES; sq++)
   {
-    if (_square[sq].type != EMPTY)
+    if (_square[sq].type != EMPTY_PIECE)
     {
       _pieces[_square[sq].color][_square[sq].type] |= tables::SQUARE_BB[sq];
     }
@@ -171,7 +171,7 @@ std::string Board::getFen() const
       }
       switch (_square[sq].type)
       {
-      case EMPTY:
+      case EMPTY_PIECE:
         empty_squares++;
         break;
       default:
@@ -219,6 +219,11 @@ std::string Board::getFen() const
                     std::to_string(_full_move_number) + "\n";
 
   return fen.substr(1, std::string::npos);
+}
+
+void Board::setEnPassantSquare(int sq)
+{
+  _en_passant_square = sq;
 }
 
 void Board::display() const
@@ -286,7 +291,7 @@ void Board::clear()
 
   _to_move = WHITE;
   _castling_rights = 0;
-  _en_passant_square = -1;
+  _en_passant_square = EMPTY_SQUARE;
   _half_move_clock = 0;
   _full_move_number = 0;
 
@@ -294,7 +299,7 @@ void Board::clear()
 
   for (int sq = A1; sq < N_SQUARES; sq++)
   {
-    _square[sq].type = EMPTY;
+    _square[sq].type = EMPTY_PIECE;
     _square[sq].color = BLACK;
   }
 }
@@ -431,7 +436,7 @@ void Board::setFromFen(std::string const &piece_placements,
   }
   else
   {
-    _en_passant_square = -1;
+    _en_passant_square = EMPTY_SQUARE;
   }
 
   _half_move_clock = std::stoi(half_move_clock);
@@ -475,13 +480,13 @@ void Board::makeMove(Move const &move)
   int pawn_push_en_passant_offset = _to_move == WHITE ? -8 : 8;
 
   bitboard::popBit(_pieces[_to_move][piece], from_square);
-  _square[from_square].type = EMPTY;
+  _square[from_square].type = EMPTY_PIECE;
   _square[from_square].color = BLACK;
 
   if (is_en_passant)
   {
     int captured_piece_square = to_square + pawn_push_en_passant_offset;
-    _square[captured_piece_square].type = EMPTY;
+    _square[captured_piece_square].type = EMPTY_PIECE;
     _square[captured_piece_square].color = BLACK;
     bitboard::popBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
@@ -517,7 +522,7 @@ void Board::makeMove(Move const &move)
       rook_to_square = _to_move == WHITE ? D1 : D8;
     }
 
-    _square[rook_from_square].type = EMPTY;
+    _square[rook_from_square].type = EMPTY_PIECE;
     _square[rook_from_square].color = BLACK;
     _square[rook_to_square].type = ROOK;
     _square[rook_to_square].color = _to_move;

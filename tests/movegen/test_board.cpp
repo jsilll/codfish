@@ -27,6 +27,6 @@ TEST_CASE("Test get piece from square")
         REQUIRE(board.getPieceFromSquare(H5).type == KING);
         REQUIRE(board.getPieceFromSquare(G2).type == KNIGHT);
         REQUIRE(board.getPieceFromSquare(F1).type == QUEEN);
-        REQUIRE(board.getPieceFromSquare(D4).type == EMPTY);
+        REQUIRE(board.getPieceFromSquare(D4).type == EMPTY_PIECE);
     }
 }

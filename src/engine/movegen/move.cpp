@@ -4,7 +4,7 @@ std::string Move::getUCI() const
 {
   if (this->isPromotion())
   {
-   return SQUARE_NAMES[this->getFromSquare()] + SQUARE_NAMES[this->getToSquare()] + PIECE_REPR[this->getPromotedPiece() + 6];
+    return SQUARE_NAMES[this->getFromSquare()] + SQUARE_NAMES[this->getToSquare()] + PIECE_REPR[this->getPromotedPiece() + 6];
   }
   return SQUARE_NAMES[this->getFromSquare()] + SQUARE_NAMES[this->getToSquare()];
 }
@@ -56,12 +56,12 @@ bool Move::isCastle() const
 
 bool Move::isCapture() const
 {
-  return this->getCapturedPiece() != EMPTY;
+  return this->getCapturedPiece() != EMPTY_PIECE;
 }
 
 bool Move::isPromotion() const
 {
-  return this->getPromotedPiece() != EMPTY;
+  return this->getPromotedPiece() != EMPTY_PIECE;
 }
 
 int Move::getEncoded() const

@@ -18,6 +18,7 @@ enum Square : int {
   A7, B7, C7, D7, E7, F7, G7, H7,
   A8, B8, C8, D8, E8, F8, G8, H8,
   N_SQUARES,
+  EMPTY_SQUARE = -1
 };
 // clang-format on
 
@@ -64,7 +65,7 @@ enum PieceType : int
   QUEEN = 4,
   KING = 5,
   N_PIECES = 6,
-  EMPTY = 6,
+  EMPTY_PIECE = 6,
 };
 
 // clang-format off

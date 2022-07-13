@@ -62,7 +62,7 @@ private:
 
     int search(int depth);
     int negamax(int alpha, int beta, int depth, const Board &board);
-    int quiescence(int alpha, int beta, int depth, const Board &board);
+    int quiescence(int alpha, int beta, const Board &board);
 
     void addToKillerMoves(Move const &move);
     void addToHistoryMoves(Move const &move);

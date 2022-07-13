@@ -50,6 +50,8 @@ public:
   std::string getFen() const;
 
   // Modifiers
+  void setEnPassantSquare(int sq);
+
   void clear();
   void setStartingPosition();
   void setFromFen(std::string const &piece_placements,
