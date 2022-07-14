@@ -641,7 +641,9 @@ void Board::unmakeMove(Move const &move, info info_board)
   }
   else
   {
-    bitboard::setBit(_pieces[_to_move][piece], to_square);
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+    bitboard::popBit(_pieces[_to_move][piece], to_square);
   }
 
   if (move.getPiece() == PAWN || (!move.isCapture()))
