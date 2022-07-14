@@ -13,12 +13,20 @@ public:
     int color;
   };
 
+  struct info
+  {
+    int en_passant_square;
+    int castling_rights;
+    int fifty_move;
+  };
+
 private:
   int _to_move;
   int _castling_rights;
   int _en_passant_square;
   int _half_move_clock;
   int _full_move_number;
+  int _fifty_move;
 
   U64 _pieces[N_SIDES][N_PIECES];
   U64 _occupancies[N_SIDES + 1];
@@ -47,10 +55,14 @@ public:
   Piece getPieceFromSquare(int sq) const;
   bool isSquareAttacked(int sq, int attacker_side) const;
 
+  info getBoardInfo() const;
+
   std::string getFen() const;
 
   // Modifiers
   void setEnPassantSquare(int sq);
+  void setCastlingRights(int castling_rights);
+  void setFiftyMove(int fifty_move);
 
   void clear();
   void setStartingPosition();
@@ -62,6 +74,7 @@ public:
                   std::string const &fullmove_number);
   int switchSideToMove();
   void makeMove(Move const &move);
+  void unmakeMove(Move const &move, info const info_board);
 
   // Display
   void display() const;

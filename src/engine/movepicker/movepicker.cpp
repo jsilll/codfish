@@ -69,10 +69,11 @@ int MovePicker::search(int depth, int alpha, int beta)
     for (const Move &move : moves)
     {
         Board backup = _board;
-        backup.makeMove(move);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        Board::info board_info = _board.getBoardInfo();
+        _board.makeMove(move);
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
+        int attacker_side = _board.getSideToMove();
+        if (!_board.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
             int score = -negamax(-beta, -alpha, depth - 1, backup);
@@ -90,6 +91,7 @@ int MovePicker::search(int depth, int alpha, int beta)
                 this->addToPrincipalVariation(best_move);
             }
         }
+        _board.unmakeMove(move, board_info);
     }
 
     return alpha;

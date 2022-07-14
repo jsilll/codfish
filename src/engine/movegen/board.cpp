@@ -221,9 +221,25 @@ std::string Board::getFen() const
   return fen.substr(1, std::string::npos);
 }
 
+struct Board::info Board::getBoardInfo() const
+{
+  Board::info board_info = {_en_passant_square, _castling_rights, _fifty_move};
+  return board_info;
+}
+
 void Board::setEnPassantSquare(int sq)
 {
   _en_passant_square = sq;
+}
+
+void Board::setCastlingRights(int castling_rights)
+{
+  _castling_rights = castling_rights;
+}
+
+void Board::setFiftyMove(int fifty_move)
+{
+  _fifty_move = fifty_move;
 }
 
 void Board::display() const
@@ -550,5 +566,97 @@ void Board::makeMove(Move const &move)
   }
 
   this->switchSideToMove();
+  this->updateOccupancies();
+}
+
+void Board::unmakeMove(Move const &move, info info_board)
+{
+  this->switchSideToMove();
+
+  _en_passant_square = info_board.en_passant_square;
+  _castling_rights = info_board.castling_rights;
+  _fifty_move = info_board.fifty_move;
+
+  int from_square = move.getFromSquare();
+  int to_square = move.getToSquare();
+  int piece = move.getPiece();
+  int captured_piece = move.getCapturedPiece();
+  int promoted_piece = move.getPromotedPiece();
+  bool is_capture = move.isCapture();
+  bool is_promotion = move.isPromotion();
+  // bool is_double_push = move.isDoublePush();
+  bool is_en_passant = move.isEnPassant();
+  bool is_castle = move.isCastle();
+
+  int pawn_push_en_passant_offset = _to_move == WHITE ? -8 : 8;
+
+  _square[from_square].type = piece;
+  _square[from_square].color = _to_move;
+  bitboard::setBit(_pieces[_to_move][piece], from_square);
+
+  if (is_en_passant)
+  {
+    int captured_piece_square = to_square + pawn_push_en_passant_offset;
+    _square[captured_piece_square].type = PAWN;
+    _square[captured_piece_square].color = this->getOpponent();
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+    bitboard::popBit(_pieces[_to_move][PAWN], to_square);
+    bitboard::setBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
+  }
+  else if (is_capture)
+  {
+    _square[to_square].type = captured_piece;
+    _square[to_square].color = this->getOpponent();
+    bitboard::setBit(_pieces[this->getOpponent()][captured_piece], to_square);
+  }
+  else if (is_promotion)
+  {
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+    bitboard::popBit(_pieces[_to_move][promoted_piece], to_square);
+  }
+  else if (is_castle)
+  {
+    int rook_from_square, rook_to_square;
+    if (to_square - from_square > 0)
+    {
+      rook_from_square = _to_move == WHITE ? H1 : H8;
+      rook_to_square = _to_move == WHITE ? F1 : F8;
+    }
+    else
+    {
+      rook_from_square = _to_move == WHITE ? A1 : A8;
+      rook_to_square = _to_move == WHITE ? D1 : D8;
+    }
+
+    _square[rook_to_square].type = EMPTY_PIECE;
+    _square[rook_to_square].color = BLACK;
+    _square[rook_from_square].type = ROOK;
+    _square[rook_from_square].color = _to_move;
+
+    bitboard::setBit(_pieces[_to_move][ROOK], rook_from_square);
+    bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
+    bitboard::popBit(_pieces[_to_move][KING], to_square);
+  }
+  else
+  {
+    bitboard::setBit(_pieces[_to_move][piece], to_square);
+  }
+
+  if (move.getPiece() == PAWN || (!move.isCapture()))
+  {
+    _half_move_clock--;
+  }
+  else
+  {
+    _half_move_clock = 0;
+  }
+
+  if (_to_move == BLACK)
+  {
+    _full_move_number--;
+  }
+
   this->updateOccupancies();
 }
