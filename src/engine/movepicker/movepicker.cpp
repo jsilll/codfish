@@ -68,7 +68,7 @@ int MovePicker::search(int depth, int alpha, int beta)
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
     for (const Move &move : moves)
     {
-        Board backup = _board;
+        // Board backup = _board;
         Board::info board_info = _board.getBoardInfo();
         _board.makeMove(move);
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
@@ -76,7 +76,7 @@ int MovePicker::search(int depth, int alpha, int beta)
         if (!_board.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
-            int score = -negamax(-beta, -alpha, depth - 1, backup);
+            int score = -negamax(-beta, -alpha, depth - 1, _board);
             _current_depth--;
             if (score > alpha)
             {

@@ -634,6 +634,8 @@ void Board::unmakeMove(Move const &move, info info_board)
     _square[rook_to_square].color = BLACK;
     _square[rook_from_square].type = ROOK;
     _square[rook_from_square].color = _to_move;
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = _to_move;
 
     bitboard::setBit(_pieces[_to_move][ROOK], rook_from_square);
     bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
