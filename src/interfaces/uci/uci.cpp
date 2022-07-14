@@ -270,9 +270,9 @@ namespace uci
                           << " nodes " << result.nodes
                           << " time " << (int)(elapsed / std::chrono::milliseconds(1))
                           << " pv ";
-                for (int i = 0; i < result.pv_length; i++)
+                for (const Move &move : result.pv)
                 {
-                    std::cout << Move(result.pv[i]).getUCI() << " ";
+                    std::cout << move.getUCI() << " ";
                 }
                 std::cout << std::endl;
             }
