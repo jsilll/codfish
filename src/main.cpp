@@ -32,11 +32,11 @@ int main(int argc, char const *argv[])
     break;
   case UCI:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    uci::init();
+    interfaces::uci::init();
     break;
   default:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    uci::init();
+    interfaces::uci::init();
     break;
   }
 

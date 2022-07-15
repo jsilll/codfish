@@ -7,7 +7,7 @@
 #include <regex>
 #include <vector>
 
-namespace utils
+namespace interfaces::utils
 {
     std::vector<std::string> tokenizeString(const std::string &text)
     {
@@ -16,5 +16,4 @@ namespace utils
         copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
         return tokens;
     }
-
-} // namespace utils
+} // namespace interfaces::utils

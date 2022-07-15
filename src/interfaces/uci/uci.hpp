@@ -1,6 +1,6 @@
 #pragma once
 
-namespace uci
+namespace interfaces::uci
 {
     /**
      * @brief Initializes the uci command line mode
@@ -8,4 +8,4 @@ namespace uci
      */
     void init();
 
-} // namespace uci
+} // namespace interfaces::uci
