@@ -74,6 +74,8 @@ public:
     {
     }
 
+    Board &getBoard() const;
+
     [[nodiscard]] int getMaxDepth() const;
 
     void setMaxDepth(int depth);

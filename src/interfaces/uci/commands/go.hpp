@@ -19,7 +19,7 @@ namespace interfaces::uci::commands
         void execute(std::vector<std::string> &args, Board &board);
 
     private:
-        static void search(MovePicker &ai, MovePicker::SearchResult &result, std::future<void> future);
+        static void search(std::future<void> future, int wtime, int btime, MovePicker &ai, MovePicker::SearchResult &result);
         static void displaySearchIteration(MovePicker::SearchResult result, int depth, std::chrono::duration<double> elapsed);
     };
 } // namespace interfaces::uci::commands

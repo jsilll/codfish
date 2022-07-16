@@ -25,6 +25,7 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/uci/commands/*.cpp
                    )
 add_executable(engine_exec ${EXEC_SRC})
 target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)

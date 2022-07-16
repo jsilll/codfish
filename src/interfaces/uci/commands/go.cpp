@@ -1,71 +1,133 @@
 #include <interfaces/uci/commands/go.hpp>
 
+#include <interfaces/uci/timectl.hpp>
+
 #include <iostream>
 
-#define WINDOW_EXPANSION 50
+#define DEFAULT_DEPTH 32
 #define MIN_EVAL (INT_MIN + 1)
-#define DEFAULT_DEPTH 9
+#define WINDOW_EXPANSION 50
 
 void interfaces::uci::commands::GoCommand::execute(std::vector<std::string> &args, Board &board)
 {
-    int max_depth = DEFAULT_DEPTH;
+    enum ArgCommand : int
+    {
+        DEPTH,
+        WTIME,
+        BTIME,
+        MOVES_TO_GO,
+    };
 
-    bool in_depth_command = false;
+    ArgCommand arg_cmd;
+
+    [[maybe_unused]] int moves_to_go{};
+    int wtime{}, btime{};
+    int depth = DEFAULT_DEPTH;
     for (const std::string &token : args)
     {
+        std::cout << "hello world" << std::endl;
         if (token == "depth")
         {
-            in_depth_command = true;
+            arg_cmd = DEPTH;
         }
-
-        if (in_depth_command)
+        else if (token == "wtime")
         {
+            arg_cmd = WTIME;
+        }
+        else if (token == "btime")
+        {
+            arg_cmd = BTIME;
+        }
+        else if (token == "movestogo")
+        {
+            arg_cmd = MOVES_TO_GO;
+        }
+        else
+        {
+            int val{};
             try
             {
-                max_depth = std::stoi(token);
+                val = std::stoi(token);
             }
             catch (const std::exception &e)
             {
                 return;
             }
 
-            if (max_depth < 0)
+            if (val < 0)
             {
                 return;
             }
 
-            in_depth_command = false;
+            switch (arg_cmd)
+            {
+            case DEPTH:
+                if (val < 0)
+                {
+                    return;
+                }
+                else
+                {
+                    depth = val;
+                }
+                break;
+            case WTIME:
+                if (val <= 0)
+                {
+                    return;
+                }
+                else
+                {
+                    wtime = val;
+                }
+                break;
+            case BTIME:
+                if (val <= 0)
+                {
+                    return;
+                }
+                else
+                {
+                    btime = val;
+                }
+                break;
+            case MOVES_TO_GO:
+                if (val <= 0)
+                {
+                    return;
+                }
+                else
+                {
+                    moves_to_go = val;
+                }
+                break;
+            }
         }
     }
 
     MovePicker ai = MovePicker(board);
-    ai.setMaxDepth(max_depth);
+    ai.setMaxDepth(depth);
+
     MovePicker::SearchResult result;
 
     std::promise<void> signal_exit;
     std::future<void> future = signal_exit.get_future();
-    std::thread t(this->search, std::ref(ai), std::ref(result), std::move(future));
-    std::cout << "going to sleep" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    std::thread t(this->search, std::move(future), std::move(wtime), std::move(btime), std::ref(ai), std::ref(result));
+    std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, board)));
     signal_exit.set_value();
     t.join();
 
     std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
 }
 
-void interfaces::uci::commands::GoCommand::search(MovePicker &ai, MovePicker::SearchResult &result, std::future<void> future)
+void interfaces::uci::commands::GoCommand::search(std::future<void> future, int wtime, int btime, MovePicker &ai, MovePicker::SearchResult &result)
 {
+    ai.clearTables();
+
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
-
-    ai.clearTables();
     for (int depth = 1; depth <= ai.getMaxDepth(); depth++)
     {
-        if (future.wait_for(std::chrono::milliseconds(1)) != std::future_status::timeout)
-        {
-            break;
-        }
-
         auto start = std::chrono::system_clock::now();
         result = ai.findBestMove(depth, alpha, beta);
         auto end = std::chrono::system_clock::now();
@@ -80,7 +142,13 @@ void interfaces::uci::commands::GoCommand::search(MovePicker &ai, MovePicker::Se
 
         alpha = result.score - WINDOW_EXPANSION;
         beta = result.score + WINDOW_EXPANSION;
+
         displaySearchIteration(result, depth, end - start);
+
+        if (future.wait_for(std::chrono::milliseconds(timectl::get_timeout_ms(depth, wtime, btime, ai.getBoard()))) != std::future_status::timeout)
+        {
+            break;
+        }
     }
 }
 
