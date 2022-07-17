@@ -551,7 +551,7 @@ void Board::makeMove(Move const &move)
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
 
-  if (move.getPiece() == PAWN || (!move.isCapture()))
+  if (piece != PAWN || (!is_capture))
   {
     _half_move_clock++;
   }
@@ -646,7 +646,7 @@ void Board::unmakeMove(Move const &move, info info_board)
     bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
   }
 
-  if (move.getPiece() == PAWN || (!move.isCapture()))
+  if (piece != PAWN || (!is_capture))
   {
     _half_move_clock--;
   }
