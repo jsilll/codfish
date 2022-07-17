@@ -18,9 +18,4 @@ namespace interfaces::uci::timectl
         }
     }
 
-    int get_timeout_ms(int depth, int wtime, int btime, const Board &board)
-    {
-        return (int)std::pow(get_time_budget_ms(wtime, btime, board) / 3072, depth);
-    }
-
 } // namespace interfaces::uci::timectl

@@ -14,14 +14,4 @@ namespace interfaces::uci::timectl
      */
     int get_time_budget_ms(int wtime, int btime, const Board &board);
 
-    /**
-     * @brief Get the timeout in milliseconds
-     *
-     * @param wtime
-     * @param btim
-     * @param board
-     * @return int
-     */
-    int get_timeout_ms(int depth, int wtime, int btime, const Board &board);
-
 } // namespace interfaces::uci::timectl
