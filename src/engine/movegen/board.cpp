@@ -599,10 +599,10 @@ void Board::unmakeMove(Move const &move, info info_board)
     int captured_piece_square = to_square + pawn_push_en_passant_offset;
     _square[captured_piece_square].type = PAWN;
     _square[captured_piece_square].color = this->getOpponent();
+    bitboard::setBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
     _square[to_square].type = EMPTY_PIECE;
     _square[to_square].color = BLACK;
     bitboard::popBit(_pieces[_to_move][PAWN], to_square);
-    bitboard::setBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
   }
   else if (is_capture)
   {
@@ -616,7 +616,14 @@ void Board::unmakeMove(Move const &move, info info_board)
     _square[to_square].color = BLACK;
     bitboard::popBit(_pieces[_to_move][promoted_piece], to_square);
   }
-  else if (is_castle)
+  else
+  {
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+    bitboard::popBit(_pieces[_to_move][piece], to_square);
+  }
+
+  if (is_castle)
   {
     int rook_from_square, rook_to_square;
     if (to_square - from_square > 0)
@@ -634,18 +641,9 @@ void Board::unmakeMove(Move const &move, info info_board)
     _square[rook_to_square].color = BLACK;
     _square[rook_from_square].type = ROOK;
     _square[rook_from_square].color = _to_move;
-    _square[to_square].type = EMPTY_PIECE;
-    _square[to_square].color = _to_move;
 
     bitboard::setBit(_pieces[_to_move][ROOK], rook_from_square);
     bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
-    bitboard::popBit(_pieces[_to_move][KING], to_square);
-  }
-  else
-  {
-    _square[to_square].type = EMPTY_PIECE;
-    _square[to_square].color = BLACK;
-    bitboard::popBit(_pieces[_to_move][piece], to_square);
   }
 
   if (move.getPiece() == PAWN || (!move.isCapture()))

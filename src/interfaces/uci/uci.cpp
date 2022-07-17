@@ -205,7 +205,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 3;
+            int max_depth = 8;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -243,7 +243,7 @@ namespace uci
             int beta = -MIN_EVAL;
 
             // This is a re-implementation of the iterative deepening of movepicker.cpp merely for UCI prints
-            for (int depth = 1; depth <= ai.getMaxDepth(); depth++)
+            for (int depth = ai.getMaxDepth(); depth <= ai.getMaxDepth(); depth++)
             {
                 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
                 result = ai.findBestMove(depth, alpha, beta);
@@ -276,7 +276,7 @@ namespace uci
                 }
                 std::cout << std::endl;
             }
-
+            std::cout << board.getFen() << std::endl;
             std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
         }
     } goCommand;

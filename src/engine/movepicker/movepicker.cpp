@@ -93,7 +93,7 @@ int MovePicker::search(int depth, int alpha, int beta)
         }
         _board.unmakeMove(move, board_info);
     }
-
+    _board.makeMove(best_move);
     return alpha;
 }
 
@@ -118,14 +118,15 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
     // Null Move Pruning (TODO: Zugzwang checking??)
     if (depth >= 3)
     {
-        // Board backup = board;
-        board.switchSideToMove();
-        board.setEnPassantSquare(EMPTY_SQUARE);
-        _current_depth += 2;
-        int score = -negamax(-beta, -beta + 1, depth - 1 - R, board);
-        _current_depth -= 2;
+        Board backup = board;
+        backup.switchSideToMove();
+        backup.setEnPassantSquare(EMPTY_SQUARE);
+        _current_depth += 2; // R+1?
+        int score = -negamax(-beta, -beta + 1, depth - 1 - R, backup);
+        _current_depth -= 2; // R+1?
         if (score >= beta)
         {
+            // std::cout << "HHHHHHHHHHHHHHHHHHHHHHH" << std::endl;
             return beta;
         }
     }
@@ -139,6 +140,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
     for (const Move &move : moves)
     {
         // Board backup = board;
+        Board::info board_info = board.getBoardInfo();
         board.makeMove(move);
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
         if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
@@ -194,7 +196,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
                 {
                     this->addToKillerMoves(move);
                 }
-
+                board.unmakeMove(move, board_info);
                 return beta;
             }
             else if (score > alpha)
@@ -212,6 +214,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
 
             n_moves_searched++;
         }
+        board.unmakeMove(move, board_info);
     }
 
     // Terminal Node
@@ -268,6 +271,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
     for (const Move &capture : captures)
     {
         // Board backup = board;
+        Board::info board_info = board.getBoardInfo();
         board.makeMove(capture);
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
         if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
@@ -277,6 +281,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
             _current_depth--;
             if (score >= beta)
             {
+                board.unmakeMove(capture, board_info);
                 return beta;
             }
             if (score > alpha)
@@ -284,6 +289,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
                 alpha = score;
             }
         }
+        board.unmakeMove(capture, board_info);
     }
 
     return alpha;
