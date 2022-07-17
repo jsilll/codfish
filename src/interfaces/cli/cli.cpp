@@ -334,34 +334,26 @@ namespace cli
         return;
       }
 
-      board.setFromFen(args[1], args[2], args[3], args[4], args[5], args[6]);
+      board.setFromFen(args[0], args[1], args[2], args[3], args[4], args[5]);
     }
 
   private:
     bool isFenValid(std::vector<std::string> &args)
     {
-      if (args.size() != 7)
-      {
-        return false;
-      }
-
       static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
       static const std::regex active_color_regex(R"(b|w)");
       static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
       static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
       static const std::regex halfmove_clock_regex(R"(\d+)");
       static const std::regex fullmove_number_regex(R"(\d+)");
-      if (!std::regex_match(args[1], piece_placements_regex) ||
-          !std::regex_match(args[2], active_color_regex) ||
-          !std::regex_match(args[3], castling_rights_regex) ||
-          !std::regex_match(args[4], en_passant_regex) ||
-          !std::regex_match(args[5], halfmove_clock_regex) ||
-          !std::regex_match(args[6], fullmove_number_regex))
-      {
-        return false;
-      }
 
-      return true;
+      return args.size() == 6 &&
+             std::regex_match(args[0], piece_placements_regex) &&
+             std::regex_match(args[1], active_color_regex) &&
+             std::regex_match(args[2], castling_rights_regex) &&
+             std::regex_match(args[3], en_passant_regex) &&
+             std::regex_match(args[4], halfmove_clock_regex) &&
+             std::regex_match(args[5], fullmove_number_regex);
     }
   } setFenCommand;
 
@@ -440,12 +432,20 @@ namespace cli
 
     for (;;)
     {
-      std::cout << "> ";
       std::string line;
+
+      std::cout << "> " << std::flush;
       std::getline(std::cin, line);
-      std::vector<std::string> args = utils::tokenizeString(std::string(line));
+      std::vector<std::string> args = utils::tokenizeString(line);
+
+      if (args.empty())
+      {
+        continue;
+      }
+
       std::string cmd = args[0];
       args.erase(args.begin());
+
       if (cmd == "help")
       {
         helpCommand.execute(args, board);
