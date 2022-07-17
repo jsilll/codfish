@@ -55,6 +55,7 @@ TEST_CASE("unmake move")
     {
         board.setFromFen("rnbqkbnr/3ppppp/8/ppp5/2P3P1/5N1B/PP1PPP1P/RNBQK2R", "b", "KQkq", "-", "0", "4");
         Move move = Move(B5, C4, PAWN, PAWN, EMPTY_PIECE, false, false, false);
+        REQUIRE(move.isCapture() == true);
         Board::info board_info = board.getBoardInfo();
         board.makeMove(move);
         board.unmakeMove(move, board_info);
