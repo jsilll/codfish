@@ -609,6 +609,7 @@ void Board::unmakeMove(Move const &move, info info_board)
     _square[to_square].type = captured_piece;
     _square[to_square].color = this->getOpponent();
     bitboard::setBit(_pieces[this->getOpponent()][captured_piece], to_square);
+    bitboard::popBit(_pieces[_to_move][piece], to_square);
   }
   else if (is_promotion)
   {

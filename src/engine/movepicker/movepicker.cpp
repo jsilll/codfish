@@ -71,7 +71,7 @@ int MovePicker::search(int depth, int alpha, int beta)
         // Board backup = _board;
         Board::info board_info = _board.getBoardInfo();
         _board.makeMove(move);
-        std::cout << _current_depth << _board.getFen() << std::endl;
+        std::cout << _current_depth << _board.getFen() << " move: " << move.getUCI() << std::endl;
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
         int attacker_side = _board.getSideToMove();
         if (!_board.isSquareAttacked(king_sq, attacker_side))
@@ -92,7 +92,6 @@ int MovePicker::search(int depth, int alpha, int beta)
                 this->addToPrincipalVariation(best_move);
             }
         }
-        std::cout << _current_depth << _board.getFen() << std::endl;
         _board.unmakeMove(move, board_info);
         std::cout << _current_depth << "->" << _board.getFen() << std::endl;
     }
@@ -115,7 +114,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
     if (depth <= 0)
     {
         _pv_length[_current_depth] = _current_depth;
-        std::cout << "qq?" << board.getFen() << std::endl;
+        // std::cout << "qq-antes-" << board.getFen() << std::endl;
         return quiescence(alpha, beta, board);
     }
 
@@ -145,8 +144,8 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
     {
         // Board backup = board;
         Board::info board_info = board.getBoardInfo();
-        std::cout << _current_depth << _board.getFen() << std::endl;
         board.makeMove(move);
+        std::cout << _current_depth << board.getFen() << " move: " << move.getUCI() << std::endl;
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
         if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
         {
@@ -201,7 +200,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
                 {
                     this->addToKillerMoves(move);
                 }
-                std::cout << _current_depth << board.getFen() << std::endl;
+                // std::cout << _current_depth << board.getFen() << std::endl;
                 board.unmakeMove(move, board_info);
                 std::cout << _current_depth << "->" << _board.getFen() << std::endl;
                 return beta;
@@ -221,7 +220,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, Board &board)
 
             n_moves_searched++;
         }
-        std::cout << _current_depth << board.getFen() << std::endl;
+        // std::cout << _current_depth << board.getFen() << std::endl;
         board.unmakeMove(move, board_info);
         std::cout << _current_depth << "->" << _board.getFen() << std::endl;
     }
@@ -247,7 +246,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
 {
     _current_nodes++;
 
-    std::cout << "qq-" << board.getFen() << std::endl;
+    // std::cout << "qq-depois-" << board.getFen() << std::endl;
 
     if (board.getHalfMoveClock() == 100)
     {
@@ -284,7 +283,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
         // Board backup = board;
         Board::info board_info = board.getBoardInfo();
         board.makeMove(capture);
-        std::cout << "q" << _current_depth << board.getFen() << std::endl;
+        std::cout << "q" << _current_depth << board.getFen() << " move: " << capture.getUCI() << std::endl;
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
         if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
         {
@@ -293,7 +292,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
             _current_depth--;
             if (score >= beta)
             {
-                std::cout << "q" << _current_depth << board.getFen() << std::endl;
+                // std::cout << "q" << _current_depth << board.getFen() << std::endl;
                 board.unmakeMove(capture, board_info);
                 std::cout << "q" << _current_depth << "->" << _board.getFen() << std::endl;
                 return beta;
@@ -303,7 +302,7 @@ int MovePicker::quiescence(int alpha, int beta, Board &board)
                 alpha = score;
             }
         }
-        std::cout << "q" << _current_depth << board.getFen() << std::endl;
+        // std::cout << "q" << _current_depth << board.getFen() << std::endl;
         board.unmakeMove(capture, board_info);
         std::cout << "q" << _current_depth << "->" << _board.getFen() << std::endl;
     }
