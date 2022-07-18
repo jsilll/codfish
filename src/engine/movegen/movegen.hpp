@@ -31,7 +31,7 @@ namespace movegen
      * @param board
      * @return std::vector<Move>
      */
-    std::vector<Move> generateLegalMoves(const Board &board);
+    std::vector<Move> generateLegalMoves(Board &board);
 
     /**
      * @brief Generates all the legal moves for a given board
@@ -39,7 +39,7 @@ namespace movegen
      * @param board
      * @return std::vector<Move>
      */
-    std::vector<Move> generateLegalCaptures(const Board &board);
+    std::vector<Move> generateLegalCaptures(Board &board);
 
     /**
      * @brief Checks whether a given board as has legal moves
@@ -47,6 +47,6 @@ namespace movegen
      * @param board
      * @return bool
      */
-    bool hasLegalMoves(const Board &board);
+    bool hasLegalMoves(Board &board);
 
 } // namespace movegen

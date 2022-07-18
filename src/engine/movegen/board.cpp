@@ -221,10 +221,9 @@ std::string Board::getFen() const
   return fen.substr(1, std::string::npos);
 }
 
-struct Board::info Board::getBoardInfo() const
+struct Board::State Board::getState() const
 {
-  Board::info board_info = {_en_passant_square, _castling_rights, _half_move_clock};
-  return board_info;
+  return State{_en_passant_square, _castling_rights, _half_move_clock};
 }
 
 void Board::setEnPassantSquare(int sq)
@@ -235,6 +234,13 @@ void Board::setEnPassantSquare(int sq)
 void Board::setCastlingRights(int castling_rights)
 {
   _castling_rights = castling_rights;
+}
+
+void Board::setState(State state)
+{
+  _en_passant_square = state.en_passant_square;
+  _castling_rights = state.castling_rights;
+  _half_move_clock = state.half_move_clock;
 }
 
 void Board::display() const
@@ -564,7 +570,7 @@ void Board::makeMove(Move const &move)
   this->updateOccupancies();
 }
 
-void Board::unmakeMove(Move const &move, info info_board)
+void Board::unmakeMove(Move const &move, State info_board)
 {
   this->switchSideToMove();
 

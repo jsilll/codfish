@@ -13,7 +13,7 @@ public:
     int color;
   };
 
-  struct info
+  struct State
   {
     int en_passant_square;
     int castling_rights;
@@ -54,7 +54,7 @@ public:
   Piece getPieceFromSquare(int sq) const;
   bool isSquareAttacked(int sq, int attacker_side) const;
 
-  info getBoardInfo() const;
+  State getState() const;
 
   std::string getFen() const;
 
@@ -62,6 +62,7 @@ public:
   void setEnPassantSquare(int sq);
   void setCastlingRights(int castling_rights);
   void setFiftyMove(int fifty_move);
+  void setState(State state);
 
   void clear();
   void setStartingPosition();
@@ -73,7 +74,7 @@ public:
                   std::string const &fullmove_number);
   int switchSideToMove();
   void makeMove(Move const &move);
-  void unmakeMove(Move const &move, info const info_board);
+  void unmakeMove(Move const &move, State const info_board);
 
   // Display
   void display() const;

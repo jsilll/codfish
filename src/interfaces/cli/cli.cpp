@@ -77,16 +77,17 @@ namespace cli
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
       for (Move const &move : movegen::generatePseudoLegalMoves(board))
       {
-        Board backup = board;
-        backup.makeMove(move);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        Board::State state = board.getState();
+        board.makeMove(move);
+        int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
+        int attacker_side = board.getSideToMove();
+        if (!board.isSquareAttacked(king_sq, attacker_side))
         {
-          unsigned long long nodes = perft::perft(backup, depth - 1);
+          unsigned long long nodes = perft::perft(board, depth - 1);
           std::cout << move.getUCI() << ": " << nodes << std::endl;
           total_nodes += nodes;
         }
+        board.unmakeMove(move, state);
       }
       std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;

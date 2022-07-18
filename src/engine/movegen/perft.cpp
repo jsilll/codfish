@@ -17,8 +17,7 @@ namespace perft
         unsigned long long nodes = 0;
         for (Move const &move : movegen::generatePseudoLegalMoves(board))
         {
-            Board backup = board;
-            Board::info board_info = board.getBoardInfo();
+            Board::State board_info = board.getState();
             board.makeMove(move);
             int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
             int attacker_side = board.getSideToMove();
@@ -27,12 +26,6 @@ namespace perft
                 nodes += perft(board, depth - 1);
             }
             board.unmakeMove(move, board_info);
-            if (board.getFen() != backup.getFen())
-            {
-                std::cout << "unmake: " << backup.getFen() << std::endl;
-                std::cout << "backup: " << backup.getFen() << std::endl;
-                std::cout << move.getUCI() << std::endl;
-            }
         }
 
         return nodes;

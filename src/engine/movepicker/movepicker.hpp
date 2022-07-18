@@ -61,8 +61,8 @@ private:
     bool canLMR(const Move &move);
 
     int search(int depth, int alpha, int beta);
-    int negamax(int alpha, int beta, int depth, Board &board);
-    int quiescence(int alpha, int beta, Board &board);
+    int negamax(int alpha, int beta, int depth);
+    int quiescence(int alpha, int beta);
 
     void addToKillerMoves(Move const &move);
     void addToHistoryMoves(Move const &move);

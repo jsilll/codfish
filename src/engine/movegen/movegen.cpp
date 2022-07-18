@@ -42,17 +42,19 @@ namespace movegen
   template <PieceColor ToMove, PieceType PType, GenType GType>
   void generateSliderMoves(std::vector<Move> &move_list, const Board &board);
 
-  bool hasLegalMoves(const Board &board) // TODO: performance can be improved
+  bool hasLegalMoves(Board &board) // TODO: performance can be improved
   {
     for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
-      Board backup = board;
-      backup.makeMove(move);
-      int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-      if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+      Board::State state = board.getState();
+      board.makeMove(move);
+      int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
+      if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
       {
+        board.unmakeMove(move, state);
         return true;
       }
+      board.unmakeMove(move, state);
     }
     return false;
   }
@@ -146,38 +148,41 @@ namespace movegen
     return moves;
   }
 
-  std::vector<Move> generateLegalMoves(const Board &board)
+  std::vector<Move> generateLegalMoves(Board &board)
   {
     std::vector<Move> moves;
     moves.reserve(MAX_SIZE_MOVES_ARRAY);
     for (Move const &move : movegen::generatePseudoLegalMoves(board))
     {
-      Board backup = board;
-      backup.makeMove(move);
-      int king_sq = bitboard::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
-      int attacker_side = backup.getSideToMove();
-      if (!backup.isSquareAttacked(king_sq, attacker_side))
+      Board::State state = board.getState();
+      int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+      int attacker_side = board.getSideToMove();
+      if (!board.isSquareAttacked(king_sq, attacker_side))
       {
+        board.unmakeMove(move, state);
         moves.push_back(move);
       }
+      board.unmakeMove(move, state);
     }
     return moves;
   }
 
-  std::vector<Move> generateLegalCaptures(const Board &board)
+  std::vector<Move> generateLegalCaptures(Board &board)
   {
     std::vector<Move> captures;
     captures.reserve(MAX_SIZE_MOVES_ARRAY);
     for (Move const &move : movegen::generatePseudoLegalCaptures(board))
     {
-      Board backup = board;
-      backup.makeMove(move);
-      int king_sq = bitboard::bitScanForward(backup.getPieces(board.getSideToMove(), KING));
-      int attacker_side = backup.getSideToMove();
-      if (!backup.isSquareAttacked(king_sq, attacker_side))
+      Board::State state = board.getState();
+      board.makeMove(move);
+      int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+      int attacker_side = board.getSideToMove();
+      if (!board.isSquareAttacked(king_sq, attacker_side))
       {
+        board.unmakeMove(move, state);
         captures.push_back(move);
       }
+      board.unmakeMove(move, state);
     }
     return captures;
   }
