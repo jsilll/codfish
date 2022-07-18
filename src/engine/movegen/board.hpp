@@ -17,7 +17,6 @@ public:
   {
     int en_passant_square;
     int castling_rights;
-    int fifty_move;
     int half_move_clock;
   };
 
@@ -27,7 +26,6 @@ private:
   int _en_passant_square;
   int _half_move_clock;
   int _full_move_number;
-  int _fifty_move;
 
   U64 _pieces[N_SIDES][N_PIECES];
   U64 _occupancies[N_SIDES + 1];
