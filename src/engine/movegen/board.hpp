@@ -18,6 +18,7 @@ public:
     int en_passant_square;
     int castling_rights;
     int fifty_move;
+    int half_move_clock;
   };
 
 private:

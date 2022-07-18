@@ -223,7 +223,7 @@ std::string Board::getFen() const
 
 struct Board::info Board::getBoardInfo() const
 {
-  Board::info board_info = {_en_passant_square, _castling_rights, _fifty_move};
+  Board::info board_info = {_en_passant_square, _castling_rights, _fifty_move, _half_move_clock};
   return board_info;
 }
 
@@ -551,13 +551,13 @@ void Board::makeMove(Move const &move)
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
 
-  if (piece != PAWN || (!is_capture))
+  if (piece == PAWN || (is_capture))
   {
-    _half_move_clock++;
+    _half_move_clock = 0;
   }
   else
   {
-    _half_move_clock = 0;
+    _half_move_clock++;
   }
 
   if (_to_move == BLACK)
@@ -576,6 +576,7 @@ void Board::unmakeMove(Move const &move, info info_board)
   _en_passant_square = info_board.en_passant_square;
   _castling_rights = info_board.castling_rights;
   _fifty_move = info_board.fifty_move;
+  _half_move_clock = info_board.half_move_clock;
 
   int from_square = move.getFromSquare();
   int to_square = move.getToSquare();
@@ -647,14 +648,14 @@ void Board::unmakeMove(Move const &move, info info_board)
     bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
   }
 
-  if (piece != PAWN || (!is_capture))
-  {
-    _half_move_clock--;
-  }
-  else
-  {
-    _half_move_clock = 0;
-  }
+  // if (piece != PAWN || (!is_capture))
+  // {
+  //   _half_move_clock--;
+  // }
+  // else
+  // {
+  //   _half_move_clock = 0;
+  // }
 
   if (_to_move == BLACK)
   {

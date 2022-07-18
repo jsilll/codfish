@@ -205,7 +205,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 3;
+            int max_depth = 4;
 
             if (args.size() != 0 && args[0] == "depth")
             {
