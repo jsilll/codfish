@@ -66,15 +66,15 @@ public:
 
   void clear();
   void setStartingPosition();
-  void setFromFen(std::string const &piece_placements,
-                  std::string const &active_color,
-                  std::string const &castling_rights,
-                  std::string const &en_passant,
-                  std::string const &halfmove_clock,
-                  std::string const &fullmove_number);
+  void setFromFen(const std::string &piece_placements,
+                  const std::string &active_color,
+                  const std::string &castling_rights,
+                  const std::string &en_passant,
+                  const std::string &halfmove_clock,
+                  const std::string &fullmove_number);
   int switchSideToMove();
-  void makeMove(Move const &move);
-  void unmakeMove(Move const &move, State const info_board);
+  void makeMove(const Move &move);
+  void unmakeMove(const Move &move, State const info_board);
 
   // Display
   void display() const;

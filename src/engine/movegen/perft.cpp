@@ -15,7 +15,7 @@ namespace perft
         }
 
         unsigned long long nodes = 0;
-        for (Move const &move : movegen::generatePseudoLegalMoves(board))
+        for (const Move &move : movegen::generatePseudoLegalMoves(board))
         {
             Board::State board_info = board.getState();
             board.makeMove(move);

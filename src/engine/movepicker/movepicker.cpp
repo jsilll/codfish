@@ -63,16 +63,28 @@ bool MovePicker::canLMR(const Move &move)
 
 int MovePicker::search(int depth, int alpha, int beta)
 {
-    Move best_move = Move();
-    std::vector<Move> moves = movegen::generatePseudoLegalMoves(_board);
+
+    auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
+
+    Board backup = _board;
+    Move best_move = Move();
+    Board::State state = _board.getState();
     for (const Move &move : moves)
     {
-        Board::State board_info = _board.getState();
+        _board.makeMove(move);
+        _board.unmakeMove(move, state);
+        if (backup.getFen() != _board.getFen())
+        {
+            std::cout << "search() Unmake is wrong here!" << std::endl;
+            std::cout << move.getUCI() << std::endl;
+            std::cout << backup.getFen() << _board.getFen();
+            return 0;
+        }
         _board.makeMove(move);
 
-        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
         int attacker_side = _board.getSideToMove();
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
         if (!_board.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
@@ -92,9 +104,9 @@ int MovePicker::search(int depth, int alpha, int beta)
             }
         }
 
-        _board.unmakeMove(move, board_info);
+        _board.unmakeMove(move, state);
     }
-    _board.makeMove(best_move);
+
     return alpha;
 }
 
@@ -116,34 +128,44 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         return quiescence(alpha, beta);
     }
 
+    Board::State state = _board.getState();
+
     // Null Move Pruning (TODO: Zugzwang checking??)
     if (depth >= 3)
     {
-        Board::State state = _board.getState();
-
         _board.switchSideToMove();
         _board.setEnPassantSquare(EMPTY_SQUARE);
-        _current_depth += 2; // R+1?
+        _current_depth += 2;
         int score = -negamax(-beta, -beta + 1, depth - 1 - R);
-        _current_depth -= 2; // R+1?
+        _board.setState(state);
+        _board.switchSideToMove();
+        _current_depth -= 2;
         if (score >= beta)
         {
             return beta;
         }
-
-        _board.setState(state);
     }
 
-    Move best_move = Move();
-    std::vector<Move> moves = movegen::generatePseudoLegalMoves(_board);
+    auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
+    Board backup = _board;
+    Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
     for (const Move &move : moves)
     {
-        Board::State state = _board.getState();
         _board.makeMove(move);
+        _board.unmakeMove(move, state);
+        if (backup.getFen() != _board.getFen())
+        {
+            std::cout << "search() Unmake is wrong here!" << std::endl;
+            std::cout << move.getUCI() << std::endl;
+            std::cout << backup.getFen() << _board.getFen();
+            return 0;
+        }
+        _board.makeMove(move);
+
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
         if (!_board.isSquareAttacked(king_sq, _board.getSideToMove()))
         {
@@ -197,6 +219,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
                 {
                     this->addToKillerMoves(move);
                 }
+
                 _board.unmakeMove(move, state);
                 return beta;
             }
@@ -268,12 +291,24 @@ int MovePicker::quiescence(int alpha, int beta)
         alpha = stand_pat;
     }
 
-    std::vector<Move> captures = movegen::generatePseudoLegalCaptures(_board);
+    auto captures = movegen::generatePseudoLegalCaptures(_board);
     std::sort(captures.begin(), captures.end(), _move_more_than_key);
+
+    Board backup = _board;
+    Board::State state = _board.getState();
     for (const Move &capture : captures)
     {
-        Board::State board_info = _board.getState();
         _board.makeMove(capture);
+        _board.unmakeMove(capture, state);
+        if (backup.getFen() != _board.getFen())
+        {
+            std::cout << "quiescense() Unmake is wrong here!" << std::endl;
+            std::cout << capture.getUCI() << std::endl;
+            std::cout << backup.getFen() << _board.getFen();
+            return 0;
+        }
+        _board.makeMove(capture);
+
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
         if (!_board.isSquareAttacked(king_sq, _board.getSideToMove()))
         {
@@ -282,7 +317,16 @@ int MovePicker::quiescence(int alpha, int beta)
             _current_depth--;
             if (score >= beta)
             {
-                _board.unmakeMove(capture, board_info);
+                _board.unmakeMove(capture, state);
+
+                if (backup.getFen() != _board.getFen())
+                {
+                    std::cout << "quiescense() (beta cut) Unmake is wrong here!" << std::endl;
+                    std::cout << capture.getUCI() << std::endl;
+                    std::cout << backup.getFen() << _board.getFen();
+                    return 0;
+                }
+
                 return beta;
             }
             if (score > alpha)
@@ -291,13 +335,13 @@ int MovePicker::quiescence(int alpha, int beta)
             }
         }
 
-        _board.unmakeMove(capture, board_info);
+        _board.unmakeMove(capture, state);
     }
 
     return alpha;
 }
 
-void MovePicker::addToKillerMoves(Move const &move)
+void MovePicker::addToKillerMoves(const Move &move)
 {
     // Killer Move Heuristic
     if (move.getEncoded() != _killer_moves[0][_current_depth])
@@ -307,13 +351,13 @@ void MovePicker::addToKillerMoves(Move const &move)
     _killer_moves[0][_current_depth] = move.getEncoded();
 }
 
-void MovePicker::addToHistoryMoves(Move const &move)
+void MovePicker::addToHistoryMoves(const Move &move)
 {
     // History Move Heuristic
     _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
 }
 
-void MovePicker::addToPrincipalVariation(Move const &move)
+void MovePicker::addToPrincipalVariation(const Move &move)
 {
     // Write Principal Variation Move
     _pv_table[_current_depth][_current_depth] = move.getEncoded();
@@ -354,6 +398,7 @@ MovePicker::SearchResult MovePicker::findBestMove()
 
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
+
     // Iterative Deepening
     for (int depth = 1; depth <= _max_depth; depth++)
     {

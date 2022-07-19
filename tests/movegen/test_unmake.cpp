@@ -25,9 +25,9 @@ TEST_CASE("unmake move")
     {
         // board.setFromFen("1k6/p6p/K6P/8/8/8/8/1q4q1", "b", "-", "-", "0", "1");
         Move move = Move(E2, E4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n");
     }
 
@@ -35,9 +35,9 @@ TEST_CASE("unmake move")
     {
         // board.setFromFen("1k6/p6p/K6P/8/8/8/8/1q4q1", "b", "-", "-", "0", "1");
         Move move = Move(B1, H7, KNIGHT, PAWN, EMPTY_PIECE, false, false, false);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n");
     }
 
@@ -45,9 +45,9 @@ TEST_CASE("unmake move")
     {
         board.setFromFen("rnbqkbnr/3ppppp/8/ppp5/6P1/5N1B/PPPPPP1P/RNBQK2R", "w", "KQkq", "-", "0", "4");
         Move move = Move(E1, G1, KING, EMPTY_PIECE, EMPTY_PIECE, false, false, true);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "rnbqkbnr/3ppppp/8/ppp5/6P1/5N1B/PPPPPP1P/RNBQK2R w KQkq - 0 4\n");
     }
 
@@ -56,9 +56,9 @@ TEST_CASE("unmake move")
         board.setFromFen("rnbqkbnr/3ppppp/8/ppp5/2P3P1/5N1B/PP1PPP1P/RNBQK2R", "b", "KQkq", "-", "0", "4");
         Move move = Move(B5, C4, PAWN, PAWN, EMPTY_PIECE, false, false, false);
         REQUIRE(move.isCapture() == true);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "rnbqkbnr/3ppppp/8/ppp5/2P3P1/5N1B/PP1PPP1P/RNBQK2R b KQkq - 0 4\n");
     }
 
@@ -66,9 +66,9 @@ TEST_CASE("unmake move")
     {
         board.setFromFen("4kbnr/P2ppppp/3q4/8/6P1/5N1B/PP1PPP1P/RNBQK1KR", "w", "k", "-", "0", "4");
         Move move = Move(A7, A8, PAWN, EMPTY_PIECE, QUEEN, false, false, false);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "4kbnr/P2ppppp/3q4/8/6P1/5N1B/PP1PPP1P/RNBQK1KR w k - 0 4\n");
     }
 
@@ -76,9 +76,19 @@ TEST_CASE("unmake move")
     {
         board.setFromFen("rnbqkbnr/3ppppp/8/p1p5/2pP2P1/5N1B/PP2PP1P/RNBQK2R", "b", "KQkq", "d3", "0", "5");
         Move move = Move(C4, D3, PAWN, PAWN, EMPTY_PIECE, false, true, false);
-        Board::State board_info = board.getState();
+        Board::State state = board.getState();
         board.makeMove(move);
-        board.unmakeMove(move, board_info);
+        board.unmakeMove(move, state);
         REQUIRE(board.getFen() == "rnbqkbnr/3ppppp/8/p1p5/2pP2P1/5N1B/PP2PP1P/RNBQK2R b KQkq d3 0 5\n");
+    }
+
+    SECTION("d2d4 rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1")
+    {
+        board.setFromFen("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
+        Move move = Move(D2, D4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
+        Board::State state = board.getState();
+        board.makeMove(move);
+        board.unmakeMove(move, state);
+        REQUIRE(board.getFen() == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n");
     }
 }

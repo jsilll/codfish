@@ -184,7 +184,7 @@ namespace uci
 
         std::optional<Move> parseMove(std::string move_uci, Board &board)
         {
-            for (Move const &move : movegen::generateLegalMoves(board))
+            for (const Move &move : movegen::generateLegalMoves(board))
             {
                 if (move.getUCI() == move_uci)
                 {
@@ -243,7 +243,7 @@ namespace uci
             int beta = -MIN_EVAL;
 
             // This is a re-implementation of the iterative deepening of movepicker.cpp merely for UCI prints
-            for (int depth = ai.getMaxDepth(); depth <= ai.getMaxDepth(); depth++)
+            for (int depth = 1; depth <= ai.getMaxDepth(); depth++)
             {
                 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
                 result = ai.findBestMove(depth, alpha, beta);
@@ -276,7 +276,6 @@ namespace uci
                 }
                 std::cout << std::endl;
             }
-            std::cout << board.getFen() << std::endl;
             std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
         }
     } goCommand;

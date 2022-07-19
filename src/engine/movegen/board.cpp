@@ -323,25 +323,21 @@ void Board::clear()
 
 void Board::setStartingPosition()
 {
-  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                   "w",
-                   "KQkq",
-                   "-",
-                   "0",
-                   "1");
+  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
 }
 
-void Board::setFromFen(std::string const &piece_placements,
-                       std::string const &active_color,
-                       std::string const &castling_rights,
-                       std::string const &en_passant,
-                       std::string const &half_move_clock,
-                       std::string const &full_move_number)
+// TODO: Buffer overflow when setting string, changes _ascii
+void Board::setFromFen(const std::string &piece_placements,
+                       const std::string &active_color,
+                       const std::string &castling_rights,
+                       const std::string &en_passant,
+                       const std::string &half_move_clock,
+                       const std::string &full_move_number)
 {
   this->clear();
 
   int file = 0, rank = 7;
-  for (char const &c : piece_placements)
+  for (const char &c : piece_placements)
   {
     switch (c)
     {
@@ -424,7 +420,7 @@ void Board::setFromFen(std::string const &piece_placements,
     _to_move = BLACK;
   }
 
-  for (char const &c : castling_rights)
+  for (const char &c : castling_rights)
   {
     switch (c)
     {
@@ -468,7 +464,7 @@ int Board::switchSideToMove()
   return _to_move = this->getOpponent();
 }
 
-void Board::makeMove(Move const &move)
+void Board::makeMove(const Move &move)
 {
   // clang-format off
   static const int castling_rights[64] = {
@@ -570,7 +566,7 @@ void Board::makeMove(Move const &move)
   this->updateOccupancies();
 }
 
-void Board::unmakeMove(Move const &move, State info_board)
+void Board::unmakeMove(const Move &move, State info_board)
 {
   this->switchSideToMove();
 

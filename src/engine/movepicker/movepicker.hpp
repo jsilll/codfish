@@ -64,9 +64,9 @@ private:
     int negamax(int alpha, int beta, int depth);
     int quiescence(int alpha, int beta);
 
-    void addToKillerMoves(Move const &move);
-    void addToHistoryMoves(Move const &move);
-    void addToPrincipalVariation(Move const &move);
+    void addToKillerMoves(const Move &move);
+    void addToHistoryMoves(const Move &move);
+    void addToPrincipalVariation(const Move &move);
 
     void clearSearchCounters();
 

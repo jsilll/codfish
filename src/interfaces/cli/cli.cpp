@@ -75,7 +75,7 @@ namespace cli
     {
       unsigned long long total_nodes = 0;
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-      for (Move const &move : movegen::generatePseudoLegalMoves(board))
+      for (const Move &move : movegen::generatePseudoLegalMoves(board))
       {
         Board::State state = board.getState();
         board.makeMove(move);
@@ -110,25 +110,26 @@ namespace cli
     {
       std::cout
           << "ascii                 Toggles between ascii and utf-8 board representation\n"
+          << "captures              Shows all pseudo legal captures\n"
           << "cc                    Plays computer-to-computer [TODO]\n"
           << "display               Displays board \n"
           << "dperft (n)            Divided perft\n"
           << "eval                  Shows static evaluation of this position\n"
           << "exit                  Exits program\n"
+          << "getfen                Prints current position to in fen string format \n"
           << "go                    Computer plays his best move [TODO]\n"
           << "help                  Shows this help \n"
           << "info                  Displays variables (for testing purposes)\n"
           << "magics                Generates magic numbers for the bishop and rook pieces\n"
           << "move (move)           Plays a move (in uci format)\n"
-          << "moves                 Shows all pseudo legal moves\n"
-          << "captures                 Shows all pseudo legal captures\n"
+          << "moves                 Shows all legal moves\n"
           << "new                   Starts new game\n"
           << "perf                  Benchmarks a number of key functions [TODO]\n"
           << "perft n               Calculates raw number of nodes from here, depth n\n"
-          << "getfen                Prints current position to in fen string format \n"
+          << "plmoves               Shows all pseudo legal moves\n"
           << "rotate                Rotates board \n"
-          << "setfen (fen)          Reads fen string position and modifies board accordingly\n"
           << "sd (n)                Sets the search depth to n [TODO]\n"
+          << "setfen (fen)          Reads fen string position and modifies board accordingly\n"
           << "switch                Switches the next side to move\n"
           << "undo                  Takes back last move [TODO]\n"
           << std::endl;
@@ -172,7 +173,7 @@ namespace cli
         return;
       }
 
-      for (Move const &move : movegen::generateLegalMoves(board))
+      for (const Move &move : movegen::generateLegalMoves(board))
       {
         if (move.getUCI() == args[0])
         {
@@ -194,12 +195,28 @@ namespace cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      std::vector<Move> moves = movegen::generateLegalMoves(board);
-      std::for_each(moves.begin(), moves.end(), [](Move const &move)
+      auto moves = movegen::generateLegalMoves(board);
+      std::for_each(moves.begin(), moves.end(), [](const Move &move)
                     { std::cout << move.getUCI() << "\n"; });
       std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
   } movesCommand;
+
+  /**
+   * @brief Handles 'plmoves' command
+   *
+   */
+  class PLMovesCommand : public Command
+  {
+  public:
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+    {
+      auto moves = movegen::generatePseudoLegalMoves(board);
+      std::for_each(moves.begin(), moves.end(), [](const Move &move)
+                    { std::cout << move.getUCI() << "\n"; });
+      std::cout << "Total number of pseudo legal moves: " << moves.size() << std::endl;
+    }
+  } plMovesCommand;
 
   /**
    * @brief Handles 'captures' command
@@ -211,7 +228,7 @@ namespace cli
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::vector<Move> captures = movegen::generateLegalCaptures(board);
-      std::for_each(captures.begin(), captures.end(), [](Move const &capture)
+      std::for_each(captures.begin(), captures.end(), [](const Move &capture)
                     { std::cout << capture.getUCI() << "\n"; });
       std::cout << "Total number of captures: " << captures.size() << std::endl;
     }
@@ -490,6 +507,10 @@ namespace cli
       else if (cmd == "moves")
       {
         movesCommand.execute(args, board);
+      }
+      else if (cmd == "plmoves")
+      {
+        plMovesCommand.execute(args, board);
       }
       else if (cmd == "captures")
       {

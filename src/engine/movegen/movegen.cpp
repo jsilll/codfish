@@ -44,9 +44,9 @@ namespace movegen
 
   bool hasLegalMoves(Board &board) // TODO: performance can be improved
   {
+    Board::State state = board.getState();
     for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
-      Board::State state = board.getState();
       board.makeMove(move);
       int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
       if (!board.isSquareAttacked(king_sq, board.getSideToMove()))
@@ -64,6 +64,7 @@ namespace movegen
   {
     std::vector<Move> moves;
     moves.reserve(MAX_SIZE_MOVES_ARRAY);
+
     if (board.getSideToMove() == WHITE)
     {
       generatePawnCapturesWithPromotion<WHITE>(moves, board);
@@ -118,6 +119,7 @@ namespace movegen
   {
     std::vector<Move> moves;
     moves.reserve(MAX_SIZE_MOVES_ARRAY);
+
     if (board.getSideToMove() == WHITE)
     {
       generatePawnCapturesWithPromotion<WHITE>(moves, board);
@@ -152,14 +154,15 @@ namespace movegen
   {
     std::vector<Move> moves;
     moves.reserve(MAX_SIZE_MOVES_ARRAY);
-    for (Move const &move : movegen::generatePseudoLegalMoves(board))
+
+    Board::State state = board.getState();
+    for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
-      Board::State state = board.getState();
-      int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
+      board.makeMove(move);
       int attacker_side = board.getSideToMove();
+      int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
       if (!board.isSquareAttacked(king_sq, attacker_side))
       {
-        board.unmakeMove(move, state);
         moves.push_back(move);
       }
       board.unmakeMove(move, state);
@@ -171,15 +174,15 @@ namespace movegen
   {
     std::vector<Move> captures;
     captures.reserve(MAX_SIZE_MOVES_ARRAY);
-    for (Move const &move : movegen::generatePseudoLegalCaptures(board))
+
+    Board::State state = board.getState();
+    for (const Move &move : movegen::generatePseudoLegalCaptures(board))
     {
-      Board::State state = board.getState();
       board.makeMove(move);
-      int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
       int attacker_side = board.getSideToMove();
+      int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
       if (!board.isSquareAttacked(king_sq, attacker_side))
       {
-        board.unmakeMove(move, state);
         captures.push_back(move);
       }
       board.unmakeMove(move, state);
