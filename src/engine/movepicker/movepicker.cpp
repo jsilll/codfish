@@ -67,20 +67,10 @@ int MovePicker::search(int depth, int alpha, int beta)
     auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
-    Board backup = _board;
     Move best_move = Move();
-    Board::State state = _board.getState();
+    Board::GameState state = _board.getState();
     for (const Move &move : moves)
     {
-        _board.makeMove(move);
-        _board.unmakeMove(move, state);
-        if (backup.getFen() != _board.getFen())
-        {
-            std::cout << "search() Unmake is wrong here!" << std::endl;
-            std::cout << move.getUCI() << std::endl;
-            std::cout << backup.getFen() << _board.getFen();
-            return 0;
-        }
         _board.makeMove(move);
 
         int attacker_side = _board.getSideToMove();
@@ -128,7 +118,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         return quiescence(alpha, beta);
     }
 
-    Board::State state = _board.getState();
+    Board::GameState state = _board.getState();
 
     // Null Move Pruning (TODO: Zugzwang checking??)
     if (depth >= 3)
@@ -149,21 +139,11 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
-    Board backup = _board;
     Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
     for (const Move &move : moves)
     {
-        _board.makeMove(move);
-        _board.unmakeMove(move, state);
-        if (backup.getFen() != _board.getFen())
-        {
-            std::cout << "search() Unmake is wrong here!" << std::endl;
-            std::cout << move.getUCI() << std::endl;
-            std::cout << backup.getFen() << _board.getFen();
-            return 0;
-        }
         _board.makeMove(move);
 
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
@@ -294,19 +274,9 @@ int MovePicker::quiescence(int alpha, int beta)
     auto captures = movegen::generatePseudoLegalCaptures(_board);
     std::sort(captures.begin(), captures.end(), _move_more_than_key);
 
-    Board backup = _board;
-    Board::State state = _board.getState();
+    Board::GameState state = _board.getState();
     for (const Move &capture : captures)
     {
-        _board.makeMove(capture);
-        _board.unmakeMove(capture, state);
-        if (backup.getFen() != _board.getFen())
-        {
-            std::cout << "quiescense() Unmake is wrong here!" << std::endl;
-            std::cout << capture.getUCI() << std::endl;
-            std::cout << backup.getFen() << _board.getFen();
-            return 0;
-        }
         _board.makeMove(capture);
 
         int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
@@ -318,15 +288,6 @@ int MovePicker::quiescence(int alpha, int beta)
             if (score >= beta)
             {
                 _board.unmakeMove(capture, state);
-
-                if (backup.getFen() != _board.getFen())
-                {
-                    std::cout << "quiescense() (beta cut) Unmake is wrong here!" << std::endl;
-                    std::cout << capture.getUCI() << std::endl;
-                    std::cout << backup.getFen() << _board.getFen();
-                    return 0;
-                }
-
                 return beta;
             }
             if (score > alpha)

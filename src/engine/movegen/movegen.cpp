@@ -44,7 +44,7 @@ namespace movegen
 
   bool hasLegalMoves(Board &board) // TODO: performance can be improved
   {
-    Board::State state = board.getState();
+    Board::GameState state = board.getState();
     for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
       board.makeMove(move);
@@ -155,7 +155,7 @@ namespace movegen
     std::vector<Move> moves;
     moves.reserve(MAX_SIZE_MOVES_ARRAY);
 
-    Board::State state = board.getState();
+    Board::GameState state = board.getState();
     for (const Move &move : movegen::generatePseudoLegalMoves(board))
     {
       board.makeMove(move);
@@ -175,7 +175,7 @@ namespace movegen
     std::vector<Move> captures;
     captures.reserve(MAX_SIZE_MOVES_ARRAY);
 
-    Board::State state = board.getState();
+    Board::GameState state = board.getState();
     for (const Move &move : movegen::generatePseudoLegalCaptures(board))
     {
       board.makeMove(move);

@@ -17,7 +17,7 @@ namespace perft
         unsigned long long nodes = 0;
         for (const Move &move : movegen::generatePseudoLegalMoves(board))
         {
-            Board::State board_info = board.getState();
+            Board::GameState board_info = board.getState();
             board.makeMove(move);
             int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
             int attacker_side = board.getSideToMove();

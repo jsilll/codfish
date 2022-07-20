@@ -77,7 +77,7 @@ namespace cli
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
       for (const Move &move : movegen::generatePseudoLegalMoves(board))
       {
-        Board::State state = board.getState();
+        Board::GameState state = board.getState();
         board.makeMove(move);
         int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
         int attacker_side = board.getSideToMove();
