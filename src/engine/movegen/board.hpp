@@ -88,9 +88,19 @@ inline bool operator==(const Board::Piece &p1, const Board::Piece &p2)
   return p1.color == p2.color && p1.type == p2.type;
 }
 
+inline bool operator!=(const Board::Piece &p1, const Board::Piece &p2)
+{
+  return p1.color != p2.color || p1.type != p2.type;
+}
+
 inline bool operator==(const Board::GameState &s1, const Board::GameState &s2)
 {
   return s1.castling_rights == s2.castling_rights && s1.en_passant_square == s2.en_passant_square && s1.half_move_clock == s2.half_move_clock;
+}
+
+inline bool operator!=(const Board::GameState &s1, const Board::GameState &s2)
+{
+  return s1.castling_rights != s2.castling_rights || s1.en_passant_square != s2.en_passant_square || s1.half_move_clock != s2.half_move_clock;
 }
 
 inline bool operator==(const Board &b1, const Board &b2)
