@@ -30,3 +30,8 @@ public:
 
   [[nodiscard]] std::string getUCI() const;
 };
+
+inline bool operator==(const Move &m1, const Move &m2)
+{
+  return m1.getEncoded() == m2.getEncoded();
+}

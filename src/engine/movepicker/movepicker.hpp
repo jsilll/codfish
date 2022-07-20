@@ -2,6 +2,8 @@
 
 #include <engine/defs.hpp>
 
+#include <engine/movepicker/pvtable.hpp>
+
 #include <vector>
 
 class Board;
@@ -23,8 +25,7 @@ private:
     int _killer_moves[2][MAX_DEPTH]{};
     int _history_moves[N_SIDES][N_PIECES][N_SQUARES]{};
 
-    int _pv_length[MAX_DEPTH]{};
-    int _pv_table[MAX_DEPTH][MAX_DEPTH]{};
+    PVTable _pv_table;
 
     struct MoveMoreThanKey
     {
@@ -40,8 +41,7 @@ public:
     {
         int score{};
         int nodes{};
-        int pv_length{};
-        int pv[MAX_DEPTH]{};
+        std::vector<Move> pv;
     };
 
 private:
@@ -64,9 +64,8 @@ private:
     int negamax(int alpha, int beta, int depth);
     int quiescence(int alpha, int beta);
 
-    void addToKillerMoves(const Move &move);
-    void addToHistoryMoves(const Move &move);
-    void addToPrincipalVariation(const Move &move);
+    void addToKillerMoves(Move const &move);
+    void addToHistoryMoves(Move const &move);
 
     void clearSearchCounters();
 

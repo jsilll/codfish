@@ -30,7 +30,7 @@ int MovePicker::score(const Move &move)
     };
     // clang-format on
 
-    if (_pv_table[0][_current_depth] == move.getEncoded())
+    if (_pv_table.getPVMove(_current_depth) == move)
     {
         return 20000;
     }
@@ -90,7 +90,7 @@ int MovePicker::search(int depth, int alpha, int beta)
 
                 alpha = score;
                 best_move = move;
-                this->addToPrincipalVariation(best_move);
+                _pv_table.add(best_move, _current_depth);
             }
         }
 
@@ -114,7 +114,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     // Forced Terminal Node
     if (depth <= 0)
     {
-        _pv_length[_current_depth] = _current_depth;
+        _pv_table.setLength(_current_depth);
         return quiescence(alpha, beta);
     }
 
@@ -213,7 +213,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 
                 alpha = score;
                 best_move = move;
-                this->addToPrincipalVariation(best_move);
+                _pv_table.add(best_move, _current_depth);
             }
 
             n_moves_searched++;
@@ -318,18 +318,6 @@ void MovePicker::addToHistoryMoves(const Move &move)
     _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
 }
 
-void MovePicker::addToPrincipalVariation(const Move &move)
-{
-    // Write Principal Variation Move
-    _pv_table[_current_depth][_current_depth] = move.getEncoded();
-
-    // Copy moves from deeper depth into current depths line
-    memcpy(&_pv_table[_current_depth][_current_depth + 1], &_pv_table[_current_depth + 1][_current_depth + 1], (unsigned long)_pv_length[_current_depth + 1] * sizeof(int));
-
-    // Adjust Principal Variation Length
-    _pv_length[_current_depth] = _pv_length[_current_depth + 1];
-}
-
 void MovePicker::clearSearchCounters()
 {
     _current_nodes = 0;
@@ -355,10 +343,10 @@ void MovePicker::setMaxDepth(int depth)
 
 MovePicker::SearchResult MovePicker::findBestMove()
 {
-    this->clearTables();
-
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
+
+    this->clearTables();
 
     // Iterative Deepening
     for (int depth = 1; depth <= _max_depth; depth++)
@@ -382,9 +370,8 @@ MovePicker::SearchResult MovePicker::findBestMove()
         beta = score + WINDOW_EXPANSION;
     }
 
-    auto res = SearchResult{alpha, _current_nodes, _pv_length[0]};
-    memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
-    return res;
+    auto result = SearchResult{alpha, _current_nodes, _pv_table.getPV()};
+    return result;
 }
 
 /**
@@ -398,9 +385,8 @@ MovePicker::SearchResult MovePicker::findBestMove(int depth, int alpha, int beta
 {
     this->clearSearchCounters();
     int score = search(depth, alpha, beta);
-    SearchResult res = SearchResult{score, _current_nodes, _pv_length[0]};
-    memcpy(&res.pv, &_pv_table[0], (unsigned long)_pv_length[0] * sizeof(int));
-    return res;
+    auto result = SearchResult{score, _current_nodes, _pv_table.getPV()};
+    return result;
 }
 
 void MovePicker::clearTables()
@@ -408,5 +394,5 @@ void MovePicker::clearTables()
     memset(_history_moves, 0, sizeof(_history_moves));
     memset(_killer_moves, 0, sizeof(_killer_moves));
     memset(_killer_moves, 0, sizeof(_killer_moves));
-    memset(_pv_table, 0, sizeof(_pv_table));
+    _pv_table.clear();
 }
