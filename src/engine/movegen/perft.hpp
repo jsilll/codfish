@@ -12,6 +12,6 @@ namespace perft
      * @param depth
      * @return long long
      */
-    unsigned long long perft(const Board &board, int depth);
+    unsigned long long perft(Board &board, int depth);
 
 } // namespace perft

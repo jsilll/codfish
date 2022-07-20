@@ -75,18 +75,19 @@ namespace cli
     {
       unsigned long long total_nodes = 0;
       std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-      for (Move const &move : movegen::generatePseudoLegalMoves(board))
+      for (const Move &move : movegen::generatePseudoLegalMoves(board))
       {
-        Board backup = board;
-        backup.makeMove(move);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        Board::GameState state = board.getState();
+        board.makeMove(move);
+        int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
+        int attacker_side = board.getSideToMove();
+        if (!board.isSquareAttacked(king_sq, attacker_side))
         {
-          unsigned long long nodes = perft::perft(backup, depth - 1);
+          unsigned long long nodes = perft::perft(board, depth - 1);
           std::cout << move.getUCI() << ": " << nodes << std::endl;
           total_nodes += nodes;
         }
+        board.unmakeMove(move, state);
       }
       std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
       std::chrono::duration<double> elapsed_seconds = end - start;
@@ -109,25 +110,26 @@ namespace cli
     {
       std::cout
           << "ascii                 Toggles between ascii and utf-8 board representation\n"
+          << "captures              Shows all pseudo legal captures\n"
           << "cc                    Plays computer-to-computer [TODO]\n"
           << "display               Displays board \n"
           << "dperft (n)            Divided perft\n"
           << "eval                  Shows static evaluation of this position\n"
           << "exit                  Exits program\n"
+          << "getfen                Prints current position to in fen string format \n"
           << "go                    Computer plays his best move [TODO]\n"
           << "help                  Shows this help \n"
           << "info                  Displays variables (for testing purposes)\n"
           << "magics                Generates magic numbers for the bishop and rook pieces\n"
           << "move (move)           Plays a move (in uci format)\n"
-          << "moves                 Shows all pseudo legal moves\n"
-          << "captures                 Shows all pseudo legal captures\n"
+          << "moves                 Shows all legal moves\n"
           << "new                   Starts new game\n"
           << "perf                  Benchmarks a number of key functions [TODO]\n"
           << "perft n               Calculates raw number of nodes from here, depth n\n"
-          << "getfen                Prints current position to in fen string format \n"
+          << "plmoves               Shows all pseudo legal moves\n"
           << "rotate                Rotates board \n"
-          << "setfen (fen)          Reads fen string position and modifies board accordingly\n"
           << "sd (n)                Sets the search depth to n [TODO]\n"
+          << "setfen (fen)          Reads fen string position and modifies board accordingly\n"
           << "switch                Switches the next side to move\n"
           << "undo                  Takes back last move [TODO]\n"
           << std::endl;
@@ -171,7 +173,7 @@ namespace cli
         return;
       }
 
-      for (Move const &move : movegen::generateLegalMoves(board))
+      for (const Move &move : movegen::generateLegalMoves(board))
       {
         if (move.getUCI() == args[0])
         {
@@ -193,12 +195,28 @@ namespace cli
   public:
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
-      std::vector<Move> moves = movegen::generateLegalMoves(board);
-      std::for_each(moves.begin(), moves.end(), [](Move const &move)
+      auto moves = movegen::generateLegalMoves(board);
+      std::for_each(moves.begin(), moves.end(), [](const Move &move)
                     { std::cout << move.getUCI() << "\n"; });
       std::cout << "Total number of moves: " << moves.size() << std::endl;
     }
   } movesCommand;
+
+  /**
+   * @brief Handles 'plmoves' command
+   *
+   */
+  class PLMovesCommand : public Command
+  {
+  public:
+    void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+    {
+      auto moves = movegen::generatePseudoLegalMoves(board);
+      std::for_each(moves.begin(), moves.end(), [](const Move &move)
+                    { std::cout << move.getUCI() << "\n"; });
+      std::cout << "Total number of pseudo legal moves: " << moves.size() << std::endl;
+    }
+  } plMovesCommand;
 
   /**
    * @brief Handles 'captures' command
@@ -210,7 +228,7 @@ namespace cli
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::vector<Move> captures = movegen::generateLegalCaptures(board);
-      std::for_each(captures.begin(), captures.end(), [](Move const &capture)
+      std::for_each(captures.begin(), captures.end(), [](const Move &capture)
                     { std::cout << capture.getUCI() << "\n"; });
       std::cout << "Total number of captures: " << captures.size() << std::endl;
     }
@@ -334,34 +352,26 @@ namespace cli
         return;
       }
 
-      board.setFromFen(args[1], args[2], args[3], args[4], args[5], args[6]);
+      board.setFromFen(args[0], args[1], args[2], args[3], args[4], args[5]);
     }
 
   private:
     bool isFenValid(std::vector<std::string> &args)
     {
-      if (args.size() != 7)
-      {
-        return false;
-      }
-
       static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
       static const std::regex active_color_regex(R"(b|w)");
       static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
       static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
       static const std::regex halfmove_clock_regex(R"(\d+)");
       static const std::regex fullmove_number_regex(R"(\d+)");
-      if (!std::regex_match(args[1], piece_placements_regex) ||
-          !std::regex_match(args[2], active_color_regex) ||
-          !std::regex_match(args[3], castling_rights_regex) ||
-          !std::regex_match(args[4], en_passant_regex) ||
-          !std::regex_match(args[5], halfmove_clock_regex) ||
-          !std::regex_match(args[6], fullmove_number_regex))
-      {
-        return false;
-      }
 
-      return true;
+      return args.size() == 6 &&
+             std::regex_match(args[0], piece_placements_regex) &&
+             std::regex_match(args[1], active_color_regex) &&
+             std::regex_match(args[2], castling_rights_regex) &&
+             std::regex_match(args[3], en_passant_regex) &&
+             std::regex_match(args[4], halfmove_clock_regex) &&
+             std::regex_match(args[5], fullmove_number_regex);
     }
   } setFenCommand;
 
@@ -440,12 +450,20 @@ namespace cli
 
     for (;;)
     {
-      std::cout << "> ";
       std::string line;
+
+      std::cout << "> " << std::flush;
       std::getline(std::cin, line);
-      std::vector<std::string> args = utils::tokenizeString(std::string(line));
+      std::vector<std::string> args = utils::tokenizeString(line);
+
+      if (args.empty())
+      {
+        continue;
+      }
+
       std::string cmd = args[0];
       args.erase(args.begin());
+
       if (cmd == "help")
       {
         helpCommand.execute(args, board);
@@ -489,6 +507,10 @@ namespace cli
       else if (cmd == "moves")
       {
         movesCommand.execute(args, board);
+      }
+      else if (cmd == "plmoves")
+      {
+        plMovesCommand.execute(args, board);
       }
       else if (cmd == "captures")
       {

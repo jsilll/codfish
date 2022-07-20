@@ -184,7 +184,7 @@ namespace uci
 
         std::optional<Move> parseMove(std::string move_uci, Board &board)
         {
-            for (Move const &move : movegen::generateLegalMoves(board))
+            for (const Move &move : movegen::generateLegalMoves(board))
             {
                 if (move.getUCI() == move_uci)
                 {
@@ -205,7 +205,7 @@ namespace uci
     public:
         void execute(std::vector<std::string> &args, Board &board)
         {
-            int max_depth = 9;
+            int max_depth = 8;
 
             if (args.size() != 0 && args[0] == "depth")
             {
@@ -276,7 +276,6 @@ namespace uci
                 }
                 std::cout << std::endl;
             }
-
             std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
         }
     } goCommand;
