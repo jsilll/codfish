@@ -22,6 +22,7 @@ Board::Board(const Board &board)
   _half_move_clock = board._half_move_clock;
   _full_move_number = board._full_move_number;
 
+  _ascii = board._ascii;
   _white_on_bottom = board._white_on_bottom;
   memcpy(_square, board._square, sizeof(_square));
 }
@@ -62,7 +63,7 @@ void Board::updateBBFromSquares()
   {
     if (_square[sq].type != EMPTY_PIECE)
     {
-      _pieces[_square[sq].color][_square[sq].type] |= tables::SQUARE_BB[sq];
+      bitboard::setBit(_pieces[_square[sq].color][_square[sq].type], sq);
     }
   }
 
@@ -145,6 +146,15 @@ bool Board::isSquareAttacked(int sq, int attacker) const
   return false;
 }
 
+bool Board::isAscii() const
+{
+  return _ascii;
+}
+bool Board::isWhiteOnBottom() const
+{
+  return _white_on_bottom;
+}
+
 std::string Board::getFen() const
 {
   std::string piece_placements;
@@ -221,9 +231,26 @@ std::string Board::getFen() const
   return fen.substr(1, std::string::npos);
 }
 
+struct Board::GameState Board::getState() const
+{
+  return GameState{_en_passant_square, _castling_rights, _half_move_clock};
+}
+
 void Board::setEnPassantSquare(int sq)
 {
   _en_passant_square = sq;
+}
+
+void Board::setCastlingRights(int castling_rights)
+{
+  _castling_rights = castling_rights;
+}
+
+void Board::setState(GameState state)
+{
+  _en_passant_square = state.en_passant_square;
+  _castling_rights = state.castling_rights;
+  _half_move_clock = state.half_move_clock;
 }
 
 void Board::display() const
@@ -306,25 +333,20 @@ void Board::clear()
 
 void Board::setStartingPosition()
 {
-  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                   "w",
-                   "KQkq",
-                   "-",
-                   "0",
-                   "1");
+  this->setFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
 }
 
-void Board::setFromFen(std::string const &piece_placements,
-                       std::string const &active_color,
-                       std::string const &castling_rights,
-                       std::string const &en_passant,
-                       std::string const &half_move_clock,
-                       std::string const &full_move_number)
+void Board::setFromFen(const std::string &piece_placements,
+                       const std::string &active_color,
+                       const std::string &castling_rights,
+                       const std::string &en_passant,
+                       const std::string &half_move_clock,
+                       const std::string &full_move_number)
 {
   this->clear();
 
   int file = 0, rank = 7;
-  for (char const &c : piece_placements)
+  for (const char &c : piece_placements)
   {
     switch (c)
     {
@@ -407,7 +429,7 @@ void Board::setFromFen(std::string const &piece_placements,
     _to_move = BLACK;
   }
 
-  for (char const &c : castling_rights)
+  for (const char &c : castling_rights)
   {
     switch (c)
     {
@@ -451,7 +473,7 @@ int Board::switchSideToMove()
   return _to_move = this->getOpponent();
 }
 
-void Board::makeMove(Move const &move)
+void Board::makeMove(const Move &move)
 {
   // clang-format off
   static const int castling_rights[64] = {
@@ -535,13 +557,13 @@ void Board::makeMove(Move const &move)
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
 
-  if (move.getPiece() == PAWN || (!move.isCapture()))
+  if (piece == PAWN || (is_capture))
   {
-    _half_move_clock++;
+    _half_move_clock = 0;
   }
   else
   {
-    _half_move_clock = 0;
+    _half_move_clock++;
   }
 
   if (_to_move == BLACK)
@@ -550,5 +572,88 @@ void Board::makeMove(Move const &move)
   }
 
   this->switchSideToMove();
+  this->updateOccupancies();
+}
+
+void Board::unmakeMove(const Move &move, const GameState &info_board)
+{
+  this->switchSideToMove();
+
+  int from_square = move.getFromSquare();
+  int to_square = move.getToSquare();
+  int piece = move.getPiece();
+  int captured_piece = move.getCapturedPiece();
+  int promoted_piece = move.getPromotedPiece();
+  bool is_capture = move.isCapture();
+  bool is_promotion = move.isPromotion();
+  bool is_en_passant = move.isEnPassant();
+  bool is_castle = move.isCastle();
+
+  _square[from_square].type = piece;
+  _square[from_square].color = _to_move;
+  bitboard::setBit(_pieces[_to_move][piece], from_square);
+
+  bitboard::popBit(_pieces[_to_move][piece], to_square);
+
+  if (is_en_passant)
+  {
+    int captured_piece_square = _to_move == WHITE ? to_square - 8 : to_square + 8;
+
+    _square[captured_piece_square].type = PAWN;
+    _square[captured_piece_square].color = this->getOpponent();
+    bitboard::setBit(_pieces[this->getOpponent()][PAWN], captured_piece_square);
+
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+  }
+  else if (is_capture)
+  {
+    _square[to_square].type = captured_piece;
+    _square[to_square].color = this->getOpponent();
+    bitboard::setBit(_pieces[this->getOpponent()][captured_piece], to_square);
+  }
+  else
+  {
+    _square[to_square].type = EMPTY_PIECE;
+    _square[to_square].color = BLACK;
+  }
+
+  if (is_promotion)
+  {
+    bitboard::popBit(_pieces[_to_move][promoted_piece], to_square);
+  }
+
+  if (is_castle)
+  {
+    int rook_from_square, rook_to_square;
+    if (to_square - from_square > 0)
+    {
+      rook_from_square = _to_move == WHITE ? H1 : H8;
+      rook_to_square = _to_move == WHITE ? F1 : F8;
+    }
+    else
+    {
+      rook_from_square = _to_move == WHITE ? A1 : A8;
+      rook_to_square = _to_move == WHITE ? D1 : D8;
+    }
+
+    _square[rook_to_square].type = EMPTY_PIECE;
+    _square[rook_to_square].color = BLACK;
+    bitboard::popBit(_pieces[_to_move][ROOK], rook_to_square);
+
+    _square[rook_from_square].type = ROOK;
+    _square[rook_from_square].color = _to_move;
+    bitboard::setBit(_pieces[_to_move][ROOK], rook_from_square);
+  }
+
+  if (_to_move == BLACK)
+  {
+    _full_move_number--;
+  }
+
+  _en_passant_square = info_board.en_passant_square;
+  _castling_rights = info_board.castling_rights;
+  _half_move_clock = info_board.half_move_clock;
+
   this->updateOccupancies();
 }

@@ -7,7 +7,7 @@
 
 namespace perft
 {
-    unsigned long long perft(const Board &board, int depth)
+    unsigned long long perft(Board &board, int depth)
     {
         if (depth == 0)
         {
@@ -15,16 +15,17 @@ namespace perft
         }
 
         unsigned long long nodes = 0;
-        for (Move const &move : movegen::generatePseudoLegalMoves(board))
+        for (const Move &move : movegen::generatePseudoLegalMoves(board))
         {
-            Board backup = board;
-            backup.makeMove(move);
-            int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-            int attacker_side = backup.getSideToMove();
-            if (!backup.isSquareAttacked(king_sq, attacker_side))
+            Board::GameState board_info = board.getState();
+            board.makeMove(move);
+            int king_sq = bitboard::bitScanForward(board.getPieces(board.getOpponent(), KING));
+            int attacker_side = board.getSideToMove();
+            if (!board.isSquareAttacked(king_sq, attacker_side))
             {
-                nodes += perft(backup, depth - 1);
+                nodes += perft(board, depth - 1);
             }
+            board.unmakeMove(move, board_info);
         }
 
         return nodes;

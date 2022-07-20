@@ -22,7 +22,7 @@ void interfaces::uci::commands::GoCommand::execute(std::vector<std::string> &arg
         MOVES_TO_GO,
     };
 
-    ArgCommand arg_cmd;
+    ArgCommand arg_cmd{};
 
     int depth{};
     int wtime{}, btime{};

@@ -57,25 +57,28 @@ int MovePicker::score(const Move &move)
 bool MovePicker::canLMR(const Move &move)
 {
     // Move can't be a capture nor a promotion for LMR to happen
-    /* TODO: missing check moves and in check moves*/
+    /* TODO: missing check moves and in check moves */
     return !move.isCapture() && !move.isPromotion();
 }
 
 int MovePicker::search(int depth, int alpha, int beta)
 {
-    Move best_move = Move();
-    std::vector<Move> moves = movegen::generatePseudoLegalMoves(_board);
+
+    auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
+
+    Move best_move = Move();
+    Board::GameState state = _board.getState();
     for (const Move &move : moves)
     {
-        Board backup = _board;
-        backup.makeMove(move);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        int attacker_side = backup.getSideToMove();
-        if (!backup.isSquareAttacked(king_sq, attacker_side))
+        _board.makeMove(move);
+
+        int attacker_side = _board.getSideToMove();
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
+        if (!_board.isSquareAttacked(king_sq, attacker_side))
         {
             _current_depth++;
-            int score = -negamax(-beta, -alpha, depth - 1, backup);
+            int score = -negamax(-beta, -alpha, depth - 1);
             _current_depth--;
             if (score > alpha)
             {
@@ -90,17 +93,19 @@ int MovePicker::search(int depth, int alpha, int beta)
                 _pv_table.add(best_move, _current_depth);
             }
         }
+
+        _board.unmakeMove(move, state);
     }
 
     return alpha;
 }
 
-int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
+int MovePicker::negamax(int alpha, int beta, int depth)
 {
     _current_nodes++;
 
     // Terminal Node
-    if (board.getHalfMoveClock() == 100)
+    if (_board.getHalfMoveClock() == 100)
     {
         // Draw
         return 0;
@@ -110,17 +115,20 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     if (depth <= 0)
     {
         _pv_table.setLength(_current_depth);
-        return quiescence(alpha, beta, board);
+        return quiescence(alpha, beta);
     }
+
+    Board::GameState state = _board.getState();
 
     // Null Move Pruning (TODO: Zugzwang checking??)
     if (depth >= 3)
     {
-        Board backup = board;
-        backup.switchSideToMove();
-        backup.setEnPassantSquare(EMPTY_SQUARE);
+        _board.switchSideToMove();
+        _board.setEnPassantSquare(EMPTY_SQUARE);
         _current_depth += 2;
-        int score = -negamax(-beta, -beta + 1, depth - 1 - R, backup);
+        int score = -negamax(-beta, -beta + 1, depth - 1 - R);
+        _board.setState(state);
+        _board.switchSideToMove();
         _current_depth -= 2;
         if (score >= beta)
         {
@@ -128,58 +136,57 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
         }
     }
 
-    Move best_move = Move();
-    std::vector<Move> moves = movegen::generatePseudoLegalMoves(board);
+    auto moves = movegen::generatePseudoLegalMoves(_board);
     std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
+    Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
     for (const Move &move : moves)
     {
-        Board backup = board;
-        backup.makeMove(move);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+        _board.makeMove(move);
+
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
+        if (!_board.isSquareAttacked(king_sq, _board.getSideToMove()))
         {
             has_legal_moves = true;
 
             int score;
-
             // First move, use Full Window Search
             if (n_moves_searched == 0)
             {
                 _current_depth++;
-                score = -negamax(-beta, -alpha, depth - 1, backup);
+                score = -negamax(-beta, -alpha, depth - 1);
                 _current_depth--;
             }
             else
             {
                 // For all the others moves, we assume they are worse moves than
                 // the first one, so let's try to use Null Window Search first
-
                 if (n_moves_searched >= FULL_DEPTH_MOVES && depth >= REDUCTION_LIMIT && this->canLMR(move))
                 {
                     // Perform a Null Window Search
                     _current_depth++;
-                    score = -negamax(-(alpha + 1), -alpha, depth - 2, backup);
+                    score = -negamax(-(alpha + 1), -alpha, depth - 2);
                     _current_depth--;
                 }
                 else
                 {
-                    score = alpha + 1; // Hack to ensure that Full Depth Search is done
+                    // Hack to ensure that Full Depth Search is done
+                    score = alpha + 1;
                 }
 
                 // If this move failed to prove to be bad, re-search with normal bounds
                 if (score > alpha)
                 {
                     _current_depth++;
-                    score = -negamax(-(alpha + 1), -alpha, depth - 1, backup);
+                    score = -negamax(-(alpha + 1), -alpha, depth - 1);
                     _current_depth--;
 
                     if ((score > alpha) && (score < beta))
                     {
                         _current_depth++;
-                        score = -negamax(-beta, -alpha, depth - 1, backup);
+                        score = -negamax(-beta, -alpha, depth - 1);
                         _current_depth--;
                     }
                 }
@@ -193,6 +200,7 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
                     this->addToKillerMoves(move);
                 }
 
+                _board.unmakeMove(move, state);
                 return beta;
             }
             else if (score > alpha)
@@ -210,14 +218,16 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
 
             n_moves_searched++;
         }
+
+        _board.unmakeMove(move, state);
     }
 
     // Terminal Node
     if (!has_legal_moves)
     {
         // Check Mate
-        int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
-        if (board.isSquareAttacked(king_sq, board.getOpponent()))
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getSideToMove(), KING));
+        if (_board.isSquareAttacked(king_sq, _board.getOpponent()))
         {
             return MIN_EVAL + _current_depth;
         }
@@ -229,19 +239,19 @@ int MovePicker::negamax(int alpha, int beta, int depth, const Board &board)
     return alpha;
 }
 
-int MovePicker::quiescence(int alpha, int beta, const Board &board)
+int MovePicker::quiescence(int alpha, int beta)
 {
     _current_nodes++;
 
-    if (board.getHalfMoveClock() == 100)
+    if (_board.getHalfMoveClock() == 100)
     {
         return 0;
     }
 
-    if (!movegen::hasLegalMoves(board))
+    if (!movegen::hasLegalMoves(_board))
     {
-        int king_sq = bitboard::bitScanForward(board.getPieces(board.getSideToMove(), KING));
-        if (board.isSquareAttacked(king_sq, board.getOpponent()))
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getSideToMove(), KING));
+        if (_board.isSquareAttacked(king_sq, _board.getOpponent()))
         {
             return MIN_EVAL + _current_depth;
         }
@@ -249,7 +259,7 @@ int MovePicker::quiescence(int alpha, int beta, const Board &board)
         return 0;
     }
 
-    int stand_pat = eval::eval(board);
+    int stand_pat = eval::eval(_board);
 
     if (stand_pat >= beta)
     {
@@ -261,20 +271,23 @@ int MovePicker::quiescence(int alpha, int beta, const Board &board)
         alpha = stand_pat;
     }
 
-    std::vector<Move> captures = movegen::generatePseudoLegalCaptures(board);
+    auto captures = movegen::generatePseudoLegalCaptures(_board);
     std::sort(captures.begin(), captures.end(), _move_more_than_key);
+
+    Board::GameState state = _board.getState();
     for (const Move &capture : captures)
     {
-        Board backup = board;
-        backup.makeMove(capture);
-        int king_sq = bitboard::bitScanForward(backup.getPieces(backup.getOpponent(), KING));
-        if (!backup.isSquareAttacked(king_sq, backup.getSideToMove()))
+        _board.makeMove(capture);
+
+        int king_sq = bitboard::bitScanForward(_board.getPieces(_board.getOpponent(), KING));
+        if (!_board.isSquareAttacked(king_sq, _board.getSideToMove()))
         {
             _current_depth++;
-            int score = -quiescence(-beta, -alpha, backup);
+            int score = -quiescence(-beta, -alpha);
             _current_depth--;
             if (score >= beta)
             {
+                _board.unmakeMove(capture, state);
                 return beta;
             }
             if (score > alpha)
@@ -282,12 +295,14 @@ int MovePicker::quiescence(int alpha, int beta, const Board &board)
                 alpha = score;
             }
         }
+
+        _board.unmakeMove(capture, state);
     }
 
     return alpha;
 }
 
-void MovePicker::addToKillerMoves(Move const &move)
+void MovePicker::addToKillerMoves(const Move &move)
 {
     // Killer Move Heuristic
     if (move.getEncoded() != _killer_moves[0][_current_depth])
@@ -297,7 +312,7 @@ void MovePicker::addToKillerMoves(Move const &move)
     _killer_moves[0][_current_depth] = move.getEncoded();
 }
 
-void MovePicker::addToHistoryMoves(Move const &move)
+void MovePicker::addToHistoryMoves(const Move &move)
 {
     // History Move Heuristic
     _history_moves[_board.getSideToMove()][move.getPiece()][move.getToSquare()] += _current_depth;
