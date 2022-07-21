@@ -3,7 +3,9 @@
 #include <string>
 #include <vector>
 
-namespace utils
+class Board;
+
+namespace interfaces::utils
 {
     /**
      * @brief Splits a string by spaces
@@ -13,4 +15,15 @@ namespace utils
      */
     std::vector<std::string> tokenizeString(const std::string &text);
 
-} // namespace utils
+    /**
+     * @brief Command Abstract class
+     * All commands should implement this class
+     *
+     */
+    class Command
+    {
+    public:
+        virtual void execute(std::vector<std::string> &args, Board &board) = 0;
+    };
+
+} // namespace interfaces::utils

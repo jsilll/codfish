@@ -326,6 +326,11 @@ void MovePicker::clearSearchCounters()
 
 // Public Methods
 
+Board &MovePicker::getBoard() const
+{
+    return _board;
+}
+
 int MovePicker::getMaxDepth() const
 {
     return _max_depth;

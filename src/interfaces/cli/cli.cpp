@@ -146,7 +146,7 @@ namespace cli
     void execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
     {
       std::string fen = board.getFen();
-      std::vector<std::string> split_fen = utils::tokenizeString(fen);
+      std::vector<std::string> split_fen = interfaces::utils::tokenizeString(fen);
       std::cout << "Side to Play                 = " << split_fen[1]
                 << "\nCastling Rights              = " << split_fen[2]
                 << "\nEn-passant Square            = " << split_fen[3]
@@ -450,11 +450,11 @@ namespace cli
 
     for (;;)
     {
-      std::string line;
-
       std::cout << "> " << std::flush;
+
+      std::string line;
       std::getline(std::cin, line);
-      std::vector<std::string> args = utils::tokenizeString(line);
+      std::vector<std::string> args = interfaces::utils::tokenizeString(std::string(line));
 
       if (args.empty())
       {
