@@ -14,6 +14,9 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 #-------------------Library-------------------
 file(GLOB AI_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
 file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
@@ -29,7 +32,7 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    )
 add_executable(engine_exec ${EXEC_SRC})
 target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(engine_exec engine)
+target_link_libraries(engine_exec engine Threads::Threads )
 
 #-------------------Unit Tests-------------------
 enable_testing()

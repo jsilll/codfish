@@ -161,7 +161,7 @@ void interfaces::uci::commands::GoCommand::search(std::future<void> future, Move
 
         if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
         {
-            std::terminate();
+            break;
         }
     }
 }
