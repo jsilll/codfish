@@ -48,9 +48,18 @@ namespace interfaces::uci
         std::string line;
         while (std::getline(std::cin, line))
         {
+            std::string cmd;
             std::vector<std::string> args = interfaces::utils::tokenizeString(line);
-            std::string cmd = args[0];
-            args.erase(args.begin());
+            if (!args.empty())
+            {
+                cmd = args[0];
+                args.erase(args.begin());
+            }
+            else
+            {
+                continue;
+            }
+
             if (cmd == "uci")
             {
                 uciCommand.execute(args, board);

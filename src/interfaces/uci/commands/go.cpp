@@ -121,14 +121,14 @@ void interfaces::uci::commands::GoCommand::execute(std::vector<std::string> &arg
     }
 
     std::promise<void> signal_exit;
-    std::future<void> future = signal_exit.get_future();
-    std::thread t(this->search, std::move(future), std::ref(ai), std::ref(result));
+    std::future<void> signal_exit_future = signal_exit.get_future();
+    std::thread search_thread(this->search, std::move(signal_exit_future), std::ref(ai), std::ref(result));
     if ((board.getSideToMove() == WHITE && wtime) || (board.getSideToMove() == BLACK && btime))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, board)));
         signal_exit.set_value();
     }
-    t.join();
+    search_thread.join();
 
     std::cout << "bestmove " << Move(result.pv[0]).getUCI() << std::endl;
 }
@@ -158,9 +158,9 @@ void interfaces::uci::commands::GoCommand::search(std::future<void> future, Move
 
         displaySearchIteration(result, depth, end - start);
 
-        if (future.wait_for(std::chrono::milliseconds(1)) != std::future_status::timeout)
+        if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
         {
-            break;
+            std::terminate();
         }
     }
 }
