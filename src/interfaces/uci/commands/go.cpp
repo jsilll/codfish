@@ -4,8 +4,9 @@
 
 #include <engine/movegen/board.hpp>
 
-#include <iostream>
 #include <algorithm>
+#include <climits>
+#include <iostream>
 
 #define DEFAULT_MIN_DEPTH 8
 #define DEFAULT_MAX_DEPTH 32
