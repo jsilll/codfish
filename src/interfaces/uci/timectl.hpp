@@ -2,7 +2,7 @@
 
 class Board;
 
-namespace interfaces::uci::timectl
+namespace uci::timectl
 {
     /**
      * @brief Get the time budget in milliseconds
@@ -14,4 +14,4 @@ namespace interfaces::uci::timectl
      */
     int get_time_budget_ms(int wtime, int btime, const Board &board);
 
-} // namespace interfaces::uci::timectl
+} // namespace uci::timectl

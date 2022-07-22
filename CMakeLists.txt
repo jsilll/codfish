@@ -18,9 +18,10 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 #-------------------Library-------------------
-file(GLOB AI_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
+file(GLOB CHESS_SRC ${PROJECT_SOURCE_DIR}/src/engine/*.cpp)
+file(GLOB MOVEPICKER_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
 file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
-add_library(engine ${MOVEGEN_SRC} ${AI_SRC})
+add_library(engine ${CHESS_SRC} ${MOVEGEN_SRC} ${MOVEPICKER_SRC})
 target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 #-------------------Executable-------------------
@@ -28,6 +29,7 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/cli/commands/*.cpp
                    ${PROJECT_SOURCE_DIR}/src/interfaces/uci/commands/*.cpp
                    )
 add_executable(engine_exec ${EXEC_SRC})

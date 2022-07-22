@@ -2,32 +2,19 @@
 
 #include <interfaces/utils.hpp>
 
-#include <engine/defs.hpp>
-
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/tables.hpp>
-#include <engine/movegen/board.hpp>
-#include <engine/movegen/move.hpp>
-#include <engine/movegen/movegen.hpp>
+#include <engine/board.hpp>
 
-#include <engine/movepicker/movepicker.hpp>
 #include <engine/movepicker/eval.hpp>
 
-#include <interfaces/uci/commands/display.hpp>
-#include <interfaces/uci/commands/exit.hpp>
-#include <interfaces/uci/commands/go.hpp>
-#include <interfaces/uci/commands/isready.hpp>
-#include <interfaces/uci/commands/position.hpp>
-#include <interfaces/uci/commands/uci.hpp>
-#include <interfaces/uci/commands/ucinewgame.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
-#include <chrono>
-#include <climits>
 #include <iostream>
 #include <string>
 #include <vector>
 
-namespace interfaces::uci
+namespace uci
 {
     void init()
     {
@@ -37,19 +24,20 @@ namespace interfaces::uci
 
         Board board = Board();
 
-        interfaces::uci::commands::UCICommand uciCommand;
-        interfaces::uci::commands::IsReadyCommand isReadyCommand;
-        interfaces::uci::commands::UCINewGameCommand uciNewGameCommand;
-        interfaces::uci::commands::PositionCommand positionCommand;
-        interfaces::uci::commands::DisplayCommand displayCommand;
-        interfaces::uci::commands::GoCommand goCommand;
-        interfaces::uci::commands::QuitCommand quitCommand;
+        // TODO: use a map instead of if statements
+        uci::UCICommand uciCommand;
+        uci::IsReadyCommand isReadyCommand;
+        uci::UCINewGameCommand uciNewGameCommand;
+        uci::PositionCommand positionCommand;
+        uci::DisplayCommand displayCommand;
+        uci::GoCommand goCommand;
+        uci::QuitCommand quitCommand;
 
         std::string line;
         while (std::getline(std::cin, line))
         {
             std::string cmd;
-            std::vector<std::string> args = interfaces::utils::tokenizeString(line);
+            std::vector<std::string> args = utils::tokenizeString(line);
             if (!args.empty())
             {
                 cmd = args[0];
@@ -91,4 +79,4 @@ namespace interfaces::uci
         }
     }
 
-} // namespace interfaces::uci
+} // namespace uci

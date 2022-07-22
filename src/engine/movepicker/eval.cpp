@@ -1,8 +1,8 @@
-#include "eval.hpp"
+#include <engine/movepicker/eval.hpp>
 
-#include <engine/movegen/utils.hpp>
-#include <engine/movegen/bitboard.hpp>
-#include <engine/movegen/board.hpp>
+#include <engine/utils.hpp>
+#include <engine/bitboard.hpp>
+#include <engine/board.hpp>
 
 namespace eval
 {
@@ -143,6 +143,7 @@ namespace eval
     int MG_TABLE[2][6][64];
     int EG_TABLE[2][6][64];
     int GAME_PHASE_INC[6] = {0, 1, 1, 2, 4, 0};
+
     // clang-format off
     int PIECE_SCORES[] = {100, 280, 320, 479, 929, 60000};
     // clang-format on
@@ -192,31 +193,31 @@ namespace eval
 
         for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
-            U64 pieces_white = board.getPieces(WHITE, piece_type);
+            U64 pieces_white = board.get_pieces(WHITE, piece_type);
             while (pieces_white)
             {
-                int sq = bitboard::bitScanForward(pieces_white);
+                int sq = bitboard::bit_scan_forward(pieces_white);
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
                 eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
                 material[WHITE] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                bitboard::popBit(pieces_white, sq);
+                bitboard::pop_bit(pieces_white, sq);
             }
 
-            U64 pieces_black = board.getPieces(BLACK, piece_type);
+            U64 pieces_black = board.get_pieces(BLACK, piece_type);
             while (pieces_black)
             {
-                int sq = bitboard::bitScanForward(pieces_black);
+                int sq = bitboard::bit_scan_forward(pieces_black);
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
                 eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
                 material[BLACK] += PIECE_SCORES[piece_type];
                 game_phase += GAME_PHASE_INC[piece_type];
-                bitboard::popBit(pieces_black, sq);
+                bitboard::pop_bit(pieces_black, sq);
             }
         }
 
-        int to_move = board.getSideToMove();
-        int opponent = board.getOpponent();
+        int to_move = board.get_side_to_move();
+        int opponent = board.get_opponent();
 
         int mg_score = mg[to_move] - mg[opponent];
         int eg_score = eg[to_move] - eg[opponent];

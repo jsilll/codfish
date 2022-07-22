@@ -1,15 +1,14 @@
-#include <engine/movegen/bitboard.hpp>
+#include <engine/bitboard.hpp>
 
-#include <engine/movegen/utils.hpp>
+#include <engine/utils.hpp>
 #include <engine/movegen/tables.hpp>
 
 #include <string>
 #include <iostream>
-#include <algorithm>
 
 namespace bitboard
 {
-    int bitCount(U64 bb)
+    int bit_count(U64 bb)
     {
         unsigned int count = 0;
         while (bb)
@@ -20,16 +19,16 @@ namespace bitboard
         return (int)count;
     }
 
-    int bitScan(U64 bb)
+    int bit_scan(U64 bb)
     {
         if (bb)
         {
-            return bitCount((bb & -bb) - 1);
+            return bit_count((bb & -bb) - 1);
         }
         return -1;
     }
 
-    int bitScanForward(U64 bb)
+    int bit_scan_forward(U64 bb)
     {
         static const int index64[64] = {
             0, 47, 1, 56, 48, 27, 2, 60,
@@ -45,13 +44,13 @@ namespace bitboard
         return index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
     }
 
-    U64 setOccupancy(int index, int bits_in_mask, U64 attack_mask)
+    U64 set_occupancy(int index, int bits_in_mask, U64 attack_mask)
     {
         U64 occupancy = ZERO;
         for (int bit = 0; bit < bits_in_mask; bit++)
         {
-            int lsb_sq = bitScanForward(attack_mask);
-            popBit(attack_mask, lsb_sq);
+            int lsb_sq = bit_scan_forward(attack_mask);
+            pop_bit(attack_mask, lsb_sq);
             if (index & (1 << bit))
             {
                 occupancy |= tables::SQUARE_BB[lsb_sq];
@@ -60,19 +59,19 @@ namespace bitboard
         return occupancy;
     }
 
-    void printBB(U64 bb)
+    void print(U64 bb)
     {
         for (int i = 7; i >= 0; i--)
         {
             std::cout << i + 1 << "  ";
             for (int n = 0; n < 8; n++)
             {
-                std::cout << ((bb >> utils::getSquare(i, n)) & ONE) << " ";
+                std::cout << ((bb >> utils::get_square(i, n)) & ONE) << " ";
             }
             std::cout << "\n";
         }
         std::cout << "\n   a b c d e f g h\n\n";
-        printf("bitboard %llud\n", bb);
+        printf("bitboard %lud\n", bb);
     }
 
 } // namespace bitboard

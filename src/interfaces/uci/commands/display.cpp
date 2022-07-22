@@ -1,8 +1,6 @@
-#include <interfaces/uci/commands/display.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
-#include <engine/movegen/board.hpp>
-
-void interfaces::uci::commands::DisplayCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void uci::DisplayCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
 {
     board.display();
 }

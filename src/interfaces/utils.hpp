@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-class Board;
+#include <engine/board.hpp>
 
-namespace interfaces::utils
+namespace utils
 {
     /**
      * @brief Splits a string by spaces
@@ -26,4 +26,4 @@ namespace interfaces::utils
         virtual void execute(std::vector<std::string> &args, Board &board) = 0;
     };
 
-} // namespace interfaces::utils
+} // namespace utils

@@ -1,13 +1,64 @@
-#include <interfaces/uci/commands/position.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
 #include <optional>
 #include <regex>
 
-#include <engine/movegen/board.hpp>
-#include <engine/movegen/move.hpp>
+#include <engine/move.hpp>
+
 #include <engine/movegen/movegen.hpp>
 
-void interfaces::uci::commands::PositionCommand::execute(std::vector<std::string> &args, Board &board)
+static std::optional<Move> parseMove(std::string move_uci, Board &board)
+{
+    for (Move const &move : movegen::generateLegalMoves(board))
+    {
+        if (move.get_uci() == move_uci)
+        {
+            return move;
+        }
+    }
+
+    return std::nullopt;
+}
+
+static void handleMoves(std::vector<std::string> &moves, Board &board)
+{
+    for (std::string move_uci : moves)
+    {
+        std::optional<Move> parsed_move = parseMove(move_uci, board);
+        if (parsed_move.has_value())
+        {
+            board.make_move(parsed_move.value());
+        }
+    }
+}
+
+static void handleFenPosition(std::string &piece_placements,
+                              std::string &active_color,
+                              std::string &castling_rights,
+                              std::string &en_passant,
+                              std::string &halfmove_clock, std::string &fullmove_number,
+                              Board &board)
+{
+    static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
+    static const std::regex active_color_regex(R"(b|w)");
+    static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
+    static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
+    static const std::regex halfmove_clock_regex(R"(\d+)");
+    static const std::regex fullmove_number_regex(R"(\d+)");
+    if (!std::regex_match(piece_placements, piece_placements_regex) ||
+        !std::regex_match(active_color, active_color_regex) ||
+        !std::regex_match(castling_rights, castling_rights_regex) ||
+        !std::regex_match(en_passant, en_passant_regex) ||
+        !std::regex_match(halfmove_clock, halfmove_clock_regex) ||
+        !std::regex_match(fullmove_number, fullmove_number_regex))
+    {
+        throw std::invalid_argument("Invalid fen string.");
+    }
+
+    board.set_from_fen(piece_placements, active_color, castling_rights, en_passant, halfmove_clock, fullmove_number);
+}
+
+void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
 {
     if (args.size() == 0)
     {
@@ -18,7 +69,7 @@ void interfaces::uci::commands::PositionCommand::execute(std::vector<std::string
     {
         args.erase(args.begin());
 
-        board.setStartingPosition();
+        board.set_starting_position();
     }
     else if (args[0] == "fen")
     {
@@ -55,50 +106,4 @@ void interfaces::uci::commands::PositionCommand::execute(std::vector<std::string
 
         handleMoves(args, board);
     }
-}
-
-void interfaces::uci::commands::PositionCommand::handleMoves(std::vector<std::string> &moves, Board &board)
-{
-    for (std::string move_uci : moves)
-    {
-        std::optional<Move> parsed_move = parseMove(move_uci, board);
-        if (parsed_move.has_value())
-        {
-            board.makeMove(parsed_move.value());
-        }
-    }
-}
-
-void interfaces::uci::commands::PositionCommand::handleFenPosition(std::string &piece_placements, std::string &active_color, std::string &castling_rights, std::string &en_passant, std::string &halfmove_clock, std::string &fullmove_number, Board &board)
-{
-    static const std::regex piece_placements_regex(R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8})");
-    static const std::regex active_color_regex(R"(b|w)");
-    static const std::regex castling_rights_regex(R"(-|K?Q?k?q?)");
-    static const std::regex en_passant_regex(R"(-|[a-h][3-6])");
-    static const std::regex halfmove_clock_regex(R"(\d+)");
-    static const std::regex fullmove_number_regex(R"(\d+)");
-    if (!std::regex_match(piece_placements, piece_placements_regex) ||
-        !std::regex_match(active_color, active_color_regex) ||
-        !std::regex_match(castling_rights, castling_rights_regex) ||
-        !std::regex_match(en_passant, en_passant_regex) ||
-        !std::regex_match(halfmove_clock, halfmove_clock_regex) ||
-        !std::regex_match(fullmove_number, fullmove_number_regex))
-    {
-        throw std::invalid_argument("Invalid fen string.");
-    }
-
-    board.setFromFen(piece_placements, active_color, castling_rights, en_passant, halfmove_clock, fullmove_number);
-}
-
-std::optional<Move> interfaces::uci::commands::PositionCommand::parseMove(std::string move_uci, Board &board)
-{
-    for (Move const &move : movegen::generateLegalMoves(board))
-    {
-        if (move.getUCI() == move_uci)
-        {
-            return move;
-        }
-    }
-
-    return std::nullopt;
 }

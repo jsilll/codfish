@@ -1,6 +1,8 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
+
+#include <engine/movegen/magics.hpp>
 
 namespace tables
 {
@@ -79,8 +81,25 @@ namespace tables
 
     void init();
 
-    U64 getBishopAttacks(const int sq, U64 occ);
-    U64 getRookAttacks(const int sq, U64 occ);
-    U64 getQueenAttacks(const int sq, U64 occ);
+    inline U64 get_bishop_attacks(const int sq, U64 occ)
+    {
+        occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
+        occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
+        occ >>= magics::MAGIC_TABLE_BISHOP[sq].shift;
+        return ATTACKS_BISHOP[sq][occ];
+    }
+
+    inline U64 get_rook_attacks(const int sq, U64 occ)
+    {
+        occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
+        occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
+        occ >>= magics::MAGIC_TABLE_ROOK[sq].shift;
+        return ATTACKS_ROOK[sq][occ];
+    }
+
+    inline U64 get_queen_attacks(const int sq, U64 occ)
+    {
+        return get_bishop_attacks(sq, occ) | get_rook_attacks(sq, occ);
+    }
 
 } // namespace tables

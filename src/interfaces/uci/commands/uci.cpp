@@ -1,8 +1,8 @@
-#include <interfaces/uci/commands/uci.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
 #include <iostream>
 
-void interfaces::uci::commands::UCICommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
+void uci::UCICommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
 {
     std::cout << "id name Chess Engine\n";
     std::cout << "id name Chess Engine\n";

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/movegen/move.hpp>
+#include <engine/move.hpp>
 
 #include <vector>
 
@@ -13,10 +13,10 @@ private:
     Move _table[MAX_DEPTH][MAX_DEPTH]{};
 
 public:
-    Move getPVMove(int depth);
-    std::vector<Move> getPV();
+    Move get_pv_move(int depth);
+    std::vector<Move> get_pV();
 
     void clear();
-    void setLength(int depth);
-    void add(Move const &move, int depth);
+    void set_length(int depth);
+    void add(Move const move, int depth);
 };

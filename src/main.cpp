@@ -1,67 +1,29 @@
-#include "interfaces/cli/cli.hpp"
-#include "interfaces/uci/uci.hpp"
+#include <opts.hpp>
+
+#include <interfaces/cli/cli.hpp>
+#include <interfaces/uci/uci.hpp>
 
 #include <iostream>
-#include <string>
-#include <vector>
-
-typedef enum
-{
-  UCI,
-  CLI,
-} InterfaceMode;
-
-typedef struct
-{
-  InterfaceMode interface;
-} ExecOptions;
-
-ExecOptions parseOptions(std::vector<std::string> arguments);
 
 int main(int argc, char const *argv[])
 {
-  std::vector<std::string> arguments(argv + 1, argv + argc);
-
-  ExecOptions options = parseOptions(arguments);
+  opts::ExecOptions options = opts::parseOptions(argc, argv);
 
   switch (options.interface)
   {
-  case CLI:
+  case opts::InterfaceMode::CLI:
     std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
     cli::init();
     break;
-  case UCI:
+  case opts::InterfaceMode::UCI:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    interfaces::uci::init();
+    uci::init();
     break;
   default:
     std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
-    interfaces::uci::init();
+    uci::init();
     break;
   }
 
   return 0;
-}
-
-ExecOptions parseOptions(std::vector<std::string> arguments)
-{
-  ExecOptions options{};
-
-  for (std::string arg : arguments)
-  {
-    if (arg == "--cli")
-    {
-      options.interface = CLI;
-    }
-    else if (arg == "--uci")
-    {
-      options.interface = UCI;
-    }
-    else
-    {
-      std::cerr << "Unknown Option: " << arg << "\n";
-    }
-  }
-
-  return options;
 }

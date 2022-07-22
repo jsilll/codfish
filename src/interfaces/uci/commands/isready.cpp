@@ -1,8 +1,8 @@
-#include <interfaces/uci/commands/isready.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
 #include <iostream>
 
-void interfaces::uci::commands::IsReadyCommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
+void uci::IsReadyCommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
 {
     std::cout << "readyok" << std::endl;
 }

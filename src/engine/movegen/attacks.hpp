@@ -1,22 +1,25 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
 
 namespace attacks
 {
-    U64 maskWhitePawnSinglePushes(U64 wpawns, U64 empty);
-    U64 maskBlackPawnSinglePushes(U64 bpawns, U64 empty);
-    U64 maskWhitePawnDoublePushes(U64 wpawns, U64 empty);
-    U64 maskBlackPawnDoublePushes(U64 bpawns, U64 empty);
+    // Pawn Pushes
+    U64 mask_white_pawn_single_pushes(U64 wpawns, U64 empty);
+    U64 mask_black_pawn_single_pushes(U64 bpawns, U64 empty);
+    U64 mask_white_pawn_double_pushes(U64 wpawns, U64 empty);
+    U64 mask_black_pawn_double_pushes(U64 bpawns, U64 empty);
 
-    U64 maskRookAttackRays(int sq);
-    U64 maskBishopAttackRays(int sq);
+    // Bishop and Rook Attack Rays
+    U64 mask_rook_attack_rays(int sq);
+    U64 mask_bishop_attack_rays(int sq);
 
-    U64 maskWhitePawnAnyAttacks(U64 wpawns);
-    U64 maskBlackPawnAnyAttacks(U64 bpawns);
-    U64 maskKnightAttacks(U64 knights);
-    U64 maskKingAttacks(U64 kings);
-    U64 maskBishopAttacks(int sq, U64 block);
-    U64 maskRookAttacks(int sq, U64 block);
+    // Attacks
+    U64 mask_white_pawn_any_attacks(U64 wpawns);
+    U64 mask_black_pawn_any_attacks(U64 bpawns);
+    U64 mask_knight_attacks(U64 knights);
+    U64 mask_king_attacks(U64 kings);
+    U64 mask_bishop_attacks(int sq, U64 block);
+    U64 mask_rook_attacks(int sq, U64 block);
 
 } // namespace attacks

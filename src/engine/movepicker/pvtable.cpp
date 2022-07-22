@@ -1,15 +1,15 @@
 #include <engine/movepicker/pvtable.hpp>
 
-#include <engine/movegen/move.hpp>
+#include <engine/move.hpp>
 
 #include <cstring>
 
-Move PVTable::getPVMove(int depth)
+Move PVTable::get_pv_move(int depth)
 {
     return _table[depth][depth];
 }
 
-std::vector<Move> PVTable::getPV()
+std::vector<Move> PVTable::get_pV()
 {
     std::vector<Move> res;
     for (int i = 0; i < _length[0]; i++)
@@ -20,7 +20,7 @@ std::vector<Move> PVTable::getPV()
     return res;
 }
 
-void PVTable::add(Move const &move, int depth)
+void PVTable::add(Move const move, int depth)
 {
     // Write Principal Variation Move
     _table[depth][depth] = move;
@@ -37,7 +37,7 @@ void PVTable::clear()
     memset(_table, 0, sizeof(_table));
 }
 
-void PVTable::setLength(int depth)
+void PVTable::set_length(int depth)
 {
     _length[depth] = depth;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
 
 class Board;
 

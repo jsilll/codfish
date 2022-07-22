@@ -2,11 +2,11 @@
 
 #include "../catch.hpp"
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/tables.hpp>
-#include <engine/movegen/board.hpp>
-#include <engine/movegen/move.hpp>
+#include <engine/board.hpp>
+#include <engine/move.hpp>
 #include <engine/movepicker/movepicker.hpp>
 
 void setup()
@@ -21,21 +21,21 @@ TEST_CASE("Checkmate in one move")
 
     Board board = Board();
     MovePicker ai = MovePicker(board);
-    ai.setMaxDepth(3);
+    ai.set_max_depth(3);
 
     SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1")
     {
-        board.setFromFen("1k6/p6p/K6P/8/8/8/8/1q4q1", "b", "-", "-", "0", "1");
-        MovePicker::SearchResult result = ai.findBestMove();
+        board.set_from_fen("1k6/p6p/K6P/8/8/8/8/1q4q1", "b", "-", "-", "0", "1");
+        MovePicker::SearchResult result = ai.find_best_move();
         Move best_move = Move(result.pv[0]);
-        REQUIRE(best_move.getUCI() == "g1b6");
+        REQUIRE(best_move.get_uci() == "g1b6");
     }
 
     SECTION("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1")
     {
-        board.setFromFen("k6r/8/8/8/8/8/8/2bPKPb1", "b", "-", "-", "0", "1");
-        MovePicker::SearchResult result = ai.findBestMove();
+        board.set_from_fen("k6r/8/8/8/8/8/8/2bPKPb1", "b", "-", "-", "0", "1");
+        MovePicker::SearchResult result = ai.find_best_move();
         Move best_move = Move(result.pv[0]);
-        REQUIRE(best_move.getUCI() == "h8e8");
+        REQUIRE(best_move.get_uci() == "h8e8");
     }
 }

@@ -2,7 +2,7 @@
 
 #include "../catch.hpp"
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/tables.hpp>
 
@@ -93,21 +93,21 @@ TEST_CASE("Test Bishop Moves")
 
     SECTION("Corners")
     {
-        REQUIRE(tables::getBishopAttacks(A1, 0xa000008) == 0x8040200);
-        REQUIRE(tables::getBishopAttacks(H1, 0xfefdfbf7efdfbfff) == 0x102040810204000);
-        REQUIRE(tables::getBishopAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x102040810204000);
-        REQUIRE(tables::getBishopAttacks(H8, 0x8120000808000202) == 0x40201008000000);
-        REQUIRE(tables::getBishopAttacks(A8, 0x8124000858204282) == 0x2040800000000);
+        REQUIRE(tables::get_bishop_attacks(A1, 0xa000008) == 0x8040200);
+        REQUIRE(tables::get_bishop_attacks(H1, 0xfefdfbf7efdfbfff) == 0x102040810204000);
+        REQUIRE(tables::get_bishop_attacks(H1, 0xfefdfbf7efdfbf7f) == 0x102040810204000);
+        REQUIRE(tables::get_bishop_attacks(H8, 0x8120000808000202) == 0x40201008000000);
+        REQUIRE(tables::get_bishop_attacks(A8, 0x8124000858204282) == 0x2040800000000);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::getBishopAttacks(D4, 0x8124000858204282) == 0x8041221400142240);
-        REQUIRE(tables::getBishopAttacks(G6, 0x8124400858204282) == 0xa000a010000000);
+        REQUIRE(tables::get_bishop_attacks(D4, 0x8124000858204282) == 0x8041221400142240);
+        REQUIRE(tables::get_bishop_attacks(G6, 0x8124400858204282) == 0xa000a010000000);
     }
 }
 
-// Test Rook    getRookAttacks
+// Test Rook    get_rook_attacks
 
 TEST_CASE("Test Rook Moves")
 {
@@ -115,17 +115,17 @@ TEST_CASE("Test Rook Moves")
 
     SECTION("Corners")
     {
-        REQUIRE(tables::getRookAttacks(A1, 0xa000009) == 0x10101010101010e);
-        REQUIRE(tables::getRookAttacks(H1, 0xfefdfbf7efdfbfff) == 0x8040);
-        REQUIRE(tables::getRookAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x8040);
-        REQUIRE(tables::getRookAttacks(H8, 0x8120000808000202) == 0x7f80808080808080);
-        REQUIRE(tables::getRookAttacks(A8, 0x8324000958a142ba) == 0x201010100000000);
+        REQUIRE(tables::get_rook_attacks(A1, 0xa000009) == 0x10101010101010e);
+        REQUIRE(tables::get_rook_attacks(H1, 0xfefdfbf7efdfbfff) == 0x8040);
+        REQUIRE(tables::get_rook_attacks(H1, 0xfefdfbf7efdfbf7f) == 0x8040);
+        REQUIRE(tables::get_rook_attacks(H8, 0x8120000808000202) == 0x7f80808080808080);
+        REQUIRE(tables::get_rook_attacks(A8, 0x8324000958a142ba) == 0x201010100000000);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::getRookAttacks(D4, 0x8124000858204282) == 0x817080808);
-        REQUIRE(tables::getRookAttacks(F5, 0x8124002858204282) == 0x2020d820200000);
+        REQUIRE(tables::get_rook_attacks(D4, 0x8124000858204282) == 0x817080808);
+        REQUIRE(tables::get_rook_attacks(F5, 0x8124002858204282) == 0x2020d820200000);
     }
 }
 
@@ -137,16 +137,16 @@ TEST_CASE("Test Queen Moves")
 
     SECTION("Corners")
     {
-        REQUIRE(tables::getQueenAttacks(A1, 0xa000009) == 0x10101010905030e);
-        REQUIRE(tables::getQueenAttacks(H1, 0xfefdfbf7efdfbfff) == 0x10204081020c040);
-        REQUIRE(tables::getQueenAttacks(H1, 0xfefdfbf7efdfbf7f) == 0x10204081020c040);
-        REQUIRE(tables::getQueenAttacks(H8, 0x8120000808000202) == 0x7fc0a09088808080);
-        REQUIRE(tables::getQueenAttacks(A8, 0x8324000958a142ba) == 0x203050900000000);
+        REQUIRE(tables::get_queen_attacks(A1, 0xa000009) == 0x10101010905030e);
+        REQUIRE(tables::get_queen_attacks(H1, 0xfefdfbf7efdfbfff) == 0x10204081020c040);
+        REQUIRE(tables::get_queen_attacks(H1, 0xfefdfbf7efdfbf7f) == 0x10204081020c040);
+        REQUIRE(tables::get_queen_attacks(H8, 0x8120000808000202) == 0x7fc0a09088808080);
+        REQUIRE(tables::get_queen_attacks(A8, 0x8324000958a142ba) == 0x203050900000000);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::getQueenAttacks(D4, 0x812402085a24428a) == 0x8040221c161c2848);
-        REQUIRE(tables::getQueenAttacks(F6, 0x812432a8da245282) == 0x8870d07088000000);
+        REQUIRE(tables::get_queen_attacks(D4, 0x812402085a24428a) == 0x8040221c161c2848);
+        REQUIRE(tables::get_queen_attacks(F6, 0x812432a8da245282) == 0x8870d07088000000);
     }
 }

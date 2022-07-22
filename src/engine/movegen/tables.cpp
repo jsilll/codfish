@@ -1,6 +1,6 @@
 #include <engine/movegen/tables.hpp>
 
-#include <engine/movegen/bitboard.hpp>
+#include <engine/bitboard.hpp>
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/attacks.hpp>
 
@@ -24,18 +24,18 @@ namespace tables
     // Initializing Leaper Piece Attack Tables
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_PAWN[WHITE][sq] = attacks::maskWhitePawnAnyAttacks(SQUARE_BB[sq]);
-      ATTACKS_PAWN[BLACK][sq] = attacks::maskBlackPawnAnyAttacks(SQUARE_BB[sq]);
+      ATTACKS_PAWN[WHITE][sq] = attacks::mask_white_pawn_any_attacks(SQUARE_BB[sq]);
+      ATTACKS_PAWN[BLACK][sq] = attacks::mask_black_pawn_any_attacks(SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_KNIGHT[sq] = attacks::maskKnightAttacks(SQUARE_BB[sq]);
+      ATTACKS_KNIGHT[sq] = attacks::mask_knight_attacks(SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      ATTACKS_KING[sq] = attacks::maskKingAttacks(SQUARE_BB[sq]);
+      ATTACKS_KING[sq] = attacks::mask_king_attacks(SQUARE_BB[sq]);
     }
 
     // Initialize Slider Piece Attack Tables
@@ -44,9 +44,9 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_BISHOP[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = bitboard::setOccupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
+        U64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_BISHOP[sq].magic) >> magics::MAGIC_TABLE_BISHOP[sq].shift);
-        ATTACKS_BISHOP[sq][magic] = attacks::maskBishopAttacks(sq, occupancy);
+        ATTACKS_BISHOP[sq][magic] = attacks::mask_bishop_attacks(sq, occupancy);
       }
     }
 
@@ -55,32 +55,11 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_ROOK[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = bitboard::setOccupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
+        U64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_ROOK[sq].magic) >> magics::MAGIC_TABLE_ROOK[sq].shift);
-        ATTACKS_ROOK[sq][magic] = attacks::maskRookAttacks(sq, occupancy);
+        ATTACKS_ROOK[sq][magic] = attacks::mask_rook_attacks(sq, occupancy);
       }
     }
-  }
-
-  U64 getBishopAttacks(const int sq, U64 occ)
-  {
-    occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
-    occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
-    occ >>= magics::MAGIC_TABLE_BISHOP[sq].shift;
-    return ATTACKS_BISHOP[sq][occ];
-  }
-
-  U64 getRookAttacks(const int sq, U64 occ)
-  {
-    occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
-    occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
-    occ >>= magics::MAGIC_TABLE_ROOK[sq].shift;
-    return ATTACKS_ROOK[sq][occ];
-  }
-
-  U64 getQueenAttacks(const int sq, U64 occ)
-  {
-    return getBishopAttacks(sq, occ) | getRookAttacks(sq, occ);
   }
 
 } // namespace tables

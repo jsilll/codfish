@@ -1,11 +1,10 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
+#include <engine/board.hpp>
+#include <engine/move.hpp>
 
 #include <vector>
-
-class Board;
-class Move;
 
 namespace movegen
 {
@@ -15,7 +14,7 @@ namespace movegen
      * @param board
      * @return std::vector<Move>
      */
-    std::vector<Move> generatePseudoLegalMoves(const Board &board);
+    std::vector<Move> generate_pseudo_legal_moves(const Board &board);
 
     /**
      * @brief Generates all the pseudo-legal captures for a given board
@@ -23,7 +22,7 @@ namespace movegen
      * @param board
      * @return std::vector<Move>
      */
-    std::vector<Move> generatePseudoLegalCaptures(const Board &board);
+    std::vector<Move> generate_pseudo_legal_captures(const Board &board);
 
     /**
      * @brief Generates all the legal moves for a given board
@@ -39,7 +38,7 @@ namespace movegen
      * @param board
      * @return std::vector<Move>
      */
-    std::vector<Move> generateLegalCaptures(Board &board);
+    std::vector<Move> generate_legal_captures(Board &board);
 
     /**
      * @brief Checks whether a given board as has legal moves
@@ -47,6 +46,6 @@ namespace movegen
      * @param board
      * @return bool
      */
-    bool hasLegalMoves(Board &board);
+    bool has_legal_moves(Board &board);
 
 } // namespace movegen

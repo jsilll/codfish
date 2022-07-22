@@ -1,8 +1,6 @@
-#include <interfaces/uci/commands/ucinewgame.hpp>
+#include <interfaces/uci/commands/commands.hpp>
 
-#include <engine/movegen/board.hpp>
-
-void interfaces::uci::commands::UCINewGameCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void uci::UCINewGameCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
 {
-    board.setStartingPosition();
+    board.set_starting_position();
 }

@@ -1,29 +1,26 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
+#include <engine/board.hpp>
+#include <engine/move.hpp>
 
 #include <engine/movepicker/pvtable.hpp>
 
 #include <vector>
 
-class Board;
-class Move;
-
-// TODO: move the 64 on the arrays to some kind of constant with a name
-
 class MovePicker
 {
 private:
-    static const int MAX_DEPTH = 64;
+    static const int DEFAULT_MAX_DEPTH = 64;
 
     Board &_board;
-    int _max_depth;
 
+    int _max_depth;
     int _current_nodes;
     int _current_depth;
 
-    int _killer_moves[2][MAX_DEPTH]{};
     int _history_moves[N_SIDES][N_PIECES][N_SQUARES]{};
+    Move _killer_moves[2][DEFAULT_MAX_DEPTH]{};
 
     PVTable _pv_table;
 
@@ -36,15 +33,6 @@ private:
         }
     } _move_more_than_key;
 
-public:
-    struct SearchResult
-    {
-        int score{};
-        int nodes{};
-        std::vector<Move> pv;
-    };
-
-private:
     /**
      * @brief Evaluates a given move using a few heuristics:
      * - MVV LVA
@@ -57,37 +45,43 @@ private:
      * @param move
      * @return move score
      */
-    int score(const Move &move);
-    bool canLMR(const Move &move);
+    int score(const Move move);
 
     int search(int depth, int alpha, int beta);
     int negamax(int alpha, int beta, int depth);
     int quiescence(int alpha, int beta);
 
-    void addToKillerMoves(Move const &move);
-    void addToHistoryMoves(Move const &move);
+    void add_to_killer_moves(const Move move);
+    void add_to_history_moves(const Move move);
 
-    void clearSearchCounters();
+    void clear_search_counters();
 
 public:
-    explicit MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this}
+    struct SearchResult
     {
-    }
+        int score{};
+        int nodes{};
+        std::vector<Move> pv;
+    };
 
-    Board &getBoard() const;
+    explicit MovePicker(Board &board) : _board(board), _max_depth(6), _current_nodes(0), _move_more_than_key{*this} {}
 
-    [[nodiscard]] int getMaxDepth() const;
+    [[nodiscard]] int get_max_depth() const;
 
-    void setMaxDepth(int depth);
+    void set_max_depth(int depth);
 
-    void clearTables();
+    /**
+     * @brief Clears all the tables
+     *
+     */
+    void clear_tables();
 
     /**
      * @brief Searches the current position with max_depth
      *
      * @return SearchResult
      */
-    SearchResult findBestMove();
+    SearchResult find_best_move();
 
     /**
      * @brief Searches the current position with the given depth
@@ -98,5 +92,5 @@ public:
      * @param depth
      * @return SearchResult
      */
-    SearchResult findBestMove(int depth, int alpha, int beta);
+    SearchResult find_best_move(int depth, int alpha, int beta);
 };

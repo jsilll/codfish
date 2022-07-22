@@ -2,7 +2,7 @@
 
 #include <string>
 
-typedef unsigned long long U64;
+typedef uint64_t U64;
 
 constexpr U64 ONE = 1ULL;
 constexpr U64 ZERO = 0ULL;

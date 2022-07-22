@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/defs.hpp>
+#include <engine/constants.hpp>
 
 namespace magics
 {
@@ -147,6 +147,7 @@ namespace magics
   extern Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
   void generate();
+
   void init();
 
 } // namespace magics

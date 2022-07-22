@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include <engine/utils.hpp>
 
 #include <string>
 #include <iostream>
@@ -7,7 +7,7 @@
 #include <regex>
 #include <vector>
 
-namespace interfaces::utils
+namespace utils
 {
     std::vector<std::string> tokenizeString(const std::string &text)
     {
@@ -16,4 +16,4 @@ namespace interfaces::utils
         copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
         return tokens;
     }
-} // namespace interfaces::utils
+} // namespace utils
