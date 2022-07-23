@@ -40,6 +40,13 @@ static void search(std::future<void> future, MovePicker &ai, MovePicker::SearchR
         result = ai.find_best_move(depth, alpha, beta);
         auto end = std::chrono::system_clock::now();
 
+        displaySearchIteration(result, depth, end - start);
+
+        if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
+        {
+            break;
+        }
+
         if ((result.score <= alpha) || (result.score >= beta))
         {
             alpha = MIN_EVAL;
@@ -50,13 +57,6 @@ static void search(std::future<void> future, MovePicker &ai, MovePicker::SearchR
 
         alpha = result.score - WINDOW_EXPANSION;
         beta = result.score + WINDOW_EXPANSION;
-
-        displaySearchIteration(result, depth, end - start);
-
-        if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
-        {
-            break;
-        }
     }
 }
 
@@ -74,6 +74,7 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
 
     int depth{};
     int wtime{}, btime{};
+    bool infinite = false;
     [[maybe_unused]] int moves_to_go{};
     for (const std::string &token : args)
     {
@@ -92,6 +93,10 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
         else if (token == "movestogo")
         {
             arg_cmd = MOVES_TO_GO;
+        }
+        else if (token == "infinite")
+        {
+            infinite = true;
         }
         else
         {
@@ -159,7 +164,7 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
     MovePicker::SearchResult result;
     MovePicker ai = MovePicker(board);
 
-    if (!depth && wtime && btime)
+    if (!depth && !infinite && wtime && btime)
     {
         ai.set_max_depth(DEFAULT_MAX_DEPTH);
     }
