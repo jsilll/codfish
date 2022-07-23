@@ -4,22 +4,15 @@
 
 #include <interfaces/cli/commands/commands.hpp>
 
-#include <engine/constants.hpp>
-#include <engine/bitboard.hpp>
 #include <engine/board.hpp>
 #include <engine/move.hpp>
 
 #include <engine/movegen/magics.hpp>
 #include <engine/movegen/tables.hpp>
-#include <engine/movegen/movegen.hpp>
-#include <engine/movegen/perft.hpp>
 
 #include <engine/movepicker/eval.hpp>
 
-#include <algorithm>
-#include <chrono>
 #include <iostream>
-#include <regex>
 #include <string>
 #include <vector>
 
@@ -58,7 +51,7 @@ namespace cli
 
       std::string line;
       std::getline(std::cin, line);
-      std::vector<std::string> args = utils::tokenizeString(std::string(line));
+      std::vector<std::string> args = utils::tokenize(std::string(line));
 
       if (args.empty())
       {

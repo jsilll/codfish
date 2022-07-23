@@ -37,7 +37,7 @@ namespace uci
         while (std::getline(std::cin, line))
         {
             std::string cmd;
-            std::vector<std::string> args = utils::tokenizeString(line);
+            std::vector<std::string> args = utils::tokenize(line);
             if (!args.empty())
             {
                 cmd = args[0];

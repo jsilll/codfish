@@ -13,7 +13,16 @@ namespace utils
      * @param text
      * @return std::vector<std::string>
      */
-    std::vector<std::string> tokenizeString(const std::string &text);
+    std::vector<std::string> tokenize(const std::string &text);
+
+    /**
+     * @brief Checks Whether a given FEN string is valid or not
+     *
+     * @param args
+     * @return true
+     * @return false
+     */
+    bool is_fen_valid(std::vector<std::string> &args);
 
     /**
      * @brief Command Abstract class

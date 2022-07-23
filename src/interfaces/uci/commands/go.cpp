@@ -15,7 +15,7 @@
 #define MIN_EVAL (INT_MIN + 1)
 #define WINDOW_EXPANSION 50
 
-static void displaySearchIteration(MovePicker::SearchResult result, int depth, std::chrono::duration<double> elapsed)
+static void display_search_iteration(MovePicker::SearchResult result, int depth, std::chrono::duration<double> elapsed)
 {
     std::cout << "info score cp " << result.score
               << " depth " << depth
@@ -40,7 +40,7 @@ static void search(std::future<void> future, MovePicker &ai, MovePicker::SearchR
         result = ai.find_best_move(depth, alpha, beta);
         auto end = std::chrono::system_clock::now();
 
-        displaySearchIteration(result, depth, end - start);
+        display_search_iteration(result, depth, end - start);
 
         if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
         {

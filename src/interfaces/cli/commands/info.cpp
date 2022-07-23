@@ -7,7 +7,7 @@
 void cli::InfoCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
 {
     std::string fen = board.get_fen();
-    std::vector<std::string> split_fen = utils::tokenizeString(fen);
+    std::vector<std::string> split_fen = utils::tokenize(fen);
     std::cout << "Side to Play                 = " << split_fen[1]
               << "\nCastling Rights              = " << split_fen[2]
               << "\nEn-passant Square            = " << split_fen[3]

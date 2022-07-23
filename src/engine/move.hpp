@@ -26,7 +26,7 @@ public:
   [[nodiscard]] bool is_castle() const;
   [[nodiscard]] bool is_capture() const;
   [[nodiscard]] bool is_promotion() const;
-  [[nodiscard]] int get_encoded() const;
+  [[nodiscard]] uint32_t get_encoded() const;
 
   [[nodiscard]] std::string get_uci() const;
 };

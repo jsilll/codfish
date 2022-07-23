@@ -7,7 +7,6 @@
 #include <engine/move.hpp>
 #include <engine/movegen/movegen.hpp>
 
-#include <algorithm>
 #include <climits>
 #include <cstring>
 
@@ -151,7 +150,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
             has_legal_moves = true;
 
             int score;
-            // First move, use Full Window Search
+            // First move, then use Full Window Search
             if (n_moves_searched == 0)
             {
                 _current_depth++;

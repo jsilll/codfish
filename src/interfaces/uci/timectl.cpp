@@ -2,8 +2,6 @@
 
 #include <engine/board.hpp>
 
-#include <bits/stdc++.h>
-
 namespace uci::timectl
 {
     int get_time_budget_ms(int wtime, int btime, const Board &board)

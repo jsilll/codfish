@@ -7,7 +7,6 @@
 #include <engine/movegen/tables.hpp>
 #include <engine/board.hpp>
 #include <engine/move.hpp>
-#include <engine/movepicker/movepicker.hpp>
 
 void setup()
 {

@@ -64,7 +64,7 @@ bool Move::is_promotion() const
   return this->get_promoted_piece() != EMPTY_PIECE;
 }
 
-int Move::get_encoded() const
+uint32_t Move::get_encoded() const
 {
   return _move_encoded;
 }
