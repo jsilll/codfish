@@ -34,3 +34,8 @@ inline bool operator==(const Move &m1, const Move &m2)
 {
   return m1.get_encoded() == m2.get_encoded();
 }
+
+inline bool operator!=(const Move &m1, const Move &m2)
+{
+  return m1.get_encoded() != m2.get_encoded();
+}
