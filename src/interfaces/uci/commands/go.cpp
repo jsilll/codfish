@@ -183,5 +183,5 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
     }
     search_thread.join();
 
-    std::cout << "bestmove " << Move(result.pv[0]).get_uci() << std::endl;
+    std::cout << "bestmove " << result.pv[0].get_uci() << std::endl;
 }

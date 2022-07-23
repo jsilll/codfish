@@ -3,6 +3,7 @@
 #include <engine/movegen/movegen.hpp>
 
 #include <iostream>
+#include <algorithm>
 
 void cli::CapturesCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
 {

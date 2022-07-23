@@ -7,6 +7,7 @@
 #include <engine/move.hpp>
 #include <engine/movegen/movegen.hpp>
 
+#include <algorithm>
 #include <climits>
 #include <cstring>
 

@@ -11,7 +11,7 @@ std::string Move::get_uci() const
 
 Move::Move(int source_square, int target_square, int piece, int captured_piece, int promoted_piece, bool is_double_push, bool is_en_passant, bool is_castle)
 {
-  _move_encoded = source_square | (target_square << 6) | (piece << 12) | (captured_piece << 15) | (promoted_piece << 18) | (is_double_push << 21) | (is_en_passant << 22) | (is_castle << 23);
+  _move_encoded = (uint32_t)source_square | ((uint32_t)target_square << 6) | ((uint32_t)piece << 12) | ((uint32_t)captured_piece << 15) | ((uint32_t)promoted_piece << 18) | ((uint32_t)is_double_push << 21) | ((uint32_t)is_en_passant << 22) | ((uint32_t)is_castle << 23);
 }
 
 int Move::get_from_square() const

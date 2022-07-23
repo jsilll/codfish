@@ -13,7 +13,6 @@ private:
 
 public:
   Move() : _move_encoded(0){};
-  explicit Move(int move_encoded) : _move_encoded(move_encoded){};
   Move(int source_square, int target_square, int piece, int captured_piece, int promoted_piece, bool is_double_push, bool is_en_passant, bool is_castle);
 
   [[nodiscard]] int get_from_square() const;
