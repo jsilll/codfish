@@ -275,7 +275,7 @@ namespace movegen
   static void generate_pawn_captures_with_promotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
-    constexpr int MASK_INDEX = ToMove == WHITE ? 0 : 1;
+    constexpr int MASK_INDEX = ToMove == WHITE ? 6 : 1;
     U64 pawns_can_capture_with_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_RANK[MASK_INDEX];
     while (pawns_can_capture_with_promo)
     {
@@ -298,7 +298,7 @@ namespace movegen
   static void generate_pawn_captures_no_promotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
-    constexpr int MASK_INDEX = ToMove == WHITE ? 0 : 1;
+    constexpr int MASK_INDEX = ToMove == WHITE ? 6 : 1;
     U64 pawns_can_capture_no_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[MASK_INDEX];
     while (pawns_can_capture_no_promo)
     {
