@@ -3,16 +3,23 @@
 #include "../catch.hpp"
 
 #include <engine/constants.hpp>
-#include <engine/movegen/magics.hpp>
-#include <engine/movegen/tables.hpp>
+
 #include <engine/board.hpp>
 #include <engine/move.hpp>
 #include <engine/movepicker/movepicker.hpp>
+
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
+
+#include <engine/movepicker/eval.hpp>
+#include <engine/movepicker/zobrist.hpp>
 
 void setup()
 {
     magics::init();
     tables::init();
+    eval::init();
+    zobrist::init();
 }
 
 TEST_CASE("Checkmate in one move")

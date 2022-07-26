@@ -8,7 +8,7 @@
 
 namespace bitboard
 {
-    int bit_count(U64 bb)
+    int bit_count(u64 bb)
     {
         unsigned int count = 0;
         while (bb)
@@ -19,7 +19,7 @@ namespace bitboard
         return (int)count;
     }
 
-    int bit_scan(U64 bb)
+    int bit_scan(u64 bb)
     {
         if (bb)
         {
@@ -28,7 +28,7 @@ namespace bitboard
         return -1;
     }
 
-    int bit_scan_forward(U64 bb)
+    int bit_scan_forward(u64 bb)
     {
         static const int index64[64] = {
             0, 47, 1, 56, 48, 27, 2, 60,
@@ -40,13 +40,13 @@ namespace bitboard
             25, 39, 14, 33, 19, 30, 9, 24,
             13, 18, 8, 12, 7, 6, 5, 63};
 
-        static const U64 debruijn64 = 0x03f79d71b4cb0a89;
+        static const u64 debruijn64 = 0x03f79d71b4cb0a89;
         return index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
     }
 
-    U64 set_occupancy(int index, int bits_in_mask, U64 attack_mask)
+    u64 set_occupancy(int index, int bits_in_mask, u64 attack_mask)
     {
-        U64 occupancy = ZERO;
+        u64 occupancy = ZERO;
         for (int bit = 0; bit < bits_in_mask; bit++)
         {
             int lsb_sq = bit_scan_forward(attack_mask);
@@ -59,7 +59,7 @@ namespace bitboard
         return occupancy;
     }
 
-    void print(U64 bb)
+    void print(u64 bb)
     {
         for (int i = 7; i >= 0; i--)
         {

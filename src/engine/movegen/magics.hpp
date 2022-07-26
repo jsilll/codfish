@@ -4,7 +4,7 @@
 
 namespace magics
 {
-  constexpr U64 MAGICS_BISHOP[N_SQUARES] = {
+  constexpr u64 MAGICS_BISHOP[N_SQUARES] = {
       0x40040844404084ULL,
       0x2004208a004208ULL,
       0x10190041080202ULL,
@@ -70,7 +70,7 @@ namespace magics
       0x8918844842082200ULL,
       0x4010011029020020ULL};
 
-  constexpr U64 MAGICS_ROOK[N_SQUARES] = {
+  constexpr u64 MAGICS_ROOK[N_SQUARES] = {
       0x8a80104000800020ULL,
       0x140002000100040ULL,
       0x2801880a0017001ULL,
@@ -138,8 +138,8 @@ namespace magics
 
   struct Magic
   {
-    U64 mask;
-    U64 magic;
+    u64 mask;
+    u64 magic;
     int shift;
   };
 

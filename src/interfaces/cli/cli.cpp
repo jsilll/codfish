@@ -11,6 +11,7 @@
 #include <engine/movegen/tables.hpp>
 
 #include <engine/movepicker/eval.hpp>
+#include <engine/movepicker/zobrist.hpp>
 
 #include <iostream>
 #include <string>
@@ -23,6 +24,7 @@ namespace cli
     magics::init();
     tables::init();
     eval::init();
+    zobrist::init();
 
     AsciiCommand ascii_command = AsciiCommand();
     CapturesCommand captures_command = CapturesCommand();

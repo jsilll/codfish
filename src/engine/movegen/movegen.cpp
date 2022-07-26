@@ -225,8 +225,8 @@ namespace movegen
   static void generate_pawn_double_pushes(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int PAWN_DOUBLE_PUSH_OFFSET = ToMove == WHITE ? -16 : 16;
-    constexpr U64 (*MASK_FUNC)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_double_pushes : attacks::mask_black_pawn_double_pushes;
-    U64 pawn_double_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
+    constexpr u64 (*MASK_FUNC)(u64 wpawns, u64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_double_pushes : attacks::mask_black_pawn_double_pushes;
+    u64 pawn_double_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
     while (pawn_double_pushes)
     {
       int to_square = bitboard::bit_scan_forward(pawn_double_pushes);
@@ -240,9 +240,9 @@ namespace movegen
   static void generate_pawn_single_push_with_promotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
-    constexpr U64 (*MASK_FUNC)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_single_pushes : attacks::mask_black_pawn_single_pushes;
-    U64 pawn_single_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
-    U64 pawn_single_pushes_promo = pawn_single_pushes & (tables::MASK_RANK[0] | tables::MASK_RANK[7]);
+    constexpr u64 (*MASK_FUNC)(u64 wpawns, u64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_single_pushes : attacks::mask_black_pawn_single_pushes;
+    u64 pawn_single_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
+    u64 pawn_single_pushes_promo = pawn_single_pushes & (tables::MASK_RANK[0] | tables::MASK_RANK[7]);
     while (pawn_single_pushes_promo)
     {
       int to_square = bitboard::bit_scan_forward(pawn_single_pushes_promo);
@@ -259,9 +259,9 @@ namespace movegen
   static void generate_pawn_single_push_no_promotion(std::vector<Move> &move_list, const Board &board)
   {
     constexpr int PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
-    constexpr U64 (*MASK_FUNC)(U64 wpawns, U64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_single_pushes : attacks::mask_black_pawn_single_pushes;
-    U64 pawn_single_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
-    U64 pawn_single_pushes_no_promo = pawn_single_pushes & tables::MASK_CLEAR_RANK[0] & tables::MASK_CLEAR_RANK[7];
+    constexpr u64 (*MASK_FUNC)(u64 wpawns, u64 empty) = ToMove == WHITE ? attacks::mask_white_pawn_single_pushes : attacks::mask_black_pawn_single_pushes;
+    u64 pawn_single_pushes = MASK_FUNC(board.get_pieces(ToMove, PAWN), ~board.get_occupancies(BOTH));
+    u64 pawn_single_pushes_no_promo = pawn_single_pushes & tables::MASK_CLEAR_RANK[0] & tables::MASK_CLEAR_RANK[7];
     while (pawn_single_pushes_no_promo)
     {
       int to_square = bitboard::bit_scan_forward(pawn_single_pushes_no_promo);
@@ -276,11 +276,11 @@ namespace movegen
   {
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
     constexpr int MASK_INDEX = ToMove == WHITE ? 6 : 1;
-    U64 pawns_can_capture_with_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_RANK[MASK_INDEX];
+    u64 pawns_can_capture_with_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_RANK[MASK_INDEX];
     while (pawns_can_capture_with_promo)
     {
       int from_square = bitboard::bit_scan_forward(pawns_can_capture_with_promo);
-      U64 pawn_captures_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(OPPONENT);
+      u64 pawn_captures_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(OPPONENT);
       while (pawn_captures_promo)
       {
         int to_square = bitboard::bit_scan_forward(pawn_captures_promo);
@@ -299,11 +299,11 @@ namespace movegen
   {
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
     constexpr int MASK_INDEX = ToMove == WHITE ? 6 : 1;
-    U64 pawns_can_capture_no_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[MASK_INDEX];
+    u64 pawns_can_capture_no_promo = board.get_pieces(ToMove, PAWN) & tables::MASK_CLEAR_RANK[MASK_INDEX];
     while (pawns_can_capture_no_promo)
     {
       int from_square = bitboard::bit_scan_forward(pawns_can_capture_no_promo);
-      U64 pawn_captures_no_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(OPPONENT);
+      u64 pawn_captures_no_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(OPPONENT);
       while (pawn_captures_no_promo)
       {
         int to_square = bitboard::bit_scan_forward(pawn_captures_no_promo);
@@ -320,7 +320,7 @@ namespace movegen
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
     if (board.get_en_passant_square() != -1)
     {
-      U64 pawns_can_en_passant = tables::ATTACKS_PAWN[OPPONENT][board.get_en_passant_square()] & board.get_pieces(ToMove, PAWN);
+      u64 pawns_can_en_passant = tables::ATTACKS_PAWN[OPPONENT][board.get_en_passant_square()] & board.get_pieces(ToMove, PAWN);
       while (pawns_can_en_passant)
       {
         int from_square = bitboard::bit_scan_forward(pawns_can_en_passant);
@@ -336,14 +336,14 @@ namespace movegen
     static_assert(PType == KNIGHT || PType == KING, "Unsupported piece type in generateLeaperMoves()");
 
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
-    constexpr U64 *ATTACKS_TABLE = PType == KNIGHT ? tables::ATTACKS_KNIGHT : tables::ATTACKS_KING;
-    U64 to_move_occupancies = board.get_occupancies(ToMove);
-    U64 opponent_occupancies = board.get_occupancies(OPPONENT);
-    U64 to_move_pieces = board.get_pieces(ToMove, PType);
+    constexpr u64 *ATTACKS_TABLE = PType == KNIGHT ? tables::ATTACKS_KNIGHT : tables::ATTACKS_KING;
+    u64 to_move_occupancies = board.get_occupancies(ToMove);
+    u64 opponent_occupancies = board.get_occupancies(OPPONENT);
+    u64 to_move_pieces = board.get_pieces(ToMove, PType);
     while (to_move_pieces)
     {
       int from_square = bitboard::bit_scan_forward(to_move_pieces);
-      U64 moves;
+      u64 moves;
       if constexpr (GType == QUIETS)
       {
         moves = ATTACKS_TABLE[from_square] & ~to_move_occupancies & ~opponent_occupancies;
@@ -375,16 +375,16 @@ namespace movegen
     static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generate_slider_moves()");
 
     constexpr PieceColor OPPONENT = ToMove == WHITE ? BLACK : WHITE;
-    constexpr U64 (*ATTACKS_FUNC)(int sq, U64 occ) = (PType == BISHOP ? tables::get_bishop_attacks
+    constexpr u64 (*ATTACKS_FUNC)(int sq, u64 occ) = (PType == BISHOP ? tables::get_bishop_attacks
                                                       : PType == ROOK ? tables::get_rook_attacks
                                                                       : tables::get_queen_attacks);
-    U64 to_move_occupancies = board.get_occupancies(ToMove);
-    U64 opponent_occupancies = board.get_occupancies(OPPONENT);
-    U64 to_move_pieces = board.get_pieces(ToMove, PType);
+    u64 to_move_occupancies = board.get_occupancies(ToMove);
+    u64 opponent_occupancies = board.get_occupancies(OPPONENT);
+    u64 to_move_pieces = board.get_pieces(ToMove, PType);
     while (to_move_pieces)
     {
       int from_square = bitboard::bit_scan_forward(to_move_pieces);
-      U64 moves;
+      u64 moves;
       if constexpr (GType == QUIETS)
       {
         moves = ATTACKS_FUNC(from_square, board.get_occupancies(BOTH)) & ~to_move_occupancies & ~opponent_occupancies;
