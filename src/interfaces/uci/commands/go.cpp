@@ -15,9 +15,48 @@
 #define MIN_EVAL (INT_MIN + 1)
 #define WINDOW_EXPANSION 50
 
-static void display_search_iteration(MovePicker::SearchResult result, int depth, std::chrono::duration<double> elapsed)
+struct UCIScore
 {
-    std::cout << "info score cp " << result.score
+    std::string repr;
+    bool is_mate;
+};
+
+static UCIScore score_to_uci(int score)
+{
+    if (score >= 0)
+    {
+        int check_mate_delta = (-MIN_EVAL) - score;
+        int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
+        if (moves_for_mate <= 16)
+        {
+            return UCIScore{std::string("mate ") + std::to_string(moves_for_mate), true};
+        }
+    }
+    else
+    {
+        int check_mate_delta = -MIN_EVAL - score;
+        int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
+        if (moves_for_mate <= 16)
+        {
+            return UCIScore{std::string("mate ") + std::to_string(moves_for_mate), true};
+        }
+    }
+
+    return UCIScore{std::string("cp ") + std::to_string(score), false};
+}
+
+/**
+ * @brief Displays all the necessary info about current iteration
+ * If score corresponds to a mate in x moves, returns true
+ *
+ * @param result
+ * @param depth
+ * @param elapsed
+ */
+static bool display_search_iteration(MovePicker::SearchResult result, int depth, std::chrono::duration<double> elapsed)
+{
+    UCIScore score = score_to_uci(result.score);
+    std::cout << "info score " << score.repr
               << " depth " << depth
               << " nodes " << result.nodes
               << " time " << (int)(elapsed / std::chrono::milliseconds(1))
@@ -26,21 +65,27 @@ static void display_search_iteration(MovePicker::SearchResult result, int depth,
     std::for_each(result.pv.cbegin(), result.pv.cend(), [](const Move &move)
                   { std::cout << move.get_uci() << " "; });
     std::cout << std::endl;
+
+    return score.is_mate;
 }
 
-static void search(std::future<void> future, MovePicker &ai, MovePicker::SearchResult &result)
+static void search(std::future<void> future, MovePicker &move_picker, MovePicker::SearchResult &result)
 {
-    ai.clear_tables();
+    move_picker.clear_tables();
 
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
-    for (int depth = 1; depth <= ai.get_max_depth(); depth++)
+    for (int depth = 1; depth <= move_picker.get_max_depth(); depth++)
     {
         auto start = std::chrono::system_clock::now();
-        result = ai.find_best_move(depth, alpha, beta);
+        result = move_picker.find_best_move(depth, alpha, beta);
         auto end = std::chrono::system_clock::now();
 
-        display_search_iteration(result, depth, end - start);
+        bool found_mate = display_search_iteration(result, depth, end - start);
+        if (found_mate)
+        {
+            break;
+        }
 
         if (future.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
         {
@@ -162,20 +207,20 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
     }
 
     MovePicker::SearchResult result;
-    MovePicker ai = MovePicker(board);
+    MovePicker move_picker = MovePicker(board);
 
     if (!depth && !infinite && wtime && btime)
     {
-        ai.set_max_depth(DEFAULT_MAX_DEPTH);
+        move_picker.set_max_depth(DEFAULT_MAX_DEPTH);
     }
     else
     {
-        ai.set_max_depth(DEFAULT_MIN_DEPTH);
+        move_picker.set_max_depth(DEFAULT_MIN_DEPTH);
     }
 
     std::promise<void> signal_exit;
     std::future<void> signal_exit_future = signal_exit.get_future();
-    std::thread search_thread(search, std::move(signal_exit_future), std::ref(ai), std::ref(result));
+    std::thread search_thread(search, std::move(signal_exit_future), std::ref(move_picker), std::ref(result));
     if ((board.get_side_to_move() == WHITE && wtime) || (board.get_side_to_move() == BLACK && btime))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, board)));
