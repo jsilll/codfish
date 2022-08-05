@@ -4,6 +4,7 @@
 #include <engine/bitboard.hpp>
 #include <engine/move.hpp>
 #include <engine/movegen/tables.hpp>
+#include <engine/movepicker/zobrist.hpp>
 
 #include <cstring>
 #include <iomanip>
@@ -21,6 +22,7 @@ Board::Board(const Board &board)
   _en_passant_square = board._en_passant_square;
   _half_move_clock = board._half_move_clock;
   _full_move_number = board._full_move_number;
+  _hash_key = board._hash_key;
 
   _ascii = board._ascii;
   _white_on_bottom = board._white_on_bottom;
@@ -108,6 +110,16 @@ int Board::get_half_move_clock() const
 int Board::get_full_move_number() const
 {
   return _full_move_number;
+}
+
+u64 Board::calculate_hash_key()
+{
+  return zobrist::generate_hash_key(*this);
+}
+
+u64 Board::get_hash_key()
+{
+  return _hash_key;
 }
 
 Board::Piece Board::get_piece_from_square(int sq) const
@@ -233,7 +245,7 @@ std::string Board::get_fen() const
 
 struct Board::GameState Board::get_state() const
 {
-  return GameState{_en_passant_square, _castling_rights, _half_move_clock};
+  return GameState{_en_passant_square, _castling_rights, _half_move_clock, _hash_key};
 }
 
 void Board::set_en_passant_square(int sq)
@@ -251,6 +263,7 @@ void Board::set_state(GameState state)
   _en_passant_square = state.en_passant_square;
   _castling_rights = state.castling_rights;
   _half_move_clock = state.half_move_clock;
+  _hash_key = state.hash_key;
 }
 
 void Board::display() const
@@ -321,6 +334,7 @@ void Board::clear()
   _en_passant_square = EMPTY_SQUARE;
   _half_move_clock = 0;
   _full_move_number = 0;
+  _hash_key = 0ULL; // replace with original
 
   _white_on_bottom = true;
 
@@ -466,6 +480,8 @@ void Board::set_from_fen(const std::string &piece_placements,
   _full_move_number = std::stoi(full_move_number);
 
   this->update_bb_from_squares();
+
+  _hash_key = this->calculate_hash_key();
 }
 
 int Board::switch_side_to_move()
@@ -505,27 +521,42 @@ void Board::make_move(const Move move)
   _square[from_square].type = EMPTY_PIECE;
   _square[from_square].color = BLACK;
 
+  // remove from hash key moved piece
+  _hash_key ^= zobrist::piece_keys[_to_move][piece][from_square];
+
   if (is_en_passant)
   {
     int captured_piece_square = to_square + pawn_push_en_passant_offset;
     _square[captured_piece_square].type = EMPTY_PIECE;
     _square[captured_piece_square].color = BLACK;
     bitboard::pop_bit(_pieces[this->get_opponent()][PAWN], captured_piece_square);
+
+    // remove from hash key captured pawn
+    _hash_key ^= zobrist::piece_keys[this->get_opponent()][PAWN][captured_piece_square];
   }
   else if (is_capture)
   {
     bitboard::pop_bit(_pieces[this->get_opponent()][captured_piece], to_square);
+
+    // remove from hash key captured piece
+    _hash_key ^= zobrist::piece_keys[this->get_opponent()][captured_piece][to_square];
   }
 
   if (is_promotion)
   {
     _square[to_square].type = promoted_piece;
     bitboard::set_bit(_pieces[_to_move][promoted_piece], to_square);
+
+    // add to hash key promoted piece
+    _hash_key ^= zobrist::piece_keys[_to_move][promoted_piece][to_square];
   }
   else
   {
     _square[to_square].type = piece;
     bitboard::set_bit(_pieces[_to_move][piece], to_square);
+
+    // add to hash key moved piece
+    _hash_key ^= zobrist::piece_keys[_to_move][piece][to_square];
   }
 
   _square[to_square].color = _to_move;
@@ -550,12 +581,30 @@ void Board::make_move(const Move move)
     _square[rook_to_square].color = _to_move;
 
     bitboard::pop_bit(_pieces[_to_move][ROOK], rook_from_square);
+    // remove from hash key rook
+    _hash_key ^= zobrist::piece_keys[_to_move][ROOK][rook_from_square];
     bitboard::set_bit(_pieces[_to_move][ROOK], rook_to_square);
+    // add to hash key rook
+    _hash_key ^= zobrist::piece_keys[_to_move][ROOK][rook_to_square];
   }
+
+  // remove from hash key castling rights and en passant
+  if (_en_passant_square != EMPTY_SQUARE)
+  {
+    _hash_key ^= zobrist::en_passant_keys[_en_passant_square];
+  }
+  _hash_key ^= zobrist::castle_keys[_castling_rights];
 
   _en_passant_square = is_double_push ? to_square + pawn_push_en_passant_offset : -1;
   _castling_rights &= castling_rights[from_square];
   _castling_rights &= castling_rights[to_square];
+
+  // update hash key with castling rights and en passant
+  if (_en_passant_square != EMPTY_SQUARE)
+  {
+    _hash_key ^= zobrist::en_passant_keys[_en_passant_square];
+  }
+  _hash_key ^= zobrist::castle_keys[_castling_rights];
 
   if (piece == PAWN || (is_capture))
   {
@@ -571,11 +620,15 @@ void Board::make_move(const Move move)
     _full_move_number++;
   }
 
+  // update from hash key side to move
+  _hash_key ^= zobrist::side_key[BLACK];
   this->switch_side_to_move();
+  // _hash_key ^= zobrist::side_key[_to_move];
+
   this->update_occupancies();
 }
 
-void Board::unmake_move(const Move move, const GameState info_board)
+void Board::unmake_move(const Move move, const GameState state)
 {
   this->switch_side_to_move();
 
@@ -651,9 +704,10 @@ void Board::unmake_move(const Move move, const GameState info_board)
     _full_move_number--;
   }
 
-  _en_passant_square = info_board.en_passant_square;
-  _castling_rights = info_board.castling_rights;
-  _half_move_clock = info_board.half_move_clock;
+  _en_passant_square = state.en_passant_square;
+  _castling_rights = state.castling_rights;
+  _half_move_clock = state.half_move_clock;
+  _hash_key = state.hash_key;
 
   this->update_occupancies();
 }

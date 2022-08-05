@@ -2,14 +2,6 @@
 
 #include <random>
 
-static u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
-
-static u64 en_passant_keys[N_SQUARES];
-
-static u64 castle_keys[16];
-
-static u64 side_key;
-
 static u64 generate_random_number_u64()
 {
     u64 n1 = ((u64)std::rand());
@@ -19,6 +11,14 @@ static u64 generate_random_number_u64()
 
 namespace zobrist
 {
+    u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
+
+    u64 en_passant_keys[N_SQUARES];
+
+    u64 castle_keys[16];
+
+    u64 side_key[BOTH] = {};
+
     void init()
     {
 
@@ -41,7 +41,7 @@ namespace zobrist
             castle_keys[castle_state] = generate_random_number_u64();
         }
 
-        side_key = generate_random_number_u64();
+        side_key[1] = generate_random_number_u64();
     }
 
     u64 generate_hash_key(const Board &board)
@@ -72,11 +72,12 @@ namespace zobrist
 
         final_key ^= castle_keys[board.get_castling_rights()];
 
-        if (board.get_side_to_move() == BLACK)
-        {
-            final_key ^= side_key;
-        }
+        // if (board.get_side_to_move() == BLACK)
+        // {
+        //     final_key ^= side_key[1];
+        // }
         // final_key ^= board.get_side_to_move() == WHITE ? 0ULL : side_key;
+        final_key ^= side_key[board.get_side_to_move()];
 
         return final_key;
     }

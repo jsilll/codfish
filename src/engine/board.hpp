@@ -18,6 +18,7 @@ public:
     int en_passant_square;
     int castling_rights;
     int half_move_clock;
+    u64 hash_key;
   };
 
 private:
@@ -26,6 +27,7 @@ private:
   int _en_passant_square;
   int _half_move_clock;
   int _full_move_number;
+  u64 _hash_key;
 
   u64 _pieces[N_SIDES][N_PIECES];
   u64 _occupancies[N_SIDES + 1];
@@ -60,6 +62,9 @@ public:
   void set_castling_rights(int castling_rights);
   void set_fifty_move(int fifty_move);
   void set_state(GameState state);
+
+  u64 calculate_hash_key();
+  u64 get_hash_key();
 
   void clear();
   void set_starting_position();
