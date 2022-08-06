@@ -7,39 +7,29 @@
 
 #include <iostream>
 #include <cstring>
+#include <random>
 
 namespace magics
 {
   Magic MAGIC_TABLE_BISHOP[N_SQUARES];
   Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
-  static unsigned int generate_random_number_u32()
+  static u64 generate_dense_random_number_u64()
   {
-    static unsigned int state = 1804289383;
-    unsigned int number = state;
-    number ^= number << 13;
-    number ^= number >> 17;
-    number ^= number << 5;
-    state = number;
-    return number;
-  }
-
-  static U64 generate_random_number_u64()
-  {
-    U64 n1 = ((U64)generate_random_number_u32()) & 0xFFFF;
-    U64 n2 = ((U64)generate_random_number_u32()) & 0xFFFF;
-    U64 n3 = ((U64)generate_random_number_u32()) & 0xFFFF;
-    U64 n4 = ((U64)generate_random_number_u32()) & 0xFFFF;
+    u64 n1 = ((u64)std::rand()) & 0xFFFF;
+    u64 n2 = ((u64)std::rand()) & 0xFFFF;
+    u64 n3 = ((u64)std::rand()) & 0xFFFF;
+    u64 n4 = ((u64)std::rand()) & 0xFFFF;
     return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
   }
 
-  static inline U64 get_magic_number_candidate() { return generate_random_number_u64() & generate_random_number_u64() & generate_random_number_u64(); }
+  static inline u64 get_magic_number_candidate() { return generate_dense_random_number_u64() & generate_dense_random_number_u64() & generate_dense_random_number_u64(); }
 
-  static U64 generate_magic_number(int sq, int relevant_bits, U64 (*mask_attacks_fun)(int), U64 (*mask_attacks_occ_fun)(int, U64))
+  static u64 generate_magic_number(int sq, int relevant_bits, u64 (*mask_attacks_fun)(int), u64 (*mask_attacks_occ_fun)(int, u64))
   {
     int occupancy_indices = 1 << relevant_bits;
-    U64 attack_mask = mask_attacks_fun(sq);
-    U64 occupancies[4096], attacks[4096], used_attacks[4096];
+    u64 attack_mask = mask_attacks_fun(sq);
+    u64 occupancies[4096], attacks[4096], used_attacks[4096];
 
     for (int i = 0; i < occupancy_indices; i++)
     {
@@ -49,7 +39,7 @@ namespace magics
 
     for (int max_tries = 0; max_tries < 99999999; max_tries++)
     {
-      U64 candidate = get_magic_number_candidate();
+      u64 candidate = get_magic_number_candidate();
 
       if (bitboard::bit_count((attack_mask * candidate) & 0xFF00000000000000) < 6)
       {
@@ -88,7 +78,7 @@ namespace magics
     for (int sq = 0; sq < 64; sq++)
     {
       int bit_count = tables::RELEVANT_BITS_COUNT_ROOK[sq];
-      U64 magic = generate_magic_number(sq, bit_count, &attacks::mask_rook_attack_rays, &attacks::mask_rook_attacks);
+      u64 magic = generate_magic_number(sq, bit_count, &attacks::mask_rook_attack_rays, &attacks::mask_rook_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
     std::cout << std::endl;
@@ -97,7 +87,7 @@ namespace magics
     for (int sq = 0; sq < 64; sq++)
     {
       int bit_count = tables::RELEVANT_BITS_COUNT_BISHOP[sq];
-      U64 magic = generate_magic_number(sq, bit_count, &attacks::mask_bishop_attack_rays, &attacks::mask_bishop_attacks);
+      u64 magic = generate_magic_number(sq, bit_count, &attacks::mask_bishop_attack_rays, &attacks::mask_bishop_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
     std::cout << std::endl;

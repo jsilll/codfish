@@ -70,12 +70,12 @@ void Board::update_bb_from_squares()
   this->update_occupancies();
 }
 
-U64 Board::get_pieces(int color, int type) const
+u64 Board::get_pieces(int color, int type) const
 {
   return _pieces[color][type];
 }
 
-U64 Board::get_occupancies(int color) const
+u64 Board::get_occupancies(int color) const
 {
   return _occupancies[color];
 }
@@ -117,27 +117,27 @@ Board::Piece Board::get_piece_from_square(int sq) const
 
 bool Board::is_square_attacked(int sq, int attacker) const
 {
-  U64 pawns = _pieces[attacker][PAWN];
+  u64 pawns = _pieces[attacker][PAWN];
   if (tables::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns)
   {
     return true;
   }
-  U64 knights = _pieces[attacker][KNIGHT];
+  u64 knights = _pieces[attacker][KNIGHT];
   if (tables::ATTACKS_KNIGHT[sq] & knights)
   {
     return true;
   }
-  U64 king = _pieces[attacker][KING];
+  u64 king = _pieces[attacker][KING];
   if (tables::ATTACKS_KING[sq] & king)
   {
     return true;
   }
-  U64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
+  u64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
   if (tables::get_bishop_attacks(sq, _occupancies[BOTH]) & bishopsQueens)
   {
     return true;
   }
-  U64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
+  u64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
   if (tables::get_rook_attacks(sq, _occupancies[BOTH]) & rooksQueens)
   {
     return true;

@@ -7,6 +7,7 @@
 #include <engine/board.hpp>
 
 #include <engine/movepicker/eval.hpp>
+#include <engine/movepicker/zobrist.hpp>
 
 #include <interfaces/uci/commands/commands.hpp>
 
@@ -21,6 +22,7 @@ namespace uci
         magics::init();
         tables::init();
         eval::init();
+        zobrist::init();
 
         Board board = Board();
 

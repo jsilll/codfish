@@ -5,21 +5,21 @@
 namespace attacks
 {
     // Pawn Pushes
-    U64 mask_white_pawn_single_pushes(U64 wpawns, U64 empty);
-    U64 mask_black_pawn_single_pushes(U64 bpawns, U64 empty);
-    U64 mask_white_pawn_double_pushes(U64 wpawns, U64 empty);
-    U64 mask_black_pawn_double_pushes(U64 bpawns, U64 empty);
+    u64 mask_white_pawn_single_pushes(u64 wpawns, u64 empty);
+    u64 mask_black_pawn_single_pushes(u64 bpawns, u64 empty);
+    u64 mask_white_pawn_double_pushes(u64 wpawns, u64 empty);
+    u64 mask_black_pawn_double_pushes(u64 bpawns, u64 empty);
 
     // Bishop and Rook Attack Rays
-    U64 mask_rook_attack_rays(int sq);
-    U64 mask_bishop_attack_rays(int sq);
+    u64 mask_rook_attack_rays(int sq);
+    u64 mask_bishop_attack_rays(int sq);
 
     // Attacks
-    U64 mask_white_pawn_any_attacks(U64 wpawns);
-    U64 mask_black_pawn_any_attacks(U64 bpawns);
-    U64 mask_knight_attacks(U64 knights);
-    U64 mask_king_attacks(U64 kings);
-    U64 mask_bishop_attacks(int sq, U64 block);
-    U64 mask_rook_attacks(int sq, U64 block);
+    u64 mask_white_pawn_any_attacks(u64 wpawns);
+    u64 mask_black_pawn_any_attacks(u64 bpawns);
+    u64 mask_knight_attacks(u64 knights);
+    u64 mask_king_attacks(u64 kings);
+    u64 mask_bishop_attacks(int sq, u64 block);
+    u64 mask_rook_attacks(int sq, u64 block);
 
 } // namespace attacks

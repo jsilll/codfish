@@ -27,8 +27,8 @@ private:
   int _half_move_clock;
   int _full_move_number;
 
-  U64 _pieces[N_SIDES][N_PIECES];
-  U64 _occupancies[N_SIDES + 1];
+  u64 _pieces[N_SIDES][N_PIECES];
+  u64 _occupancies[N_SIDES + 1];
 
   bool _ascii;
   bool _white_on_bottom;
@@ -41,8 +41,8 @@ public:
   Board();
   Board(const Board &board);
 
-  U64 get_pieces(int color, int type) const;
-  U64 get_occupancies(int color) const;
+  u64 get_pieces(int color, int type) const;
+  u64 get_occupancies(int color) const;
   int get_side_to_move() const;
   int get_opponent() const;
   int get_castling_rights() const;

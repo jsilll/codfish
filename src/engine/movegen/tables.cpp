@@ -6,12 +6,12 @@
 
 namespace tables
 {
-  U64 SQUARE_BB[N_SQUARES];
-  U64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
-  U64 ATTACKS_KNIGHT[N_SQUARES];
-  U64 ATTACKS_KING[N_SQUARES];
-  U64 ATTACKS_BISHOP[N_SQUARES][512];
-  U64 ATTACKS_ROOK[N_SQUARES][4096];
+  u64 SQUARE_BB[N_SQUARES];
+  u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
+  u64 ATTACKS_KNIGHT[N_SQUARES];
+  u64 ATTACKS_KING[N_SQUARES];
+  u64 ATTACKS_BISHOP[N_SQUARES][512];
+  u64 ATTACKS_ROOK[N_SQUARES][4096];
 
   void init()
   {
@@ -44,7 +44,7 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_BISHOP[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
+        u64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_BISHOP[sq], magics::MAGIC_TABLE_BISHOP[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_BISHOP[sq].magic) >> magics::MAGIC_TABLE_BISHOP[sq].shift);
         ATTACKS_BISHOP[sq][magic] = attacks::mask_bishop_attacks(sq, occupancy);
       }
@@ -55,7 +55,7 @@ namespace tables
       int occupancy_indices = 1 << RELEVANT_BITS_COUNT_ROOK[sq];
       for (int i = 0; i < occupancy_indices; i++)
       {
-        U64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
+        u64 occupancy = bitboard::set_occupancy(i, RELEVANT_BITS_COUNT_ROOK[sq], magics::MAGIC_TABLE_ROOK[sq].mask);
         int magic = (int)((occupancy * magics::MAGIC_TABLE_ROOK[sq].magic) >> magics::MAGIC_TABLE_ROOK[sq].shift);
         ATTACKS_ROOK[sq][magic] = attacks::mask_rook_attacks(sq, occupancy);
       }

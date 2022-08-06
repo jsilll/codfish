@@ -6,7 +6,7 @@
 
 namespace tables
 {
-    constexpr U64 MASK_RANK[] = {
+    constexpr u64 MASK_RANK[] = {
         0xFF,
         0xFF00,
         0xFF0000,
@@ -16,7 +16,7 @@ namespace tables
         0xFF000000000000,
         0xFF00000000000000};
 
-    constexpr U64 MASK_FILE[] = {
+    constexpr u64 MASK_FILE[] = {
         0x0101010101010101,
         0x202020202020202,
         0x404040404040404,
@@ -26,7 +26,7 @@ namespace tables
         0x4040404040404040,
         0x8080808080808080};
 
-    constexpr U64 MASK_CLEAR_RANK[] = {
+    constexpr u64 MASK_CLEAR_RANK[] = {
         0xFFFFFFFFFFFFFF00,
         0xFFFFFFFFFFFF00FF,
         0xFFFFFFFFFF00FFFF,
@@ -36,7 +36,7 @@ namespace tables
         0xFF00FFFFFFFFFFFF,
         0x00FFFFFFFFFFFFFF};
 
-    constexpr U64 MASK_CLEAR_FILE[] = {
+    constexpr u64 MASK_CLEAR_FILE[] = {
         0xFEFEFEFEFEFEFEFE,
         0xFDFDFDFDFDFDFDFD,
         0xFBFBFBFBFBFBFBFB,
@@ -70,18 +70,18 @@ namespace tables
     };
     // clang-format on
 
-    extern U64 SQUARE_BB[N_SQUARES];
+    extern u64 SQUARE_BB[N_SQUARES];
 
-    extern U64 ATTACKS_PAWN[BOTH][N_SQUARES]; // Direct Access TODO: make this accessible through function only?
-    extern U64 ATTACKS_KNIGHT[N_SQUARES];     // Direct Access
-    extern U64 ATTACKS_KING[N_SQUARES];       // Direct Access
+    extern u64 ATTACKS_PAWN[BOTH][N_SQUARES]; // Direct Access TODO: make this accessible through function only?
+    extern u64 ATTACKS_KNIGHT[N_SQUARES];     // Direct Access
+    extern u64 ATTACKS_KING[N_SQUARES];       // Direct Access
 
-    extern U64 ATTACKS_BISHOP[N_SQUARES][512]; // Needs Magics Bitboards For Accessing
-    extern U64 ATTACKS_ROOK[N_SQUARES][4096];  // Needs Magics Bitboards For Accessing
+    extern u64 ATTACKS_BISHOP[N_SQUARES][512]; // Needs Magics Bitboards For Accessing
+    extern u64 ATTACKS_ROOK[N_SQUARES][4096];  // Needs Magics Bitboards For Accessing
 
     void init();
 
-    inline U64 get_bishop_attacks(const int sq, U64 occ)
+    inline u64 get_bishop_attacks(const int sq, u64 occ)
     {
         occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
         occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
@@ -89,7 +89,7 @@ namespace tables
         return ATTACKS_BISHOP[sq][occ];
     }
 
-    inline U64 get_rook_attacks(const int sq, U64 occ)
+    inline u64 get_rook_attacks(const int sq, u64 occ)
     {
         occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
         occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
@@ -97,7 +97,7 @@ namespace tables
         return ATTACKS_ROOK[sq][occ];
     }
 
-    inline U64 get_queen_attacks(const int sq, U64 occ)
+    inline u64 get_queen_attacks(const int sq, u64 occ)
     {
         return get_bishop_attacks(sq, occ) | get_rook_attacks(sq, occ);
     }
