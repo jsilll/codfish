@@ -1,8 +1,9 @@
 #include <engine/movepicker/eval.hpp>
-
 #include <engine/utils.hpp>
 #include <engine/bitboard.hpp>
 #include <engine/board.hpp>
+
+#define set_bit(bitboard, square) ((bitboard) |= (1ULL << (square)))
 
 namespace eval
 {
@@ -148,6 +149,62 @@ namespace eval
     int PIECE_SCORES[] = {100, 280, 320, 479, 929, 60000};
     // clang-format on
 
+    /*
+          Rank mask            File mask           Isolated mask        Passed pawn mask
+        for square a6        for square f2         for square g2          for square c4
+    8  0 0 0 0 0 0 0 0    8  0 0 0 0 0 1 0 0    8  0 0 0 0 0 1 0 1     8  0 1 1 1 0 0 0 0
+    7  0 0 0 0 0 0 0 0    7  0 0 0 0 0 1 0 0    7  0 0 0 0 0 1 0 1     7  0 1 1 1 0 0 0 0
+    6  1 1 1 1 1 1 1 1    6  0 0 0 0 0 1 0 0    6  0 0 0 0 0 1 0 1     6  0 1 1 1 0 0 0 0
+    5  0 0 0 0 0 0 0 0    5  0 0 0 0 0 1 0 0    5  0 0 0 0 0 1 0 1     5  0 1 1 1 0 0 0 0
+    4  0 0 0 0 0 0 0 0    4  0 0 0 0 0 1 0 0    4  0 0 0 0 0 1 0 1     4  0 0 0 0 0 0 0 0
+    3  0 0 0 0 0 0 0 0    3  0 0 0 0 0 1 0 0    3  0 0 0 0 0 1 0 1     3  0 0 0 0 0 0 0 0
+    2  0 0 0 0 0 0 0 0    2  0 0 0 0 0 1 0 0    2  0 0 0 0 0 1 0 1     2  0 0 0 0 0 0 0 0
+    1  0 0 0 0 0 0 0 0    1  0 0 0 0 0 1 0 0    1  0 0 0 0 0 1 0 1     1  0 0 0 0 0 0 0 0
+       a b c d e f g h       a b c d e f g h       a b c d e f g h        a b c d e f g h 
+    */
+
+    // file masks [square]
+    U64 file_masks[64];
+
+    // rank masks [square]
+    U64 rank_masks[64];
+
+    // isolated pawn masks [square]
+    U64 isolated_masks[64];
+
+    // passed pawn masks [square]
+    U64 passed_masks[64];
+
+    U64 set_file_rank_mask(int file_number, int rank_number){
+        U64 mask = 0ULL;
+        for (int rank = 0; rank < 8;rank++){
+            for (int file = 0; file < 8;file++){
+                int square = rank*8 + file;  
+                
+                if (file_number != -1)
+                {
+                    // on file match
+                    if (file == file_number)
+                        mask |= set_bit(mask, square);
+                }
+                else if (rank_number != -1)
+                {
+                   
+                    if (rank == rank_number)
+                        mask |= set_bit(mask, square);
+                }
+               
+            }
+        }
+        return mask;
+    }
+
+    //init eval masks
+    void init_eval_masks(){
+        U64 mask = set_file_rank_mask(0,0);
+        bitboard::print(mask);
+    }
+
     void init()
     {
         for (int sq = A1; sq < N_SQUARES; sq++)
@@ -182,7 +239,11 @@ namespace eval
             EG_TABLE[BLACK][QUEEN][sq] = EG_QUEEN_TABLE[sq];
             EG_TABLE[BLACK][KING][sq] = EG_KING_TABLE[sq];
         }
+
+        init_eval_masks();
     }
+
+
 
     int eval(const Board &board)
     {
