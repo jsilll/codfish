@@ -3,10 +3,12 @@
 #include "../catch.hpp"
 
 #include <engine/constants.hpp>
-#include <engine/movegen/magics.hpp>
-#include <engine/movegen/tables.hpp>
+
 #include <engine/board.hpp>
 #include <engine/move.hpp>
+
+#include <engine/movegen/magics.hpp>
+#include <engine/movegen/tables.hpp>
 
 void setup()
 {

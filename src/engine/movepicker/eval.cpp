@@ -193,7 +193,7 @@ namespace eval
 
         for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
-            U64 pieces_white = board.get_pieces(WHITE, piece_type);
+            u64 pieces_white = board.get_pieces(WHITE, piece_type);
             while (pieces_white)
             {
                 int sq = bitboard::bit_scan_forward(pieces_white);
@@ -204,7 +204,7 @@ namespace eval
                 bitboard::pop_bit(pieces_white, sq);
             }
 
-            U64 pieces_black = board.get_pieces(BLACK, piece_type);
+            u64 pieces_black = board.get_pieces(BLACK, piece_type);
             while (pieces_black)
             {
                 int sq = bitboard::bit_scan_forward(pieces_black);
