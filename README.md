@@ -50,7 +50,7 @@ cmake
 
 ### Build Dependencies
 - C++ Standard Library
-- Catch2 (header included) for Unit Tests
+- [Catch2](https://github.com/catchorg/Catch2) (header included) for Unit Tests
 
 Usage
 ===
@@ -69,10 +69,10 @@ If this argument is not specified at startup the engine will default to UCI mode
 Files
 ===
 Chess-Engine consists of the following files:
-- [`CMakeLists.txt`](https://github.com/jsilll/chess-engine/blob/master/CMakeLists.txt), a file that contains the rules for building the engine using [`cmake`](https://cmake.org/).
+- [`CMakeLists.txt`](https://github.com/jsilll/chess-engine/blob/master/CMakeLists.txt), a file that contains the rules for building the engine using [cmake](https://cmake.org/).
 - [`src`](https://github.com/jsilll/chess-engine/blob/master/src), a subdirectory that contains all the source code for the engine.
 - [`tests`](https://github.com/jsilll/chess-engine/blob/master/tests), a subdirectory that contains all the source for the unit tests.
-- [`Doxyfile`](https://github.com/jsilll/chess-engine/blob/master/Doxyfile), a file for generating documentation for the source code using [`Doxygen`](https://doxygen.nl/).
+- [`Doxyfile`](https://github.com/jsilll/chess-engine/blob/master/Doxyfile), a file for generating documentation for the source code using [Doxygen](https://doxygen.nl/).
 
 Contributing
 ===
@@ -91,4 +91,4 @@ Terms of Use
 Chess-Engine is free, and distributed under the **MIT License**.
 
 For full details, read the copy of the MIT License found in the file named
-[*LICENSE*](https://github.com/jsilll/chess-engine/blob/master/LICENSE).
+[LICENSE](https://github.com/jsilll/chess-engine/blob/master/LICENSE).
