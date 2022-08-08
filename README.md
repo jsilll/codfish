@@ -1,7 +1,7 @@
 Chess-Engine
 ===
 
-[![Chess-Engine](https://github.com/jsilll/chess-engine/actions/workflows/cmake.yml/badge.svg)](https://github.com/dshawul/Scorpio/actions)
+[![Chess-Engine](https://github.com/jsilll/chess-engine/actions/workflows/cmake.yml/badge.svg)](https://github.com/jsilll/chess-engine/actions)
 
 Chess-Engine is a strong chess engine written in C++.
 
@@ -9,7 +9,7 @@ It comes with two operating modes: UCI and CLI:
 - The UCI mode is meant for use with a UCI-compatible graphical user interface. 
 - The CLI mode is meant for playing and testing the engine within the terminal.
 
-Currently, Chess-Engine still doesn't support opening books, endgame tables, multi-threading or any kind of neural network evaluation. Some of these features are intended to be implemented in future versions.
+Currently, Chess-Engine doesn't support opening books, endgame tables, multi-threading or any kind of neural network evaluation. Some of these features will certainly be implemented in future versions.
 
 The main goal of this project is to provide a simple introduction to newcomers to the chess programming world. The code is meant to be efficient and fast but also clean, maintainable and, above all, understandable.
 
