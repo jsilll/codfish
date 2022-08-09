@@ -16,27 +16,27 @@ The main goal of this project is to provide a simple introduction to newcomers t
 Features
 ===
 ### Interfaces
-- UCI Mode for GUI interaction
+- [UCI](http://wbec-ridderkerk.nl/html/UCIProtocol.html) Mode for GUI interaction
 - CLI Mode for Terminal Usage
 
 ### Move Generation
-- Bitboard Representation
-- Pre-calculated Attack Tables
-- Magic Bitboards
-- Pseudo-Legal Move Generation
-- Make Unmake Approach
+- [Bitboard Representation](https://www.chessprogramming.org/Bitboards)
+- [Pre-calculated Attack Tables](https://www.chessprogramming.org/Attack_and_Defend_Maps)
+- [Magic Bitboards](https://www.chessprogramming.org/Looking_for_Magics)
+- [Pseudo-Legal Move Generation](https://www.chessprogramming.org/Pseudo-Legal_Move)
+- [Make Unmake Approach](https://www.chessprogramming.org/Make_Move)
 
 ### Move Picker
-- PeSTO inspired evaluation function
-- NegaMax Search
-- Quiescense Search with Null Move Pruning
-- Move Sorting with PV, Killer, History and MVV LVA moves
-- Triangular PV-Table
-- Iterative Deepening
-- Principal Variation Search
-- Late Move Reduction
-- Null Move Pruning
-- Transposition Tables
+- [PeSTO inspired evaluation function](https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function)
+- [NegaMax Search](https://www.chessprogramming.org/Negamax)
+- [Quiescense Search with Null Move Pruning](https://www.chessprogramming.org/Quiescence_Search)
+- [Move Ordering with PV, Killer, History and MVV LVA moves](https://www.chessprogramming.org/index.php?title=Move_Ordering&mobileaction=toggle_view_mobile)
+- [Triangular PV-Table](https://www.chessprogramming.org/index.php?title=Triangular_PV-Table&mobileaction=toggle_view_mobile)
+- [Iterative Deepening](https://www.chessprogramming.org/Iterative_Deepening)
+- [Principal Variation Search](https://www.chessprogramming.org/Principal_Variation_Search)
+- [Late Move Reduction](https://www.chessprogramming.org/Late_Move_Reductions)
+- [Null Move Pruning](https://www.chessprogramming.org/Null_Move_Pruning)
+- [Transposition Table](https://en.wikipedia.org/wiki/Transposition_table)
 
 Building and Installation
 ===
@@ -78,12 +78,10 @@ Contributing
 ===
 Everyone is more than welcome to contribute to the development of the project. In case you want to help improve this project here's a list of resources to get you started with chess programming:
 
-- [Bitboard Chess Engine in C Video Tutorials Playlist](https://www.youtube.com/playlist?list=PLmN0neTso3Jxh8ZIylk74JpwfiWNI76Cs)
-- [Chess Program in 99 Steps](http://aghaznawi.comuf.com/computer%20chess/winglet/)
+- [Bitboard Chess Engine in C Video Tutorials Playlist](https://youtube.com/playlist?list=PLmN0neTso3Jxh8ZIylk74JpwfiWNI76Cs)
 - [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
 - [Chess Programming Youtube Channel](https://www.youtube.com/channel/UCB9-prLkPwgvlKKqDgXhsMQ)
 - [FEN Editor](http://en.lichess.org/editor)
-- [How Magic Bitboards Work](http://www.rivalchess.com/magic-bitboards/)
 - [Load PGN Files](http://en.lichess.org/paste)
 
 Terms of Use
