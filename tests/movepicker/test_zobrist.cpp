@@ -9,12 +9,39 @@
 
 #include <engine/movepicker/zobrist.hpp>
 #include <engine/movegen/tables.hpp>
+#include <engine/movegen/movegen.hpp>
 
 void setup()
 {
     magics::init();
     tables::init();
     zobrist::init();
+}
+
+int perft(Board &board, int depth)
+{
+    if (depth == 0)
+    {
+        return 1;
+    }
+
+    int nodes = 0;
+    for (const Move &move : movegen::generate_pseudo_legal_moves(board))
+    {
+        Board::GameState board_info = board.get_state();
+        board.make_move(move);
+        REQUIRE(board.calculate_hash_key() == board.get_hash_key());
+        int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
+        int attacker_side = board.get_side_to_move();
+        if (!board.is_square_attacked(king_sq, attacker_side))
+        {
+            nodes += perft(board, depth - 1);
+        }
+        board.unmake_move(move, board_info);
+        REQUIRE(board.calculate_hash_key() == board.get_hash_key());
+    }
+
+    return nodes;
 }
 
 TEST_CASE("hash_key")
@@ -98,5 +125,10 @@ TEST_CASE("hash_key")
         REQUIRE(zobrist::generate_hash_key(board) == board.get_hash_key());
         board.unmake_move(move, state);
         REQUIRE(board.calculate_hash_key() == board.get_hash_key());
+    }
+
+    SECTION("perft hash key")
+    {
+        perft(board, 5);
     }
 }
