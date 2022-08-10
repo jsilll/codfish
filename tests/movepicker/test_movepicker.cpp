@@ -12,7 +12,7 @@
 #include <engine/movegen/tables.hpp>
 
 #include <engine/movepicker/eval.hpp>
-#include <engine/movepicker/zobrist.hpp>
+#include <engine/zobrist.hpp>
 
 void setup()
 {

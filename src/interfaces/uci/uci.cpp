@@ -7,7 +7,7 @@
 #include <engine/board.hpp>
 
 #include <engine/movepicker/eval.hpp>
-#include <engine/movepicker/zobrist.hpp>
+#include <engine/zobrist.hpp>
 
 #include <interfaces/uci/commands/commands.hpp>
 

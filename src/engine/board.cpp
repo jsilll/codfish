@@ -4,7 +4,7 @@
 #include <engine/bitboard.hpp>
 #include <engine/move.hpp>
 #include <engine/movegen/tables.hpp>
-#include <engine/movepicker/zobrist.hpp>
+#include <engine/zobrist.hpp>
 
 #include <cstring>
 #include <iomanip>

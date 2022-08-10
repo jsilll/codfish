@@ -7,7 +7,7 @@
 #include <engine/board.hpp>
 #include <engine/move.hpp>
 
-#include <engine/movepicker/zobrist.hpp>
+#include <engine/zobrist.hpp>
 #include <engine/movegen/tables.hpp>
 #include <engine/movegen/movegen.hpp>
 
