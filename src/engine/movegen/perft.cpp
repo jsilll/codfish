@@ -20,10 +20,6 @@ namespace perft
         {
             Board::GameState board_info = board.get_state();
             board.make_move(move);
-            if (board.get_hash_key() != zobrist::generate_hash_key(board))
-            {
-                std::cout << "make: " << board.get_fen() << "   " << move.get_uci() << std::endl;
-            }
             int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
             int attacker_side = board.get_side_to_move();
             if (!board.is_square_attacked(king_sq, attacker_side))
@@ -31,10 +27,6 @@ namespace perft
                 nodes += perft(board, depth - 1);
             }
             board.unmake_move(move, board_info);
-            if (board.get_hash_key() != zobrist::generate_hash_key(board))
-            {
-                std::cout << "unmake: " << board.get_fen() << "   " << move.get_uci() << std::endl;
-            }
         }
 
         return nodes;

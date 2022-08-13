@@ -1,31 +1,30 @@
-#include <engine/movepicker/hashtable.hpp>
+#include <engine/movepicker/ttable.hpp>
 
 #include <cstring>
 #include <iostream>
 
-void TranspositionTable::clear()
+TTable::~TTable()
 {
-    std::cout << "entrei" << std::endl;
-    memset(_table, 0, sizeof(_table));
-    std::cout << "sai" << std::endl;
+    delete[] _table;
 }
 
-void TranspositionTable::set_entry(u64 hash_key, int depth, int flag, int score)
+void TTable::clear()
 {
-    std::cout << "entrei" << std::endl;
-    int entry = hash_key % HASH_SIZE;
+    memset(_table, 0, TABLE_SIZE);
+}
+
+void TTable::set_entry([[maybe_unused]] u64 hash_key, int depth, int flag, int score)
+{
+    int entry = hash_key % TABLE_SIZE;
     _table[entry].depth = depth;
     _table[entry].flag = flag;
     _table[entry].score = score;
-    std::cout << "sai" << std::endl;
 }
 
-TranspositionTable::TTOutput TranspositionTable::read_hash(u64 hash_key, int alpha, int beta, int depth)
+TTable::TTOutput TTable::read_hash(u64 hash_key, int alpha, int beta, int depth)
 {
-    std::cout << "entrei" << std::endl;
-    TTEntry hash_entry = _table[hash_key % HASH_SIZE];
     TTOutput search_result = {false, 0};
-
+    TTEntry hash_entry = _table[hash_key % TABLE_SIZE];
     if ((hash_entry.hash_key == hash_key) && (hash_entry.depth >= depth))
     {
         search_result.found = true;
@@ -44,6 +43,6 @@ TranspositionTable::TTOutput TranspositionTable::read_hash(u64 hash_key, int alp
             search_result.score = beta;
         }
     }
-    std::cout << "sai" << std::endl;
+
     return search_result;
 }

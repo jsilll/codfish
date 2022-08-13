@@ -7,18 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(chess_engine VERSION 1.0 DESCRIPTION "Chess Engine")
 
 set(CMAKE_CXX_FLAGS "-Wall -Wpedantic -Wextra -Wconversion -Werror")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
-
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS_DEBUG "-g")
-endif(CMAKE_BUILD_TYPE MATCHES Debug)
-
-if(CMAKE_BUILD_TYPE MATCHES Release)
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-endif(CMAKE_BUILD_TYPE MATCHES Release)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

@@ -102,9 +102,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 {
     _current_nodes++;
 
-    u64 hash_key = _board.get_hash_key();
-
-    TranspositionTable::TTOutput hash_read = _tt.read_hash(_board.get_hash_key(), alpha, beta, depth);
+    TTable::TTOutput hash_read = _tt.read_hash(_board.get_hash_key(), alpha, beta, depth);
 
     if (hash_read.found)
     {
@@ -125,6 +123,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         return quiescence(alpha, beta);
     }
 
+    u64 hash_key = _board.get_hash_key();
     Board::GameState state = _board.get_state();
 
     // Null Move Pruning (TODO: Zugzwang checking??)
@@ -139,7 +138,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         _current_depth -= 2;
         if (score >= beta)
         {
-            _tt.set_entry(hash_key, depth, HASH_FLAG_BETA, beta);
+            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta);
             return beta;
         }
     }
@@ -150,7 +149,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
-    int alpha_cutoff = HASH_FLAG_ALPHA;
+    int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
     for (const Move &move : moves)
     {
         _board.make_move(move);
@@ -211,7 +210,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 
                 _board.unmake_move(move, state);
 
-                _tt.set_entry(hash_key, depth, HASH_FLAG_BETA, beta);
+                _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta);
                 return beta;
             }
             else if (score > alpha)
@@ -223,7 +222,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
                 }
 
                 alpha = score;
-                alpha_cutoff = HASH_FLAG_SCORE;
+                alpha_cutoff = TTable::HASH_FLAG_SCORE;
                 best_move = move;
                 _pv_table.add(best_move, _current_depth);
             }
@@ -241,12 +240,12 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(hash_key, depth, HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
+            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
-        _tt.set_entry(hash_key, depth, HASH_FLAG_SCORE, 0);
+        _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -258,11 +257,9 @@ int MovePicker::quiescence(int alpha, int beta)
 {
     _current_nodes++;
 
-    u64 hash_key = _board.get_hash_key();
-
     if (_board.get_half_move_clock() == 100)
     {
-        _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, 0);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -271,11 +268,11 @@ int MovePicker::quiescence(int alpha, int beta)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
+            _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
             return MIN_EVAL + _current_depth;
         }
 
-        _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, 0);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -283,20 +280,21 @@ int MovePicker::quiescence(int alpha, int beta)
 
     if (stand_pat >= beta)
     {
-        _tt.set_entry(hash_key, 0, HASH_FLAG_BETA, beta);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta);
         return beta;
     }
 
-    int alpha_cutoff = HASH_FLAG_ALPHA;
+    int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
     if (stand_pat > alpha)
     {
-        alpha_cutoff = HASH_FLAG_SCORE;
+        alpha_cutoff = TTable::HASH_FLAG_SCORE;
         alpha = stand_pat;
     }
 
     auto captures = movegen::generate_pseudo_legal_captures(_board);
     std::sort(captures.begin(), captures.end(), _move_more_than_key);
 
+    u64 hash_key = _board.get_hash_key();
     Board::GameState state = _board.get_state();
     for (const Move &capture : captures)
     {
@@ -311,12 +309,12 @@ int MovePicker::quiescence(int alpha, int beta)
             if (score >= beta)
             {
                 _board.unmake_move(capture, state);
-                _tt.set_entry(hash_key, 0, HASH_FLAG_BETA, beta);
+                _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta);
                 return beta;
             }
             if (score > alpha)
             {
-                alpha_cutoff = HASH_FLAG_SCORE;
+                alpha_cutoff = TTable::HASH_FLAG_SCORE;
                 alpha = score;
             }
         }
@@ -324,7 +322,7 @@ int MovePicker::quiescence(int alpha, int beta)
         _board.unmake_move(capture, state);
     }
 
-    _tt.set_entry(hash_key, 0, alpha_cutoff, alpha);
+    _tt.set_entry(_board.get_hash_key(), 0, alpha_cutoff, alpha);
     return alpha;
 }
 
@@ -348,6 +346,11 @@ void MovePicker::clear_search_counters()
 {
     _current_nodes = 0;
     _current_depth = 0;
+}
+
+void MovePicker::clear_tt()
+{
+    _tt.clear();
 }
 
 // Public Methods

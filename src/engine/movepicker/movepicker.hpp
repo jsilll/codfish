@@ -5,7 +5,7 @@
 #include <engine/move.hpp>
 
 #include <engine/movepicker/pvtable.hpp>
-#include <engine/movepicker/hashtable.hpp>
+#include <engine/movepicker/ttable.hpp>
 
 #include <vector>
 
@@ -13,7 +13,6 @@ class MovePicker
 {
 private:
     static const int DEFAULT_MAX_DEPTH = 64;
-    static const int HASH_SIZE = 0x400000;
 
     Board &_board;
 
@@ -25,7 +24,7 @@ private:
     Move _killer_moves[2][DEFAULT_MAX_DEPTH]{};
 
     PVTable _pv_table;
-    TranspositionTable _tt{};
+    TTable _tt;
 
     struct MoveMoreThanKey
     {
@@ -59,9 +58,7 @@ private:
 
     void clear_search_counters();
 
-    void clear_tt()
-    {
-    }
+    void clear_tt();
 
 public:
     struct SearchResult
