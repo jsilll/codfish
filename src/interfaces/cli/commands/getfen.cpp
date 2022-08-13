@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void cli::GetFenCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::GetFenCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    std::cout << board.get_fen();
+    std::cout << _board.get_fen();
 }

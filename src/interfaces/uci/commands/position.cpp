@@ -31,7 +31,7 @@ static void handle_moves(std::vector<std::string> &moves, Board &board)
     }
 }
 
-void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
+void uci::PositionCommand::execute(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {
@@ -42,7 +42,7 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
     {
         args.erase(args.begin());
 
-        board.set_starting_position();
+        _board.set_starting_position();
     }
     else if (args[0] == "fen")
     {
@@ -60,7 +60,7 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
         }
         else
         {
-            board.set_from_fen(args[0], args[1], args[2], args[3], args[4], args[5]);
+            _board.set_from_fen(args[0], args[1], args[2], args[3], args[4], args[5]);
             args.erase(args.begin(), args.begin() + 6);
         }
     }
@@ -78,6 +78,6 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
     {
         args.erase(args.begin());
 
-        handle_moves(args, board);
+        handle_moves(args, _board);
     }
 }

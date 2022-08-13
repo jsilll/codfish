@@ -1,6 +1,6 @@
 #include <interfaces/uci/commands/commands.hpp>
 
-void uci::UCINewGameCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void uci::UCINewGameCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    board.set_starting_position();
+    _board.set_starting_position();
 }

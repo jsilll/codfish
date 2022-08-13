@@ -35,7 +35,7 @@ static void dperft(int depth, Board &board)
     std::cout << "Nodes Per Second: " << (double)total_nodes / elapsed_seconds.count() << std::endl;
 }
 
-void cli::DividedPerftCommand::execute(std::vector<std::string> &args, Board &board)
+void cli::DividedPerftCommand::execute(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {
@@ -56,7 +56,7 @@ void cli::DividedPerftCommand::execute(std::vector<std::string> &args, Board &bo
 
     if (depth >= 0)
     {
-        dperft(depth, board);
+        dperft(depth, _board);
     }
     else
     {

@@ -1,6 +1,6 @@
 #include <interfaces/uci/commands/commands.hpp>
 
-void uci::DisplayCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void uci::DisplayCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    board.display();
+    _board.display();
 }

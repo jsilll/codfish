@@ -26,26 +26,26 @@ namespace cli
     eval::init();
     zobrist::init();
 
-    AsciiCommand ascii_command = AsciiCommand();
-    CapturesCommand captures_command = CapturesCommand();
-    DisplayCommand display_command = DisplayCommand();
-    DividedPerftCommand dperft_command = DividedPerftCommand();
-    EvalCommand eval_command = EvalCommand();
-    ExitCommand exit_command = ExitCommand();
-    GetFenCommand get_fen_command = GetFenCommand();
-    HelpCommand help_command = HelpCommand();
-    InfoCommand info_command = InfoCommand();
-    MagicsCommand magics_command = MagicsCommand();
-    MoveCommand move_command = MoveCommand();
-    MovesCommand moves_command = MovesCommand();
-    NewCommand new_command = NewCommand();
-    PerftCommand perft_command = PerftCommand();
-    PLMovesCommand pl_moves_command = PLMovesCommand();
-    RotateCommand rotate_command = RotateCommand();
-    SetFenCommand set_fen_command = SetFenCommand();
-    SwitchCommand switch_command = SwitchCommand();
-
     Board board = Board();
+
+    AsciiCommand ascii_command = AsciiCommand(board);
+    CapturesCommand captures_command = CapturesCommand(board);
+    DisplayCommand display_command = DisplayCommand(board);
+    DividedPerftCommand dperft_command = DividedPerftCommand(board);
+    EvalCommand eval_command = EvalCommand(board);
+    ExitCommand exit_command = ExitCommand(board);
+    GetFenCommand get_fen_command = GetFenCommand(board);
+    HelpCommand help_command = HelpCommand(board);
+    InfoCommand info_command = InfoCommand(board);
+    MagicsCommand magics_command = MagicsCommand(board);
+    MoveCommand move_command = MoveCommand(board);
+    MovesCommand moves_command = MovesCommand(board);
+    NewCommand new_command = NewCommand(board);
+    PerftCommand perft_command = PerftCommand(board);
+    PLMovesCommand pl_moves_command = PLMovesCommand(board);
+    RotateCommand rotate_command = RotateCommand(board);
+    SetFenCommand set_fen_command = SetFenCommand(board);
+    SwitchCommand switch_command = SwitchCommand(board);
 
     for (;;)
     {
@@ -65,75 +65,75 @@ namespace cli
 
       if (cmd == "help")
       {
-        help_command.execute(args, board);
+        help_command.execute(args);
       }
       else if (cmd == "ascii")
       {
-        ascii_command.execute(args, board);
+        ascii_command.execute(args);
       }
       else if (cmd == "display")
       {
-        display_command.execute(args, board);
+        display_command.execute(args);
       }
       else if (cmd == "dperft")
       {
-        dperft_command.execute(args, board);
+        dperft_command.execute(args);
       }
       else if (cmd == "eval")
       {
-        eval_command.execute(args, board);
+        eval_command.execute(args);
       }
       else if (cmd == "exit")
       {
-        exit_command.execute(args, board);
+        exit_command.execute(args);
       }
       else if (cmd == "info")
       {
-        info_command.execute(args, board);
+        info_command.execute(args);
       }
       else if (cmd == "magics")
       {
-        magics_command.execute(args, board);
+        magics_command.execute(args);
       }
       else if (cmd == "move")
       {
-        move_command.execute(args, board);
+        move_command.execute(args);
       }
       else if (cmd == "moves")
       {
-        moves_command.execute(args, board);
+        moves_command.execute(args);
       }
       else if (cmd == "plmoves")
       {
-        pl_moves_command.execute(args, board);
+        pl_moves_command.execute(args);
       }
       else if (cmd == "captures")
       {
-        captures_command.execute(args, board);
+        captures_command.execute(args);
       }
       else if (cmd == "new")
       {
-        new_command.execute(args, board);
+        new_command.execute(args);
       }
       else if (cmd == "perft")
       {
-        perft_command.execute(args, board);
+        perft_command.execute(args);
       }
       else if (cmd == "getfen")
       {
-        get_fen_command.execute(args, board);
+        get_fen_command.execute(args);
       }
       else if (cmd == "rotate")
       {
-        rotate_command.execute(args, board);
+        rotate_command.execute(args);
       }
       else if (cmd == "setfen")
       {
-        set_fen_command.execute(args, board);
+        set_fen_command.execute(args);
       }
       else if (cmd == "switch")
       {
-        switch_command.execute(args, board);
+        switch_command.execute(args);
       }
       else
       {
