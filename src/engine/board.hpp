@@ -64,7 +64,6 @@ public:
   void set_state(GameState state);
 
   u64 calculate_hash_key();
-  u64 get_hash_key();
 
   void clear();
   void set_starting_position();

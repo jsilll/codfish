@@ -28,17 +28,17 @@ TranspositionTable::TTOutput TranspositionTable::read_hash(u64 hash_key, int alp
     if ((hash_entry->hash_key == hash_key) && (hash_entry->depth >= depth))
     {
         search_result.found = true;
-        if (hash_entry->flag == hash_flag_score)
+        if (hash_entry->flag == HASH_FLAG_SCORE)
         {
             search_result.score = hash_entry->score;
         }
 
-        if ((hash_entry->flag == hash_flag_alpha) && (hash_entry->score <= alpha))
+        if ((hash_entry->flag == HASH_FLAG_ALPHA) && (hash_entry->score <= alpha))
         {
             search_result.score = alpha;
         }
 
-        if ((hash_entry->flag == hash_flag_beta) && (hash_entry->score > beta))
+        if ((hash_entry->flag == HASH_FLAG_BETA) && (hash_entry->score > beta))
         {
             search_result.score = beta;
         }

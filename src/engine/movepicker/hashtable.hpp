@@ -2,9 +2,9 @@
 
 #include <engine/constants.hpp>
 
-#define hash_flag_score 0
-#define hash_flag_alpha 1
-#define hash_flag_beta 2
+#define HASH_FLAG_SCORE 0
+#define HASH_FLAG_ALPHA 1
+#define HASH_FLAG_BETA 2
 
 class TranspositionTable
 {

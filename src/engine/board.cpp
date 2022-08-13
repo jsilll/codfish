@@ -117,11 +117,6 @@ u64 Board::calculate_hash_key()
   return zobrist::generate_hash_key(*this);
 }
 
-u64 Board::get_hash_key()
-{
-  return _hash_key;
-}
-
 Board::Piece Board::get_piece_from_square(int sq) const
 {
   return _square[sq];

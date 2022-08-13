@@ -21,7 +21,6 @@ namespace zobrist
 
     void init()
     {
-
         for (int piece = PAWN; piece < N_PIECES; piece++)
         {
             for (int square = A1; square < N_SQUARES; square++)
@@ -47,19 +46,15 @@ namespace zobrist
     u64 generate_hash_key(const Board &board)
     {
         u64 final_key = 0ULL;
-
         for (int piece = PAWN; piece < N_PIECES; piece++)
         {
             for (int side = WHITE; side < BOTH; side++)
             {
                 u64 bitboard = board.get_pieces(side, piece);
-
                 while (bitboard)
                 {
                     int sq = bitboard::bit_scan_forward(bitboard);
-
                     final_key ^= piece_keys[side][piece][sq];
-
                     bitboard::pop_bit(bitboard, sq);
                 }
             }
@@ -71,14 +66,7 @@ namespace zobrist
         }
 
         final_key ^= castle_keys[board.get_castling_rights()];
-
-        // if (board.get_side_to_move() == BLACK)
-        // {
-        //     final_key ^= side_key[1];
-        // }
-        // final_key ^= board.get_side_to_move() == WHITE ? 0ULL : side_key;
         final_key ^= side_key[board.get_side_to_move()];
-
         return final_key;
     }
 

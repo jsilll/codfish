@@ -5,6 +5,7 @@
 #include <engine/bitboard.hpp>
 #include <engine/board.hpp>
 #include <engine/move.hpp>
+#include <engine/zobrist.hpp>
 #include <engine/movegen/movegen.hpp>
 
 #include <algorithm>
@@ -16,9 +17,6 @@
 #define FULL_DEPTH_MOVES 4
 #define WINDOW_EXPANSION 50
 #define MIN_EVAL (INT_MIN + 1)
-#define hash_flag_exact 0
-#define hash_flag_alpha 1
-#define hash_flag_beta 2
 
 static bool can_lmr(const Move move)
 {
@@ -105,8 +103,8 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 {
     _current_nodes++;
 
-    u64 hash_key = _board.get_hash_key();
-    TranspositionTable::TTOutput hash_read = _tt.read_hash(_board.get_hash_key(), alpha, beta, depth);
+    u64 hash_key = zobrist::generate_hash_key(_board);
+    TranspositionTable::TTOutput hash_read = _tt.read_hash(zobrist::generate_hash_key(_board), alpha, beta, depth);
 
     if (hash_read.found)
     {
@@ -141,7 +139,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         _current_depth -= 2;
         if (score >= beta)
         {
-            _tt.set_entry(hash_key, depth, hash_flag_beta, beta);
+            _tt.set_entry(hash_key, depth, HASH_FLAG_BETA, beta);
             return beta;
         }
     }
@@ -152,7 +150,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
-    int alpha_cutoff = hash_flag_alpha;
+    int alpha_cutoff = HASH_FLAG_ALPHA;
     for (const Move &move : moves)
     {
         _board.make_move(move);
@@ -213,7 +211,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 
                 _board.unmake_move(move, state);
 
-                _tt.set_entry(hash_key, depth, hash_flag_beta, beta);
+                _tt.set_entry(hash_key, depth, HASH_FLAG_BETA, beta);
                 return beta;
             }
             else if (score > alpha)
@@ -225,7 +223,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
                 }
 
                 alpha = score;
-                alpha_cutoff = hash_flag_score;
+                alpha_cutoff = HASH_FLAG_SCORE;
                 best_move = move;
                 _pv_table.add(best_move, _current_depth);
             }
@@ -243,12 +241,12 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(hash_key, depth, hash_flag_score, MIN_EVAL + _current_depth);
+            _tt.set_entry(hash_key, depth, HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
-        _tt.set_entry(hash_key, depth, hash_flag_score, 0);
+        _tt.set_entry(hash_key, depth, HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -260,11 +258,11 @@ int MovePicker::quiescence(int alpha, int beta)
 {
     _current_nodes++;
 
-    u64 hash_key = _board.get_hash_key();
+    u64 hash_key = zobrist::generate_hash_key(_board);
 
     if (_board.get_half_move_clock() == 100)
     {
-        _tt.set_entry(hash_key, 0, hash_flag_score, 0);
+        _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -273,11 +271,11 @@ int MovePicker::quiescence(int alpha, int beta)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(hash_key, 0, hash_flag_score, MIN_EVAL + _current_depth);
+            _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
             return MIN_EVAL + _current_depth;
         }
 
-        _tt.set_entry(hash_key, 0, hash_flag_score, 0);
+        _tt.set_entry(hash_key, 0, HASH_FLAG_SCORE, 0);
         return 0;
     }
 
@@ -285,14 +283,14 @@ int MovePicker::quiescence(int alpha, int beta)
 
     if (stand_pat >= beta)
     {
-        _tt.set_entry(hash_key, 0, hash_flag_beta, beta);
+        _tt.set_entry(hash_key, 0, HASH_FLAG_BETA, beta);
         return beta;
     }
 
-    int alpha_cutoff = hash_flag_alpha;
+    int alpha_cutoff = HASH_FLAG_ALPHA;
     if (stand_pat > alpha)
     {
-        alpha_cutoff = hash_flag_score;
+        alpha_cutoff = HASH_FLAG_SCORE;
         alpha = stand_pat;
     }
 
@@ -313,12 +311,12 @@ int MovePicker::quiescence(int alpha, int beta)
             if (score >= beta)
             {
                 _board.unmake_move(capture, state);
-                _tt.set_entry(hash_key, 0, hash_flag_beta, beta);
+                _tt.set_entry(hash_key, 0, HASH_FLAG_BETA, beta);
                 return beta;
             }
             if (score > alpha)
             {
-                alpha_cutoff = hash_flag_score;
+                alpha_cutoff = HASH_FLAG_SCORE;
                 alpha = score;
             }
         }
