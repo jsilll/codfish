@@ -46,7 +46,7 @@ Currently Chess-Engine is meant to be built only for Unix systems (although it m
 
 To compile the source code and the unit tests into their respective binaries:
 ```
-cmake
+cmake --build build --config Release --target all -j 10 --
 ```
 
 ### Build Dependencies
