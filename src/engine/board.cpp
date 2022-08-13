@@ -112,9 +112,9 @@ int Board::get_full_move_number() const
   return _full_move_number;
 }
 
-u64 Board::calculate_hash_key()
+u64 Board::get_hash_key() const
 {
-  return zobrist::generate_hash_key(*this);
+  return _hash_key;
 }
 
 Board::Piece Board::get_piece_from_square(int sq) const
@@ -476,7 +476,7 @@ void Board::set_from_fen(const std::string &piece_placements,
 
   this->update_bb_from_squares();
 
-  _hash_key = this->calculate_hash_key();
+  _hash_key = zobrist::generate_hash_key(*this);
 }
 
 int Board::switch_side_to_move()

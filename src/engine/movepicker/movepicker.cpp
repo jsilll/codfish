@@ -5,7 +5,6 @@
 #include <engine/bitboard.hpp>
 #include <engine/board.hpp>
 #include <engine/move.hpp>
-#include <engine/zobrist.hpp>
 #include <engine/movegen/movegen.hpp>
 
 #include <algorithm>
@@ -103,8 +102,9 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 {
     _current_nodes++;
 
-    u64 hash_key = zobrist::generate_hash_key(_board);
-    TranspositionTable::TTOutput hash_read = _tt.read_hash(zobrist::generate_hash_key(_board), alpha, beta, depth);
+    u64 hash_key = _board.get_hash_key();
+
+    TranspositionTable::TTOutput hash_read = _tt.read_hash(_board.get_hash_key(), alpha, beta, depth);
 
     if (hash_read.found)
     {
@@ -258,7 +258,7 @@ int MovePicker::quiescence(int alpha, int beta)
 {
     _current_nodes++;
 
-    u64 hash_key = zobrist::generate_hash_key(_board);
+    u64 hash_key = _board.get_hash_key();
 
     if (_board.get_half_move_clock() == 100)
     {

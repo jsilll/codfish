@@ -20,7 +20,7 @@ namespace perft
         {
             Board::GameState board_info = board.get_state();
             board.make_move(move);
-            if (board.calculate_hash_key() != zobrist::generate_hash_key(board))
+            if (board.get_hash_key() != zobrist::generate_hash_key(board))
             {
                 std::cout << "make: " << board.get_fen() << "   " << move.get_uci() << std::endl;
             }
@@ -31,7 +31,7 @@ namespace perft
                 nodes += perft(board, depth - 1);
             }
             board.unmake_move(move, board_info);
-            if (board.calculate_hash_key() != zobrist::generate_hash_key(board))
+            if (board.get_hash_key() != zobrist::generate_hash_key(board))
             {
                 std::cout << "unmake: " << board.get_fen() << "   " << move.get_uci() << std::endl;
             }
