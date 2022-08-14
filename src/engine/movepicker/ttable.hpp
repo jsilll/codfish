@@ -5,32 +5,31 @@
 class TTable
 {
 private:
-    struct TTEntry // transposition table entry
+    struct TTEntry
     {
         u64 hash_key;
         int depth;
         int flag;
         int score;
-        // TODO: list of moves
+        // TODO: List Of Moves
     };
 
     static const int TABLE_SIZE = 0x400000;
 
-    TTEntry *_table;
+    TTEntry *_table = new TTEntry[TABLE_SIZE];
 
 public:
     static const int HASH_FLAG_SCORE = 0;
     static const int HASH_FLAG_ALPHA = 1;
     static const int HASH_FLAG_BETA = 2;
 
-    struct TTOutput // transposition table entry
+    struct TTOutput
     {
         bool found;
         int score;
-        // TODO: list of moves
+        // TODO: List Of Moves
     };
 
-    TTable() : _table(new TTEntry[TABLE_SIZE]){};
     ~TTable();
 
     void clear();
