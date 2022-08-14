@@ -399,7 +399,7 @@ MovePicker::SearchResult MovePicker::find_best_move()
         beta = score + WINDOW_EXPANSION;
     }
 
-    auto result = SearchResult{alpha, _current_nodes, _pv_table.get_pV()};
+    auto result = SearchResult{alpha, _current_nodes, _pv_table.get_pv()};
     return result;
 }
 
@@ -414,7 +414,7 @@ MovePicker::SearchResult MovePicker::find_best_move(int depth, int alpha, int be
 {
     this->clear_search_counters();
     int score = search(depth, alpha, beta);
-    auto result = SearchResult{score, _current_nodes, _pv_table.get_pV()};
+    auto result = SearchResult{score, _current_nodes, _pv_table.get_pv()};
     return result;
 }
 

@@ -9,7 +9,7 @@ Move PVTable::get_pv_move(int depth)
     return _table[depth][depth];
 }
 
-std::vector<Move> PVTable::get_pV()
+std::vector<Move> PVTable::get_pv()
 {
     std::vector<Move> res;
     for (int i = 0; i < _length[0]; i++)

@@ -14,7 +14,7 @@ private:
 
 public:
     Move get_pv_move(int depth);
-    std::vector<Move> get_pV();
+    std::vector<Move> get_pv();
 
     void clear();
     void set_length(int depth);
