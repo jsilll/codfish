@@ -34,11 +34,11 @@ static UCIScore score_to_uci(int score)
     }
     else
     {
-        int check_mate_delta = -MIN_EVAL - score;
+        int check_mate_delta = -(MIN_EVAL - score);
         int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
-        if (-16 <= moves_for_mate && moves_for_mate < 0)
+        if (0 < moves_for_mate && moves_for_mate <= 16)
         {
-            return UCIScore{std::string("mate ") + std::to_string(moves_for_mate), true};
+            return UCIScore{std::string("mate ") + std::to_string(-moves_for_mate), true};
         }
     }
 
