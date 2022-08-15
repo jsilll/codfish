@@ -53,7 +53,7 @@ void Board::update_occupancies()
   _occupancies[BOTH] |= _occupancies[BLACK];
 }
 
-void Board::update_bb_from_squares()
+void Board::update_bitboards_from_squares()
 {
   for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
   {
@@ -319,9 +319,9 @@ void Board::clear()
     {
       _pieces[color][piece_type] = ZERO;
     }
-
     _occupancies[color] = ZERO;
   }
+
   _occupancies[BOTH] = ZERO;
 
   _to_move = WHITE;
@@ -329,7 +329,7 @@ void Board::clear()
   _en_passant_square = EMPTY_SQUARE;
   _half_move_clock = 0;
   _full_move_number = 0;
-  _hash_key = 0ULL; // replace with original
+  _hash_key = ZERO;
 
   _white_on_bottom = true;
 
@@ -474,7 +474,7 @@ void Board::set_from_fen(const std::string &piece_placements,
 
   _full_move_number = std::stoi(full_move_number);
 
-  this->update_bb_from_squares();
+  this->update_bitboards_from_squares();
 
   _hash_key = zobrist::generate_hash_key(*this);
 }

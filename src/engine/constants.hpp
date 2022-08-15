@@ -2,11 +2,6 @@
 
 #include <string>
 
-typedef uint64_t u64;
-
-constexpr u64 ONE = 1ULL;
-constexpr u64 ZERO = 0ULL;
-
 // clang-format off
 enum Square : int {
   A1, B1, C1, D1, E1, F1, G1, H1,

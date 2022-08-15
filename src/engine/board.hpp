@@ -1,5 +1,6 @@
 #pragma once
 
+#include <engine/bitboard.hpp>
 #include <engine/constants.hpp>
 
 class Move;
@@ -32,12 +33,12 @@ private:
   u64 _pieces[N_SIDES][N_PIECES];
   u64 _occupancies[N_SIDES + 1];
 
-  bool _ascii;
+  bool _ascii{};
   bool _white_on_bottom;
   Piece _square[N_SQUARES];
 
   void update_occupancies();
-  void update_bb_from_squares();
+  void update_bitboards_from_squares();
 
 public:
   Board();
@@ -82,6 +83,7 @@ public:
   bool rotate_display();
 };
 
+#ifdef DEBUG
 inline bool operator==(const Board::Piece &p1, const Board::Piece &p2)
 {
   return p1.color == p2.color && p1.type == p2.type;
@@ -162,3 +164,5 @@ inline bool operator==(const Board &b1, const Board &b2)
 
   return true;
 }
+
+#endif

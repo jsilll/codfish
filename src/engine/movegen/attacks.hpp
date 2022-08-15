@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/constants.hpp>
+#include <engine/bitboard.hpp>
 
 namespace attacks
 {

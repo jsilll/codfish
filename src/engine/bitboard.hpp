@@ -1,9 +1,15 @@
 #pragma once
 
-#include <engine/constants.hpp>
+#include <cstdint>
+
+typedef std::uint64_t u64;
+
+constexpr u64 ONE = 1ULL;
+constexpr u64 ZERO = 0ULL;
 
 namespace bitboard
 {
+
     // Common Bitboard Operations
     inline bool get_bit(u64 bb, int sq) { return ((bb >> sq) & 1ULL); }
     inline void pop_bit(u64 &bn, int sq) { bn &= ~(1ULL << sq); }

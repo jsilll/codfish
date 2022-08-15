@@ -1,5 +1,6 @@
 #pragma once
 
+#include <engine/bitboard.hpp>
 #include <engine/constants.hpp>
 
 namespace magics
