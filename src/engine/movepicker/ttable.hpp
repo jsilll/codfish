@@ -1,6 +1,9 @@
 #pragma once
 
 #include <engine/bitboard.hpp>
+#include <engine/move.hpp>
+
+#include <vector>
 
 class TTable
 {
@@ -11,7 +14,7 @@ private:
         int depth;
         int flag;
         int score;
-        // TODO: List Of Moves
+        std::vector<Move> moves;
     };
 
     static const int TABLE_SIZE = 0x400000;
@@ -27,12 +30,12 @@ public:
     {
         bool found;
         int score;
-        // TODO: List Of Moves
+        std::vector<Move> moves;
     };
 
     ~TTable();
 
     void clear();
-    void set_entry(u64 hash_key, int depth, int flag, int score);
+    void set_entry(u64 hash_key, int depth, int flag, int score, std::vector<Move> moves);
     TTOutput read_hash(u64 hash_key, int alpha, int beta, int depth);
-};
+}; // TODO: List Of Moves

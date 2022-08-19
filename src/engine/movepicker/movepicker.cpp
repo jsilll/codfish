@@ -106,6 +106,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 
     if (hash_read.found)
     {
+        _pv_table.add_pv_from_depth(hash_read.moves, _current_depth);
         return hash_read.score;
     }
 
@@ -138,7 +139,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         _current_depth -= 2;
         if (score >= beta)
         {
-            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta);
+            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
             return beta;
         }
     }
@@ -210,7 +211,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
 
                 _board.unmake_move(move, state);
 
-                _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta);
+                _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
                 return beta;
             }
             else if (score > alpha)
@@ -240,16 +241,16 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
+            _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth, _pv_table.get_pv_from_depth(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
-        _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, 0);
+        _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_SCORE, 0, _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
-    _tt.set_entry(hash_key, depth, alpha_cutoff, alpha);
+    _tt.set_entry(hash_key, depth, alpha_cutoff, alpha, _pv_table.get_pv_from_depth(_current_depth));
     return alpha;
 }
 
@@ -259,7 +260,7 @@ int MovePicker::quiescence(int alpha, int beta)
 
     if (_board.get_half_move_clock() == 100)
     {
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0, _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
@@ -268,11 +269,11 @@ int MovePicker::quiescence(int alpha, int beta)
         int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
-            _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth);
+            _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth, _pv_table.get_pv_from_depth(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0, _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
@@ -280,7 +281,7 @@ int MovePicker::quiescence(int alpha, int beta)
 
     if (stand_pat >= beta)
     {
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta);
+        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
         return beta;
     }
 
@@ -309,7 +310,7 @@ int MovePicker::quiescence(int alpha, int beta)
             if (score >= beta)
             {
                 _board.unmake_move(capture, state);
-                _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta);
+                _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
                 return beta;
             }
             if (score > alpha)
@@ -322,7 +323,7 @@ int MovePicker::quiescence(int alpha, int beta)
         _board.unmake_move(capture, state);
     }
 
-    _tt.set_entry(_board.get_hash_key(), 0, alpha_cutoff, alpha);
+    _tt.set_entry(_board.get_hash_key(), 0, alpha_cutoff, alpha, _pv_table.get_pv_from_depth(_current_depth));
     return alpha;
 }
 

@@ -20,6 +20,17 @@ std::vector<Move> PVTable::get_pv()
     return res;
 }
 
+std::vector<Move> PVTable::get_pv_from_depth(int start_depth)
+{
+    std::vector<Move> res;
+    for (int i = start_depth; i < _length[start_depth]; i++)
+    {
+        res.push_back(_table[start_depth][i]);
+    }
+
+    return res;
+}
+
 void PVTable::add(Move const move, int depth)
 {
     // Write Principal Variation Move
@@ -30,6 +41,16 @@ void PVTable::add(Move const move, int depth)
 
     // Adjust Principal Variation Length
     _length[depth] = _length[depth + 1];
+}
+
+void PVTable::add_pv_from_depth(std::vector<Move> moves, int starting_depth)
+{
+    std::reverse(moves.begin(), moves.end());
+    for (const Move &move : moves)
+    {
+        this->add(move, starting_depth);
+        starting_depth++;
+    }
 }
 
 void PVTable::clear()
