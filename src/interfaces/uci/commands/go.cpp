@@ -81,6 +81,11 @@ static void search(std::future<void> future, MovePicker &move_picker, MovePicker
         result = move_picker.find_best_move(depth, alpha, beta);
         auto end = std::chrono::system_clock::now();
 
+        if (depth == 1 && result.nodes == 1)
+        {
+            break;
+        }
+
         bool found_mate = display_search_iteration(result, depth, end - start);
         if (found_mate)
         {

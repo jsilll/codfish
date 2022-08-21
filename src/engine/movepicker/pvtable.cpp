@@ -3,6 +3,7 @@
 #include <engine/move.hpp>
 
 #include <cstring>
+#include <algorithm>
 
 Move PVTable::get_pv_move(int depth)
 {
@@ -45,11 +46,18 @@ void PVTable::add(Move const move, int depth)
 
 void PVTable::add_pv_from_depth(std::vector<Move> moves, int starting_depth)
 {
-    std::reverse(moves.begin(), moves.end());
-    for (const Move &move : moves)
+    int last_depth = starting_depth + (int)moves.size() - 1;
+
+    // Update PV with moves from starting_depth to last depth (reverse order)
+    for (int i = (int)moves.size() - 1; i >= 0; i--)
     {
-        this->add(move, starting_depth);
-        starting_depth++;
+        this->add(moves[(std::vector<Move>::size_type)i], last_depth--);
+    }
+
+    // Update the Higher Depths
+    for (int depth = starting_depth - 1; depth >= 0; depth--)
+    {
+        memcpy(&_table[depth][depth + 1], &_table[depth + 1][depth + 1], (unsigned long)_length[depth + 1] * sizeof(int));
     }
 }
 

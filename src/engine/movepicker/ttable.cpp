@@ -16,7 +16,7 @@ void TTable::clear()
     }
 }
 
-void TTable::set_entry([[maybe_unused]] u64 hash_key, int depth, int flag, int score, std::vector<Move> moves)
+void TTable::set_entry(u64 hash_key, int depth, int flag, int score, std::vector<Move> moves)
 {
     int entry = hash_key % TABLE_SIZE;
     _table[entry].depth = depth;
