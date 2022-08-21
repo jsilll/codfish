@@ -55,9 +55,9 @@ void PVTable::add_pv_from_depth(std::vector<Move> moves, int starting_depth)
     }
 
     // Update the Higher Depths
-    for (int depth = starting_depth - 1; depth >= 0; depth--)
+    for (int current_depth = starting_depth - 1; current_depth >= 0; current_depth--)
     {
-        memcpy(&_table[depth][depth + 1], &_table[depth + 1][depth + 1], (unsigned long)_length[depth + 1] * sizeof(int));
+        memcpy(&_table[current_depth][current_depth + 1], &_table[current_depth + 1][current_depth + 1], (unsigned long)_length[current_depth + 1] * sizeof(int));
     }
 }
 
