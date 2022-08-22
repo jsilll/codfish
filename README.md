@@ -30,7 +30,7 @@ Features
 ### Move Picker
 - [PeSTO inspired evaluation function](https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function)
 - [NegaMax Search](https://www.chessprogramming.org/Negamax)
-- [Quiescense Search with Null Move Pruning](https://www.chessprogramming.org/Quiescence_Search)
+- [Quiescense Search](https://www.chessprogramming.org/Quiescence_Search)
 - [Move Ordering with PV, Killer, History and MVV LVA moves](https://www.chessprogramming.org/index.php?title=Move_Ordering&mobileaction=toggle_view_mobile)
 - [Triangular PV-Table](https://www.chessprogramming.org/index.php?title=Triangular_PV-Table&mobileaction=toggle_view_mobile)
 - [Iterative Deepening](https://www.chessprogramming.org/Iterative_Deepening)
