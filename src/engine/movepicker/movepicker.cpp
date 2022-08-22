@@ -134,9 +134,9 @@ int MovePicker::negamax(int alpha, int beta, int depth)
         _board.set_en_passant_square(EMPTY_SQUARE);
         _current_depth += 2;
         int score = -negamax(-beta, -beta + 1, depth - 1 - R);
+        _current_depth -= 2;
         _board.set_state(state);
         _board.switch_side_to_move();
-        _current_depth -= 2;
         if (score >= beta)
         {
             _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
