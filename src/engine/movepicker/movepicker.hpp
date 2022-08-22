@@ -58,8 +58,6 @@ private:
 
     void clear_search_counters();
 
-    void clear_tt();
-
 public:
     struct SearchResult
     {
@@ -75,10 +73,16 @@ public:
     void set_max_depth(int depth);
 
     /**
-     * @brief Clears all the tables
+     * @brief Clears all the move tables
      *
      */
-    void clear_tables();
+    void clear_move_tables();
+
+    /**
+     * @brief Clears the transposition table
+     *
+     */
+    void clear_tranposition_table();
 
     /**
      * @brief Searches the current position with max_depth

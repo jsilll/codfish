@@ -10,6 +10,7 @@
 #include <engine/zobrist.hpp>
 #include <engine/movegen/tables.hpp>
 #include <engine/movegen/movegen.hpp>
+#include <engine/movegen/perft.hpp>
 
 void setup()
 {
@@ -18,37 +19,12 @@ void setup()
     zobrist::init();
 }
 
-int perft(Board &board, int depth)
-{
-    if (depth == 0)
-    {
-        return 1;
-    }
-
-    int nodes = 0;
-    for (const Move &move : movegen::generate_pseudo_legal_moves(board))
-    {
-        Board::GameState board_info = board.get_state();
-        board.make_move(move);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
-        int attacker_side = board.get_side_to_move();
-        if (!board.is_square_attacked(king_sq, attacker_side))
-        {
-            nodes += perft(board, depth - 1);
-        }
-        board.unmake_move(move, board_info);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-    }
-
-    return nodes;
-}
-
 TEST_CASE("hash_key")
 {
     setup();
 
     Board board = Board();
+
     SECTION("fen hash key")
     {
         board.set_from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R", "w", "KQkq", "-", "0", "1");
@@ -62,9 +38,8 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("capture hash key")
@@ -74,9 +49,8 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("double push hash key")
@@ -86,9 +60,8 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("promotion hash key")
@@ -98,9 +71,8 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("promotion + capture hash key")
@@ -110,9 +82,8 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("en passant hash key")
@@ -122,13 +93,14 @@ TEST_CASE("hash_key")
         Board::GameState state = board.get_state();
         board.make_move(move);
         REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
-        REQUIRE(zobrist::generate_hash_key(board) == zobrist::generate_hash_key(board));
         board.unmake_move(move, state);
-        REQUIRE(board.get_hash_key() == zobrist::generate_hash_key(board));
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 
     SECTION("perft hash key")
     {
-        perft(board, 5);
+        Board::GameState state = board.get_state();
+        perft::perft(board, 5);
+        REQUIRE(board.get_hash_key() == state.hash_key);
     }
 }

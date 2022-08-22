@@ -25,14 +25,15 @@ namespace uci
         zobrist::init();
 
         Board board = Board();
+        MovePicker move_picker = MovePicker(board);
 
         // TODO: use a map instead of if statements
         uci::UCICommand uciCommand = UCICommand(board);
         uci::IsReadyCommand isReadyCommand = IsReadyCommand(board);
-        uci::UCINewGameCommand uciNewGameCommand = UCINewGameCommand(board);
+        uci::UCINewGameCommand uciNewGameCommand = UCINewGameCommand(board, move_picker);
         uci::PositionCommand positionCommand = PositionCommand(board);
         uci::DisplayCommand displayCommand = DisplayCommand(board);
-        uci::GoCommand goCommand = GoCommand(board);
+        uci::GoCommand goCommand = GoCommand(board, move_picker);
         uci::QuitCommand quitCommand = QuitCommand(board);
 
         std::string line;

@@ -127,7 +127,8 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     u64 hash_key = _board.get_hash_key();
     Board::GameState state = _board.get_state();
 
-    // Null Move Pruning (TODO: Zugzwang checking??)
+    // Null Move Pruning
+    // TODO: Zugzwang checking
     if (depth >= 3)
     {
         _board.switch_side_to_move();
@@ -201,21 +202,22 @@ int MovePicker::negamax(int alpha, int beta, int depth)
                 }
             }
 
-            if (score >= beta)
+            if (score > alpha)
             {
-                // Killer Move Heuristic
-                if (!move.is_capture())
+                if (score >= beta)
                 {
-                    this->add_to_killer_moves(move);
+                    // Killer Move Heuristic
+                    if (!move.is_capture())
+                    {
+                        this->add_to_killer_moves(move);
+                    }
+
+                    _board.unmake_move(move, state);
+
+                    _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
+                    return beta;
                 }
 
-                _board.unmake_move(move, state);
-
-                _tt.set_entry(hash_key, depth, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
-                return beta;
-            }
-            else if (score > alpha)
-            {
                 // History Move Heuristic
                 if (!move.is_capture())
                 {
@@ -277,17 +279,17 @@ int MovePicker::quiescence(int alpha, int beta)
         return 0;
     }
 
-    int stand_pat = eval::eval(_board);
-
-    if (stand_pat >= beta)
-    {
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
-        return beta;
-    }
-
     int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
+
+    int stand_pat = eval::eval(_board);
     if (stand_pat > alpha)
     {
+        if (stand_pat >= beta)
+        {
+            _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
+            return beta;
+        }
+
         alpha_cutoff = TTable::HASH_FLAG_SCORE;
         alpha = stand_pat;
     }
@@ -307,14 +309,15 @@ int MovePicker::quiescence(int alpha, int beta)
             _current_depth++;
             int score = -quiescence(-beta, -alpha);
             _current_depth--;
-            if (score >= beta)
-            {
-                _board.unmake_move(capture, state);
-                _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
-                return beta;
-            }
             if (score > alpha)
             {
+                if (score >= beta)
+                {
+                    _board.unmake_move(capture, state);
+                    _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta, _pv_table.get_pv_from_depth(_current_depth));
+                    return beta;
+                }
+
                 alpha_cutoff = TTable::HASH_FLAG_SCORE;
                 alpha = score;
             }
@@ -349,11 +352,6 @@ void MovePicker::clear_search_counters()
     _current_depth = 0;
 }
 
-void MovePicker::clear_tt()
-{
-    _tt.clear();
-}
-
 // Public Methods
 
 int MovePicker::get_max_depth() const
@@ -376,7 +374,7 @@ MovePicker::SearchResult MovePicker::find_best_move()
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
 
-    this->clear_tables();
+    this->clear_move_tables();
 
     // Iterative Deepening
     for (int depth = 1; depth <= _max_depth; depth++)
@@ -419,10 +417,15 @@ MovePicker::SearchResult MovePicker::find_best_move(int depth, int alpha, int be
     return result;
 }
 
-void MovePicker::clear_tables()
+void MovePicker::clear_move_tables()
 {
     memset(_history_moves, 0, sizeof(_history_moves));
     memset(_killer_moves, 0, sizeof(_killer_moves));
     memset(_killer_moves, 0, sizeof(_killer_moves));
     _pv_table.clear();
+}
+
+void MovePicker::clear_tranposition_table()
+{
+    _tt.clear();
 }

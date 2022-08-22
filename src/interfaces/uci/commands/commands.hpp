@@ -20,8 +20,11 @@ namespace uci
     };
     class UCINewGameCommand : public utils::Command
     {
+    private:
+        MovePicker _move_picker;
+
     public:
-        UCINewGameCommand(Board &board) : Command(board){};
+        UCINewGameCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
         void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class PositionCommand : public utils::Command
@@ -39,10 +42,10 @@ namespace uci
     class GoCommand : public utils::Command
     {
     private:
-        MovePicker _move_picker;
+        MovePicker &_move_picker;
 
     public:
-        GoCommand(Board &board) : Command(board), _move_picker(MovePicker(board)){};
+        GoCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
         void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class QuitCommand : public utils::Command

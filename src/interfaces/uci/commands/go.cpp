@@ -71,10 +71,11 @@ static bool display_search_iteration(MovePicker::SearchResult result, int depth,
 
 static void search(std::future<void> future, MovePicker &move_picker, MovePicker::SearchResult &result)
 {
-    move_picker.clear_tables();
-
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
+
+    move_picker.clear_move_tables();
+
     for (int depth = 1; depth <= move_picker.get_max_depth(); depth++)
     {
         auto start = std::chrono::system_clock::now();
