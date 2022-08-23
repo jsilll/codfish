@@ -29,8 +29,11 @@ namespace uci
     };
     class PositionCommand : public utils::Command
     {
+    private:
+        MovePicker &_move_picker;
+
     public:
-        PositionCommand(Board &board) : Command(board){};
+        PositionCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
         void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class DisplayCommand : public utils::Command

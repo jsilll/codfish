@@ -75,8 +75,8 @@ public:
                     const std::string &halfmove_clock,
                     const std::string &fullmove_number);
   int switch_side_to_move();
-  void make_move(const Move move);
-  void unmake_move(const Move move, const GameState info_board);
+  void make(const Move move);
+  void unmake(const Move move, const GameState info_board);
 
   void display() const;
   bool toggle_ascii();

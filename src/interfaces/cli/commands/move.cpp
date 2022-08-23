@@ -15,7 +15,7 @@ void cli::MoveCommand::execute(std::vector<std::string> &args)
     {
         if (move.get_uci() == args[0])
         {
-            _board.make_move(move);
+            _board.make(move);
             return;
         }
     }

@@ -47,14 +47,14 @@ namespace movegen
     Board::GameState state = board.get_state();
     for (const Move &move : movegen::generate_pseudo_legal_moves(board))
     {
-      board.make_move(move);
+      board.make(move);
       int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
       if (!board.is_square_attacked(king_sq, board.get_side_to_move()))
       {
-        board.unmake_move(move, state);
+        board.unmake(move, state);
         return true;
       }
-      board.unmake_move(move, state);
+      board.unmake(move, state);
     }
     return false;
   }
@@ -158,14 +158,14 @@ namespace movegen
     Board::GameState state = board.get_state();
     for (const Move &move : movegen::generate_pseudo_legal_moves(board))
     {
-      board.make_move(move);
+      board.make(move);
       int attacker_side = board.get_side_to_move();
       int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
       if (!board.is_square_attacked(king_sq, attacker_side))
       {
         moves.push_back(move);
       }
-      board.unmake_move(move, state);
+      board.unmake(move, state);
     }
     return moves;
   }
@@ -178,14 +178,14 @@ namespace movegen
     Board::GameState state = board.get_state();
     for (const Move &move : movegen::generate_pseudo_legal_captures(board))
     {
-      board.make_move(move);
+      board.make(move);
       int attacker_side = board.get_side_to_move();
       int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
       if (!board.is_square_attacked(king_sq, attacker_side))
       {
         captures.push_back(move);
       }
-      board.unmake_move(move, state);
+      board.unmake(move, state);
     }
     return captures;
   }

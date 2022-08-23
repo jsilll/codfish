@@ -5,6 +5,7 @@
 #include <engine/move.hpp>
 
 #include <engine/movepicker/pvtable.hpp>
+#include <engine/movepicker/histtable.hpp>
 #include <engine/movepicker/ttable.hpp>
 
 #include <vector>
@@ -24,6 +25,7 @@ private:
     Move _killer_moves[2][DEFAULT_MAX_DEPTH]{};
 
     PVTable _pv_table;
+    HistoryTable _hist_table;
     TTable _tt;
 
     struct MoveMoreThanKey
@@ -70,7 +72,25 @@ public:
 
     [[nodiscard]] int get_max_depth() const;
 
+    /**
+     * @brief Set the max depth for the search
+     *
+     * @param depth
+     */
     void set_max_depth(int depth);
+
+    /**
+     * @brief Adds a board hash to the current known history
+     *
+     * @param key
+     */
+    void add_to_history(u64 key);
+
+    /**
+     * @brief Clears all known game history
+     *
+     */
+    void clear_history();
 
     /**
      * @brief Clears all the move tables
@@ -82,7 +102,7 @@ public:
      * @brief Clears the transposition table
      *
      */
-    void clear_tranposition_table();
+    void clear_transposition_table();
 
     /**
      * @brief Searches the current position with max_depth

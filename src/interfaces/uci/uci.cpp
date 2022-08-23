@@ -31,7 +31,7 @@ namespace uci
         uci::UCICommand uciCommand = UCICommand(board);
         uci::IsReadyCommand isReadyCommand = IsReadyCommand(board);
         uci::UCINewGameCommand uciNewGameCommand = UCINewGameCommand(board, move_picker);
-        uci::PositionCommand positionCommand = PositionCommand(board);
+        uci::PositionCommand positionCommand = PositionCommand(board, move_picker);
         uci::DisplayCommand displayCommand = DisplayCommand(board);
         uci::GoCommand goCommand = GoCommand(board, move_picker);
         uci::QuitCommand quitCommand = QuitCommand(board);

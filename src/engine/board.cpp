@@ -254,7 +254,10 @@ void Board::set_en_passant_square(int sq)
   _en_passant_square = sq;
 
   // Update hash key with new en passant square
-  _hash_key ^= zobrist::en_passant_keys[_en_passant_square];
+  if (_en_passant_square != EMPTY_SQUARE)
+  {
+    _hash_key ^= zobrist::en_passant_keys[_en_passant_square];
+  }
 }
 
 void Board::set_castling_rights(int castling_rights)
@@ -493,7 +496,7 @@ int Board::switch_side_to_move()
   return _to_move = this->get_opponent();
 }
 
-void Board::make_move(const Move move)
+void Board::make(const Move move)
 {
   // clang-format off
   static const int castling_rights[64] = {
@@ -642,7 +645,7 @@ void Board::make_move(const Move move)
   this->update_occupancies();
 }
 
-void Board::unmake_move(const Move move, const GameState state)
+void Board::unmake(const Move move, const GameState state)
 {
   this->switch_side_to_move();
 
