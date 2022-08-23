@@ -39,6 +39,7 @@ Features
 - [Null Move Pruning](https://www.chessprogramming.org/Null_Move_Pruning)
 - [Null Window Search](https://www.chessprogramming.org/Null_Window)
 - [Transposition Table](https://en.wikipedia.org/wiki/Transposition_table)
+- [Repetition Detection](https://www.chessprogramming.org/Repetitions)
 
 Building and Installation
 ===
