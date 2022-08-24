@@ -15,16 +15,16 @@ static void dperft(int depth, Board &board)
     for (const Move &move : movegen::generate_pseudo_legal_moves(board))
     {
         Board::GameState state = board.get_state();
-        board.make_move(move);
-        int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
-        int attacker_side = board.get_side_to_move();
+        board.make(move);
+        Square king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
+        Color attacker_side = board.get_side_to_move();
         if (!board.is_square_attacked(king_sq, attacker_side))
         {
             int nodes = perft::perft(board, depth - 1);
             std::cout << move.get_uci() << ": " << nodes << std::endl;
             total_nodes += nodes;
         }
-        board.unmake_move(move, state);
+        board.unmake(move, state);
     }
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
@@ -35,7 +35,7 @@ static void dperft(int depth, Board &board)
     std::cout << "Nodes Per Second: " << (double)total_nodes / elapsed_seconds.count() << std::endl;
 }
 
-void cli::DividedPerftCommand::execute(std::vector<std::string> &args, Board &board)
+void cli::DividedPerftCommand::execute(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {
@@ -56,7 +56,7 @@ void cli::DividedPerftCommand::execute(std::vector<std::string> &args, Board &bo
 
     if (depth >= 0)
     {
-        dperft(depth, board);
+        dperft(depth, _board);
     }
     else
     {

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void cli::HelpCommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
+void cli::HelpCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
     std::cout
         << "ascii                 Toggles between ascii and utf-8 board representation\n"

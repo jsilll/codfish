@@ -6,7 +6,7 @@
 
 #include <optional>
 
-static std::optional<Move> parse_mov(std::string move_uci, Board &board)
+static std::optional<Move> parse_move(std::string move_uci, Board &board)
 {
     for (Move const &move : movegen::generateLegalMoves(board))
     {
@@ -19,19 +19,22 @@ static std::optional<Move> parse_mov(std::string move_uci, Board &board)
     return std::nullopt;
 }
 
-static void handle_moves(std::vector<std::string> &moves, Board &board)
+static void handle_moves(std::vector<std::string> &moves, Board &board, MovePicker &move_picker)
 {
+    move_picker.add_to_history(board.get_hash_key()); // For Three-Fold Draws
     for (std::string move_uci : moves)
     {
-        std::optional<Move> parsed_move = parse_mov(move_uci, board);
+        std::optional<Move> parsed_move = parse_move(move_uci, board);
         if (parsed_move.has_value())
         {
-            board.make_move(parsed_move.value());
+            Move move = parsed_move.value();
+            board.make(move);
+            move_picker.add_to_history(board.get_hash_key()); // For Three-Fold Draws
         }
     }
 }
 
-void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
+void uci::PositionCommand::execute(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {
@@ -42,7 +45,7 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
     {
         args.erase(args.begin());
 
-        board.set_starting_position();
+        _board.set_starting_position();
     }
     else if (args[0] == "fen")
     {
@@ -60,7 +63,7 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
         }
         else
         {
-            board.set_from_fen(args[0], args[1], args[2], args[3], args[4], args[5]);
+            _board.set_from_fen(args[0], args[1], args[2], args[3], args[4], args[5]);
             args.erase(args.begin(), args.begin() + 6);
         }
     }
@@ -74,10 +77,15 @@ void uci::PositionCommand::execute(std::vector<std::string> &args, Board &board)
         return;
     }
 
+    _move_picker.clear_history();
+
     if (args[0] == "moves")
     {
         args.erase(args.begin());
 
-        handle_moves(args, board);
+        handle_moves(args, _board, _move_picker);
     }
+
+    _move_picker.clear_move_tables();
+    _move_picker.clear_transposition_table();
 }

@@ -7,109 +7,127 @@ namespace cli
     class AsciiCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        AsciiCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class CapturesCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        CapturesCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class DisplayCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        DisplayCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class DividedPerftCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        DividedPerftCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class EvalCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        EvalCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class ExitCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        ExitCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class GetFenCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        GetFenCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class HelpCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        HelpCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class InfoCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        InfoCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class MagicsCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        MagicsCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class MoveCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        MoveCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class MovesCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        MovesCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class NewCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        NewCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class PerftCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        PerftCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class PLMovesCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        PLMovesCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class RotateCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        RotateCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class SetFenCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        SetFenCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
     class SwitchCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        SwitchCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
 } // namespace cli

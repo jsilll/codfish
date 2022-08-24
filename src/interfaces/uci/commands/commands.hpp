@@ -2,42 +2,60 @@
 
 #include <interfaces/utils.hpp>
 
+#include <engine/movepicker/movepicker.hpp>
+
 namespace uci
 {
     class UCICommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        UCICommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class IsReadyCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        IsReadyCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class UCINewGameCommand : public utils::Command
     {
+    private:
+        MovePicker _move_picker;
+
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        UCINewGameCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class PositionCommand : public utils::Command
     {
+    private:
+        MovePicker &_move_picker;
+
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        PositionCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class DisplayCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        DisplayCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class GoCommand : public utils::Command
     {
+    private:
+        MovePicker &_move_picker;
+
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        GoCommand(Board &board, MovePicker &move_picker) : Command(board), _move_picker(move_picker){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
     class QuitCommand : public utils::Command
     {
     public:
-        void execute([[maybe_unused]] std::vector<std::string> &args, Board &board);
+        QuitCommand(Board &board) : Command(board){};
+        void execute([[maybe_unused]] std::vector<std::string> &args);
     };
 
 } // namespace cli

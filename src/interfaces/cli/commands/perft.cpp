@@ -18,7 +18,7 @@ static void timed_perft(int depth, Board &board)
     std::cout << "Nodes Per Second: " << (double)nodes / elapsed_seconds.count() << std::endl;
 }
 
-void cli::PerftCommand::execute(std::vector<std::string> &args, Board &board)
+void cli::PerftCommand::execute(std::vector<std::string> &args)
 {
 
     if (args.size() == 0)
@@ -39,7 +39,7 @@ void cli::PerftCommand::execute(std::vector<std::string> &args, Board &board)
     }
     if (depth >= 0)
     {
-        timed_perft(depth, board);
+        timed_perft(depth, _board);
     }
     else
     {

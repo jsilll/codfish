@@ -14,9 +14,11 @@ private:
 
 public:
     Move get_pv_move(int depth);
-    std::vector<Move> get_pV();
+    std::vector<Move> get_pv();
+    std::vector<Move> get_pv_from_depth(int start_depth);
 
     void clear();
     void set_length(int depth);
     void add(Move const move, int depth);
+    void add_pv_from_depth(std::vector<Move> moves, int starting_depth);
 };

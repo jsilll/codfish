@@ -1,14 +1,22 @@
 #pragma once
 
+#include <cstdint>
+
 #include <engine/constants.hpp>
+
+typedef std::uint64_t u64;
+
+constexpr u64 ONE = 1ULL;
+constexpr u64 ZERO = 0ULL;
 
 namespace bitboard
 {
+
     // Common Bitboard Operations
-    inline bool get_bit(u64 bb, int sq) { return ((bb >> sq) & 1ULL); }
-    inline void pop_bit(u64 &bn, int sq) { bn &= ~(1ULL << sq); }
+    inline bool get_bit(u64 bb, Square sq) { return ((bb >> sq) & 1ULL); }
+    inline void pop_bit(u64 &bn, Square sq) { bn &= ~(1ULL << sq); }
     inline void pop_last_bit(u64 &bb) { bb &= bb - 1; }
-    inline void set_bit(u64 &bb, int sq) { bb |= (1ULL << sq); }
+    inline void set_bit(u64 &bb, Square sq) { bb |= (1ULL << sq); }
 
     // Common Bitboard Shifts
     inline u64 sout_one(u64 bb) { return (bb >> 8); }
@@ -34,7 +42,7 @@ namespace bitboard
      * @param bb
      * @return unsigned int
      */
-    int bit_scan(u64 bb);
+    Square bit_scan(u64 bb);
 
     /**
      * @brief Returns index of LSB bit
@@ -42,7 +50,7 @@ namespace bitboard
      * @param bb
      * @return unsigned int
      */
-    int bit_scan_forward(u64 bb);
+    Square bit_scan_forward(u64 bb);
 
     /**
      * @brief Sets the occupancy bits

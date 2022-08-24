@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void uci::UCICommand::execute([[maybe_unused]] std::vector<std::string> &args, [[maybe_unused]] Board &board)
+void uci::UCICommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
     std::cout << "id name Chess Engine\n";
     std::cout << "id name Chess Engine\n";

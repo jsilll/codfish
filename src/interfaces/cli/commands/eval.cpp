@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-void cli::EvalCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::EvalCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    std::cout << "Static Evaluation: " << eval::eval(board) << std::endl;
+    std::cout << "Static Evaluation: " << eval::eval(_board) << std::endl;
 }

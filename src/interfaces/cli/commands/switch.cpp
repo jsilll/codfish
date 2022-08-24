@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void cli::SwitchCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::SwitchCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    std::cout << "side to play is now " << (board.switch_side_to_move() == WHITE ? "white" : "black") << std::endl;
+    std::cout << "side to play is now " << (_board.switch_side_to_move() == WHITE ? "white" : "black") << std::endl;
 }

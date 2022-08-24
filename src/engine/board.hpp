@@ -1,5 +1,6 @@
 #pragma once
 
+#include <engine/bitboard.hpp>
 #include <engine/constants.hpp>
 
 class Move;
@@ -9,57 +10,61 @@ class Board
 public:
   struct Piece
   {
-    int type;
-    int color;
+    PieceType type;
+    Color color;
   };
 
   struct GameState
   {
-    int en_passant_square;
+    Square en_passant_square;
     int castling_rights;
     int half_move_clock;
+    u64 hash_key;
   };
 
 private:
-  int _to_move;
+  Color _to_move;
   int _castling_rights;
-  int _en_passant_square;
+  Square _en_passant_square;
   int _half_move_clock;
   int _full_move_number;
+  u64 _hash_key;
 
   u64 _pieces[N_SIDES][N_PIECES];
   u64 _occupancies[N_SIDES + 1];
 
-  bool _ascii;
+  bool _ascii{};
   bool _white_on_bottom;
   Piece _square[N_SQUARES];
 
   void update_occupancies();
-  void update_bb_from_squares();
+  void update_bitboards_from_squares();
 
 public:
   Board();
   Board(const Board &board);
 
-  u64 get_pieces(int color, int type) const;
-  u64 get_occupancies(int color) const;
-  int get_side_to_move() const;
-  int get_opponent() const;
+  u64 get_pieces(Color color, PieceType type) const;
+  u64 get_occupancies(Color color) const;
+  Color get_side_to_move() const;
+  Color get_opponent() const;
   int get_castling_rights() const;
-  int get_en_passant_square() const;
+  Square get_en_passant_square() const;
   int get_half_move_clock() const;
   int get_full_move_number() const;
-  Piece get_piece_from_square(int sq) const;
-  bool is_square_attacked(int sq, int attacker_side) const;
+  Piece get_piece_from_square(Square sq) const;
+  bool is_square_attacked(Square sq, Color attacker_side) const;
   bool is_ascii() const;
   bool is_white_on_bottom() const;
   GameState get_state() const;
   std::string get_fen() const;
 
-  void set_en_passant_square(int sq);
+  void set_en_passant_square(Square sq);
   void set_castling_rights(int castling_rights);
   void set_fifty_move(int fifty_move);
   void set_state(GameState state);
+
+  u64 get_hash_key() const;
 
   void clear();
   void set_starting_position();
@@ -70,14 +75,15 @@ public:
                     const std::string &halfmove_clock,
                     const std::string &fullmove_number);
   int switch_side_to_move();
-  void make_move(const Move move);
-  void unmake_move(const Move move, const GameState info_board);
+  void make(const Move move);
+  void unmake(const Move move, const GameState info_board);
 
   void display() const;
   bool toggle_ascii();
   bool rotate_display();
 };
 
+#ifdef DEBUG
 inline bool operator==(const Board::Piece &p1, const Board::Piece &p2)
 {
   return p1.color == p2.color && p1.type == p2.type;
@@ -158,3 +164,5 @@ inline bool operator==(const Board &b1, const Board &b2)
 
   return true;
 }
+
+#endif

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void cli::AsciiCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::AsciiCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    std::cout << "ascii mode toggled " << (board.toggle_ascii() ? "on" : "off") << std::endl;
+    std::cout << "ascii mode toggled " << (_board.toggle_ascii() ? "on" : "off") << std::endl;
 }
