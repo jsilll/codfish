@@ -176,27 +176,25 @@ namespace eval
 
     u64 set_file_rank_mask(int file_number, int rank_number)
     {
-        u64 mask = 0ULL;
-        for (int rank = 0; rank < 8; rank++)
+        u64 mask = ZERO;
+        for (int rank = RANK_1; rank < N_RANKS; rank++)
         {
-            for (int file = 0; file < 8; file++)
+            for (int file = FILE_A; file < N_FILES; file++)
             {
-                int square = rank * 8 + file;
+                Square sq = (Square)utils::get_square((Rank)rank, (File)file);
 
                 if (file_number != -1)
                 {
-                    // on file match
                     if (file == file_number)
                     {
-                        bitboard::set_bit(mask, square);
+                        bitboard::set_bit(mask, sq);
                     }
                 }
                 else if (rank_number != -1)
                 {
-
                     if (rank == rank_number)
                     {
-                        bitboard::set_bit(mask, square);
+                        bitboard::set_bit(mask, sq);
                     }
                 }
             }
@@ -205,7 +203,6 @@ namespace eval
         return mask;
     }
 
-    // init eval masks
     void init_eval_masks()
     {
         u64 mask = set_file_rank_mask(0, 0);
@@ -259,8 +256,7 @@ namespace eval
 
         for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
-            u64 pieces_white = board.get_pieces(WHITE, (PieceType)piece_type);
-            while (pieces_white)
+            while (u64 pieces_white = board.get_pieces(WHITE, (PieceType)piece_type))
             {
                 Square sq = bitboard::bit_scan_forward(pieces_white);
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
@@ -270,8 +266,7 @@ namespace eval
                 bitboard::pop_bit(pieces_white, sq);
             }
 
-            u64 pieces_black = board.get_pieces(BLACK, (PieceType)piece_type);
-            while (pieces_black)
+            while (u64 pieces_black = board.get_pieces(BLACK, (PieceType)piece_type))
             {
                 Square sq = bitboard::bit_scan_forward(pieces_black);
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
