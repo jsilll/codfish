@@ -31,8 +31,12 @@ namespace utils
      */
     class Command
     {
+    protected:
+        Board &_board;
+
     public:
-        virtual void execute(std::vector<std::string> &args, Board &board) = 0;
+        Command(Board &board) : _board(board){};
+        virtual void execute(std::vector<std::string> &args) = 0;
     };
 
 } // namespace utils

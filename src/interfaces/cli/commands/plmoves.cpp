@@ -5,9 +5,9 @@
 #include <iostream>
 #include <algorithm>
 
-void cli::PLMovesCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::PLMovesCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    auto moves = movegen::generate_pseudo_legal_moves(board);
+    auto moves = movegen::generate_pseudo_legal_moves(_board);
     std::for_each(moves.begin(), moves.end(), [](const Move &move)
                   { std::cout << move.get_uci() << "\n"; });
     std::cout << "Total number of pseudo legal moves: " << moves.size() << std::endl;

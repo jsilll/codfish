@@ -20,28 +20,28 @@ TEST_CASE("Test Pawn Moves")
 
     SECTION("Corners Start")
     {
-        REQUIRE(tables::ATTACKS_PAWN[WHITE][A2] == 0x20000);
-        REQUIRE(tables::ATTACKS_PAWN[WHITE][H2] == 0x400000);
-        REQUIRE(tables::ATTACKS_PAWN[BLACK][A7] == 0x20000000000);
-        REQUIRE(tables::ATTACKS_PAWN[BLACK][H7] == 0x400000000000);
+        REQUIRE(tables::get_pawn_attacks(WHITE, A2) == 0x20000);
+        REQUIRE(tables::get_pawn_attacks(WHITE, H2) == 0x400000);
+        REQUIRE(tables::get_pawn_attacks(BLACK, A7) == 0x20000000000);
+        REQUIRE(tables::get_pawn_attacks(BLACK, H7) == 0x400000000000);
     }
 
     SECTION("Limits White")
     {
-        REQUIRE(tables::ATTACKS_PAWN[WHITE][A8] == 0x0);
-        REQUIRE(tables::ATTACKS_PAWN[WHITE][H8] == 0x0);
+        REQUIRE(tables::get_pawn_attacks(WHITE, A8) == 0x0);
+        REQUIRE(tables::get_pawn_attacks(WHITE, H8) == 0x0);
     }
 
     SECTION("Limits Black")
     {
-        REQUIRE(tables::ATTACKS_PAWN[BLACK][A1] == 0x0);
-        REQUIRE(tables::ATTACKS_PAWN[BLACK][H1] == 0x0);
+        REQUIRE(tables::get_pawn_attacks(BLACK, A1) == 0x0);
+        REQUIRE(tables::get_pawn_attacks(BLACK, H1) == 0x0);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::ATTACKS_PAWN[WHITE][D4] == 0x1400000000);
-        REQUIRE(tables::ATTACKS_PAWN[BLACK][E5] == 0x28000000);
+        REQUIRE(tables::get_pawn_attacks(WHITE, D4) == 0x1400000000);
+        REQUIRE(tables::get_pawn_attacks(BLACK, E5) == 0x28000000);
     }
 }
 
@@ -53,15 +53,15 @@ TEST_CASE("Test King Moves")
 
     SECTION("Corners")
     {
-        REQUIRE(tables::ATTACKS_KING[A1] == 0x302);
-        REQUIRE(tables::ATTACKS_KING[H1] == 0xc040);
-        REQUIRE(tables::ATTACKS_KING[A8] == 0x203000000000000);
-        REQUIRE(tables::ATTACKS_KING[H8] == 0x40c0000000000000);
+        REQUIRE(tables::get_king_attacks(A1) == 0x302);
+        REQUIRE(tables::get_king_attacks(H1) == 0xc040);
+        REQUIRE(tables::get_king_attacks(A8) == 0x203000000000000);
+        REQUIRE(tables::get_king_attacks(H8) == 0x40c0000000000000);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::ATTACKS_KING[D4] == 0x1c141c0000);
+        REQUIRE(tables::get_king_attacks(D4) == 0x1c141c0000);
     }
 }
 
@@ -73,15 +73,15 @@ TEST_CASE("Test Knights Moves")
 
     SECTION("Corners")
     {
-        REQUIRE(tables::ATTACKS_KNIGHT[A1] == 0x20400);
-        REQUIRE(tables::ATTACKS_KNIGHT[H1] == 0x402000);
-        REQUIRE(tables::ATTACKS_KNIGHT[A8] == 0x4020000000000);
-        REQUIRE(tables::ATTACKS_KNIGHT[H8] == 0x20400000000000);
+        REQUIRE(tables::get_knight_attacks(A1) == 0x20400);
+        REQUIRE(tables::get_knight_attacks(H1) == 0x402000);
+        REQUIRE(tables::get_knight_attacks(A8) == 0x4020000000000);
+        REQUIRE(tables::get_knight_attacks(H8) == 0x20400000000000);
     }
 
     SECTION("Middle of the Board")
     {
-        REQUIRE(tables::ATTACKS_KNIGHT[D4] == 0x142200221400);
+        REQUIRE(tables::get_knight_attacks(D4) == 0x142200221400);
     }
 }
 

@@ -1,17 +1,20 @@
 #pragma once
 
+#include <engine/constants.hpp>
+
 #include <string>
 #include <vector>
 
 namespace utils
 {
   // Square Operations
-  inline int get_square(const int rk, const int fl) { return 8 * rk + fl; }
-  inline int get_file(const int sq) { return sq & 7; }
-  inline int get_rank(const int sq) { return sq >> 3; }
-  inline int flipSquare(const int sq) { return sq ^ 56; }
+  inline Square get_square(const Rank rk, const File fl) { return (Square)(8 * rk + fl); }
+  inline Square flip_square(const Square sq) { return (Square)(sq ^ 56); }
+
+  inline File get_file(const Square sq) { return (File)(sq & 7); }
+  inline Rank get_rank(const Square sq) { return (Rank)(sq >> 3); }
 
   // Flip Side to Move
-  inline int get_opponent(int to_move) { return to_move ^ 1; }
+  inline Color get_opponent(Color to_move) { return (Color)((int)to_move ^ 1); }
 
 } // namespace utils

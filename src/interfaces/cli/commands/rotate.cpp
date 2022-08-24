@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void cli::RotateCommand::execute([[maybe_unused]] std::vector<std::string> &args, Board &board)
+void cli::RotateCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {
-    std::cout << (board.rotate_display() ? "white" : "black") << " is now on bottom" << std::endl;
+    std::cout << (_board.rotate_display() ? "white" : "black") << " is now on bottom" << std::endl;
 }

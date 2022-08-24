@@ -7,7 +7,7 @@
 #include <engine/board.hpp>
 
 #include <engine/movepicker/eval.hpp>
-#include <engine/movepicker/zobrist.hpp>
+#include <engine/zobrist.hpp>
 
 #include <interfaces/uci/commands/commands.hpp>
 
@@ -25,15 +25,16 @@ namespace uci
         zobrist::init();
 
         Board board = Board();
+        MovePicker move_picker = MovePicker(board);
 
         // TODO: use a map instead of if statements
-        uci::UCICommand uciCommand;
-        uci::IsReadyCommand isReadyCommand;
-        uci::UCINewGameCommand uciNewGameCommand;
-        uci::PositionCommand positionCommand;
-        uci::DisplayCommand displayCommand;
-        uci::GoCommand goCommand;
-        uci::QuitCommand quitCommand;
+        uci::UCICommand uciCommand = UCICommand(board);
+        uci::IsReadyCommand isReadyCommand = IsReadyCommand(board);
+        uci::UCINewGameCommand uciNewGameCommand = UCINewGameCommand(board, move_picker);
+        uci::PositionCommand positionCommand = PositionCommand(board, move_picker);
+        uci::DisplayCommand displayCommand = DisplayCommand(board);
+        uci::GoCommand goCommand = GoCommand(board, move_picker);
+        uci::QuitCommand quitCommand = QuitCommand(board);
 
         std::string line;
         while (std::getline(std::cin, line))
@@ -52,31 +53,31 @@ namespace uci
 
             if (cmd == "uci")
             {
-                uciCommand.execute(args, board);
+                uciCommand.execute(args);
             }
             else if (cmd == "isready")
             {
-                isReadyCommand.execute(args, board);
+                isReadyCommand.execute(args);
             }
             else if (cmd == "ucinewgame")
             {
-                uciNewGameCommand.execute(args, board);
+                uciNewGameCommand.execute(args);
             }
             else if (cmd == "position")
             {
-                positionCommand.execute(args, board);
+                positionCommand.execute(args);
             }
             else if (cmd == "d")
             {
-                displayCommand.execute(args, board);
+                displayCommand.execute(args);
             }
             else if (cmd == "go")
             {
-                goCommand.execute(args, board);
+                goCommand.execute(args);
             }
             else if (cmd == "quit")
             {
-                quitCommand.execute(args, board);
+                quitCommand.execute(args);
             }
         }
     }

@@ -34,11 +34,11 @@ static UCIScore score_to_uci(int score)
     }
     else
     {
-        int check_mate_delta = -MIN_EVAL - score;
+        int check_mate_delta = -(MIN_EVAL - score);
         int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
-        if (-16 <= moves_for_mate && moves_for_mate < 0)
+        if (0 < moves_for_mate && moves_for_mate <= 16)
         {
-            return UCIScore{std::string("mate ") + std::to_string(moves_for_mate), true};
+            return UCIScore{std::string("mate ") + std::to_string(-moves_for_mate), true};
         }
     }
 
@@ -71,10 +71,11 @@ static bool display_search_iteration(MovePicker::SearchResult result, int depth,
 
 static void search(std::future<void> future, MovePicker &move_picker, MovePicker::SearchResult &result)
 {
-    move_picker.clear_tables();
-
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
+
+    move_picker.clear_move_tables();
+
     for (int depth = 1; depth <= move_picker.get_max_depth(); depth++)
     {
         auto start = std::chrono::system_clock::now();
@@ -82,7 +83,13 @@ static void search(std::future<void> future, MovePicker &move_picker, MovePicker
         auto end = std::chrono::system_clock::now();
 
         bool found_mate = display_search_iteration(result, depth, end - start);
+
         if (found_mate)
+        {
+            break;
+        }
+
+        if (result.nodes == 2)
         {
             break;
         }
@@ -105,7 +112,7 @@ static void search(std::future<void> future, MovePicker &move_picker, MovePicker
     }
 }
 
-void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
+void uci::GoCommand::execute(std::vector<std::string> &args)
 {
     enum ArgCommand : int
     {
@@ -207,23 +214,21 @@ void uci::GoCommand::execute(std::vector<std::string> &args, Board &board)
     }
 
     MovePicker::SearchResult result;
-    MovePicker move_picker = MovePicker(board);
-
     if (!depth && !infinite && wtime && btime)
     {
-        move_picker.set_max_depth(DEFAULT_MAX_DEPTH);
+        _move_picker.set_max_depth(DEFAULT_MAX_DEPTH);
     }
     else
     {
-        move_picker.set_max_depth(DEFAULT_MIN_DEPTH);
+        _move_picker.set_max_depth(DEFAULT_MIN_DEPTH);
     }
 
     std::promise<void> signal_exit;
     std::future<void> signal_exit_future = signal_exit.get_future();
-    std::thread search_thread(search, std::move(signal_exit_future), std::ref(move_picker), std::ref(result));
-    if ((board.get_side_to_move() == WHITE && wtime) || (board.get_side_to_move() == BLACK && btime))
+    std::thread search_thread(search, std::move(signal_exit_future), std::ref(_move_picker), std::ref(result));
+    if ((_board.get_side_to_move() == WHITE && wtime) || (_board.get_side_to_move() == BLACK && btime))
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, board)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, _board)));
         signal_exit.set_value();
     }
     search_thread.join();

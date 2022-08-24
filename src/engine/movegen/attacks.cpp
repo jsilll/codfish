@@ -53,101 +53,98 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_bishop_attack_rays(int sq)
+  u64 mask_bishop_attack_rays(Square sq)
   {
     u64 attacks = ZERO;
-    int rank = utils::get_rank(sq);
-    int file = utils::get_file(sq);
-
-    for (int r = rank + 1, f = file + 1; r < 7 && f < 7; r++, f++)
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1, f = file + 1; r < RANK_8 && f < FILE_H; r++, f++)
     {
-      attacks |= (ONE << utils::get_square(r, f));
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
     }
 
-    for (int r = rank + 1, f = file - 1; r < 7 && f > 0; r++, f--)
+    for (int r = rank + 1, f = file - 1; r < RANK_8 && f > FILE_A; r++, f--)
     {
-      attacks |= (ONE << utils::get_square(r, f));
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
     }
 
-    for (int r = rank - 1, f = file + 1; r > 0 && f < 7; r--, f++)
+    for (int r = rank - 1, f = file + 1; r > RANK_1 && f < FILE_H; r--, f++)
     {
-      attacks |= (ONE << utils::get_square(r, f));
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
     }
 
-    for (int r = rank - 1, f = file - 1; r > 0 && f > 0; r--, f--)
+    for (int r = rank - 1, f = file - 1; r > RANK_1 && f > FILE_A; r--, f--)
     {
-      attacks |= (ONE << utils::get_square(r, f));
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
     }
 
     return attacks;
   }
 
-  u64 mask_rook_attack_rays(int sq)
+  u64 mask_rook_attack_rays(Square sq)
   {
     u64 attacks = ZERO;
-    int rank = utils::get_rank(sq);
-    int file = utils::get_file(sq);
-
-    for (int r = rank + 1; r < 7; r++)
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1; r < RANK_8; r++)
     {
-      attacks |= (ONE << utils::get_square(r, file));
+      attacks |= (ONE << utils::get_square((Rank)r, file));
     }
 
-    for (int r = rank - 1; r > 0; r--)
+    for (int r = rank - 1; r > RANK_1; r--)
     {
-      attacks |= (ONE << utils::get_square(r, file));
+      attacks |= (ONE << utils::get_square((Rank)r, file));
     }
 
-    for (int f = file + 1; f < 7; f++)
+    for (int f = file + 1; f < FILE_H; f++)
     {
-      attacks |= (ONE << utils::get_square(rank, f));
+      attacks |= (ONE << utils::get_square(rank, (File)f));
     }
 
-    for (int f = file - 1; f > 0; f--)
+    for (int f = file - 1; f > FILE_A; f--)
     {
-      attacks |= (ONE << utils::get_square(rank, f));
+      attacks |= (ONE << utils::get_square(rank, (File)f));
     }
 
     return attacks;
   }
 
-  u64 mask_bishop_attacks(int sq, u64 block)
+  u64 mask_bishop_xray_attacks(Square sq, u64 block)
   {
     u64 attacks = ZERO;
-    int rank = utils::get_rank(sq);
-    int file = utils::get_file(sq);
-
-    for (int r = rank + 1, f = file + 1; r < 8 && f < 8; r++, f++)
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1, f = file + 1; r < N_RANKS && f < N_FILES; r++, f++)
     {
-      attacks |= (ONE << utils::get_square(r, f));
-      if ((ONE << utils::get_square(r, f)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
+      if ((ONE << utils::get_square((Rank)r, (File)f)) & block)
       {
         break;
       }
     }
 
-    for (int r = rank + 1, f = file - 1; r < 8 && f >= 0; r++, f--)
+    for (int r = rank + 1, f = file - 1; r < N_RANKS && f >= FILE_A; r++, f--)
     {
-      attacks |= (ONE << utils::get_square(r, f));
-      if ((ONE << utils::get_square(r, f)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
+      if ((ONE << utils::get_square((Rank)r, (File)f)) & block)
       {
         break;
       }
     }
 
-    for (int r = rank - 1, f = file + 1; r >= 0 && f < 8; r--, f++)
+    for (int r = rank - 1, f = file + 1; r >= RANK_1 && f < N_FILES; r--, f++)
     {
-      attacks |= (ONE << utils::get_square(r, f));
-      if ((ONE << utils::get_square(r, f)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
+      if ((ONE << utils::get_square((Rank)r, (File)f)) & block)
       {
         break;
       }
     }
 
-    for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; r--, f--)
+    for (int r = rank - 1, f = file - 1; r >= RANK_1 && f >= FILE_A; r--, f--)
     {
-      attacks |= (ONE << utils::get_square(r, f));
-      if ((ONE << utils::get_square(r, f)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, (File)f));
+      if ((ONE << utils::get_square((Rank)r, (File)f)) & block)
       {
         break;
       }
@@ -156,43 +153,42 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_rook_attacks(int sq, u64 block)
+  u64 mask_rook_xray_attacks(Square sq, u64 block)
   {
     u64 attacks = ZERO;
-    int rank = utils::get_rank(sq);
-    int file = utils::get_file(sq);
-
-    for (int r = rank + 1; r < 8; r++)
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1; r < N_RANKS; r++)
     {
-      attacks |= (ONE << utils::get_square(r, file));
-      if ((ONE << utils::get_square(r, file)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, file));
+      if ((ONE << utils::get_square((Rank)r, file)) & block)
       {
         break;
       }
     }
 
-    for (int r = rank - 1; r >= 0; r--)
+    for (int r = rank - 1; r >= RANK_1; r--)
     {
-      attacks |= (ONE << utils::get_square(r, file));
-      if ((ONE << utils::get_square(r, file)) & block)
+      attacks |= (ONE << utils::get_square((Rank)r, file));
+      if ((ONE << utils::get_square((Rank)r, file)) & block)
       {
         break;
       }
     }
 
-    for (int f = file + 1; f < 8; f++)
+    for (int f = file + 1; f < N_FILES; f++)
     {
-      attacks |= (ONE << utils::get_square(rank, f));
-      if ((ONE << utils::get_square(rank, f)) & block)
+      attacks |= (ONE << utils::get_square(rank, (File)f));
+      if ((ONE << utils::get_square(rank, (File)f)) & block)
       {
         break;
       }
     }
 
-    for (int f = file - 1; f >= 0; f--)
+    for (int f = file - 1; f >= FILE_A; f--)
     {
-      attacks |= (ONE << utils::get_square(rank, f));
-      if ((ONE << utils::get_square(rank, f)) & block)
+      attacks |= (ONE << utils::get_square(rank, (File)f));
+      if ((ONE << utils::get_square(rank, (File)f)) & block)
       {
         break;
       }

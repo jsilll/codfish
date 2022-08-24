@@ -4,18 +4,18 @@
 
 #include <iostream>
 
-void cli::MoveCommand::execute(std::vector<std::string> &args, Board &board)
+void cli::MoveCommand::execute(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {
         return;
     }
 
-    for (const Move &move : movegen::generateLegalMoves(board))
+    for (const Move &move : movegen::generateLegalMoves(_board))
     {
         if (move.get_uci() == args[0])
         {
-            board.make_move(move);
+            _board.make(move);
             return;
         }
     }
