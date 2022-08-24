@@ -2,6 +2,32 @@
 
 #include <string>
 
+enum Rank : int
+{
+  RANK_1,
+  RANK_2,
+  RANK_3,
+  RANK_4,
+  RANK_5,
+  RANK_6,
+  RANK_7,
+  RANK_8,
+  N_RANKS,
+};
+
+enum File : int
+{
+  FILE_A,
+  FILE_B,
+  FILE_C,
+  FILE_D,
+  FILE_E,
+  FILE_F,
+  FILE_G,
+  FILE_H,
+  N_FILES,
+};
+
 // clang-format off
 enum Square : int {
   A1, B1, C1, D1, E1, F1, G1, H1,
@@ -43,7 +69,7 @@ enum Direction : int
   N_DIRECTIONS = 8,
 };
 
-enum PieceColor : int
+enum Color : int
 {
   WHITE = 0,
   BLACK = 1,

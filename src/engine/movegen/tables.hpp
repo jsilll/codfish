@@ -6,6 +6,10 @@
 
 namespace tables
 {
+    /**
+     * This arrays should only be indexed with compile time values
+     */
+
     constexpr u64 MASK_RANK[] = {
         0xFF,
         0xFF00,
@@ -46,60 +50,94 @@ namespace tables
         0xBFBFBFBFBFBFBFBF,
         0x7F7F7F7F7F7F7F7F};
 
-    // clang-format off
-    constexpr int RELEVANT_BITS_COUNT_BISHOP[N_SQUARES] = {
-        6, 5, 5, 5, 5, 5, 5, 6,
-        5, 5, 5, 5, 5, 5, 5, 5,
-        5, 5, 7, 7, 7, 7, 5, 5,
-        5, 5, 7, 9, 9, 7, 5, 5,
-        5, 5, 7, 9, 9, 7, 5, 5,
-        5, 5, 7, 7, 7, 7, 5, 5,
-        5, 5, 5, 5, 5, 5, 5, 5,
-        6, 5, 5, 5, 5, 5, 5, 6,
-    };
+    /**
+     * @brief Converts a square to its bitboard representation
+     *
+     * @param sq
+     * @return u64
+     */
+    u64 square_to_bitboard(Square sq);
 
-    constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {
-        12, 11, 11, 11, 11, 11, 11, 12,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        11, 10, 10, 10, 10, 10, 10, 11,
-        12, 11, 11, 11, 11, 11, 11, 12,
-    };
-    // clang-format on
+    /**
+     * @brief Gets the relevant bits count for the bishop piece
+     *
+     * @param sq
+     * @return int
+     */
+    int get_relevant_bits_count_bishop(Square sq);
 
-    extern u64 SQUARE_BB[N_SQUARES];
+    /**
+     * @brief Gets the relevant bits count for the rook piece
+     *
+     * @param sq
+     * @return int
+     */
+    int get_relevant_bits_count_rook(Square sq);
 
-    extern u64 ATTACKS_PAWN[BOTH][N_SQUARES]; // Direct Access TODO: make this accessible through function only?
-    extern u64 ATTACKS_KNIGHT[N_SQUARES];     // Direct Access
-    extern u64 ATTACKS_KING[N_SQUARES];       // Direct Access
-
-    extern u64 ATTACKS_BISHOP[N_SQUARES][512]; // Needs Magics Bitboards For Accessing
-    extern u64 ATTACKS_ROOK[N_SQUARES][4096];  // Needs Magics Bitboards For Accessing
-
+    /**
+     * @brief Inits all the tables
+     *
+     */
     void init();
 
-    inline u64 get_bishop_attacks(const int sq, u64 occ)
-    {
-        occ &= magics::MAGIC_TABLE_BISHOP[sq].mask;
-        occ *= magics::MAGIC_TABLE_BISHOP[sq].magic;
-        occ >>= magics::MAGIC_TABLE_BISHOP[sq].shift;
-        return ATTACKS_BISHOP[sq][occ];
-    }
+    /**
+     * @brief Deallocates all the heap allocated tables
+     *
+     */
+    void teardown();
 
-    inline u64 get_rook_attacks(const int sq, u64 occ)
-    {
-        occ &= magics::MAGIC_TABLE_ROOK[sq].mask;
-        occ *= magics::MAGIC_TABLE_ROOK[sq].magic;
-        occ >>= magics::MAGIC_TABLE_ROOK[sq].shift;
-        return ATTACKS_ROOK[sq][occ];
-    }
+    /**
+     * @brief Gets the pawn attacks
+     *
+     * @param color
+     * @param sq
+     * @return u64
+     */
+    u64 get_pawn_attacks(Color color, Square sq);
 
-    inline u64 get_queen_attacks(const int sq, u64 occ)
-    {
-        return get_bishop_attacks(sq, occ) | get_rook_attacks(sq, occ);
-    }
+    /**
+     * @brief Gets the knight attacks
+     *
+     * @param color
+     * @param sq
+     * @return u64
+     */
+    u64 get_knight_attacks(Square sq);
+
+    /**
+     * @brief Gets the king attacks
+     *
+     * @param color
+     * @param sq
+     * @return u64
+     */
+    u64 get_king_attacks(Square sq);
+
+    /**
+     * @brief Gets the bishop attacks
+     *
+     * @param sq
+     * @param occ
+     * @return u64
+     */
+    u64 get_bishop_attacks(const Square sq, u64 occ);
+
+    /**
+     * @brief Gets the rook attacks
+     *
+     * @param sq
+     * @param occ
+     * @return u64
+     */
+    u64 get_rook_attacks(const Square sq, u64 occ);
+
+    /**
+     * @brief Gets the queen attacks
+     *
+     * @param sq
+     * @param occ
+     * @return u64
+     */
+    u64 get_queen_attacks(const Square sq, u64 occ);
 
 } // namespace tables

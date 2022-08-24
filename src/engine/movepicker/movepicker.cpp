@@ -44,7 +44,7 @@ int MovePicker::score(const Move move)
 
     if (move.is_capture())
     {
-        return MVV_LVA[move.get_piece()][move.get_captured_piece()];
+        return MVV_LVA[move.get_piece_type()][move.get_captured_piece_type()];
     }
 
     if (_killer_moves[0][_current_depth] == move)
@@ -57,7 +57,7 @@ int MovePicker::score(const Move move)
         return 8000;
     }
 
-    return _history_moves[_board.get_side_to_move()][move.get_piece()][move.get_to_square()];
+    return _history_moves[_board.get_side_to_move()][move.get_piece_type()][move.get_to_square()];
 }
 
 int MovePicker::search(int depth, int alpha, int beta)
@@ -71,8 +71,8 @@ int MovePicker::search(int depth, int alpha, int beta)
     {
         _board.make(move);
 
-        int attacker_side = _board.get_side_to_move();
-        int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
+        Color attacker_side = _board.get_side_to_move();
+        Square king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
         if (!_board.is_square_attacked(king_sq, attacker_side))
         {
             _current_depth++;
@@ -163,7 +163,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     {
         _board.make(move);
 
-        int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
+        Square king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
         if (!_board.is_square_attacked(king_sq, _board.get_side_to_move()))
         {
             has_legal_moves = true;
@@ -255,7 +255,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     if (!has_legal_moves)
     {
         // Check Mate
-        int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
+        Square king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
             _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth, _pv_table.get_pv_from_depth(_current_depth));
@@ -283,7 +283,7 @@ int MovePicker::quiescence(int alpha, int beta)
 
     if (!movegen::has_legal_moves(_board))
     {
-        int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
+        Square king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_side_to_move(), KING));
         if (_board.is_square_attacked(king_sq, _board.get_opponent()))
         {
             _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, MIN_EVAL + _current_depth, _pv_table.get_pv_from_depth(_current_depth));
@@ -318,7 +318,7 @@ int MovePicker::quiescence(int alpha, int beta)
     {
         _board.make(capture);
 
-        int king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
+        Square king_sq = bitboard::bit_scan_forward(_board.get_pieces(_board.get_opponent(), KING));
         if (!_board.is_square_attacked(king_sq, _board.get_side_to_move()))
         {
             _current_depth++;
@@ -359,7 +359,7 @@ void MovePicker::add_to_killer_moves(const Move move)
 void MovePicker::add_to_history_moves(const Move move)
 {
     // History Move Heuristic
-    _history_moves[_board.get_side_to_move()][move.get_piece()][move.get_to_square()] += _current_depth;
+    _history_moves[_board.get_side_to_move()][move.get_piece_type()][move.get_to_square()] += _current_depth;
 }
 
 void MovePicker::clear_search_counters()

@@ -7,7 +7,7 @@
 #include <engine/movegen/tables.hpp>
 #include <engine/board.hpp>
 
-void setup()
+static void setup()
 {
     magics::init();
     tables::init();

@@ -19,16 +19,17 @@ namespace bitboard
         return (int)count;
     }
 
-    int bit_scan(u64 bb)
+    Square bit_scan(u64 bb)
     {
         if (bb)
         {
-            return bit_count((bb & -bb) - 1);
+            return (Square)bit_count((bb & -bb) - 1);
         }
-        return -1;
+
+        return EMPTY_SQUARE;
     }
 
-    int bit_scan_forward(u64 bb)
+    Square bit_scan_forward(u64 bb)
     {
         static const int index64[64] = {
             0, 47, 1, 56, 48, 27, 2, 60,
@@ -41,7 +42,7 @@ namespace bitboard
             13, 18, 8, 12, 7, 6, 5, 63};
 
         static const u64 debruijn64 = 0x03f79d71b4cb0a89;
-        return index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
+        return (Square)index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
     }
 
     u64 set_occupancy(int index, int bits_in_mask, u64 attack_mask)
@@ -49,24 +50,25 @@ namespace bitboard
         u64 occupancy = ZERO;
         for (int bit = 0; bit < bits_in_mask; bit++)
         {
-            int lsb_sq = bit_scan_forward(attack_mask);
+            Square lsb_sq = bit_scan_forward(attack_mask);
             pop_bit(attack_mask, lsb_sq);
             if (index & (1 << bit))
             {
-                occupancy |= tables::SQUARE_BB[lsb_sq];
+                occupancy |= tables::square_to_bitboard((Square)lsb_sq);
             }
         }
+
         return occupancy;
     }
 
     void print(u64 bb)
     {
-        for (int i = 7; i >= 0; i--)
+        for (int i = RANK_8; i >= RANK_1; i--)
         {
             std::cout << i + 1 << "  ";
-            for (int n = 0; n < 8; n++)
+            for (int n = FILE_A; n < N_FILES; n++)
             {
-                std::cout << ((bb >> utils::get_square(i, n)) & ONE) << " ";
+                std::cout << ((bb >> utils::get_square((Rank)i, (File)n)) & ONE) << " ";
             }
             std::cout << "\n";
         }

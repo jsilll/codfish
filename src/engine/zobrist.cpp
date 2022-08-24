@@ -50,10 +50,10 @@ namespace zobrist
         {
             for (int side = WHITE; side < BOTH; side++)
             {
-                u64 bitboard = board.get_pieces(side, piece);
+                u64 bitboard = board.get_pieces((Color)side, (PieceType)piece);
                 while (bitboard)
                 {
-                    int sq = bitboard::bit_scan_forward(bitboard);
+                    Square sq = bitboard::bit_scan_forward(bitboard);
                     final_key ^= piece_keys[side][piece][sq];
                     bitboard::pop_bit(bitboard, sq);
                 }

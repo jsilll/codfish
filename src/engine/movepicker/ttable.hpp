@@ -38,4 +38,4 @@ public:
     void clear();
     void set_entry(u64 hash_key, int depth, int flag, int score, std::vector<Move> moves);
     TTOutput read_hash(u64 hash_key, int alpha, int beta, int depth);
-}; // TODO: List Of Moves
+};

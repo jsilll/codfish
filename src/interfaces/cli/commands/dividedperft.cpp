@@ -16,8 +16,8 @@ static void dperft(int depth, Board &board)
     {
         Board::GameState state = board.get_state();
         board.make(move);
-        int king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
-        int attacker_side = board.get_side_to_move();
+        Square king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
+        Color attacker_side = board.get_side_to_move();
         if (!board.is_square_attacked(king_sq, attacker_side))
         {
             int nodes = perft::perft(board, depth - 1);
