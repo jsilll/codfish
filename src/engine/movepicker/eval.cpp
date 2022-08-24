@@ -205,8 +205,8 @@ namespace eval
 
     void init_eval_masks()
     {
-        u64 mask = set_file_rank_mask(0, 0);
-        bitboard::print(mask);
+        // u64 mask = set_file_rank_mask(0, 0);
+        // bitboard::print(mask);
     }
 
     void init()
@@ -256,7 +256,8 @@ namespace eval
 
         for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
-            while (u64 pieces_white = board.get_pieces(WHITE, (PieceType)piece_type))
+            u64 pieces_white = board.get_pieces(WHITE, (PieceType)piece_type);
+            while (pieces_white)
             {
                 Square sq = bitboard::bit_scan_forward(pieces_white);
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
@@ -266,7 +267,8 @@ namespace eval
                 bitboard::pop_bit(pieces_white, sq);
             }
 
-            while (u64 pieces_black = board.get_pieces(BLACK, (PieceType)piece_type))
+            u64 pieces_black = board.get_pieces(BLACK, (PieceType)piece_type);
+            while (pieces_black)
             {
                 Square sq = bitboard::bit_scan_forward(pieces_black);
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
