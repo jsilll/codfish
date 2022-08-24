@@ -68,6 +68,8 @@ Usage
 ```
 
 If this argument is not specified at startup the engine will default to UCI mode.
+Once in UCI mode mode you can use any UCI compliant chess GUI to interact with the engine,
+some examples are [CuteChess](https://cutechess.com/) and [Arena](https://cutechess.com/).
 
 Files
 ===
