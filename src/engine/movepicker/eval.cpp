@@ -1,5 +1,4 @@
 #include <engine/movepicker/eval.hpp>
-
 #include <engine/bitboard.hpp>
 #include <engine/board.hpp>
 #include <engine/utils.hpp>
@@ -174,6 +173,12 @@ namespace eval
     // passed pawn masks [square]
     u64 passed_masks[64];
 
+    // white passed pawn masks [square]
+    u64 white_passed_masks[64];
+
+    // black passed pawn masks [square]
+    u64 black_passed_masks[64];
+
     u64 set_file_rank_mask(int file_number, int rank_number)
     {
         u64 mask = ZERO;
@@ -205,8 +210,43 @@ namespace eval
 
     void init_eval_masks()
     {
-        // u64 mask = set_file_rank_mask(0, 0);
-        // bitboard::print(mask);
+        for (int rank = RANK_1; rank < N_RANKS; rank++)
+        {
+            for (int file = FILE_A; file < N_FILES; file++)
+            {
+                Square sq = (Square)utils::get_square((Rank)rank, (File)file);
+
+                file_masks[sq] |= set_file_rank_mask(file, -1);
+                rank_masks[sq] |= set_file_rank_mask(-1, rank);
+
+                isolated_masks[sq] |= set_file_rank_mask(file - 1, -1);
+                isolated_masks[sq] |= set_file_rank_mask(file + 1, -1);
+            }
+        }
+
+        for (int rank = RANK_1; rank < N_RANKS; rank++)
+        {
+            for (int file = FILE_A; file < N_FILES; file++)
+            {
+                Square sq = (Square)utils::get_square((Rank)rank, (File)file);
+
+                black_passed_masks[sq] |= set_file_rank_mask(file - 1, -1);
+                black_passed_masks[sq] |= set_file_rank_mask(file, -1);
+                black_passed_masks[sq] |= set_file_rank_mask(file + 1, -1);
+
+                white_passed_masks[sq] |= set_file_rank_mask(file - 1, -1);
+                white_passed_masks[sq] |= set_file_rank_mask(file, -1);
+                white_passed_masks[sq] |= set_file_rank_mask(file + 1, -1);
+
+                // reset redudant bits for black
+                for (int i = 0; i < (8 - rank); i++)
+                    black_passed_masks[sq] &= ~rank_masks[(7 - i) * 8 + file];
+
+                // reset redudant bits for white
+                for (int i = 0; i < rank + 1; i++)
+                    white_passed_masks[sq] &= ~rank_masks[i * 8 + file];
+            }
+        }
     }
 
     void init()
