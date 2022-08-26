@@ -12,15 +12,15 @@ int main(int argc, char const *argv[])
   switch (options.interface)
   {
   case opts::InterfaceMode::CLI:
-    std::cout << "Chess Engine Initialized in CLI Mode" << std::endl;
+    std::cout << "Codfish Initialized in CLI Mode" << std::endl;
     cli::init();
     break;
   case opts::InterfaceMode::UCI:
-    std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
+    std::cout << "Codfish Initialized in UCI Mode" << std::endl;
     uci::init();
     break;
   default:
-    std::cout << "Chess Engine Initialized in UCI Mode" << std::endl;
+    std::cout << "Codfish Initialized in UCI Mode" << std::endl;
     uci::init();
     break;
   }

@@ -2,15 +2,15 @@
   
 </p>
 
-<h1 align="center">Chess Engine</h1>
+<h1 align="center">Codfish</h1>
 
 <p align="center">
-  <a href="https://github.com/jsilll/chess-engine/actions"><img src="https://github.com/jsilll/chess-engine/actions/workflows/cmake.yml/badge.svg"></a>
+  <a href="https://github.com/jsilll/codfish/actions"><img src="https://github.com/jsilll/codfish/actions/workflows/cmake.yml/badge.svg"></a>
 </p>
 
-Chess-Engine is a strong chess engine written in C++.
+Codfish is a strong chess engine written in C++.
 
-Currently, Chess-Engine doesn't support opening books, endgame tables, multi-threading or any kind of neural network evaluation. Some of these features will certainly be implemented in future releases.
+Currently, Codfish doesn't support opening books, endgame tables, multi-threading or any kind of neural network evaluation. Some of these features will certainly be implemented in future releases.
 
 The main goal of this project is to provide a simple introduction to newcomers to the chess programming world. The code is meant to be efficient and fast but also clean, maintainable and, above all, understandable.
 
@@ -44,7 +44,7 @@ Features
 Building and Installation
 ===
 
-Currently Chess-Engine is meant to be built only for Unix systems (although it may be built for other target platforms with little to no effort).
+Codfish is meant to be built only for Unix systems (although it may be built for other target platforms with little to no effort).
 
 To compile the source code and the unit tests into their respective binaries:
 ```
@@ -73,11 +73,11 @@ some examples are [CuteChess](https://cutechess.com/) and [Arena](https://cutech
 
 Files
 ===
-Chess-Engine consists of the following files:
-- [`CMakeLists.txt`](https://github.com/jsilll/chess-engine/blob/master/CMakeLists.txt), a file that contains the rules for building the engine using [cmake](https://cmake.org/).
-- [`src`](https://github.com/jsilll/chess-engine/blob/master/src), a subdirectory that contains all the source code for the engine.
-- [`tests`](https://github.com/jsilll/chess-engine/blob/master/tests), a subdirectory that contains all the source for the unit tests.
-- [`Doxyfile`](https://github.com/jsilll/chess-engine/blob/master/Doxyfile), a file for generating documentation for the source code using [Doxygen](https://doxygen.nl/).
+Codfish consists of the following files:
+- [`CMakeLists.txt`](https://github.com/jsilll/codfish/blob/master/CMakeLists.txt), a file that contains the rules for building the engine using [cmake](https://cmake.org/).
+- [`src`](https://github.com/jsilll/codfish/blob/master/src), a subdirectory that contains all the source code for the engine.
+- [`tests`](https://github.com/jsilll/codfish/blob/master/tests), a subdirectory that contains all the source for the unit tests.
+- [`Doxyfile`](https://github.com/jsilll/codfish/blob/master/Doxyfile), a file for generating documentation for the source code using [Doxygen](https://doxygen.nl/).
 
 Contributing
 ===
@@ -91,7 +91,7 @@ Everyone is more than welcome to contribute to the development of the project. I
 
 Terms of Use
 ===
-Chess-Engine is free, and distributed under the **MIT License**.
+Codfish is free, and distributed under the **MIT License**.
 
 For full details, read the copy of the MIT License found in the file named
-[LICENSE](https://github.com/jsilll/chess-engine/blob/master/LICENSE).
+[LICENSE](https://github.com/jsilll/codfish/blob/master/LICENSE).
