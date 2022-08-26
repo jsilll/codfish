@@ -179,6 +179,23 @@ namespace eval
     // black passed pawn masks [square]
     u64 black_passed_masks[64];
 
+    const int get_rank[64] =
+        {
+            7, 7, 7, 7, 7, 7, 7, 7,
+            6, 6, 6, 6, 6, 6, 6, 6,
+            5, 5, 5, 5, 5, 5, 5, 5,
+            4, 4, 4, 4, 4, 4, 4, 4,
+            3, 3, 3, 3, 3, 3, 3, 3,
+            2, 2, 2, 2, 2, 2, 2, 2,
+            1, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 0, 0, 0, 0, 0, 0};
+
+    const int double_pawn_penalty = -10;
+
+    const int isolated_pawn_penalty = -10;
+
+    const int passed_pawn_bonus[8] = {0, 10, 30, 50, 75, 100, 150, 200};
+
     u64 set_file_rank_mask(int file_number, int rank_number)
     {
         u64 mask = ZERO;
@@ -293,6 +310,7 @@ namespace eval
         int material[2]{};
         int mg[2]{};
         int eg[2]{};
+        int double_pawns = 1;
 
         for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
         {
@@ -300,9 +318,18 @@ namespace eval
             while (pieces_white)
             {
                 Square sq = bitboard::bit_scan_forward(pieces_white);
+                if (piece_type == PAWN)
+                {
+                    double_pawns = bitboard::bit_count(pieces_white & file_masks[sq]);
+                    if (double_pawns > 1)
+                    {
+                        material[WHITE] += double_pawns * double_pawn_penalty;
+                    }
+                }
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
                 eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
                 material[WHITE] += PIECE_SCORES[piece_type];
+
                 game_phase += GAME_PHASE_INC[piece_type];
                 bitboard::pop_bit(pieces_white, sq);
             }
@@ -311,6 +338,14 @@ namespace eval
             while (pieces_black)
             {
                 Square sq = bitboard::bit_scan_forward(pieces_black);
+                if (piece_type == PAWN)
+                {
+                    double_pawns = bitboard::bit_count(pieces_black & file_masks[sq]);
+                    if (double_pawns > 1)
+                    {
+                        material[BLACK] += double_pawns * double_pawn_penalty;
+                    }
+                }
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
                 eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
                 material[BLACK] += PIECE_SCORES[piece_type];
