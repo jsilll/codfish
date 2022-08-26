@@ -1,27 +1,52 @@
 cmake_minimum_required(VERSION 3.2...3.15)
+
+#-------------------Setup-------------------
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-project(chess_engine VERSION 1.0 DESCRIPTION "Chess Engine")
+project(chess_engine VERSION 1.0 DESCRIPTION "Codfish")
 
-# Engine 
-file(GLOB ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.hpp)
+set(CMAKE_CXX_FLAGS "-Wall -Wpedantic -Wextra -Wconversion -Werror")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
-add_executable(engine ${ENGINE_SRC})
-target_link_libraries(engine readline)
-set_target_properties(engine PROPERTIES COMPILE_FLAGS "-O3 -Wall -Wextra")
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
 
-# Tests
-set(TEST_SRC ${ENGINE_SRC})
-list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.cpp)
-list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/uci.hpp)
-list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.cpp)
-list(REMOVE_ITEM TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/cli.hpp)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
-add_executable(test_board ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_board.cpp ${TEST_SRC})
-add_executable(test_movegen ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_movegen.cpp ${TEST_SRC})
+#-------------------Library-------------------
+file(GLOB CHESS_SRC ${PROJECT_SOURCE_DIR}/src/engine/*.cpp)
+file(GLOB MOVEPICKER_SRC ${PROJECT_SOURCE_DIR}/src/engine/movepicker/*.cpp)
+file(GLOB MOVEGEN_SRC ${PROJECT_SOURCE_DIR}/src/engine/movegen/*.cpp)
+add_library(engine ${CHESS_SRC} ${MOVEGEN_SRC} ${MOVEPICKER_SRC})
+target_include_directories(engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
+#-------------------Executable-------------------
+file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/cli/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/uci/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/cli/commands/*.cpp
+                   ${PROJECT_SOURCE_DIR}/src/interfaces/uci/commands/*.cpp
+                   )
+add_executable(engine_exec ${EXEC_SRC})
+target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(engine_exec engine Threads::Threads )
+
+#-------------------Unit Tests-------------------
 enable_testing()
-add_test(NAME test_board COMMAND test_board)
-add_test(NAME test_movegen COMMAND test_movegen)
+
+file(GLOB TESTS_SRC ${PROJECT_SOURCE_DIR}/tests/movegen/test_*.cpp 
+                    ${PROJECT_SOURCE_DIR}/tests/movepicker/test_*.cpp
+                    )
+
+foreach(TEST_SRC ${TESTS_SRC})
+  get_filename_component(TEST_NAME ${TEST_SRC} NAME_WLE)
+  add_executable(${TEST_NAME} ${TEST_SRC})
+  target_include_directories(${TEST_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
+  target_link_libraries(${TEST_NAME} engine)
+  add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach()
