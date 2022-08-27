@@ -59,12 +59,12 @@ Usage
 ===
 ### Starting in UCI mode
 ```
-./codfish --uci
+codfish --uci
 ```
 
 ### Starting in CLI mode
 ```
-./codfish --cli
+codfish --cli
 ```
 
 If this argument is not specified at startup the engine will default to UCI mode.
