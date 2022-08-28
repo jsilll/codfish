@@ -202,7 +202,7 @@ namespace eval
 
     const int double_pawn_penalty = -5;
 
-    const int isolated_pawn_penalty = -60;
+    const int isolated_pawn_penalty = -10;
 
     const int passed_pawn_bonus[8] = {0, 10, 30, 50, 75, 100, 150, 200};
 
