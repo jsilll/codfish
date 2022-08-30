@@ -6,6 +6,32 @@
 namespace eval
 {
     // clang-format off
+    const int GET_RANK[64] =
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1, 1, 1,
+        2, 2, 2, 2, 2, 2, 2, 2,
+        3, 3, 3, 3, 3, 3, 3, 3,
+        4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5,
+        6, 6, 6, 6, 6, 6, 6, 6,
+        7, 7, 7, 7, 7, 7, 7, 7
+    };
+    // clang-format on
+
+    u64 FILE_MASKS[64];
+
+    u64 ISOLATED_MASKS[64];
+
+    u64 PASSED_MASKS[64];
+
+    u64 RANK_MASKS[64];
+
+    u64 WHITE_PASSED_MASKS[64];
+
+    u64 BLACK_PASSED_MASKS[64];
+
+    // clang-format off
     int MG_PAWN_TABLE[64] = {
         0,   0,   0,   0,   0,   0,  0,   0,
         98, 134,  61,  95,  68, 126, 34, -11,
@@ -147,63 +173,17 @@ namespace eval
     int PIECE_SCORES[] = {100, 280, 320, 479, 929, 60000};
     // clang-format on
 
-    /*
-          Rank mask            File mask           Isolated mask        Passed pawn mask
-        for square a6        for square f2         for square g2          for square c4
-    8  0 0 0 0 0 0 0 0    8  0 0 0 0 0 1 0 0    8  0 0 0 0 0 1 0 1     8  0 1 1 1 0 0 0 0
-    7  0 0 0 0 0 0 0 0    7  0 0 0 0 0 1 0 0    7  0 0 0 0 0 1 0 1     7  0 1 1 1 0 0 0 0
-    6  1 1 1 1 1 1 1 1    6  0 0 0 0 0 1 0 0    6  0 0 0 0 0 1 0 1     6  0 1 1 1 0 0 0 0
-    5  0 0 0 0 0 0 0 0    5  0 0 0 0 0 1 0 0    5  0 0 0 0 0 1 0 1     5  0 1 1 1 0 0 0 0
-    4  0 0 0 0 0 0 0 0    4  0 0 0 0 0 1 0 0    4  0 0 0 0 0 1 0 1     4  0 0 0 0 0 0 0 0
-    3  0 0 0 0 0 0 0 0    3  0 0 0 0 0 1 0 0    3  0 0 0 0 0 1 0 1     3  0 0 0 0 0 0 0 0
-    2  0 0 0 0 0 0 0 0    2  0 0 0 0 0 1 0 0    2  0 0 0 0 0 1 0 1     2  0 0 0 0 0 0 0 0
-    1  0 0 0 0 0 0 0 0    1  0 0 0 0 0 1 0 0    1  0 0 0 0 0 1 0 1     1  0 0 0 0 0 0 0 0
-       a b c d e f g h       a b c d e f g h       a b c d e f g h        a b c d e f g h
-    */
+    const int SEMI_OPEN_FILE_SCORE = 10;
 
-    // file masks [square]
-    u64 file_masks[64];
+    const int OPEN_FILE_SCORE = 15;
 
-    // rank masks [square]
-    u64 rank_masks[64];
+    const int DOUBLE_PAWN_PENALTY = -5;
 
-    // isolated pawn masks [square]
-    u64 isolated_masks[64];
+    const int ISOLATED_PAWN_PENALTY = -10;
 
-    // passed pawn masks [square]
-    u64 passed_masks[64];
+    const int PASSED_PAWN_SCORE[N_SIDES][N_RANKS] = {{0, 10, 30, 50, 70, 100, 150, 200}, {200, 150, 100, 70, 50, 30, 10, 0}};
 
-    // white passed pawn masks [square]
-    u64 white_passed_masks[64];
-
-    // black passed pawn masks [square]
-    u64 black_passed_masks[64];
-
-    // semi open file score
-    const int semi_open_file_score = 10;
-
-    // open file score
-    const int open_file_score = 25;
-
-    const int get_rank[64] =
-        {
-            0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            2, 2, 2, 2, 2, 2, 2, 2,
-            3, 3, 3, 3, 3, 3, 3, 3,
-            4, 4, 4, 4, 4, 4, 4, 4,
-            5, 5, 5, 5, 5, 5, 5, 5,
-            6, 6, 6, 6, 6, 6, 6, 6,
-            7, 7, 7, 7, 7, 7, 7, 7};
-
-    const int double_pawn_penalty = -5;
-
-    const int isolated_pawn_penalty = -10;
-
-    const int passed_pawn_bonus_white[8] = {0, 10, 30, 50, 75, 100, 150, 200};
-    const int passed_pawn_bonus_black[8] = {200, 150, 100, 75, 50, 30, 10, 0};
-
-    u64 set_file_rank_mask(int file_number, int rank_number)
+    u64 get_file_rank_mask(int file_number, int rank_number)
     {
         u64 mask = ZERO;
         for (int rank = RANK_1; rank < N_RANKS; rank++)
@@ -240,11 +220,11 @@ namespace eval
             {
                 Square sq = (Square)utils::get_square((Rank)rank, (File)file);
 
-                file_masks[sq] |= set_file_rank_mask(file, -1);
-                rank_masks[sq] |= set_file_rank_mask(-1, rank);
+                FILE_MASKS[sq] |= get_file_rank_mask(file, -1);
+                RANK_MASKS[sq] |= get_file_rank_mask(-1, rank);
 
-                isolated_masks[sq] |= set_file_rank_mask(file - 1, -1);
-                isolated_masks[sq] |= set_file_rank_mask(file + 1, -1);
+                ISOLATED_MASKS[sq] |= get_file_rank_mask(file - 1, -1);
+                ISOLATED_MASKS[sq] |= get_file_rank_mask(file + 1, -1);
             }
         }
 
@@ -254,21 +234,25 @@ namespace eval
             {
                 Square sq = (Square)utils::get_square((Rank)rank, (File)file);
 
-                black_passed_masks[sq] |= set_file_rank_mask(file - 1, -1);
-                black_passed_masks[sq] |= set_file_rank_mask(file, -1);
-                black_passed_masks[sq] |= set_file_rank_mask(file + 1, -1);
+                BLACK_PASSED_MASKS[sq] |= get_file_rank_mask(file - 1, -1);
+                BLACK_PASSED_MASKS[sq] |= get_file_rank_mask(file, -1);
+                BLACK_PASSED_MASKS[sq] |= get_file_rank_mask(file + 1, -1);
 
-                white_passed_masks[sq] |= set_file_rank_mask(file - 1, -1);
-                white_passed_masks[sq] |= set_file_rank_mask(file, -1);
-                white_passed_masks[sq] |= set_file_rank_mask(file + 1, -1);
+                WHITE_PASSED_MASKS[sq] |= get_file_rank_mask(file - 1, -1);
+                WHITE_PASSED_MASKS[sq] |= get_file_rank_mask(file, -1);
+                WHITE_PASSED_MASKS[sq] |= get_file_rank_mask(file + 1, -1);
 
                 // reset redudant bits for black
                 for (int i = 0; i < (8 - rank); i++)
-                    black_passed_masks[sq] &= ~rank_masks[(7 - i) * 8 + file];
+                {
+                    BLACK_PASSED_MASKS[sq] &= ~RANK_MASKS[(7 - i) * 8 + file];
+                }
 
                 // reset redudant bits for white
                 for (int i = 0; i < rank + 1; i++)
-                    white_passed_masks[sq] &= ~rank_masks[i * 8 + file];
+                {
+                    WHITE_PASSED_MASKS[sq] &= ~RANK_MASKS[i * 8 + file];
+                }
             }
         }
     }
@@ -311,136 +295,155 @@ namespace eval
         init_eval_masks();
     }
 
+    template <Color Clr, PieceType PType>
+    inline void eval_piece(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_piece()");
+        static_assert(PType == KNIGHT || PType == BISHOP || PType == QUEEN, "Unsupported piece type in eval_piece()");
+        u64 pieces_white = board.get_pieces(Clr, PType);
+        while (pieces_white)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces_white);
+
+            material[Clr] += PIECE_SCORES[PType];
+            mg[Clr] += MG_TABLE[Clr][PType][sq];
+            eg[Clr] += EG_TABLE[Clr][PType][sq];
+            game_phase += GAME_PHASE_INC[PType];
+
+            bitboard::pop_bit(pieces_white, sq);
+        }
+    }
+
+    template <Color Clr>
+    inline void eval_pawns(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_pawns()");
+        u64 pieces = board.get_pieces(Clr, PAWN);
+        while (pieces)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces);
+
+            material[Clr] += PIECE_SCORES[PAWN];
+            mg[Clr] += MG_TABLE[Clr][PAWN][sq];
+            eg[Clr] += EG_TABLE[Clr][PAWN][sq];
+            game_phase += GAME_PHASE_INC[PAWN];
+
+            int double_pawns = bitboard::bit_count(board.get_pieces(Clr, PAWN) & FILE_MASKS[sq]);
+
+            if (double_pawns > 1)
+            {
+                material[Clr] += double_pawns * DOUBLE_PAWN_PENALTY;
+            }
+
+            if constexpr (Clr == WHITE)
+            {
+                if ((board.get_pieces(Clr, PAWN) & ISOLATED_MASKS[sq]) == 0)
+                {
+                    material[Clr] += ISOLATED_PAWN_PENALTY;
+                }
+                if ((WHITE_PASSED_MASKS[sq] & board.get_pieces(BLACK, PAWN)) == 0)
+                {
+                    material[Clr] += PASSED_PAWN_SCORE[Clr][GET_RANK[sq]];
+                }
+            }
+            else
+            {
+                if ((board.get_pieces(Clr, PAWN) & ISOLATED_MASKS[sq]) == 0)
+                {
+                    material[Clr] += ISOLATED_PAWN_PENALTY;
+                }
+                if ((BLACK_PASSED_MASKS[sq] & board.get_pieces(WHITE, PAWN)) == 0)
+                {
+                    material[Clr] += PASSED_PAWN_SCORE[Clr][GET_RANK[sq]];
+                }
+            }
+
+            bitboard::pop_bit(pieces, sq);
+        }
+    }
+
+    template <Color Clr>
+    inline void eval_rooks(const Board &board, u64 pawns, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_rooks()");
+        u64 pieces = board.get_pieces(Clr, ROOK);
+        while (pieces)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces);
+
+            material[Clr] += PIECE_SCORES[ROOK];
+            mg[Clr] += MG_TABLE[Clr][ROOK][sq];
+            eg[Clr] += EG_TABLE[Clr][ROOK][sq];
+            game_phase += GAME_PHASE_INC[ROOK];
+
+            // Open Files
+            if ((pawns & FILE_MASKS[sq]) == 0)
+            {
+                material[Clr] += OPEN_FILE_SCORE;
+            }
+
+            // Semi Open Files
+            if ((board.get_pieces(Clr, PAWN) & FILE_MASKS[sq]) == 0)
+            {
+                material[Clr] += SEMI_OPEN_FILE_SCORE;
+            }
+
+            bitboard::pop_bit(pieces, sq);
+        }
+    }
+
+    template <Color Clr>
+    inline void eval_king(const Board &board, u64 pawns, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_king()");
+        u64 pieces = board.get_pieces(Clr, KING);
+        while (pieces)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces);
+
+            material[Clr] += PIECE_SCORES[KING];
+            mg[Clr] += MG_TABLE[Clr][KING][sq];
+            eg[Clr] += EG_TABLE[Clr][KING][sq];
+            game_phase += GAME_PHASE_INC[KING];
+
+            // Open Files
+            if ((pawns & FILE_MASKS[sq]) == 0)
+            {
+                mg[Clr] -= OPEN_FILE_SCORE;
+            }
+
+            // Semi Open Files
+            if ((board.get_pieces(Clr, PAWN) & FILE_MASKS[sq]) == 0)
+            {
+                mg[Clr] -= SEMI_OPEN_FILE_SCORE;
+            }
+
+            bitboard::pop_bit(pieces, sq);
+        }
+    }
+
     int eval(const Board &board)
     {
         int game_phase = 0;
         int material[2]{};
         int mg[2]{};
         int eg[2]{};
-        int double_pawns = 1;
-        u64 pawns_white = board.get_pieces(WHITE, (PieceType)PAWN);
-        u64 pawns_black = board.get_pieces(BLACK, (PieceType)PAWN);
 
-        for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++)
-        {
-            u64 pieces_white = board.get_pieces(WHITE, (PieceType)piece_type);
-            while (pieces_white)
-            {
-                Square sq = bitboard::bit_scan_forward(pieces_white);
-                if (piece_type == PAWN)
-                {
-                    double_pawns = bitboard::bit_count(pawns_white & file_masks[sq]);
-                    if (double_pawns > 1)
-                    {
-                        material[WHITE] += double_pawns * double_pawn_penalty;
-                    }
-                    if ((pawns_white & isolated_masks[sq]) == 0)
-                    {
-                        material[WHITE] += isolated_pawn_penalty;
-                    }
-                    if ((white_passed_masks[sq] & pawns_black) == 0)
-                    {
-                        material[WHITE] += passed_pawn_bonus_white[get_rank[sq]];
-                    }
-                }
-                if (piece_type == ROOK)
-                {
-                    // open file
-                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
-                    {
-                        printf("\n open file \n");
-                        material[WHITE] += open_file_score;
-                    }
-                    // semi open file
-                    else if ((pawns_white & file_masks[sq]) == 0)
-                    {
-                        printf("\nsemi open file ma boy\n");
-                        material[WHITE] += semi_open_file_score;
-                    }
-                }
-                // Pode ser desnecessario por causa das mb tables
-                if (piece_type == KING)
-                {
-                    // open file
-                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
-                    {
-                        printf("\n open file \n");
-                        material[WHITE] -= open_file_score;
-                    }
-                    // semi open file
-                    else if ((pawns_white & file_masks[sq]) == 0)
-                    {
-                        printf("\nsemi open file ma boy\n");
-                        material[WHITE] -= semi_open_file_score;
-                    }
-                }
+        u64 pawns = board.get_pieces(WHITE, PAWN) | board.get_pieces(BLACK, PAWN);
 
-                mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
-                eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
-                material[WHITE] += PIECE_SCORES[piece_type];
-                game_phase += GAME_PHASE_INC[piece_type];
-                bitboard::pop_bit(pieces_white, sq);
-            }
+        eval_pawns<WHITE>(board, material, mg, eg, game_phase);
+        eval_rooks<WHITE>(board, pawns, material, mg, eg, game_phase);
+        eval_king<WHITE>(board, pawns, material, mg, eg, game_phase);
+        eval_piece<WHITE, KNIGHT>(board, material, mg, eg, game_phase);
+        eval_piece<WHITE, BISHOP>(board, material, mg, eg, game_phase);
+        eval_piece<WHITE, QUEEN>(board, material, mg, eg, game_phase);
 
-            u64 pieces_black = board.get_pieces(BLACK, (PieceType)piece_type);
-            while (pieces_black)
-            {
-                Square sq = bitboard::bit_scan_forward(pieces_black);
-                if (piece_type == PAWN)
-                {
-                    double_pawns = bitboard::bit_count(pawns_black & file_masks[sq]);
-                    if (double_pawns > 1)
-                    {
-                        material[BLACK] += double_pawns * double_pawn_penalty;
-                    }
-                    if ((pawns_black & isolated_masks[sq]) == 0)
-                    {
-                        material[BLACK] += isolated_pawn_penalty;
-                    }
-                    if ((black_passed_masks[sq] & pawns_white) == 0)
-                    {
-                        material[BLACK] += passed_pawn_bonus_black[get_rank[sq]];
-                    }
-                }
-                if (piece_type == ROOK)
-                {
-                    // open file
-                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
-                    {
-                        printf("\n black pen file \n");
-                        material[BLACK] += open_file_score;
-                    }
-                    // semi open file
-                    else if ((pawns_black & file_masks[sq]) == 0)
-                    {
-                        printf("\n black semi open file ma boy\n");
-                        material[BLACK] += semi_open_file_score;
-                    }
-                }
-                // Pode ser desnecessario por causa das mb tables
-                if (piece_type == KING)
-                {
-                    // open file
-                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
-                    {
-                        printf("\n black pen file \n");
-                        material[BLACK] -= open_file_score;
-                    }
-                    // semi open file
-                    else if ((pawns_black & file_masks[sq]) == 0)
-                    {
-                        printf("\n black semi open file ma boy\n");
-                        material[BLACK] -= semi_open_file_score;
-                    }
-                }
-
-                mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
-                eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
-                material[BLACK] += PIECE_SCORES[piece_type];
-                game_phase += GAME_PHASE_INC[piece_type];
-                bitboard::pop_bit(pieces_black, sq);
-            }
-        }
+        eval_pawns<BLACK>(board, material, mg, eg, game_phase);
+        eval_rooks<BLACK>(board, pawns, material, mg, eg, game_phase);
+        eval_king<BLACK>(board, pawns, material, mg, eg, game_phase);
+        eval_piece<BLACK, KNIGHT>(board, material, mg, eg, game_phase);
+        eval_piece<BLACK, BISHOP>(board, material, mg, eg, game_phase);
+        eval_piece<BLACK, QUEEN>(board, material, mg, eg, game_phase);
 
         Color to_move = board.get_side_to_move();
         Color opponent = board.get_opponent();
