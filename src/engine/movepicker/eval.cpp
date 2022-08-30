@@ -179,17 +179,13 @@ namespace eval
     // black passed pawn masks [square]
     u64 black_passed_masks[64];
 
-    const int get_rank_black[64] =
-        {
-            7, 7, 7, 7, 7, 7, 7, 7,
-            6, 6, 6, 6, 6, 6, 6, 6,
-            5, 5, 5, 5, 5, 5, 5, 5,
-            4, 4, 4, 4, 4, 4, 4, 4,
-            3, 3, 3, 3, 3, 3, 3, 3,
-            2, 2, 2, 2, 2, 2, 2, 2,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0, 0, 0, 0};
-    const int get_rank_white[64] =
+    // semi open file score
+    const int semi_open_file_score = 10;
+
+    // open file score
+    const int open_file_score = 25;
+
+    const int get_rank[64] =
         {
             0, 0, 0, 0, 0, 0, 0, 0,
             1, 1, 1, 1, 1, 1, 1, 1,
@@ -204,7 +200,8 @@ namespace eval
 
     const int isolated_pawn_penalty = -10;
 
-    const int passed_pawn_bonus[8] = {0, 10, 30, 50, 75, 100, 150, 200};
+    const int passed_pawn_bonus_white[8] = {0, 10, 30, 50, 75, 100, 150, 200};
+    const int passed_pawn_bonus_black[8] = {200, 150, 100, 75, 50, 30, 10, 0};
 
     u64 set_file_rank_mask(int file_number, int rank_number)
     {
@@ -343,9 +340,41 @@ namespace eval
                     }
                     if ((white_passed_masks[sq] & pawns_black) == 0)
                     {
-                        material[WHITE] += passed_pawn_bonus[get_rank_white[sq]];
+                        material[WHITE] += passed_pawn_bonus_white[get_rank[sq]];
                     }
                 }
+                if (piece_type == ROOK)
+                {
+                    // open file
+                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
+                    {
+                        printf("\n open file \n");
+                        material[WHITE] += open_file_score;
+                    }
+                    // semi open file
+                    else if ((pawns_white & file_masks[sq]) == 0)
+                    {
+                        printf("\nsemi open file ma boy\n");
+                        material[WHITE] += semi_open_file_score;
+                    }
+                }
+                // Pode ser desnecessario por causa das mb tables
+                if (piece_type == KING)
+                {
+                    // open file
+                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
+                    {
+                        printf("\n open file \n");
+                        material[WHITE] -= open_file_score;
+                    }
+                    // semi open file
+                    else if ((pawns_white & file_masks[sq]) == 0)
+                    {
+                        printf("\nsemi open file ma boy\n");
+                        material[WHITE] -= semi_open_file_score;
+                    }
+                }
+
                 mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
                 eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
                 material[WHITE] += PIECE_SCORES[piece_type];
@@ -370,9 +399,41 @@ namespace eval
                     }
                     if ((black_passed_masks[sq] & pawns_white) == 0)
                     {
-                        material[BLACK] += passed_pawn_bonus[get_rank_black[sq]];
+                        material[BLACK] += passed_pawn_bonus_black[get_rank[sq]];
                     }
                 }
+                if (piece_type == ROOK)
+                {
+                    // open file
+                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
+                    {
+                        printf("\n black pen file \n");
+                        material[BLACK] += open_file_score;
+                    }
+                    // semi open file
+                    else if ((pawns_black & file_masks[sq]) == 0)
+                    {
+                        printf("\n black semi open file ma boy\n");
+                        material[BLACK] += semi_open_file_score;
+                    }
+                }
+                // Pode ser desnecessario por causa das mb tables
+                if (piece_type == KING)
+                {
+                    // open file
+                    if (((pawns_white | pawns_black) & file_masks[sq]) == 0)
+                    {
+                        printf("\n black pen file \n");
+                        material[BLACK] -= open_file_score;
+                    }
+                    // semi open file
+                    else if ((pawns_black & file_masks[sq]) == 0)
+                    {
+                        printf("\n black semi open file ma boy\n");
+                        material[BLACK] -= semi_open_file_score;
+                    }
+                }
+
                 mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
                 eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
                 material[BLACK] += PIECE_SCORES[piece_type];
