@@ -32,9 +32,9 @@ file(GLOB EXEC_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp
   ${PROJECT_SOURCE_DIR}/src/interfaces/cli/commands/*.cpp
   ${PROJECT_SOURCE_DIR}/src/interfaces/uci/commands/*.cpp
 )
-add_executable(codfish ${EXEC_SRC})
+add_executable(engine_exec ${EXEC_SRC})
 target_include_directories(engine PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(codfish engine Threads::Threads)
+target_link_libraries(engine_exec engine Threads::Threads)
 
 # -------------------Unit Tests-------------------
 enable_testing()
