@@ -2,6 +2,7 @@
 #include <engine/bitboard.hpp>
 #include <engine/board.hpp>
 #include <engine/utils.hpp>
+#include <engine/movegen/tables.hpp>
 
 namespace eval
 {
@@ -295,20 +296,19 @@ namespace eval
         init_eval_masks();
     }
 
-    template <Color Clr, PieceType PType>
-    inline void eval_piece(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    template <Color Clr>
+    inline void eval_knight(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
     {
         static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_piece()");
-        static_assert(PType == KNIGHT || PType == BISHOP || PType == QUEEN, "Unsupported piece type in eval_piece()");
-        u64 pieces_white = board.get_pieces(Clr, PType);
+        u64 pieces_white = board.get_pieces(Clr, KNIGHT);
         while (pieces_white)
         {
             Square sq = bitboard::bit_scan_forward(pieces_white);
 
-            material[Clr] += PIECE_SCORES[PType];
-            mg[Clr] += MG_TABLE[Clr][PType][sq];
-            eg[Clr] += EG_TABLE[Clr][PType][sq];
-            game_phase += GAME_PHASE_INC[PType];
+            material[Clr] += PIECE_SCORES[KNIGHT];
+            mg[Clr] += MG_TABLE[Clr][KNIGHT][sq];
+            eg[Clr] += EG_TABLE[Clr][KNIGHT][sq];
+            game_phase += GAME_PHASE_INC[KNIGHT];
 
             bitboard::pop_bit(pieces_white, sq);
         }
@@ -393,6 +393,46 @@ namespace eval
     }
 
     template <Color Clr>
+    inline void eval_bishops(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_bishops()");
+        u64 pieces = board.get_pieces(Clr, BISHOP);
+        while (pieces)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces);
+
+            material[Clr] += PIECE_SCORES[BISHOP];
+            mg[Clr] += MG_TABLE[Clr][BISHOP][sq];
+            eg[Clr] += EG_TABLE[Clr][BISHOP][sq];
+            game_phase += GAME_PHASE_INC[BISHOP];
+            // Mobility
+            material[Clr] += bitboard::bit_count(tables::get_bishop_attacks(sq, board.get_occupancies(BOTH))) * 3;
+
+            bitboard::pop_bit(pieces, sq);
+        }
+    }
+
+    template <Color Clr>
+    inline void eval_queen(const Board &board, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
+    {
+        static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_queen()");
+        u64 pieces = board.get_pieces(Clr, QUEEN);
+        while (pieces)
+        {
+            Square sq = bitboard::bit_scan_forward(pieces);
+
+            material[Clr] += PIECE_SCORES[QUEEN];
+            mg[Clr] += MG_TABLE[Clr][QUEEN][sq];
+            eg[Clr] += EG_TABLE[Clr][QUEEN][sq];
+            game_phase += GAME_PHASE_INC[QUEEN];
+            // Mobility
+            material[Clr] += bitboard::bit_count(tables::get_queen_attacks(sq, board.get_occupancies(BOTH)));
+
+            bitboard::pop_bit(pieces, sq);
+        }
+    }
+
+    template <Color Clr>
     inline void eval_king(const Board &board, u64 pawns, int (&material)[2], int (&mg)[2], int (&eg)[2], int &game_phase)
     {
         static_assert(Clr == WHITE || Clr == BLACK, "Unsupported color in eval_king()");
@@ -432,18 +472,18 @@ namespace eval
         u64 pawns = board.get_pieces(WHITE, PAWN) | board.get_pieces(BLACK, PAWN);
 
         eval_pawns<WHITE>(board, material, mg, eg, game_phase);
+        eval_knight<WHITE>(board, material, mg, eg, game_phase);
         eval_rooks<WHITE>(board, pawns, material, mg, eg, game_phase);
+        eval_bishops<WHITE>(board, material, mg, eg, game_phase);
+        eval_queen<WHITE>(board, material, mg, eg, game_phase);
         eval_king<WHITE>(board, pawns, material, mg, eg, game_phase);
-        eval_piece<WHITE, KNIGHT>(board, material, mg, eg, game_phase);
-        eval_piece<WHITE, BISHOP>(board, material, mg, eg, game_phase);
-        eval_piece<WHITE, QUEEN>(board, material, mg, eg, game_phase);
 
         eval_pawns<BLACK>(board, material, mg, eg, game_phase);
+        eval_knight<BLACK>(board, material, mg, eg, game_phase);
         eval_rooks<BLACK>(board, pawns, material, mg, eg, game_phase);
+        eval_bishops<BLACK>(board, material, mg, eg, game_phase);
+        eval_queen<BLACK>(board, material, mg, eg, game_phase);
         eval_king<BLACK>(board, pawns, material, mg, eg, game_phase);
-        eval_piece<BLACK, KNIGHT>(board, material, mg, eg, game_phase);
-        eval_piece<BLACK, BISHOP>(board, material, mg, eg, game_phase);
-        eval_piece<BLACK, QUEEN>(board, material, mg, eg, game_phase);
 
         Color to_move = board.get_side_to_move();
         Color opponent = board.get_opponent();
