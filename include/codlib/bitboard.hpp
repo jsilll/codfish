@@ -132,6 +132,6 @@ namespace bitboard
 
     /// @brief Prints a bitboard
     /// @param bb The bitboard 
-    void print(u64 bb) noexcept;
+    void print(u64 bb) noexcept; // TODO: Implement cout operator
 
 } // namespace bitboard

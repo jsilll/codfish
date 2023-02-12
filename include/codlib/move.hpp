@@ -127,25 +127,25 @@ public:
     return SQUARE_NAMES[get_from_square()] + SQUARE_NAMES[get_to_square()];
   }
 
+  /// @brief Overload of the == operator for the Move class
+  /// @param m1 The move
+  /// @param m2 The other move
+  /// @return Whether the moves are equal
+  friend constexpr bool operator==(const Move &m1, const Move &m2)
+  {
+    return m1._move_encoded == m2._move_encoded;
+  }
+
+  /// @brief Overload of the != operator for the Move class
+  /// @param m1 The move
+  /// @param m2 The other move
+  /// @return Whether the moves are not equal
+  friend constexpr bool operator!=(const Move &m1, const Move &m2)
+  {
+    return m1._move_encoded != m2._move_encoded;
+  }
+
 private:
   /// @brief The encoded move for memory efficiency
   std::uint32_t _move_encoded;
 };
-
-/// @brief Overload of the == operator for the Move class
-/// @param m1 The move 
-/// @param m2 The other move 
-/// @return Whether the moves are equal
-constexpr bool operator==(const Move &m1, const Move &m2)
-{
-  return m1.get_encoded() == m2.get_encoded();
-}
-
-/// @brief Overload of the != operator for the Move class
-/// @param m1 The move
-/// @param m2 The other move 
-/// @return Whether the moves are not equal 
-constexpr bool operator!=(const Move &m1, const Move &m2)
-{
-  return m1.get_encoded() != m2.get_encoded();
-}
