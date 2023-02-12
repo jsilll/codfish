@@ -2,7 +2,7 @@
 
 #include "../catch.hpp"
 
-#include <engine/move.hpp>
+#include <codlib/move.hpp>
 
 // TODO: Missing tests for get_uci()
 

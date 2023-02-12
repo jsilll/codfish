@@ -2,17 +2,17 @@
 
 #include "../catch.hpp"
 
-#include <engine/constants.hpp>
+#include <codlib/constants.hpp>
 
-#include <engine/board.hpp>
-#include <engine/move.hpp>
-#include <engine/movepicker/movepicker.hpp>
+#include <codlib/board.hpp>
+#include <codlib/move.hpp>
+#include <codlib/movepicker/movepicker.hpp>
 
-#include <engine/movegen/magics.hpp>
-#include <engine/movegen/tables.hpp>
+#include <codlib/movegen/magics.hpp>
+#include <codlib/movegen/tables.hpp>
 
-#include <engine/movepicker/eval.hpp>
-#include <engine/zobrist.hpp>
+#include <codlib/movepicker/eval.hpp>
+#include <codlib/zobrist.hpp>
 
 void setup()
 {

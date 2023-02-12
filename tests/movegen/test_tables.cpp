@@ -2,9 +2,9 @@
 
 #include "../catch.hpp"
 
-#include <engine/constants.hpp>
-#include <engine/movegen/magics.hpp>
-#include <engine/movegen/tables.hpp>
+#include <codlib/constants.hpp>
+#include <codlib/movegen/magics.hpp>
+#include <codlib/movegen/tables.hpp>
 
 void setup()
 {

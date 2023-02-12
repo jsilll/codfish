@@ -2,13 +2,13 @@
 
 #include "../catch.hpp"
 
-#include <engine/constants.hpp>
+#include <codlib/constants.hpp>
 
-#include <engine/board.hpp>
-#include <engine/move.hpp>
+#include <codlib/board.hpp>
+#include <codlib/move.hpp>
 
-#include <engine/movegen/magics.hpp>
-#include <engine/movegen/tables.hpp>
+#include <codlib/movegen/magics.hpp>
+#include <codlib/movegen/tables.hpp>
 
 void setup()
 {

@@ -2,15 +2,15 @@
 
 #include "../catch.hpp"
 
-#include <engine/constants.hpp>
+#include <codlib/constants.hpp>
 
-#include <engine/board.hpp>
-#include <engine/move.hpp>
+#include <codlib/board.hpp>
+#include <codlib/move.hpp>
 
-#include <engine/zobrist.hpp>
-#include <engine/movegen/tables.hpp>
-#include <engine/movegen/movegen.hpp>
-#include <engine/movegen/perft.hpp>
+#include <codlib/zobrist.hpp>
+#include <codlib/movegen/tables.hpp>
+#include <codlib/movegen/movegen.hpp>
+#include <codlib/movegen/perft.hpp>
 
 void setup()
 {
