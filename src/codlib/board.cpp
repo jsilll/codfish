@@ -4,7 +4,7 @@
 #include <codlib/utils.hpp>
 #include <codlib/zobrist.hpp>
 #include <codlib/bitboard.hpp>
-#include <codlib/movegen/tables.hpp>
+#include <codlib/movegen/attacks.hpp>
 
 std::string Board::get_fen() const noexcept
 {
@@ -85,31 +85,31 @@ std::string Board::get_fen() const noexcept
 bool Board::is_square_attacked(Square sq, Color attacker) const noexcept
 {
   u64 pawns = _pieces[attacker][PAWN];
-  if (tables::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns)
+  if (attacks::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns)
   {
     return true;
   }
 
   u64 knights = _pieces[attacker][KNIGHT];
-  if (tables::ATTACKS_KNIGHT[sq] & knights)
+  if (attacks::ATTACKS_KNIGHT[sq] & knights)
   {
     return true;
   }
 
   u64 king = _pieces[attacker][KING];
-  if (tables::ATTACKS_KING[sq] & king)
+  if (attacks::ATTACKS_KING[sq] & king)
   {
     return true;
   }
 
   u64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
-  if (tables::get_bishop_attacks(sq, _occupancies[BOTH]) & bishopsQueens)
+  if (attacks::get_bishop_attacks(sq, _occupancies[BOTH]) & bishopsQueens)
   {
     return true;
   }
 
   u64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
-  if (tables::get_rook_attacks(sq, _occupancies[BOTH]) & rooksQueens)
+  if (attacks::get_rook_attacks(sq, _occupancies[BOTH]) & rooksQueens)
   {
     return true;
   }

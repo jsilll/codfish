@@ -1,5 +1,6 @@
 #pragma once
 
+#include <codlib/utils.hpp>
 #include <codlib/bitboard.hpp>
 #include <codlib/constants.hpp>
 

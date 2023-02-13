@@ -3,7 +3,6 @@
 #include <codlib/move.hpp>
 #include <codlib/board.hpp>
 #include <codlib/bitboard.hpp>
-#include <codlib/movegen/tables.hpp>
 #include <codlib/movegen/attacks.hpp>
 
 #define MAX_SIZE_MOVES_ARRAY 256
@@ -64,7 +63,7 @@ namespace movegen
     constexpr Color Opponent = ToMove == WHITE ? BLACK : WHITE;
     if (board.get_en_passant_square() != -1)
     {
-      u64 pawns_can_en_passant = tables::ATTACKS_PAWN[Opponent][board.get_en_passant_square()] & board.get_pieces(ToMove, PAWN);
+      u64 pawns_can_en_passant = attacks::ATTACKS_PAWN[Opponent][board.get_en_passant_square()] & board.get_pieces(ToMove, PAWN);
       while (pawns_can_en_passant)
       {
         int from_square = bitboard::bit_scan_forward(pawns_can_en_passant);
@@ -130,7 +129,7 @@ namespace movegen
     while (pawns_can_capture_with_promo)
     {
       Square from_square = bitboard::bit_scan_forward(pawns_can_capture_with_promo);
-      u64 pawn_captures_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(Opponent);
+      u64 pawn_captures_promo = attacks::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(Opponent);
       while (pawn_captures_promo)
       {
         Square to_square = bitboard::bit_scan_forward(pawn_captures_promo);
@@ -157,7 +156,7 @@ namespace movegen
     while (pawns_can_capture_no_promo)
     {
       Square from_square = bitboard::bit_scan_forward(pawns_can_capture_no_promo);
-      u64 pawn_captures_no_promo = tables::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(Opponent);
+      u64 pawn_captures_no_promo = attacks::ATTACKS_PAWN[ToMove][from_square] & board.get_occupancies(Opponent);
       while (pawn_captures_no_promo)
       {
         Square to_square = bitboard::bit_scan_forward(pawn_captures_no_promo);
@@ -212,22 +211,22 @@ namespace movegen
       {
         if constexpr (PType == KNIGHT)
         {
-          moves = tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
+          moves = attacks::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies;
         }
         else
         {
-          moves = tables::ATTACKS_KING[from_square] & ~to_move_occupancies;
+          moves = attacks::ATTACKS_KING[from_square] & ~to_move_occupancies;
         }
       }
       else
       {
         if constexpr (PType == KNIGHT)
         {
-          moves = tables::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies & opponent_occupancies;
+          moves = attacks::ATTACKS_KNIGHT[from_square] & ~to_move_occupancies & opponent_occupancies;
         }
         else
         {
-          moves = tables::ATTACKS_KING[from_square] & ~to_move_occupancies & opponent_occupancies;
+          moves = attacks::ATTACKS_KING[from_square] & ~to_move_occupancies & opponent_occupancies;
         }
       }
       while (moves)
@@ -259,9 +258,9 @@ namespace movegen
     static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN, "Unsupported piece type in generate_slider_moves()");
 
     constexpr Color Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr u64 (*ATTACKS_FUNC)(const Square sq, u64 occ) = (PType == BISHOP ? tables::get_bishop_attacks
-                                                               : PType == ROOK ? tables::get_rook_attacks
-                                                                               : tables::get_queen_attacks);
+    constexpr u64 (*ATTACKS_FUNC)(const Square sq, u64 occ) = (PType == BISHOP ? attacks::get_bishop_attacks
+                                                               : PType == ROOK ? attacks::get_rook_attacks
+                                                                               : attacks::get_queen_attacks);
     u64 to_move_occupancies = board.get_occupancies(ToMove);
     u64 opponent_occupancies = board.get_occupancies(Opponent);
     u64 to_move_pieces = board.get_pieces(ToMove, PType);

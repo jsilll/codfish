@@ -2,7 +2,6 @@
 
 #include <codlib/utils.hpp>
 #include <codlib/bitboard.hpp>
-#include <codlib/movegen/tables.hpp>
 #include <codlib/movegen/attacks.hpp>
 
 #include <iostream>
@@ -155,11 +154,73 @@ namespace magics
   /// @return The random number
   [[nodiscard]] u64 generate_dense_random_number_u64() noexcept
   {
-    u64 n1 = ((u64)std::rand()) & 0xFFFF;
-    u64 n2 = ((u64)std::rand()) & 0xFFFF;
-    u64 n3 = ((u64)std::rand()) & 0xFFFF;
-    u64 n4 = ((u64)std::rand()) & 0xFFFF;
+    u64 n1 = (static_cast<u64>(std::rand())) & 0xFFFF;
+    u64 n2 = (static_cast<u64>(std::rand())) & 0xFFFF;
+    u64 n3 = (static_cast<u64>(std::rand())) & 0xFFFF;
+    u64 n4 = (static_cast<u64>(std::rand())) & 0xFFFF;
     return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
+  }
+
+  /// @brief Returns a bitboard of all the bishop attacks from a given square.
+  /// @param sq The square to generate attacks from.
+  /// @return A bitboard of all the bishop attacks from a given square.
+  [[nodiscard]] constexpr u64 mask_bishop_attack_rays(Square sq) noexcept
+  {
+    u64 attacks = bitboard::kZERO;
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1, f = file + 1; r < RANK_8 && f < FILE_H; r++, f++)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, (File)f));
+    }
+
+    for (int r = rank + 1, f = file - 1; r < RANK_8 && f > FILE_A; r++, f--)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, (File)f));
+    }
+
+    for (int r = rank - 1, f = file + 1; r > RANK_1 && f < FILE_H; r--, f++)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, (File)f));
+    }
+
+    for (int r = rank - 1, f = file - 1; r > RANK_1 && f > FILE_A; r--, f--)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, (File)f));
+    }
+
+    return attacks;
+  }
+
+  /// @brief Returns a bitboard of all the rook attacks from a given square.
+  /// @param sq The square to generate attacks from.
+  /// @return A bitboard of all the rook attacks from a given square.
+  [[nodiscard]] constexpr u64 mask_rook_attack_rays(Square sq) noexcept
+  {
+    u64 attacks = bitboard::kZERO;
+    Rank rank = utils::get_rank(sq);
+    File file = utils::get_file(sq);
+    for (int r = rank + 1; r < RANK_8; r++)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, file));
+    }
+
+    for (int r = rank - 1; r > RANK_1; r--)
+    {
+      attacks |= (bitboard::kONE << utils::get_square((Rank)r, file));
+    }
+
+    for (int f = file + 1; f < FILE_H; f++)
+    {
+      attacks |= (bitboard::kONE << utils::get_square(rank, (File)f));
+    }
+
+    for (int f = file - 1; f > FILE_A; f--)
+    {
+      attacks |= (bitboard::kONE << utils::get_square(rank, (File)f));
+    }
+
+    return attacks;
   }
 
   /// @brief Generate a candidate for a magic number.
@@ -225,14 +286,14 @@ namespace magics
   {
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      MAGIC_TABLE_BISHOP[sq].mask = attacks::mask_bishop_attack_rays((Square)sq);
+      MAGIC_TABLE_BISHOP[sq].mask = mask_bishop_attack_rays((Square)sq);
       MAGIC_TABLE_BISHOP[sq].magic = MAGICS_BISHOP[sq];
       MAGIC_TABLE_BISHOP[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_BISHOP[sq];
     }
 
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      MAGIC_TABLE_ROOK[sq].mask = attacks::mask_rook_attack_rays((Square)sq);
+      MAGIC_TABLE_ROOK[sq].mask = mask_rook_attack_rays((Square)sq);
       MAGIC_TABLE_ROOK[sq].magic = MAGICS_ROOK[sq];
       MAGIC_TABLE_ROOK[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_ROOK[sq];
     }
@@ -244,7 +305,7 @@ namespace magics
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
       int bit_count = utils::RELEVANT_BITS_COUNT_ROOK[sq];
-      u64 magic = generate_magic_number((Square)sq, bit_count, &attacks::mask_rook_attack_rays, &attacks::mask_rook_xray_attacks);
+      u64 magic = generate_magic_number((Square)sq, bit_count, &mask_rook_attack_rays, &attacks::mask_rook_xray_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
     std::cout << std::endl;
@@ -253,7 +314,7 @@ namespace magics
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
       int bit_count = utils::RELEVANT_BITS_COUNT_BISHOP[sq];
-      u64 magic = generate_magic_number((Square)sq, bit_count, &attacks::mask_bishop_attack_rays, &attacks::mask_bishop_xray_attacks);
+      u64 magic = generate_magic_number((Square)sq, bit_count, &mask_bishop_attack_rays, &attacks::mask_bishop_xray_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
     std::cout << std::endl;

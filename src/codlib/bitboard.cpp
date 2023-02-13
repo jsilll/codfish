@@ -1,7 +1,7 @@
 #include <codlib/bitboard.hpp>
 
 #include <codlib/utils.hpp>
-#include <codlib/movegen/tables.hpp>
+#include <codlib/movegen/attacks.hpp>
 
 #include <string>
 #include <iostream>
@@ -24,18 +24,19 @@ namespace bitboard
         return occupancy;
     }
 
-    void print(u64 bb) noexcept
+    std::ostream &operator<<(std::ostream &os, const u64 &bb) noexcept
     {
-        for (int i = RANK_8; i >= RANK_1; i--)
+        for (int i = RANK_8; i >= RANK_1; --i)
         {
-            std::cout << i + 1 << "  ";
-            for (int n = FILE_A; n < N_FILES; n++)
+            os << (i + 1) << std::string("  ");
+            for (int n = FILE_A; n < N_FILES; ++n)
             {
-                std::cout << ((bb >> utils::get_square((Rank)i, (File)n)) & kONE) << " ";
+                os << static_cast<int>((bb >> utils::get_square((Rank)i, (File)n)) & kONE) << std::string(" ");
             }
-            std::cout << "\n";
+            os << "\n";
         }
-        std::cout << "\n   a b c d e f g h\n\n";
+        os << "\n   a b c d e f g h\n\n";
         printf("bitboard %lud\n", bb);
+        return os;
     }
 } // namespace bitboard

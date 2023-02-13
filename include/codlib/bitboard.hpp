@@ -18,65 +18,65 @@ namespace bitboard
     /// @brief Pops the last bit in a bitboard
     /// @param bb The bitboard
     constexpr void pop_last_bit(u64 &bb) noexcept { bb &= bb - kONE; }
-    
+
     /// @brief Sets a bit in a bitboard
-    /// @param bb The bitboard 
-    /// @param sq The square 
+    /// @param bb The bitboard
+    /// @param sq The square
     constexpr void set_bit(u64 &bb, Square sq) noexcept { bb |= (kONE << sq); }
-    
+
     /// @brief Pops a bit in a bitboard
     /// @param bn The bitboard
-    /// @param sq The square 
+    /// @param sq The square
     constexpr void pop_bit(u64 &bb, Square sq) noexcept { bb &= ~(kONE << sq); }
-    
+
     /// @brief Gets a bit in a bitboard
     /// @param bb The bitboard
-    /// @param sq The square 
+    /// @param sq The square
     /// @return Whether the bit is set or not
-    [[nodiscard]] constexpr bool get_bit(u64 bb, Square sq) noexcept { return ((bb >> sq) & kONE); } 
+    [[nodiscard]] constexpr bool get_bit(u64 bb, Square sq) noexcept { return ((bb >> sq) & kONE); }
 
     /// @brief Shifts a bitboard one square south
-    /// @param bb The bitboard 
-    /// @return The shifted bitboard 
+    /// @param bb The bitboard
+    /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 sout_one(u64 bb) noexcept { return (bb >> 8); }
-    
+
     /// @brief Shifts a bitboard one square north
-    /// @param bb The bitboard 
-    /// @return The shifted bitboard 
+    /// @param bb The bitboard
+    /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 nort_one(u64 bb) noexcept { return (bb << 8); }
-    
+
     /// @brief Shifts a bitboard one square east
     /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 east_one(u64 bb) noexcept { return (bb << 1) & 0xFEFEFEFEFEFEFEFE; }
-    
+
     /// @brief Shifts a bitboard one square north east
     /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 no_ea_one(u64 bb) noexcept { return (bb << 9) & 0xFEFEFEFEFEFEFEFE; }
-    
+
     /// @brief Shifts a bitboard one square south east
-    /// @param bb The bitboard 
+    /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 so_ea_one(u64 bb) noexcept { return (bb >> 7) & 0xFEFEFEFEFEFEFEFE; }
-    
+
     /// @brief Shifts a bitboard one square west
-    /// @param bb The bitboard 
+    /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 west_one(u64 bb) noexcept { return (bb >> 1) & 0x7F7F7F7F7F7F7F7F; }
-    
+
     /// @brief Shifts a bitboard one square south west
-    /// @param bb The bitboard 
+    /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 so_we_one(u64 bb) noexcept { return (bb >> 9) & 0x7F7F7F7F7F7F7F7F; }
-    
+
     /// @brief Shifts a bitboard one square north west
     /// @param bb The bitboard
     /// @return The shifted bitboard
     [[nodiscard]] constexpr u64 no_we_one(u64 bb) noexcept { return (bb << 7) & 0x7F7F7F7F7F7F7F7F; }
 
-    /// @brief Returns the number of bits in a bitboard 
-    /// @param bb The bitboard 
+    /// @brief Returns the number of bits in a bitboard
+    /// @param bb The bitboard
     /// @return The number of bits in the bitboard
     [[nodiscard]] constexpr int bit_count(u64 bb) noexcept
     {
@@ -90,9 +90,9 @@ namespace bitboard
     }
 
     /// @brief Returns index of LSB bit
-    /// @param bb The bitboard 
-    /// @return The index of the LSB bit 
-    [[nodiscard]] constexpr Square bit_scan(u64 bb) noexcept 
+    /// @param bb The bitboard
+    /// @return The index of the LSB bit
+    [[nodiscard]] constexpr Square bit_scan(u64 bb) noexcept
     {
         if (bb)
         {
@@ -103,7 +103,7 @@ namespace bitboard
     }
 
     /// @brief Returns index of LSB bit
-    /// @param bb The bitboard 
+    /// @param bb The bitboard
     /// @return The index of the LSB bit
     [[nodiscard]] constexpr Square bit_scan_forward(u64 bb) noexcept
     {
@@ -123,15 +123,16 @@ namespace bitboard
         return (Square)index64[((bb ^ (bb - 1)) * debruijn64) >> 58];
     }
 
-    /// @brief Sets the occupancy bits 
-    /// @param index Index of the bitboard 
-    /// @param bits_in_mask Number of bits in the mask 
-    /// @param attack_mask The attack mask 
-    /// @return The occupancy bits 
+    /// @brief Sets the occupancy bits
+    /// @param index Index of the bitboard
+    /// @param bits_in_mask Number of bits in the mask
+    /// @param attack_mask The attack mask
+    /// @return The occupancy bits
     [[nodiscard]] u64 set_occupancy(int index, int bits_in_mask, u64 attack_mask) noexcept;
 
-    /// @brief Prints a bitboard
+    /// @brief Prints a bitboard to the an output stream
+    /// @param os The output stream 
     /// @param bb The bitboard 
-    void print(u64 bb) noexcept; 
-    // TODO: Implement cout operator
+    /// @return The output stream 
+    std::ostream &operator<<(std::ostream &os, const u64 &bb) noexcept;
 } // namespace bitboard
