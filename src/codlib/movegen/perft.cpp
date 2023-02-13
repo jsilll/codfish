@@ -1,10 +1,9 @@
 #include <codlib/movegen/perft.hpp>
 
-#include <codlib/bitboard.hpp>
-#include <codlib/board.hpp>
 #include <codlib/move.hpp>
-#include <codlib/movegen/movegen.hpp>
 #include <codlib/zobrist.hpp>
+#include <codlib/bitboard.hpp>
+#include <codlib/movegen/movegen.hpp>
 
 namespace perft
 {
@@ -31,5 +30,4 @@ namespace perft
 
         return nodes;
     }
-
 } // namespace perft

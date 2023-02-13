@@ -1,8 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <codlib/constants.hpp>
 
@@ -30,14 +30,14 @@ public:
                      bool is_double_push,
                      bool is_en_passant,
                      bool is_castle) noexcept
-      : _move_encoded((std::uint32_t)source_square |
-                      ((std::uint32_t)target_square << 6) |
-                      ((std::uint32_t)piece << 12) |
-                      ((std::uint32_t)captured_piece << 15) |
-                      ((std::uint32_t)promoted_piece << 18) |
-                      ((std::uint32_t)is_double_push << 21) |
-                      ((std::uint32_t)is_en_passant << 22) |
-                      ((std::uint32_t)is_castle << 23)) {}
+      : _move_encoded(static_cast<std::uint32_t>(source_square) |
+                      (static_cast<std::uint32_t>(target_square << 6)) |
+                      (static_cast<std::uint32_t>(piece << 12)) |
+                      (static_cast<std::uint32_t>(captured_piece << 15)) |
+                      (static_cast<std::uint32_t>(promoted_piece << 18)) |
+                      (static_cast<std::uint32_t>(is_double_push << 21)) |
+                      (static_cast<std::uint32_t>(is_en_passant << 22)) |
+                      (static_cast<std::uint32_t>(is_castle << 23))) {}
 
   /// @brief Returns the source square
   /// @return The source square

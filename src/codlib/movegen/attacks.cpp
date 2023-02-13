@@ -6,36 +6,60 @@
 
 namespace attacks
 {
-  static inline u64 mask_white_pawn_east_attacks(u64 wpawns) { return bitboard::no_ea_one(wpawns); }
-  static inline u64 mask_white_pawn_west_attacks(u64 wpawns) { return bitboard::no_we_one(wpawns); }
-  static inline u64 mask_black_pawn_east_attacks(u64 bpawns) { return bitboard::so_ea_one(bpawns); }
-  static inline u64 mask_black_pawn_west_attacks(u64 bpawns) { return bitboard::so_we_one(bpawns); }
+  /// @brief Returns a bitboard of all east attacks of white pawns.
+  /// @param wpawns A bitboard of white pawns.
+  /// @return A bitboard of all east attacks of white pawns.
+  [[nodiscard]] constexpr u64 mask_white_pawn_east_attacks(u64 wpawns) noexcept { return bitboard::no_ea_one(wpawns); }
 
-  u64 mask_white_pawn_single_pushes(u64 wpawns, u64 empty) { return bitboard::nort_one(wpawns) & empty; }
-  u64 mask_black_pawn_single_pushes(u64 bpawns, u64 empty) { return bitboard::sout_one(bpawns) & empty; }
+  /// @brief Returns a bitboard of all west attacks of white pawns.
+  /// @param wpawns A bitboard of white pawns.
+  /// @return A bitboard of all west attacks of white pawns.
+  [[nodiscard]] constexpr u64 mask_white_pawn_west_attacks(u64 wpawns) noexcept { return bitboard::no_we_one(wpawns); }
 
-  u64 mask_white_pawn_double_pushes(u64 wpawns, u64 empty)
+  /// @brief Returns a bitboard of all east attacks of black pawns.
+  /// @param bpawns A bitboard of black pawns.
+  /// @return A bitboard of all east attacks of black pawns.
+  [[nodiscard]] constexpr u64 mask_black_pawn_east_attacks(u64 bpawns) noexcept { return bitboard::so_ea_one(bpawns); }
+
+  /// @brief Returns a bitboard of all west attacks of black pawns.
+  /// @param bpawns A bitboard of black pawns.
+  /// @return A bitboard of all west attacks of black pawns.
+  [[nodiscard]] constexpr u64 mask_black_pawn_west_attacks(u64 bpawns) noexcept { return bitboard::so_we_one(bpawns); }
+
+  /// @brief Returns a bitboard of all single pushes of white pawns.
+  /// @param wpawns A bitboard of white pawns.
+  /// @param empty A bitboard of empty squares.
+  u64 mask_white_pawn_single_pushes(u64 wpawns, u64 empty) noexcept { return bitboard::nort_one(wpawns) & empty; }
+
+  /// @brief Returns a bitboard of all single pushes of black pawns.
+  /// @param bpawns A bitboard of black pawns.
+  /// @param empty A bitboard of empty squares.
+  /// @return
+  u64 mask_black_pawn_single_pushes(u64 bpawns, u64 empty) noexcept { return bitboard::sout_one(bpawns) & empty; }
+
+  u64 mask_white_pawn_double_pushes(u64 wpawns, u64 empty) noexcept
   {
     u64 single_pushes = mask_white_pawn_single_pushes(wpawns, empty);
-    return bitboard::nort_one(single_pushes) & empty & tables::MASK_RANK[3];
+    return bitboard::nort_one(single_pushes) & empty & utils::MASK_RANK[3];
   }
 
-  u64 mask_black_pawn_double_pushes(u64 bpawns, u64 empty)
+  u64 mask_black_pawn_double_pushes(u64 bpawns, u64 empty) noexcept
   {
     u64 single_pushes = mask_black_pawn_single_pushes(bpawns, empty);
-    return bitboard::sout_one(single_pushes) & empty & tables::MASK_RANK[4];
+    return bitboard::sout_one(single_pushes) & empty & utils::MASK_RANK[4];
   }
 
-  u64 mask_white_pawn_any_attacks(u64 wpawns) { return mask_white_pawn_east_attacks(wpawns) | mask_white_pawn_west_attacks(wpawns); }
-  u64 mask_black_pawn_any_attacks(u64 bpawns) { return mask_black_pawn_east_attacks(bpawns) | mask_black_pawn_west_attacks(bpawns); }
+  u64 mask_white_pawn_any_attacks(u64 wpawns) noexcept { return mask_white_pawn_east_attacks(wpawns) | mask_white_pawn_west_attacks(wpawns); }
 
-  u64 mask_knight_attacks(u64 knights)
+  u64 mask_black_pawn_any_attacks(u64 bpawns) noexcept { return mask_black_pawn_east_attacks(bpawns) | mask_black_pawn_west_attacks(bpawns); }
+
+  u64 mask_knight_attacks(u64 knights) noexcept 
   {
-    static const u64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
-    static const u64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
+    constexpr u64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
+    constexpr u64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
 
-    u64 l1 = (knights >> 1) & tables::MASK_CLEAR_FILE[7];
-    u64 r1 = (knights << 1) & tables::MASK_CLEAR_FILE[0];
+    u64 l1 = (knights >> 1) & utils::MASK_CLEAR_FILE[7];
+    u64 r1 = (knights << 1) & utils::MASK_CLEAR_FILE[0];
     u64 h1 = l1 | r1;
 
     u64 l2 = (knights >> 2) & CLEAR_FILE_HG;
@@ -45,7 +69,7 @@ namespace attacks
     return (h1 << 16) | (h1 >> 16) | (h2 << 8) | (h2 >> 8);
   }
 
-  u64 mask_king_attacks(u64 kings)
+  u64 mask_king_attacks(u64 kings) noexcept
   {
     u64 attacks = bitboard::east_one(kings) | bitboard::west_one(kings);
     kings |= attacks;
@@ -53,7 +77,7 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_bishop_attack_rays(Square sq)
+  u64 mask_bishop_attack_rays(Square sq) noexcept
   {
     u64 attacks = bitboard::kZERO;
     Rank rank = utils::get_rank(sq);
@@ -81,7 +105,7 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_rook_attack_rays(Square sq)
+  u64 mask_rook_attack_rays(Square sq) noexcept
   {
     u64 attacks = bitboard::kZERO;
     Rank rank = utils::get_rank(sq);
@@ -109,7 +133,7 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_bishop_xray_attacks(Square sq, u64 block)
+  u64 mask_bishop_xray_attacks(Square sq, u64 block) noexcept
   {
     u64 attacks = bitboard::kZERO;
     Rank rank = utils::get_rank(sq);
@@ -153,7 +177,7 @@ namespace attacks
     return attacks;
   }
 
-  u64 mask_rook_xray_attacks(Square sq, u64 block)
+  u64 mask_rook_xray_attacks(Square sq, u64 block) noexcept
   {
     u64 attacks = bitboard::kZERO;
     Rank rank = utils::get_rank(sq);
@@ -196,5 +220,4 @@ namespace attacks
 
     return attacks;
   }
-
 } // namespace attacks

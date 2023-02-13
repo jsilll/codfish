@@ -5,7 +5,7 @@
 #include <codlib/constants.hpp>
 
 /// @brief Bitboard type
-using u64 = std::uint64_t;
+typedef std::uint64_t u64;
 
 namespace bitboard
 {
@@ -132,6 +132,6 @@ namespace bitboard
 
     /// @brief Prints a bitboard
     /// @param bb The bitboard 
-    void print(u64 bb) noexcept; // TODO: Implement cout operator
-
+    void print(u64 bb) noexcept; 
+    // TODO: Implement cout operator
 } // namespace bitboard

@@ -10,16 +10,16 @@ namespace zobrist
     constexpr std::size_t N_CASTLING_KEYS = 16;
 
     /// @brief The keys for the side to move
-    extern u64 side_key[BOTH];
+    static u64 side_key[BOTH]{};
 
     /// @brief The keys for the en passant squares
-    extern u64 en_passant_keys[N_SQUARES];
+    static u64 en_passant_keys[N_SQUARES];
 
     /// @brief The keys for the castling rights
-    extern u64 castle_keys[N_CASTLING_KEYS];
+    static u64 castle_keys[N_CASTLING_KEYS];
 
     /// @brief The keys for the pieces
-    extern u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
+    static u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
 
     /// @brief Generates a random number
     /// @return The random number
@@ -82,6 +82,7 @@ namespace zobrist
 
         final_key ^= castle_keys[board.get_castling_rights()];
         final_key ^= side_key[board.get_side_to_move()];
+
         return final_key;
     }
 } // namespace zobrist

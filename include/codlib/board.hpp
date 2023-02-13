@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <cstring>
-#include <iomanip>
 #include <string>
+#include <iomanip>
+#include <cstring>
+#include <iostream>
 
 #include <codlib/utils.hpp>
 #include <codlib/bitboard.hpp>
@@ -23,6 +23,16 @@ public:
     PieceType type;
     /// @brief The color of the piece
     Color color;
+
+    friend constexpr bool operator==(const Piece &p1, const Piece &p2)
+    {
+      return p1.color == p2.color && p1.type == p2.type;
+    }
+
+    friend constexpr bool operator!=(const Piece &p1, const Piece &p2)
+    {
+      return p1.color != p2.color || p1.type != p2.type;
+    }
   };
 
   /// @brief The auxiliary information of the board
@@ -36,6 +46,20 @@ public:
     int half_move_clock;
     /// @brief The hash key
     u64 hash_key;
+
+    friend constexpr bool operator==(const GameState &s1, const GameState &s2)
+    {
+      return s1.castling_rights == s2.castling_rights &&
+             s1.en_passant_square == s2.en_passant_square &&
+             s1.half_move_clock == s2.half_move_clock;
+    }
+
+    friend constexpr bool operator!=(const GameState &s1, const GameState &s2)
+    {
+      return s1.castling_rights != s2.castling_rights ||
+             s1.en_passant_square != s2.en_passant_square ||
+             s1.half_move_clock != s2.half_move_clock;
+    }
   };
 
   /// @brief Default constructor
@@ -47,7 +71,7 @@ public:
 
   /// @brief Copy constructor
   /// @param board The board to copy
-  [[nodiscard]] Board(const Board &board) = default;
+  [[nodiscard]] Board(const Board &board) noexcept = default;
 
   /// @brief Returns whether the board is in ASCII mode
   /// @return Whether the board is in ASCII mode
@@ -184,7 +208,8 @@ public:
   /// @brief Sets the board to the starting position
   void set_starting_position() noexcept
   {
-    set_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
+    const std::string initial_pos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    set_from_fen(initial_pos, "w", "KQkq", "-", "0", "1");
   }
 
   /// @brief Toggles the ASCII mode
@@ -196,7 +221,7 @@ public:
 
   /// @brief Sets the current game state
   /// @param state The game state
-  void set_state(GameState state) noexcept
+  void set_state(const GameState &state) noexcept
   {
     _hash_key = state.hash_key;
     _castling_rights = state.castling_rights;
@@ -296,26 +321,6 @@ public:
                 << "      a   b   c   d   e   f   g   h\n";
     }
     std::cout << std::endl;
-  }
-
-  friend constexpr bool operator==(const Board::Piece &p1, const Board::Piece &p2)
-  {
-    return p1.color == p2.color && p1.type == p2.type;
-  }
-
-  friend constexpr bool operator!=(const Board::Piece &p1, const Board::Piece &p2)
-  {
-    return p1.color != p2.color || p1.type != p2.type;
-  }
-
-  friend constexpr bool operator==(const Board::GameState &s1, const Board::GameState &s2)
-  {
-    return s1.castling_rights == s2.castling_rights && s1.en_passant_square == s2.en_passant_square && s1.half_move_clock == s2.half_move_clock;
-  }
-
-  friend constexpr bool operator!=(const Board::GameState &s1, const Board::GameState &s2)
-  {
-    return s1.castling_rights != s2.castling_rights || s1.en_passant_square != s2.en_passant_square || s1.half_move_clock != s2.half_move_clock;
   }
 
   friend constexpr bool operator==(const Board &b1, const Board &b2)

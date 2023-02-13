@@ -85,19 +85,19 @@ std::string Board::get_fen() const noexcept
 bool Board::is_square_attacked(Square sq, Color attacker) const noexcept
 {
   u64 pawns = _pieces[attacker][PAWN];
-  if (tables::get_pawn_attacks(utils::get_opponent(attacker), sq) & pawns)
+  if (tables::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns)
   {
     return true;
   }
 
   u64 knights = _pieces[attacker][KNIGHT];
-  if (tables::get_knight_attacks(sq) & knights)
+  if (tables::ATTACKS_KNIGHT[sq] & knights)
   {
     return true;
   }
 
   u64 king = _pieces[attacker][KING];
-  if (tables::get_king_attacks(sq) & king)
+  if (tables::ATTACKS_KING[sq] & king)
   {
     return true;
   }

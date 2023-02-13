@@ -11,7 +11,8 @@
 
 namespace magics
 {
-  static const u64 MAGICS_BISHOP[N_SQUARES] = {
+  /// @brief Pre-computed magic numbers for bishops.
+  constexpr u64 MAGICS_BISHOP[N_SQUARES] = {
       0x40040844404084ULL,
       0x2004208a004208ULL,
       0x10190041080202ULL,
@@ -77,7 +78,8 @@ namespace magics
       0x8918844842082200ULL,
       0x4010011029020020ULL};
 
-  static const u64 MAGICS_ROOK[N_SQUARES] = {
+  /// @brief Pre-computed magic numbers for rooks.
+  constexpr u64 MAGICS_ROOK[N_SQUARES] = {
       0x8a80104000800020ULL,
       0x140002000100040ULL,
       0x2801880a0017001ULL,
@@ -143,10 +145,15 @@ namespace magics
       0x2006104900a0804ULL,
       0x1004081002402ULL};
 
-  static Magic MAGIC_TABLE_BISHOP[N_SQUARES];
-  static Magic MAGIC_TABLE_ROOK[N_SQUARES];
+  /// @brief Array of pre-computed magic numbers, masks and shifts for rooks.
+  Magic MAGIC_TABLE_ROOK[N_SQUARES];
 
-  static inline u64 generate_dense_random_number_u64()
+  /// @brief Array of pre-computed magic numbers, masks and shifts for bishops.
+  Magic MAGIC_TABLE_BISHOP[N_SQUARES];
+
+  /// @brief Generates a random number with a high density of bits set to 1.
+  /// @return The random number
+  [[nodiscard]] u64 generate_dense_random_number_u64() noexcept
   {
     u64 n1 = ((u64)std::rand()) & 0xFFFF;
     u64 n2 = ((u64)std::rand()) & 0xFFFF;
@@ -155,12 +162,19 @@ namespace magics
     return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
   }
 
-  static inline u64 get_magic_number_candidate()
+  /// @brief Generate a candidate for a magic number.
+  /// @return The candidate
+  [[nodiscard]] u64 get_magic_number_candidate() noexcept
   {
     return generate_dense_random_number_u64() & generate_dense_random_number_u64() & generate_dense_random_number_u64();
   }
 
-  static u64 generate_magic_number(Square sq, int relevant_bits, u64 (*mask_attacks_fun)(Square), u64 (*mask_attacks_occ_fun)(Square, u64))
+  /// @brief Generates a magic number.
+  /// @param sq The square for which the magic number is generated.
+  /// @param relevant_bits The number of relevant bits for the square.
+  /// @param mask_attacks_fun The function that generates the attack mask.
+  /// @param mask_attacks_occ_fun The function that generates the attack mask for a given occupancy.
+  [[nodiscard]] u64 generate_magic_number(Square sq, int relevant_bits, u64 (*mask_attacks_fun)(Square), u64 (*mask_attacks_occ_fun)(Square, u64)) noexcept
   {
     int occupancy_indices = 1 << relevant_bits;
     u64 attack_mask = mask_attacks_fun(sq);
@@ -207,12 +221,29 @@ namespace magics
     return bitboard::kZERO;
   }
 
-  void generate()
+  void init() noexcept
+  {
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+      MAGIC_TABLE_BISHOP[sq].mask = attacks::mask_bishop_attack_rays((Square)sq);
+      MAGIC_TABLE_BISHOP[sq].magic = MAGICS_BISHOP[sq];
+      MAGIC_TABLE_BISHOP[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_BISHOP[sq];
+    }
+
+    for (int sq = A1; sq < N_SQUARES; sq++)
+    {
+      MAGIC_TABLE_ROOK[sq].mask = attacks::mask_rook_attack_rays((Square)sq);
+      MAGIC_TABLE_ROOK[sq].magic = MAGICS_ROOK[sq];
+      MAGIC_TABLE_ROOK[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_ROOK[sq];
+    }
+  }
+
+  void generate() noexcept
   {
     std::cout << "Rook Magic Numbers" << std::endl;
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      int bit_count = tables::get_relevant_bits_count_rook((Square)sq);
+      int bit_count = utils::RELEVANT_BITS_COUNT_ROOK[sq];
       u64 magic = generate_magic_number((Square)sq, bit_count, &attacks::mask_rook_attack_rays, &attacks::mask_rook_xray_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
@@ -221,38 +252,10 @@ namespace magics
     std::cout << "Bishop Magic Numbers" << std::endl;
     for (int sq = A1; sq < N_SQUARES; sq++)
     {
-      int bit_count = tables::get_relevant_bits_count_bishop((Square)sq);
+      int bit_count = utils::RELEVANT_BITS_COUNT_BISHOP[sq];
       u64 magic = generate_magic_number((Square)sq, bit_count, &attacks::mask_bishop_attack_rays, &attacks::mask_bishop_xray_attacks);
       printf("%d : 0x%lxULL\n", sq, magic);
     }
     std::cout << std::endl;
   }
-
-  void init()
-  {
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-      MAGIC_TABLE_BISHOP[sq].mask = attacks::mask_bishop_attack_rays((Square)sq);
-      MAGIC_TABLE_BISHOP[sq].magic = MAGICS_BISHOP[sq];
-      MAGIC_TABLE_BISHOP[sq].shift = 64 - tables::get_relevant_bits_count_bishop((Square)sq);
-    }
-
-    for (int sq = A1; sq < N_SQUARES; sq++)
-    {
-      MAGIC_TABLE_ROOK[sq].mask = attacks::mask_rook_attack_rays((Square)sq);
-      MAGIC_TABLE_ROOK[sq].magic = MAGICS_ROOK[sq];
-      MAGIC_TABLE_ROOK[sq].shift = 64 - tables::get_relevant_bits_count_rook((Square)sq);
-    }
-  }
-
-  Magic get_bishop_magic(Square sq)
-  {
-    return MAGIC_TABLE_BISHOP[sq];
-  }
-
-  Magic get_rook_magic(Square sq)
-  {
-    return MAGIC_TABLE_ROOK[sq];
-  }
-
 } // namespace magics

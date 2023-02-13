@@ -5,7 +5,6 @@
 
 namespace opts
 {
-
     typedef enum
     {
         UCI,

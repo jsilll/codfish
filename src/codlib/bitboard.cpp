@@ -17,7 +17,7 @@ namespace bitboard
             pop_bit(attack_mask, lsb_sq);
             if (index & (1 << bit))
             {
-                occupancy |= tables::square_to_bitboard((Square)lsb_sq);
+                occupancy |= utils::SQUARE_BB[lsb_sq];
             }
         }
 
@@ -26,7 +26,6 @@ namespace bitboard
 
     void print(u64 bb) noexcept
     {
-        // TODO: implement std::cout << bitboard
         for (int i = RANK_8; i >= RANK_1; i--)
         {
             std::cout << i + 1 << "  ";
@@ -39,6 +38,4 @@ namespace bitboard
         std::cout << "\n   a b c d e f g h\n\n";
         printf("bitboard %lud\n", bb);
     }
-    
-
 } // namespace bitboard

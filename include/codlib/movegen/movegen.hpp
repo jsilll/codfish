@@ -1,51 +1,35 @@
 #pragma once
 
-#include <codlib/constants.hpp>
-#include <codlib/board.hpp>
-#include <codlib/move.hpp>
-
 #include <vector>
+
+#include <codlib/move.hpp>
+#include <codlib/board.hpp>
+#include <codlib/constants.hpp>
 
 namespace movegen
 {
-    /**
-     * @brief Generates all the pseudo-legal moves for a given board
-     *
-     * @param board
-     * @return std::vector<Move>
-     */
-    std::vector<Move> generate_pseudo_legal_moves(const Board &board);
+    /// @brief Returns whether a board has any legal moves to be played by the current player.
+    /// @param board The board to check for legal moves.
+    /// @return True if the board has legal moves, false otherwise.
+    [[nodiscard]] bool has_legal_moves(Board &board) noexcept;
 
-    /**
-     * @brief Generates all the pseudo-legal captures for a given board
-     *
-     * @param board
-     * @return std::vector<Move>
-     */
-    std::vector<Move> generate_pseudo_legal_captures(const Board &board);
+    /// @brief Returns all pseudo-legal moves on the board.
+    /// @param board The board to generate pseudo-legal moves on.
+    /// @return All pseudo-legal moves on the board.
+    [[nodiscard]] std::vector<Move> generate_pseudo_legal_moves(Board &board) noexcept;
 
-    /**
-     * @brief Generates all the legal moves for a given board
-     *
-     * @param board
-     * @return std::vector<Move>
-     */
-    std::vector<Move> generateLegalMoves(Board &board);
+    /// @brief Returns all pseudo-legal captures on the board.
+    /// @param board The board to generate pseudo-legal captures on.
+    /// @return All pseudo-legal captures on the board.
+    [[nodiscard]] std::vector<Move> generate_pseudo_legal_captures(Board &board) noexcept;
 
-    /**
-     * @brief Generates all the legal moves for a given board
-     *
-     * @param board
-     * @return std::vector<Move>
-     */
-    std::vector<Move> generate_legal_captures(Board &board);
+    /// @brief Returns all legal moves on the board.
+    /// @param board The board to generate legal moves on.
+    /// @return All legal moves on the board.
+    [[nodiscard]] std::vector<Move> generate_legal_moves(Board &board) noexcept;
 
-    /**
-     * @brief Checks whether a given board as has legal moves
-     *
-     * @param board
-     * @return bool
-     */
-    bool has_legal_moves(Board &board);
-
+    /// @brief Returns all legal captures on the board.
+    /// @param board The board to generate legal captures on.
+    /// @return All legal captures on the board.
+    [[nodiscard]] std::vector<Move> generate_legal_captures(Board &board) noexcept;
 } // namespace movegen

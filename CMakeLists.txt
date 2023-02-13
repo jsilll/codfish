@@ -8,7 +8,7 @@ set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT ON)
 
 # -- Project Metadata --
 project(Codfish
-        VERSION 0.0.1
+        VERSION 1.0.0
         DESCRIPTION "Codfish"
         HOMEPAGE_URL "https://github.com/jsilll/codfish"
         LANGUAGES CXX)
