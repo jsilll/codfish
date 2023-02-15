@@ -1,6 +1,6 @@
 #pragma once
 
-#include <codlib/bitboard.hpp>
+#include "codlib/bitboard.hpp"
 
 class HistoryTable
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <codlib/board.hpp>
-#include <codlib/constants.hpp>
+#include "../../../include/codlib/board.hpp"
+#include "../../../include/codlib/base.hpp"
 
 namespace perft
 {

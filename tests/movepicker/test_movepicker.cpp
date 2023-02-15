@@ -2,7 +2,7 @@
 
 #include "../catch.hpp"
 
-#include <codlib/constants.hpp>
+#include <codlib/base.hpp>
 
 #include <codlib/board.hpp>
 #include <codlib/move.hpp>
@@ -11,8 +11,8 @@
 #include <codlib/movegen/magics.hpp>
 #include <codlib/movegen/tables.hpp>
 
+#include "codlib/zobrist.hpp"
 #include <codlib/movepicker/eval.hpp>
-#include <codlib/zobrist.hpp>
 
 void setup()
 {

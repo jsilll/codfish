@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
+#include "../../../../../../../usr/include/c++/12.2.0/vector"
 
-#include <codlib/utils.hpp>
-#include <codlib/bitboard.hpp>
-#include <codlib/movegen/magics.hpp>
+#include "codlib/utils.hpp"
+#include "codlib/bitboard.hpp"
+#include "magics.hpp"
 
 namespace attacks
 {

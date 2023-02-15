@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include <codlib/constants.hpp>
+#include "codlib/base.hpp"
 
 /// @brief Bitboard type
 typedef std::uint64_t u64;

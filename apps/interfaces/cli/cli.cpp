@@ -10,8 +10,8 @@
 #include <codlib/movegen/magics.hpp>
 #include <codlib/movegen/tables.hpp>
 
+#include "codlib/zobrist.hpp"
 #include <codlib/movepicker/eval.hpp>
-#include <codlib/zobrist.hpp>
 
 #include <iostream>
 #include <string>

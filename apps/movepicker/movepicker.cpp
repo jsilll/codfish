@@ -2,7 +2,7 @@
 
 #include <codlib/movepicker/eval.hpp>
 
-#include <codlib/bitboard.hpp>
+#include "codlib/bitboard.hpp"
 #include <codlib/board.hpp>
 #include <codlib/move.hpp>
 #include <codlib/movegen/movegen.hpp>

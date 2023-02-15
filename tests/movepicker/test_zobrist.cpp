@@ -2,15 +2,15 @@
 
 #include "../catch.hpp"
 
-#include <codlib/constants.hpp>
+#include <codlib/base.hpp>
 
 #include <codlib/board.hpp>
 #include <codlib/move.hpp>
 
-#include <codlib/zobrist.hpp>
-#include <codlib/movegen/tables.hpp>
+#include "codlib/zobrist.hpp"
 #include <codlib/movegen/movegen.hpp>
 #include <codlib/movegen/perft.hpp>
+#include <codlib/movegen/tables.hpp>
 
 void setup()
 {

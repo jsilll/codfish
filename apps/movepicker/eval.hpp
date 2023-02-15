@@ -1,6 +1,6 @@
 #pragma once
 
-#include <codlib/constants.hpp>
+#include <codlib/base.hpp>
 
 class Board;
 

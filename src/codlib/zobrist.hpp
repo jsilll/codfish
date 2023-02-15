@@ -1,11 +1,10 @@
 #pragma once
 
-#include <codlib/board.hpp>
-#include <codlib/bitboard.hpp>
-#include <codlib/constants.hpp>
+#include "bitboard.hpp"
+#include "codlib/base.hpp"
+#include "codlib/board.hpp"
 
-namespace zobrist
-{
+namespace zobrist {
     /// @brief The number of castling keys
     constexpr std::size_t N_CASTLING_KEYS = 16;
 
@@ -23,33 +22,27 @@ namespace zobrist
 
     /// @brief Generates a random number
     /// @return The random number
-    u64 generate_random_number_u64() noexcept
-    {
+    u64 generate_random_number_u64() noexcept {
         u64 n1 = (static_cast<u64>(std::rand()));
         u64 n2 = (static_cast<u64>(std::rand()));
         return n1 | (n2 << 32);
     }
 
     /// @brief Initializes the zobrist keys
-    void init() noexcept
-    {
-        for (int piece = PAWN; piece < N_PIECES; piece++)
-        {
-            for (int square = A1; square < N_SQUARES; square++)
-            {
+    void init() noexcept {
+        for (auto &en_passant_key: en_passant_keys) {
+            en_passant_key = generate_random_number_u64();
+        }
+
+        for (auto &castle_key: castle_keys) {
+            castle_key = generate_random_number_u64();
+        }
+
+        for (int piece = PAWN; piece < N_PIECES; piece++) {
+            for (int square = A1; square < N_SQUARES; square++) {
                 piece_keys[WHITE][piece][square] = generate_random_number_u64();
                 piece_keys[BLACK][piece][square] = generate_random_number_u64();
             }
-        }
-
-        for (int square = A1; square < N_SQUARES; square++)
-        {
-            en_passant_keys[square] = generate_random_number_u64();
-        }
-
-        for (int castle_state = 0; castle_state < 16; castle_state++)
-        {
-            castle_keys[castle_state] = generate_random_number_u64();
         }
 
         side_key[1] = generate_random_number_u64();
@@ -58,16 +51,12 @@ namespace zobrist
     /// @brief Generates the hash key for a board
     /// @param board The board
     /// @return The hash key
-    constexpr u64 generate_hash_key(const Board &board) noexcept
-    {
+    u64 generate_hash_key(const Board &board) noexcept {
         u64 final_key = bitboard::kZERO;
-        for (int piece = PAWN; piece < N_PIECES; piece++)
-        {
-            for (int side = WHITE; side < BOTH; side++)
-            {
-                u64 bitboard = board.get_pieces((Color)side, (PieceType)piece);
-                while (bitboard)
-                {
+        for (int piece = PAWN; piece < N_PIECES; piece++) {
+            for (int side = WHITE; side < BOTH; side++) {
+                u64 bitboard = board.get_pieces((Color) side, (PieceType) piece);
+                while (bitboard) {
                     Square sq = bitboard::bit_scan_forward(bitboard);
                     final_key ^= piece_keys[side][piece][sq];
                     bitboard::pop_bit(bitboard, sq);
@@ -75,8 +64,7 @@ namespace zobrist
             }
         }
 
-        if (board.get_en_passant_square() != EMPTY_SQUARE)
-        {
+        if (board.get_en_passant_square() != EMPTY_SQUARE) {
             final_key ^= en_passant_keys[board.get_en_passant_square()];
         }
 

@@ -2,7 +2,7 @@
 
 #include "../catch.hpp"
 
-#include <codlib/constants.hpp>
+#include <codlib/base.hpp>
 #include <codlib/movegen/magics.hpp>
 #include <codlib/movegen/tables.hpp>
 

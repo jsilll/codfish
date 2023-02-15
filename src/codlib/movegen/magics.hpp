@@ -1,7 +1,7 @@
 #pragma once
 
-#include <codlib/bitboard.hpp>
-#include <codlib/constants.hpp>
+#include "codlib/bitboard.hpp"
+#include "../../../include/codlib/base.hpp"
 
 namespace magics
 {

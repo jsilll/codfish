@@ -1,9 +1,9 @@
-#include <codlib/movegen/perft.hpp>
+#include "perft.hpp"
 
+#include "codlib/bitboard.hpp"
+#include "codlib/movegen.hpp"
+#include "codlib/zobrist.hpp"
 #include <codlib/move.hpp>
-#include <codlib/zobrist.hpp>
-#include <codlib/bitboard.hpp>
-#include <codlib/movegen/movegen.hpp>
 
 namespace perft
 {

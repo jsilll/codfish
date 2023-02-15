@@ -1,7 +1,7 @@
-#include <codlib/bitboard.hpp>
+#include "bitboard.hpp"
 
-#include <codlib/utils.hpp>
-#include <codlib/movegen/attacks.hpp>
+#include "utils.hpp"
+#include "movegen/attacks.hpp"
 
 #include <string>
 #include <iostream>

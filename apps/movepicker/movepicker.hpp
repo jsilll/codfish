@@ -1,6 +1,6 @@
 #pragma once
 
-#include <codlib/constants.hpp>
+#include <codlib/base.hpp>
 #include <codlib/board.hpp>
 #include <codlib/move.hpp>
 

@@ -1,9 +1,9 @@
-#include <codlib/movegen/movegen.hpp>
+#include "codlib/movegen.hpp"
 
 #include <codlib/move.hpp>
 #include <codlib/board.hpp>
-#include <codlib/bitboard.hpp>
-#include <codlib/movegen/attacks.hpp>
+#include "codlib/bitboard.hpp"
+#include "attacks.hpp"
 
 #define MAX_SIZE_MOVES_ARRAY 256
 

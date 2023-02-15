@@ -1,6 +1,6 @@
 #include <interfaces/cli/commands/commands.hpp>
 
-#include <codlib/bitboard.hpp>
+#include "codlib/bitboard.hpp"
 
 #include <codlib/movegen/movegen.hpp>
 #include <codlib/movegen/perft.hpp>

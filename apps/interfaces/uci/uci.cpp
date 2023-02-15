@@ -6,8 +6,8 @@
 #include <codlib/movegen/tables.hpp>
 #include <codlib/board.hpp>
 
+#include "codlib/zobrist.hpp"
 #include <codlib/movepicker/eval.hpp>
-#include <codlib/zobrist.hpp>
 
 #include <interfaces/uci/commands/commands.hpp>
 

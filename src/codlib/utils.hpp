@@ -1,8 +1,8 @@
 #pragma once
 
-#include <codlib/utils.hpp>
-#include <codlib/bitboard.hpp>
-#include <codlib/constants.hpp>
+#include "utils.hpp"
+#include "codlib/bitboard.hpp"
+#include "codlib/base.hpp"
 
 #include <string>
 #include <vector>

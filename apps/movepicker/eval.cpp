@@ -1,7 +1,7 @@
 #include <codlib/movepicker/eval.hpp>
 
-#include <codlib/utils.hpp>
-#include <codlib/bitboard.hpp>
+#include "codlib/utils.hpp"
+#include "codlib/bitboard.hpp"
 #include <codlib/board.hpp>
 
 namespace eval

@@ -5,6 +5,7 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 add_library(codlib STATIC ${SOURCES})
 
 # -- Include Directory --
+target_include_directories(codlib PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(codlib PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # -- All Warnings as Errors --
