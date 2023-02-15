@@ -2,8 +2,8 @@
 
 #include "codlib/bitboard.hpp"
 
+#include "codlib/perft.hpp"
 #include <codlib/movegen/movegen.hpp>
-#include <codlib/movegen/perft.hpp>
 
 #include <chrono>
 #include <iostream>

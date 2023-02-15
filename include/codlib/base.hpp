@@ -112,7 +112,7 @@ const std::string SQUARE_NAMES[] = {
         "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
         "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
         "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
-        "-"}; // TODO: remove this from this file
+        "-"};// TODO: remove this from this file
 
 /// @brief The directions of the board represented as offsets
 enum Direction : int {
@@ -126,7 +126,7 @@ enum Direction : int {
     SOUTH_EAST [[maybe_unused]] = -7,
     /// @brief Used for iterating over all directions
     N_DIRECTIONS [[maybe_unused]] = 8,
-}; // TODO: remove this from this file
+};// TODO: remove this from this file
 
 /// @brief The colors of the pieces
 enum Color : int {
@@ -154,13 +154,33 @@ enum PieceType : int {
 /// @brief The representation of the pieces aligned with the PieceType enum
 /// @note The first 6 are the ascii representation, the next 6 are unicode
 const std::string PIECE_REPR[26] = {
-        "P", "N", "B", "R", "Q", "K",
-        "p", "n", "b", "r", "q", "k",
+        "P",
+        "N",
+        "B",
+        "R",
+        "Q",
+        "K",
+        "p",
+        "n",
+        "b",
+        "r",
+        "q",
+        "k",
         " ",
-        "♙", "♘", "♗", "♖", "♕", "♔",
-        "♟︎", "♞", "♝", "♜", "♛", "♚",
+        "♙",
+        "♘",
+        "♗",
+        "♖",
+        "♕",
+        "♔",
+        "♟︎",
+        "♞",
+        "♝",
+        "♜",
+        "♛",
+        "♚",
         " ",
-}; // TODO: remove this from this file
+};// TODO: remove this from this file
 
 /// @brief The different types of castling rights
 /// @note The values are powers of 2 so that they can be combined with bitwise operators

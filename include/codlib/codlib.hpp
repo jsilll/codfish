@@ -12,6 +12,8 @@
 /// @brief The namespace for move generation functionality.
 #include <codlib/movegen.hpp>
 
-/// @brief Initializes all codlib functionality.
-/// @note This function must be called before any other codlib functionality is used.
-[[maybe_unused]] void init() noexcept;
+namespace codlib {
+    /// @brief Initializes all codlib functionality.
+    /// @note This function must be called before any other codlib functionality is used.
+    [[maybe_unused]] void init() noexcept;
+}// namespace codlib

@@ -52,6 +52,19 @@ public:
         }
     };
 
+private:
+    /// @brief Returns the opponent color
+    /// @param to_move The color to move
+    /// @return The opponent color
+    [[nodiscard]] static constexpr auto get_opponent(Color to_move) noexcept { return static_cast<Color>((int) to_move ^ 1); }
+
+    /// @brief Returns the square of a rank and file
+    /// @param rk The rank
+    /// @param fl The file
+    /// @return The square
+    [[nodiscard]] static constexpr auto get_square(const Rank rk, const File fl) noexcept { return static_cast<Square>(8 * rk + fl); }
+
+public:
     /// @brief Default constructor
     /// @details Sets the board to the starting position
     [[nodiscard]] Board() noexcept { set_starting_position(); }
@@ -60,21 +73,39 @@ public:
     /// @param board The board to copy
     [[nodiscard]] Board(const Board &board) noexcept = default;
 
-    /// @brief Returns whether the board is in ASCII mode
-    /// @return Whether the board is in ASCII mode
-    [[nodiscard]] constexpr bool is_ascii() const noexcept { return _ascii; }
+    // -- Getters --
 
-    /// @brief Returns the hash key of the board
-    /// @return The hash key of the board
-    [[maybe_unused]] [[nodiscard]] constexpr std::uint64_t get_hash_key() const noexcept { return _hash_key; }
+    /// @brief Returns the current side to move
+    /// @return The current side to move
+    [[nodiscard]] constexpr auto get_side_to_move() const noexcept { return _to_move; }
 
     /// @brief Returns the current opponent color
     /// @return The current opponent color
-    [[nodiscard]] constexpr Color get_opponent() const noexcept { return get_opponent(_to_move); }
+    [[nodiscard]] constexpr auto get_opponent() const noexcept { return get_opponent(_to_move); }
+
+    /// @brief Returns the castling rights
+    /// @return The castling rights
+    [[nodiscard]] constexpr auto get_castling_rights() const noexcept { return _castling_rights; }
+
+    /// @brief Returns the half move clock
+    /// @return The half move clock
+    [[nodiscard]] constexpr auto get_half_move_clock() const noexcept { return _half_move_clock; }
+
+    /// @brief Returns whether the white pieces are on the bottom
+    /// @return Whether the white pieces are on the bottom
+    [[nodiscard]] constexpr auto is_white_on_bottom() const noexcept { return _white_on_bottom; }
+
+    /// @brief Returns the full move number
+    /// @return The full move number
+    [[nodiscard]] constexpr auto get_full_move_number() const noexcept { return _full_move_number; }
+
+    /// @brief Returns the en passant square
+    /// @return The en passant square
+    [[nodiscard]] constexpr auto get_en_passant_square() const noexcept { return _en_passant_square; }
 
     /// @brief Returns the current game state
     /// @return The current game state
-    [[nodiscard]] constexpr GameState get_state() const noexcept {
+    [[nodiscard]] constexpr auto get_state() const noexcept {
         // TODO: Board should have a GameState field, instead of having to create a new one every time
         return GameState{_en_passant_square,
                          _castling_rights,
@@ -82,57 +113,10 @@ public:
                          _hash_key};
     }
 
-    /// @brief Returns the current side to move
-    /// @return The current side to move
-    [[nodiscard]] constexpr Color get_side_to_move() const noexcept { return _to_move; }
-
-    /// @brief Returns the castling rights
-    /// @return The castling rights
-    [[nodiscard]] constexpr int get_castling_rights() const noexcept { return _castling_rights; }
-
-    /// @brief Returns the half move clock
-    /// @return The half move clock
-    [[nodiscard]] constexpr int get_half_move_clock() const noexcept { return _half_move_clock; }
-
-    /// @brief Returns whether the white pieces are on the bottom
-    /// @return Whether the white pieces are on the bottom
-    [[nodiscard]] constexpr bool is_white_on_bottom() const noexcept { return _white_on_bottom; }
-
-    /// @brief Returns the full move number
-    /// @return The full move number
-    [[nodiscard]] constexpr int get_full_move_number() const noexcept { return _full_move_number; }
-
-    /// @brief Returns the en passant square
-    /// @return The en passant square
-    [[nodiscard]] constexpr Square get_en_passant_square() const noexcept { return _en_passant_square; }
-
-    /// @brief Returns the occupancy of a color
-    /// @param color The color
-    /// @return The occupancy of the color
-    [[nodiscard]] constexpr std::uint64_t get_occupancies(Color color) const noexcept { return _occupancies[color]; }
-
     /// @brief Returns the piece on a square
     /// @param sq The square
     /// @return The piece on the square
-    [[nodiscard]] constexpr Piece get_piece_from_square(Square sq) const noexcept { return _square[sq]; }
-
-    /// @brief Returns the pieces bitboard of a color and type
-    /// @param color The color
-    /// @param type The type
-    [[nodiscard]] constexpr std::uint64_t
-    get_pieces(Color color, PieceType type) const noexcept { return _pieces[color][type]; }
-
-    /// @brief Returns the FEN string of the board
-    /// @return The FEN string of the board
-    [[maybe_unused]] [[nodiscard]] std::string get_fen() const noexcept;
-
-    /// @brief Sets the board to the starting position
-    void set_starting_position() noexcept {
-        set_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                     "w", "KQkq", "-", "0", "1");
-    }
-
-    [[maybe_unused]] [[nodiscard]] std::uint64_t hash() const noexcept;
+    [[nodiscard]] constexpr auto get_piece_from_square(Square sq) const noexcept { return _square[sq]; }
 
     /// @brief Returns whether a square is attacked by a color
     /// @param sq The square
@@ -140,9 +124,46 @@ public:
     /// @return Whether the square is attacked by the color
     [[nodiscard]] bool is_square_attacked(Square sq, Color attacker) const noexcept;
 
-    /// @brief Toggles the ASCII mode
+    /// @brief Returns the pieces bitboard of a color and type
+    /// @param color The color
+    /// @param type The type
+    [[nodiscard]] constexpr auto get_pieces(Color color, PieceType type) const noexcept { return _pieces[color][type]; }
+
+    /// @brief Returns the occupancy of a color
+    /// @param color The color
+    /// @return The occupancy of the color
+    [[nodiscard]] constexpr auto get_occupancies(Color color) const noexcept { return _occupancies[color]; }
+
+    /// @brief Returns the hash key of the board
+    /// @return The hash key of the board
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_hash_key() const noexcept { return _hash_key; }
+
+    /// @brief Returns the FEN string of the board
+    /// @return The FEN string of the board
+    [[maybe_unused]] [[nodiscard]] std::string get_fen() const noexcept;
+
+    /// @brief Returns whether the board is in ASCII mode
     /// @return Whether the board is in ASCII mode
-    [[maybe_unused]] constexpr bool toggle_ascii() noexcept { return _ascii = !_ascii; }
+    [[nodiscard]] constexpr auto is_ascii() const noexcept { return _ascii; }
+
+    // -- Setters --
+
+    /// @brief Sets the board to the starting position
+    void set_starting_position() noexcept {
+        set_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
+    }
+
+    /// @brief Switches the side to move
+    /// @return The new side to move
+    constexpr auto switch_side_to_move() noexcept { return _to_move = get_opponent(); }
+
+    /// @brief Sets the current en passant square
+    /// @param sq The en passant square
+    [[maybe_unused]] void set_en_passant_square(Square sq) noexcept { _en_passant_square = sq; }
+
+    /// @brief Sets the current castling rights
+    /// @param castling_rights The castling rights
+    [[maybe_unused]] void set_castling_rights(int castling_rights) noexcept { _castling_rights = castling_rights; }
 
     /// @brief Sets the current game state
     /// @param state The game state
@@ -154,31 +175,13 @@ public:
         _en_passant_square = state.en_passant_square;
     }
 
+    /// @brief Toggles the ASCII mode
+    /// @return Whether the board is in ASCII mode
+    [[maybe_unused]] constexpr auto toggle_ascii() noexcept { return _ascii = !_ascii; }
+
     /// @brief Rotates the board
     /// @return Whether white is on the bottom
-    [[maybe_unused]] constexpr bool rotate_display() noexcept { return _white_on_bottom = !_white_on_bottom; }
-
-    /// @brief Switches the side to move
-    /// @return The new side to move
-    constexpr int switch_side_to_move() noexcept { return _to_move = get_opponent(); }
-
-    /// @brief Sets the current en passant square
-    /// @param sq The en passant square
-    [[maybe_unused]] void set_en_passant_square(Square sq) noexcept { _en_passant_square = sq; }
-
-    /// @brief Sets the current castling rights
-    /// @param castling_rights The castling rights
-    [[maybe_unused]] void set_castling_rights(int castling_rights) noexcept { _castling_rights = castling_rights; }
-
-    /// @brief Makes a move on the board
-    /// @param move The move
-    /// @note This function does not check if the move is legal
-    void make(Move move) noexcept;
-
-    /// @brief Unmakes a move on the board
-    /// @param move The move
-    /// @param info_board The previous game state
-    void unmake(Move move, GameState info_board) noexcept;
+    [[maybe_unused]] constexpr auto rotate_display() noexcept { return _white_on_bottom = !_white_on_bottom; }
 
     /// @brief Sets the board from a FEN string
     /// @param piece_placements The piece placements
@@ -193,6 +196,18 @@ public:
                       const std::string &en_passant,
                       const std::string &halfmove_clock,
                       const std::string &fullmove_number) noexcept;
+
+    /// @brief Makes a move on the board
+    /// @param move The move
+    /// @note This function does not check if the move is legal
+    void make(Move move) noexcept;
+
+    /// @brief Unmakes a move on the board
+    /// @param move The move
+    /// @param info_board The previous game state
+    void unmake(Move move, GameState info_board) noexcept;
+
+    // -- Overloaded Operators --
 
     /// @brief Outputs the string representation of the board
     /// @param os The output stream
@@ -238,17 +253,4 @@ private:
     /// @brief Updates the bitboards from the squares
     /// @details This function is called when setting the board from a FEN string
     void update_bitboards_from_squares() noexcept;
-
-    /// @brief Returns the opponent color
-    /// @param to_move The color to move
-    /// @return The opponent color
-    [[nodiscard]] static constexpr Color
-    get_opponent(Color to_move) noexcept { return static_cast<Color>((int) to_move ^ 1); }
-
-    /// @brief Returns the square of a rank and file
-    /// @param rk The rank
-    /// @param fl The file
-    /// @return The square
-    [[nodiscard]] static constexpr Square
-    get_square(const Rank rk, const File fl) noexcept { return static_cast<Square>(8 * rk + fl); }
 };

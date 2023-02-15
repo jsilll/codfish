@@ -2,9 +2,8 @@
 
 #include <vector>
 
-#include <codlib/base.hpp>
-#include <codlib/move.hpp>
 #include <codlib/board.hpp>
+#include <codlib/move.hpp>
 
 namespace movegen {
     /// @brief Returns whether a board has any legal moves to be played by the current player.
@@ -31,4 +30,4 @@ namespace movegen {
     /// @param board The board to generate legal captures on.
     /// @return All legal captures on the board.
     [[maybe_unused]] [[nodiscard]] std::vector<Move> generate_legal_captures(Board &board) noexcept;
-} // namespace movegen
+}// namespace movegen

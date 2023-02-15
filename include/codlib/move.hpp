@@ -8,7 +8,7 @@
 class Move {
 public:
     /// @brief Default constructor
-    [[maybe_unused]] [[nodiscard]] Move() noexcept: _move_encoded(0) {};
+    [[maybe_unused]] [[nodiscard]] Move() noexcept = default;
 
     /// @brief Constructor
     /// @param source_square The source square
@@ -27,44 +27,38 @@ public:
                                         bool is_double_push,
                                         bool is_en_passant,
                                         bool is_castle) noexcept
-            : _move_encoded(static_cast<std::uint32_t>(source_square) |
-                            (static_cast<std::uint32_t>(target_square << 6)) |
-                            (static_cast<std::uint32_t>(piece << 12)) |
-                            (static_cast<std::uint32_t>(captured_piece << 15)) |
-                            (static_cast<std::uint32_t>(promoted_piece << 18)) |
-                            (static_cast<std::uint32_t>(is_double_push << 21)) |
-                            (static_cast<std::uint32_t>(is_en_passant << 22)) |
-                            (static_cast<std::uint32_t>(is_castle << 23))) {}
+        : _move_encoded(static_cast<std::uint32_t>(source_square) |
+                        (static_cast<std::uint32_t>(target_square << 6)) |
+                        (static_cast<std::uint32_t>(piece << 12)) |
+                        (static_cast<std::uint32_t>(captured_piece << 15)) |
+                        (static_cast<std::uint32_t>(promoted_piece << 18)) |
+                        (static_cast<std::uint32_t>(is_double_push << 21)) |
+                        (static_cast<std::uint32_t>(is_en_passant << 22)) |
+                        (static_cast<std::uint32_t>(is_castle << 23))) {}
 
     /// @brief Returns the source square
     /// @return The source square
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    get_from_square() const noexcept { return static_cast<Square>(_move_encoded & 0x3f); }
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_from_square() const noexcept { return static_cast<Square>(_move_encoded & 0x3f); }
 
     /// @brief Returns the target square
     /// @return The target square
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    get_to_square() const noexcept { return static_cast<Square>((_move_encoded & 0xfc0) >> 6); }
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_to_square() const noexcept { return static_cast<Square>((_move_encoded & 0xfc0) >> 6); }
 
     /// @brief Returns the piece
     /// @return The piece
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    get_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x7000) >> 12); }
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x7000) >> 12); }
 
     /// @brief Returns the captured piece
     /// @return The captured piece
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    get_captured_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x38000) >> 15); }
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_captured_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x38000) >> 15); }
 
     /// @brief Returns the promoted piece
     /// @return The promoted piece
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    get_promoted_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x1C0000) >> 18); }
+    [[maybe_unused]] [[nodiscard]] constexpr auto get_promoted_piece_type() const noexcept { return static_cast<PieceType>((_move_encoded & 0x1C0000) >> 18); }
 
     /// @brief Returns if it is a double push
     /// @return If it is a double push
-    [[maybe_unused]] [[nodiscard]] constexpr bool
-    is_double_push() const noexcept { return (_move_encoded & 0x200000); }
+    [[maybe_unused]] [[nodiscard]] constexpr bool is_double_push() const noexcept { return (_move_encoded & 0x200000); }
 
     /// @brief Returns if it is an en passant
     /// @return If it is an en passant
@@ -76,13 +70,11 @@ public:
 
     /// @brief Returns if it is a capture
     /// @return If it is a capture
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    is_capture() const noexcept { return get_captured_piece_type() != EMPTY_PIECE; }
+    [[maybe_unused]] [[nodiscard]] constexpr auto is_capture() const noexcept { return get_captured_piece_type() != EMPTY_PIECE; }
 
     /// @brief Returns if it is a promotion
     /// @return If it is a promotion
-    [[maybe_unused]] [[nodiscard]] constexpr auto
-    is_promotion() const noexcept { return get_promoted_piece_type() != EMPTY_PIECE; }
+    [[maybe_unused]] [[nodiscard]] constexpr auto is_promotion() const noexcept { return get_promoted_piece_type() != EMPTY_PIECE; }
 
     /// @brief Returns the encoded move
     /// @return The encoded move
@@ -92,27 +84,27 @@ public:
     /// @return The move in UCI format
     [[maybe_unused]] [[nodiscard]] constexpr auto get_uci() const noexcept {
         if (is_promotion()) {
-            return SQUARE_NAMES[get_from_square()] + SQUARE_NAMES[get_to_square()] +
+            return SQUARE_NAMES[get_from_square()] +
+                   SQUARE_NAMES[get_to_square()] +
                    PIECE_REPR[get_promoted_piece_type() + 6];
+        } else {
+            return SQUARE_NAMES[get_from_square()] + SQUARE_NAMES[get_to_square()];
         }
-        return SQUARE_NAMES[get_from_square()] + SQUARE_NAMES[get_to_square()];
     }
 
     /// @brief Overload of the == operator for the Move class
     /// @param m1 The move
     /// @param m2 The other move
     /// @return Whether the moves are equal
-    [[maybe_unused]] friend constexpr auto
-    operator==(const Move &m1, const Move &m2) { return m1._move_encoded == m2._move_encoded; }
+    [[maybe_unused]] friend constexpr auto operator==(const Move &m1, const Move &m2) { return m1._move_encoded == m2._move_encoded; }
 
     /// @brief Overload of the != operator for the Move class
     /// @param m1 The move
     /// @param m2 The other move
     /// @return Whether the moves are not equal
-    [[maybe_unused]] friend constexpr auto
-    operator!=(const Move &m1, const Move &m2) { return m1._move_encoded != m2._move_encoded; }
+    [[maybe_unused]] friend constexpr auto operator!=(const Move &m1, const Move &m2) { return m1._move_encoded != m2._move_encoded; }
 
 private:
     /// @brief The encoded move for memory efficiency
-    std::uint32_t _move_encoded;
+    std::uint32_t _move_encoded{};
 };

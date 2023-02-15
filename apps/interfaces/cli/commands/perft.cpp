@@ -1,6 +1,6 @@
 #include <interfaces/cli/commands/commands.hpp>
 
-#include <codlib/movegen/perft.hpp>
+#include "codlib/perft.hpp"
 
 #include <chrono>
 #include <iostream>

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
+# -- FetchContent --
+Include(FetchContent)
+
 # -- Setup --
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -16,16 +19,24 @@ project(Codfish
 # -- Baseline Flags --
 if (MSVC)
     add_compile_options(/W4 /w14640)
-else()
+else ()
     add_compile_options(
             -Wall -Wextra -Wshadow -Wunused -Wnon-virtual-dtor -pedantic)
-endif()
+endif ()
 
 # -- When Building Standalone --
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # -- Testing Only Available When Building Standalone --
     include(CTest)
     enable_testing()
+
+    # -- Fetch Catch2 --
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG v3.0.1
+    )
+    FetchContent_MakeAvailable(Catch2)
 
     # -- Ensure that the -std=c++xx flag is used --
     set(CMAKE_CXX_EXTENSIONS OFF)
@@ -45,10 +56,10 @@ endif ()
 # -- Library --
 add_subdirectory(src)
 
+# -- Testing only available when building Standalone --
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    add_subdirectory(tests)
+endif ()
+
 # -- Executable --
 # add_subdirectory(apps)
-
-# -- Testing only available when building Standalone --
-# if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#    add_subdirectory(tests)
-# endif ()

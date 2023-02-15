@@ -1,15 +1,11 @@
-#define CATCH_CONFIG_MAIN
-
-#include "../catch.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 #include <codlib/move.hpp>
 
 // TODO: Missing tests for get_uci()
 
-TEST_CASE("Test Moves")
-{
-    SECTION("Impossible Move")
-    {
+TEST_CASE("Test Moves") {
+    SECTION("Impossible Move") {
         Move move = Move(0, 63, PAWN, QUEEN, QUEEN, true, false, true);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 63);
@@ -23,8 +19,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.get_uci() == "a1h8q");
     }
 
-    SECTION("Pawn Takes King")
-    {
+    SECTION("Pawn Takes King") {
         Move move = Move(0, 1, PAWN, KING, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);
@@ -40,8 +35,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.is_promotion() == false);
     }
 
-    SECTION("Pawn Takes Queen")
-    {
+    SECTION("Pawn Takes Queen") {
         Move move = Move(0, 1, PAWN, QUEEN, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);
@@ -56,8 +50,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.get_uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Rook")
-    {
+    SECTION("Pawn Takes Rook") {
         Move move = Move(0, 1, PAWN, ROOK, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);
@@ -72,8 +65,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.is_promotion() == false);
     }
 
-    SECTION("Pawn Takes Bishop")
-    {
+    SECTION("Pawn Takes Bishop") {
         Move move = Move(0, 1, PAWN, BISHOP, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);
@@ -88,8 +80,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.get_uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Knight")
-    {
+    SECTION("Pawn Takes Knight") {
         Move move = Move(0, 1, PAWN, KNIGHT, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);
@@ -104,8 +95,7 @@ TEST_CASE("Test Moves")
         REQUIRE(move.get_uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Pawn")
-    {
+    SECTION("Pawn Takes Pawn") {
         Move move = Move(0, 1, PAWN, PAWN, EMPTY_PIECE, false, false, false);
         REQUIRE(move.get_from_square() == 0);
         REQUIRE(move.get_to_square() == 1);

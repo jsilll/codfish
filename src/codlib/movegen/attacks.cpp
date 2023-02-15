@@ -1,7 +1,9 @@
 #include <codlib/movegen/attacks.hpp>
 
-#include <codlib/utils.hpp>
 #include <codlib/bitboard.hpp>
+#include <codlib/utils.hpp>
+
+using bitboard::u64;
 
 namespace attacks {
     u64 ATTACKS_KING[N_SQUARES];
@@ -50,23 +52,23 @@ namespace attacks {
 
     void init() noexcept {
         // Initializing Leaper Piece Attack Tables
-        for (int sq = A1; sq < N_SQUARES; sq++) {
+        for (int sq = A1; sq < N_SQUARES; ++sq) {
             ATTACKS_PAWN[WHITE][sq] = attacks::mask_white_pawn_any_attacks(utils::SQUARE_BB[sq]);
             ATTACKS_PAWN[BLACK][sq] = attacks::mask_black_pawn_any_attacks(utils::SQUARE_BB[sq]);
         }
 
-        for (int sq = A1; sq < N_SQUARES; sq++) {
+        for (int sq = A1; sq < N_SQUARES; ++sq) {
             ATTACKS_KNIGHT[sq] = attacks::mask_knight_attacks(utils::SQUARE_BB[sq]);
         }
 
-        for (int sq = A1; sq < N_SQUARES; sq++) {
+        for (int sq = A1; sq < N_SQUARES; ++sq) {
             ATTACKS_KING[sq] = attacks::mask_king_attacks(utils::SQUARE_BB[sq]);
         }
 
         // Initialize Slider Piece Attack Tables
-        for (int sq = A1; sq < N_SQUARES; sq++) {
+        for (int sq = A1; sq < N_SQUARES; ++sq) {
             int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_BISHOP[sq];
-            for (int i = 0; i < occupancy_indices; i++) {
+            for (int i = 0; i < occupancy_indices; ++i) {
                 magics::Magic magic = magics::MAGIC_TABLE_BISHOP[sq];
                 u64 occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_BISHOP[sq], magic.mask);
                 int index = static_cast<int>((occupancy * magic.magic) >> magic.shift);
@@ -74,9 +76,9 @@ namespace attacks {
             }
         }
 
-        for (int sq = A1; sq < N_SQUARES; sq++) {
+        for (int sq = A1; sq < N_SQUARES; ++sq) {
             int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_ROOK[sq];
-            for (int i = 0; i < occupancy_indices; i++) {
+            for (int i = 0; i < occupancy_indices; ++i) {
                 magics::Magic magic = magics::MAGIC_TABLE_ROOK[sq];
                 u64 occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_ROOK[sq], magic.mask);
                 int index = (int) ((occupancy * magic.magic) >> magic.shift);
@@ -85,24 +87,13 @@ namespace attacks {
         }
     }
 
-    /// @brief Computes the magic index for a given occupancy and magic entry
-    /// @param occ The occupancy
-    /// @param magic The magic entry
-    /// @return The magic index
-    [[nodiscard]] constexpr u64 magic_index(u64 occ, const magics::Magic &magic) noexcept {
-        occ &= magic.mask;
-        occ *= magic.magic;
-        occ >>= magic.shift;
-        return occ;
-    }
-
     u64 get_bishop_attacks(const Square sq, u64 occ) noexcept {
-        const auto idx = magic_index(occ, magics::MAGIC_TABLE_BISHOP[sq]);
+        const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_BISHOP[sq]);
         return ATTACKS_BISHOP[sq][idx];
     }
 
     u64 get_rook_attacks(const Square sq, u64 occ) noexcept {
-        const auto idx = magic_index(occ, magics::MAGIC_TABLE_ROOK[sq]);
+        const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_ROOK[sq]);
         return ATTACKS_ROOK[sq][idx];
     }
-} // namespace attacks
+}// namespace attacks

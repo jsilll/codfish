@@ -1,10 +1,12 @@
 #include <codlib/board.hpp>
 
-#include "bitboard.hpp"
-#include "movegen/attacks.hpp"
-#include "utils.hpp"
-#include "zobrist.hpp"
+#include "codlib/zobrist.hpp"
+#include <codlib/bitboard.hpp>
 #include <codlib/move.hpp>
+#include <codlib/movegen/attacks.hpp>
+#include <codlib/utils.hpp>
+
+using bitboard::u64;
 
 [[maybe_unused]] std::string Board::get_fen() const noexcept {
     std::string piece_placements;
@@ -71,10 +73,6 @@
                       std::to_string(_full_move_number) + "\n";
 
     return fen.substr(1, std::string::npos);
-}
-
-std::uint64_t Board::hash() const noexcept {
-    return zobrist::generate_hash_key(*this);
 }
 
 bool Board::is_square_attacked(Square sq, Color attacker) const noexcept {

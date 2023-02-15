@@ -1,30 +1,30 @@
 #pragma once
 
-#include "bitboard.hpp"
-#include "codlib/base.hpp"
-#include "codlib/board.hpp"
+#include <codlib/base.hpp>
+#include <codlib/bitboard.hpp>
+#include <codlib/board.hpp>
 
 namespace zobrist {
     /// @brief The number of castling keys
     constexpr std::size_t N_CASTLING_KEYS = 16;
 
     /// @brief The keys for the side to move
-    static u64 side_key[BOTH]{};
+    static bitboard::u64 side_key[BOTH]{};
 
     /// @brief The keys for the en passant squares
-    static u64 en_passant_keys[N_SQUARES];
+    static bitboard::u64 en_passant_keys[N_SQUARES];
 
     /// @brief The keys for the castling rights
-    static u64 castle_keys[N_CASTLING_KEYS];
+    static bitboard::u64 castle_keys[N_CASTLING_KEYS];
 
     /// @brief The keys for the pieces
-    static u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
+    static bitboard::u64 piece_keys[N_SIDES][N_PIECES][N_SQUARES];
 
     /// @brief Generates a random number
     /// @return The random number
-    u64 generate_random_number_u64() noexcept {
-        u64 n1 = (static_cast<u64>(std::rand()));
-        u64 n2 = (static_cast<u64>(std::rand()));
+    bitboard::u64 generate_random_number_u64() noexcept {
+        bitboard::u64 n1 = (static_cast<bitboard::u64>(std::rand()));// NOLINT
+        bitboard::u64 n2 = (static_cast<bitboard::u64>(std::rand()));// NOLINT
         return n1 | (n2 << 32);
     }
 
@@ -51,11 +51,11 @@ namespace zobrist {
     /// @brief Generates the hash key for a board
     /// @param board The board
     /// @return The hash key
-    u64 generate_hash_key(const Board &board) noexcept {
-        u64 final_key = bitboard::kZERO;
+    bitboard::u64 generate_hash_key(const Board &board) noexcept {
+        bitboard::u64 final_key = bitboard::kZERO;
         for (int piece = PAWN; piece < N_PIECES; piece++) {
             for (int side = WHITE; side < BOTH; side++) {
-                u64 bitboard = board.get_pieces((Color) side, (PieceType) piece);
+                bitboard::u64 bitboard = board.get_pieces((Color) side, (PieceType) piece);
                 while (bitboard) {
                     Square sq = bitboard::bit_scan_forward(bitboard);
                     final_key ^= piece_keys[side][piece][sq];
@@ -73,4 +73,4 @@ namespace zobrist {
 
         return final_key;
     }
-} // namespace zobrist
+}// namespace zobrist
