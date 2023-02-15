@@ -33,7 +33,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @brief Returns a bitboard of all east attacks of white pawns.
 /// @param wpawns A bitboard of white pawns.
 /// @return A bitboard of all east attacks of white pawns.
-[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_east_attacks(bitboard::u64 wpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_east_attacks(const bitboard::u64 wpawns) noexcept
 {
   return bitboard::no_ea_one(wpawns);
 }
@@ -41,7 +41,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @brief Returns a bitboard of all west attacks of white pawns.
 /// @param wpawns A bitboard of white pawns.
 /// @return A bitboard of all west attacks of white pawns.
-[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_west_attacks(bitboard::u64 wpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_west_attacks(const bitboard::u64 wpawns) noexcept
 {
   return bitboard::no_we_one(wpawns);
 }
@@ -49,7 +49,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @brief Returns a bitboard of all east attacks of black pawns.
 /// @param bpawns A bitboard of black pawns.
 /// @return A bitboard of all east attacks of black pawns.
-[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_east_attacks(bitboard::u64 bpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_east_attacks(const bitboard::u64 bpawns) noexcept
 {
   return bitboard::so_ea_one(bpawns);
 }
@@ -57,7 +57,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @brief Returns a bitboard of all west attacks of black pawns.
 /// @param bpawns A bitboard of black pawns.
 /// @return A bitboard of all west attacks of black pawns.
-[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_west_attacks(bitboard::u64 bpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_west_attacks(const bitboard::u64 bpawns) noexcept
 {
   return bitboard::so_we_one(bpawns);
 }
@@ -66,7 +66,8 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param wpawns A bitboard of white pawns.
 /// @param empty A bitboard of empty squares.
 /// @return A bitboard of all white pawn single pushes.
-[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_single_pushes(bitboard::u64 wpawns, bitboard::u64 empty) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_single_pushes(const bitboard::u64 wpawns,
+  const bitboard::u64 empty) noexcept
 {
   return bitboard::nort_one(wpawns) & empty;
 }
@@ -75,7 +76,8 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param bpawns A bitboard of black pawns.
 /// @param empty A bitboard of empty squares.
 /// @return A bitboard of all black pawn single pushes.
-[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_single_pushes(bitboard::u64 bpawns, bitboard::u64 empty) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_single_pushes(const bitboard::u64 bpawns,
+  const bitboard::u64 empty) noexcept
 {
   return bitboard::sout_one(bpawns) & empty;
 }
@@ -84,7 +86,8 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param wpawns A bitboard of white pawns.
 /// @param empty A bitboard of empty squares.
 /// @return A bitboard of all white pawn double pushes.
-[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_double_pushes(bitboard::u64 wpawns, bitboard::u64 empty) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_double_pushes(const bitboard::u64 wpawns,
+  const bitboard::u64 empty) noexcept
 {
   bitboard::u64 single_pushes = mask_white_pawn_single_pushes(wpawns, empty);
   return bitboard::nort_one(single_pushes) & empty & utils::MASK_RANK[RANK_3];
@@ -94,16 +97,17 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param bpawns A bitboard of black pawns.
 /// @param empty A bitboard of empty squares.
 /// @return A bitboard of all black pawn double pushes.
-[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_double_pushes(bitboard::u64 bpawns, bitboard::u64 empty) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_double_pushes(const bitboard::u64 bpawns,
+  const bitboard::u64 empty) noexcept
 {
-  bitboard::u64 single_pushes = mask_black_pawn_single_pushes(bpawns, empty);
+  const bitboard::u64 single_pushes = mask_black_pawn_single_pushes(bpawns, empty);
   return bitboard::sout_one(single_pushes) & empty & utils::MASK_RANK[RANK_4];
 }
 
 /// @brief Returns a bitboard of all the white pawn attacks.
 /// @param wpawns A bitboard of white pawns.
 /// @return A bitboard of all the white pawn attacks.
-[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_any_attacks(bitboard::u64 wpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_white_pawn_any_attacks(const bitboard::u64 wpawns) noexcept
 {
   return mask_white_pawn_east_attacks(wpawns) | mask_white_pawn_west_attacks(wpawns);
 }
@@ -111,7 +115,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @brief Returns a bitboard of all the black pawn attacks.
 /// @param bpawns A bitboard of black pawns.
 /// @return A bitboard of all the black pawn attacks.
-[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_any_attacks(bitboard::u64 bpawns) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_black_pawn_any_attacks(const bitboard::u64 bpawns) noexcept
 {
   return mask_black_pawn_east_attacks(bpawns) | mask_black_pawn_west_attacks(bpawns);
 }
@@ -121,7 +125,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param sq The square to generate attacks from.
 /// @param block A bitboard of the blocked squares.
 /// @return A bitboard of all the bishop attacks.
-[[nodiscard]] constexpr bitboard::u64 mask_bishop_xray_attacks(Square sq, bitboard::u64 block) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_bishop_xray_attacks(const Square sq, const bitboard::u64 block) noexcept
 {
   bitboard::u64 attacks = bitboard::kZERO;
   Rank rank = utils::get_rank(sq);
@@ -154,7 +158,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param sq The square to generate attacks from.
 /// @param block A bitboard of the blocked squares.
 /// @return A bitboard of all the rook attacks.
-[[nodiscard]] constexpr bitboard::u64 mask_rook_xray_attacks(Square sq, bitboard::u64 block) noexcept
+[[nodiscard]] constexpr bitboard::u64 mask_rook_xray_attacks(const Square sq, const bitboard::u64 block) noexcept
 {
   bitboard::u64 attacks = bitboard::kZERO;
   Rank rank = utils::get_rank(sq);
@@ -198,7 +202,7 @@ extern bitboard::u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
 /// @param sq The square
 /// @param occ The occupancy
 /// @return The queen attacks
-[[nodiscard]] bitboard::u64 get_queen_attacks(const Square sq, bitboard::u64 occ) noexcept
+[[nodiscard]] inline bitboard::u64 get_queen_attacks(const Square sq, const bitboard::u64 occ) noexcept
 {
   return get_bishop_attacks(sq, occ) | get_rook_attacks(sq, occ);
 }

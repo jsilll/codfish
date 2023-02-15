@@ -8,8 +8,8 @@ foreach (SOURCE ${SOURCES})
     add_executable(${TEST} ${SOURCE})
 
     target_link_libraries(${TEST}
-            PRIVATE codlib
-            PRIVATE Catch2::Catch2WithMain)
+            PRIVATE Catch2::Catch2WithMain
+            PRIVATE codlib)
 
     add_test(${TEST} ${TEST})
 endforeach ()
