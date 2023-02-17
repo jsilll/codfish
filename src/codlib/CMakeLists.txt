@@ -2,7 +2,7 @@
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 # -- Codlib --
-add_library(codlib STATIC ${SOURCES})
+add_library(codlib STATIC ${SOURCES} move.cpp)
 
 # -- Include Directory --
 target_include_directories(codlib

@@ -1,9 +1,9 @@
 #include "catch2/catch_test_macros.hpp"
 
-// #include <codlib/codlib.hpp>
+#include <codlib/codlib.hpp>
 // #include <codlib/movegen/attacks.hpp>
-//
-// TEST_CASE("Test Pawn Moves") {
+
+TEST_CASE("Test Pawn Moves") {
 //   codlib::init();
 //
 //   SECTION("Corners Start") {
@@ -123,5 +123,4 @@
 //     REQUIRE(attacks::get_queen_attacks(F6, 0x812432a8da245282) ==
 //             0x8870d07088000000);
 //   }
-// }
-//
+}

@@ -45,7 +45,7 @@ bitboard::u64 generate_hash_key(const Board &board) noexcept
   bitboard::u64 final_key = bitboard::kZERO;
   for (int piece = PAWN; piece < N_PIECES; ++piece) {
     for (int side = WHITE; side < BOTH; ++side) {
-      bitboard::u64 bitboard = board.get_pieces((Color)side, (PieceType)piece);
+      bitboard::u64 bitboard = board.pieces((Color) side, (PieceType) piece);
       while (bitboard) {
         Square sq = bitboard::bit_scan_forward(bitboard);
         final_key ^= piece_keys[side][piece][sq];
@@ -54,10 +54,10 @@ bitboard::u64 generate_hash_key(const Board &board) noexcept
     }
   }
 
-  if (board.get_en_passant_square() != EMPTY_SQUARE) { final_key ^= en_passant_keys[board.get_en_passant_square()]; }
+  if (board.en_passant_square() != EMPTY_SQUARE) { final_key ^= en_passant_keys[board.en_passant_square()]; }
 
-  final_key ^= castle_keys[board.get_castling_rights()];
-  final_key ^= side_key[board.get_side_to_move()];
+  final_key ^= castle_keys[board.castling_availability()];
+  final_key ^= side_key[board.active()];
 
   return final_key;
 }

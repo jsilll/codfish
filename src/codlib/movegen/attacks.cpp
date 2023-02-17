@@ -6,6 +6,7 @@
 using bitboard::u64;
 
 namespace attacks {
+
 u64 ATTACKS_KING[N_SQUARES];
 
 u64 ATTACKS_KNIGHT[N_SQUARES];
@@ -97,4 +98,5 @@ u64 get_rook_attacks(const Square sq, const u64 occ) noexcept
   const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_ROOK[sq]);
   return ATTACKS_ROOK[sq][idx];
 }
+
 }// namespace attacks

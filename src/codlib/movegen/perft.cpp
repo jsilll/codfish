@@ -11,12 +11,12 @@ int perft(Board &board, const int depth)
 
   int nodes = 0;
   for (const Move &move : movegen::generate_pseudo_legal_moves(board)) {
-    Board::GameState board_info = board.get_state();
-    board.make(move);
-    Square king_sq = bitboard::bit_scan_forward(board.get_pieces(board.get_opponent(), KING));
-    Color attacker_side = board.get_side_to_move();
-    if (!board.is_square_attacked(king_sq, attacker_side)) { nodes += perft(board, depth - 1); }
-    board.unmake(move, board_info);
+    Board::StateBackup board_info = board.GetStateBackup();
+      board.Make(move);
+    Square king_sq = bitboard::bit_scan_forward(board.pieces(board.inactive(), KING));
+    Color attacker_side = board.active();
+    if (!board.IsSquareAttacked(king_sq, attacker_side)) { nodes += perft(board, depth - 1); }
+      board.Unmake(move, board_info);
   }
 
   return nodes;
