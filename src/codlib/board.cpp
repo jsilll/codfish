@@ -208,7 +208,7 @@ void Board::Make(Move move) noexcept {
 
     switch_active();
 
-    update_occupancies();
+    UpdateOccupancies();
 }
 
 void Board::Unmake(Move move, StateBackup info_board) noexcept {
@@ -276,7 +276,7 @@ void Board::Unmake(Move move, StateBackup info_board) noexcept {
     _half_move_clock = info_board.half_move_clock;
     _hash_key = info_board.hash_key;
 
-    update_occupancies();
+    UpdateOccupancies();
 }
 
 void Board::SetFromFen(const std::string &piece_placements,
@@ -400,7 +400,7 @@ void Board::SetFromFen(const std::string &piece_placements,
 
     _full_move_number = std::stoi(fullmove_number);
 
-    update_bitboards_from_squares();
+    UpdateBitboards();
 
     _hash_key = zobrist::generate_hash_key(*this);
 }
@@ -473,7 +473,7 @@ constexpr bool operator==(const Board &b1, const Board &b2) noexcept {
     return true;
 }
 
-void Board::update_occupancies() noexcept {
+void Board::UpdateOccupancies() noexcept {
     // Reset occupancies
     _occupancies[BOTH] = bitboard::kZERO;
     _occupancies[WHITE] = bitboard::kZERO;
@@ -500,7 +500,7 @@ void Board::update_occupancies() noexcept {
     _occupancies[BOTH] |= _occupancies[BLACK];
 }
 
-void Board::update_bitboards_from_squares() noexcept {
+void Board::UpdateBitboards() noexcept {
     for (int piece_type = PAWN; piece_type < N_PIECES; ++piece_type) {
         _pieces[WHITE][piece_type] = bitboard::kZERO;
         _pieces[BLACK][piece_type] = bitboard::kZERO;
@@ -512,5 +512,5 @@ void Board::update_bitboards_from_squares() noexcept {
         }
     }
 
-    update_occupancies();
+    UpdateOccupancies();
 }

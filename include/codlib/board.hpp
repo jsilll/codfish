@@ -228,11 +228,11 @@ private:
     /// @brief The bitboards for the pieces
     std::array<std::array<std::uint64_t, N_SIDES>, N_PIECES> _pieces{};
 
-    /// @brief Updates the occupancy bitboards
-    /// @details This function is called after a move is made
-    void update_occupancies() noexcept;
-
-    /// @brief Updates the bitboards from the squares
+    /// @brief Updates the bitboards from the piece array
     /// @details This function is called when setting the board from a FEN string
-    void update_bitboards_from_squares() noexcept;
+    void UpdateBitboards() noexcept;
+
+    /// @brief Updates the occupancy bitboards from the pieces bitboards
+    /// @details This function is called after a move is made
+    void UpdateOccupancies() noexcept;
 };
