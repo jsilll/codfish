@@ -8,9 +8,9 @@ namespace magics {
 struct Magic
 {
   /// @brief The mask for a given square.
-  bitboard::u64 mask;
+  bitboard::Bitboard mask;
   /// @brief The magic number for a given square.
-  bitboard::u64 magic;
+  bitboard::Bitboard magic;
   /// @brief The shift for a given square.
   int shift;
 };
@@ -28,7 +28,7 @@ extern Magic MAGIC_TABLE_BISHOP[N_SQUARES];
 /// @param occ The occupancy
 /// @param magic The magic entry
 /// @return The magic index
-[[nodiscard]] constexpr bitboard::u64 magic_index(bitboard::u64 occ, const magics::Magic &magic) noexcept
+[[nodiscard]] constexpr bitboard::Bitboard magic_index(bitboard::Bitboard occ, const magics::Magic &magic) noexcept
 {
   occ &= magic.mask;
   occ *= magic.magic;

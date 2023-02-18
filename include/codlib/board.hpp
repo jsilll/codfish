@@ -33,7 +33,7 @@ public:
     struct StateBackup {
         /// @brief The en passant square
         Square en_passant_square;
-        /// @brief The castling rights
+        /// @brief The castling_availability rights
         int castling_rights;
         /// @brief The half move clock
         int half_move_clock;
@@ -52,12 +52,36 @@ public:
     };
 
 private:
+    /// @brief Represents a FEN string
+    struct Fen {
+        /// @brief The position field
+        std::string position;
+        /// @brief The active color field
+        char active;
+        /// @brief The castling_availability rights field
+        std::string castling_availability;
+        /// @brief The en passant field
+        std::string en_passant_square;
+        /// @brief The half move clock field
+        int half_move_clock;
+        /// @brief The full move number field
+        int full_move_number;
+    };
+
+    static constexpr char STARTING_POSITION[]{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR, w KQkq - 0 1"};
+
     /// @brief Returns the inactive color
     /// @param to_move The color to move
     /// @return The inactive color
-    [[nodiscard]] static constexpr auto flip(const Color to_move) noexcept {
+    [[nodiscard]] static constexpr auto FlipColor(const Color to_move) noexcept {
         return static_cast<Color>(static_cast<int>(to_move) ^ 1);
     }
+
+    /// @brief Returns the split FEN string
+    /// @param fen The FEN string
+    /// @return The split FEN string
+    /// @note The fen string is assumed to be valid
+    [[nodiscard]] static Fen ParseFen(const std::string &fen) noexcept;
 
 public:
     /// @brief Default constructor
@@ -65,21 +89,8 @@ public:
     [[nodiscard]] Board() noexcept { SetStartingPosition(); }
 
     /// @brief Constructor from FEN
-    /// @param piece_placements The piece placements
-    /// @param active_color The active color
-    /// @param castling_rights The castling rights
-    /// @param en_passant The en passant square
-    /// @param halfmove_clock The half move clock
-    /// @param fullmove_number The full move number
-    // TODO: make it receive only a string
-    [[nodiscard]] Board(const std::string &piece_placements,
-                        const std::string &active_color,
-                        const std::string &castling_rights,
-                        const std::string &en_passant,
-                        const std::string &halfmove_clock,
-                        const std::string &fullmove_number) noexcept {
-        SetFromFen(piece_placements, active_color, castling_rights, en_passant, halfmove_clock, fullmove_number);
-    }
+    /// @note The fen string is assumed to be valid
+    [[nodiscard]] explicit Board(const std::string &fen) noexcept { SetFromFen(fen); }
 
     /// @brief Copy constructor
     /// @param board The board to copy
@@ -93,10 +104,10 @@ public:
 
     /// @brief Returns the current inactive color
     /// @return The current inactive color
-    [[nodiscard]] constexpr auto inactive() const noexcept { return flip(_active); }
+    [[nodiscard]] constexpr auto inactive() const noexcept { return FlipColor(_active); }
 
-    /// @brief Returns the castling availability
-    /// @return The castling rights
+    /// @brief Returns the castling_availability availability
+    /// @return The castling_availability rights
     [[nodiscard]] constexpr auto castling_availability() const noexcept { return _castling_availability; }
 
     /// @brief Returns the half move clock
@@ -154,14 +165,14 @@ public:
 
     /// @brief Switches the side to move
     /// @return The new side to move
-    constexpr auto switch_active() noexcept { return _active = flip(_active); }
+    constexpr auto switch_active() noexcept { return _active = FlipColor(_active); }
 
     /// @brief Sets the current en passant square
     /// @param sq The en passant square
     [[maybe_unused]] void en_passant_square(const Square sq) noexcept { _en_passant_square = sq; }
 
-    /// @brief Sets the current castling rights
-    /// @param castling_availability The castling rights
+    /// @brief Sets the current castling_availability rights
+    /// @param castling_availability The castling_availability rights
     [[maybe_unused]] void
     castling_availability(const int castling_availability) noexcept { _castling_availability = castling_availability; }
 
@@ -177,23 +188,12 @@ public:
     }
 
     /// @brief Sets the board to the starting position
-    void SetStartingPosition() noexcept {
-        SetFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", "w", "KQkq", "-", "0", "1");
-    }
+    void SetStartingPosition() noexcept { SetFromFen(STARTING_POSITION); }
 
     /// @brief Sets the board from a FEN string
-    /// @param piece_placements The piece placements
-    /// @param active_color The active color
-    /// @param castling_rights The castling rights
-    /// @param en_passant The en passant square
-    /// @param halfmove_clock The half move clock
-    /// @param fullmove_number The full move number
-    void SetFromFen(const std::string &piece_placements,
-                    const std::string &active_color,
-                    const std::string &castling_rights,
-                    const std::string &en_passant,
-                    const std::string &halfmove_clock,
-                    const std::string &fullmove_number) noexcept;
+    /// @param fen The FEN string
+    /// @note The fen string is assumed to be valid
+    void SetFromFen(const std::string &fen) noexcept;
 
     // -- Chess Logic --
 
@@ -208,18 +208,8 @@ public:
     void Unmake(Move move, StateBackup info_board) noexcept;
 
 private:
-    /// @brief The side to move
-    Color _active{};
-    /// @brief The current castling rights
-    int _castling_availability{};
-    /// @brief The half move clock
-    int _half_move_clock{};
-    /// @brief The full move number
-    int _full_move_number{};
-    /// @brief The hash key of the board
-    std::uint64_t _hash_key{};
-    /// @brief The en passant square
-    Square _en_passant_square{};
+    // -- The position --
+
     /// @brief The squares representation of the board
     /// @details This is always maintains the same state as the bitboards
     std::array<Piece, N_SQUARES> _piece{};
@@ -227,6 +217,26 @@ private:
     std::array<std::uint64_t, N_SIDES + 1> _occupancies{};
     /// @brief The bitboards for the pieces
     std::array<std::array<std::uint64_t, N_SIDES>, N_PIECES> _pieces{};
+
+    // -- Additional Board state --
+
+    /// @brief The side to move
+    Color _active{};
+    /// @brief The current castling_availability rights
+    int _castling_availability{};
+    /// @brief The half move clock
+    int _half_move_clock{};
+    /// @brief The full move number
+    int _full_move_number{};
+    /// @brief The en passant square
+    Square _en_passant_square{};
+
+    // -- Hashing --
+
+    /// @brief The hash key of the board
+    std::uint64_t _hash_key{};
+
+    // -- Helper methods --
 
     /// @brief Updates the bitboards from the piece array
     /// @details This function is called when setting the board from a FEN string

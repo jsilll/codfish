@@ -131,8 +131,8 @@ enum PieceType : int {
     EMPTY_PIECE [[maybe_unused]] = 6,
 };
 
-/// @brief The different types of castling rights
-/// @note The values are powers of 2 so that each bit represents a different castling right: 0001 = WHITE_KING, 0010 = WHITE_QUEEN, 0100 = BLACK_KING, 1000 = BLACK_QUEEN
+/// @brief The different types of castling_availability rights
+/// @note The values are powers of 2 so that each bit represents a different castling_availability right: 0001 = WHITE_KING, 0010 = WHITE_QUEEN, 0100 = BLACK_KING, 1000 = BLACK_QUEEN
 enum CastlingAvailability : int {
     NONE [[maybe_unused]] = 0,
     WHITE_KING [[maybe_unused]] = 1,

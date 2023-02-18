@@ -6,9 +6,9 @@
 #include <codlib/utils.hpp>
 
 namespace bitboard {
-u64 set_occupancy(const int index, const int bits_in_mask, u64 attack_mask) noexcept
+Bitboard set_occupancy(const int index, const int bits_in_mask, Bitboard attack_mask) noexcept
 {
-  u64 occupancy = kZERO;
+  Bitboard occupancy = kZERO;
   for (int bit = 0; bit < bits_in_mask; bit++) {
     Square lsb_sq = bit_scan_forward(attack_mask);
     pop_bit(attack_mask, lsb_sq);
@@ -18,7 +18,7 @@ u64 set_occupancy(const int index, const int bits_in_mask, u64 attack_mask) noex
   return occupancy;
 }
 
-std::ostream &operator<<(std::ostream &os, const u64 &bb) noexcept
+std::ostream &operator<<(std::ostream &os, const Bitboard &bb) noexcept
 {
   for (int i = RANK_8; i >= RANK_1; --i) {
     os << (i + 1) << std::string("  ");

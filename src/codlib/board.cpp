@@ -7,7 +7,21 @@
 #include <codlib/utils.hpp>
 #include <codlib/display.hpp>
 
-using bitboard::u64;
+using bitboard::Bitboard;
+
+Board::Fen Board::ParseFen(const std::string &fen) noexcept {
+    Fen res;
+    std::stringstream ss(fen);
+
+    std::getline(ss, res.position, ' ');
+    ss >> res.active;
+    ss >> res.castling_availability;
+    ss >> res.en_passant_square;
+    ss >> res.half_move_clock;
+    ss >> res.full_move_number;
+
+    return res;
+}
 
 [[maybe_unused]] std::string Board::GetFen() const noexcept {
     std::string piece_placements;
@@ -68,19 +82,19 @@ using bitboard::u64;
 }
 
 bool Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
-    u64 pawns = _pieces[attacker][PAWN];
+    Bitboard pawns = _pieces[attacker][PAWN];
     if (attacks::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns) { return true; }
 
-    u64 knights = _pieces[attacker][KNIGHT];
+    Bitboard knights = _pieces[attacker][KNIGHT];
     if (attacks::ATTACKS_KNIGHT[sq] & knights) { return true; }
 
-    u64 king = _pieces[attacker][KING];
+    Bitboard king = _pieces[attacker][KING];
     if (attacks::ATTACKS_KING[sq] & king) { return true; }
 
-    u64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
+    Bitboard bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
     if (attacks::get_bishop_attacks(sq, _occupancies[BOTH]) & bishopsQueens) { return true; }
 
-    u64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
+    Bitboard rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
     if (attacks::get_rook_attacks(sq, _occupancies[BOTH]) & rooksQueens) { return true; }
 
     return false;
@@ -180,7 +194,7 @@ void Board::Make(Move move) noexcept {
     // Remove from hash key en passant square
     if (_en_passant_square != EMPTY_SQUARE) { _hash_key ^= zobrist::en_passant_keys[_en_passant_square]; }
 
-    // Remove from hash key castling rights
+    // Remove from hash key castling_availability rights
     _hash_key ^= zobrist::castle_keys[_castling_availability];
 
     _en_passant_square = is_double_push ? (Square) (to_square + pawn_push_en_passant_offset) : EMPTY_SQUARE;
@@ -190,7 +204,7 @@ void Board::Make(Move move) noexcept {
     // Update hash key with en passant square
     if (_en_passant_square != EMPTY_SQUARE) { _hash_key ^= zobrist::en_passant_keys[_en_passant_square]; }
 
-    // Update hash key with castling rights
+    // Update hash key with castling_availability rights
     _hash_key ^= zobrist::castle_keys[_castling_availability];
 
     if (piece_type == PAWN || (is_capture)) {
@@ -279,19 +293,13 @@ void Board::Unmake(Move move, StateBackup info_board) noexcept {
     UpdateOccupancies();
 }
 
-void Board::SetFromFen(const std::string &piece_placements,
-                       const std::string &active_color,
-                       const std::string &castling_rights,
-                       const std::string &en_passant,
-                       const std::string &halfmove_clock,
-                       const std::string &fullmove_number) noexcept {
-    for (int i = 0; i < Square::N_SQUARES; ++i) {
-        _piece[i].color = BOTH;
-        _piece[i].type = EMPTY_PIECE;
-    }
+void Board::SetFromFen(const std::string &fen_str) noexcept {
+    // TODO: Check if fen is valid
+
+    const Fen fen = ParseFen(fen_str);
 
     int file = FILE_A, rank = RANK_8;
-    for (const char &c: piece_placements) {
+    for (const char &c: fen.position) {
         switch (c) {
             case 'p':
                 _piece[utils::get_square((Rank) rank, (File) file)].type = PAWN;
@@ -363,13 +371,13 @@ void Board::SetFromFen(const std::string &piece_placements,
         }
     }
 
-    if (active_color == "w") {
+    if (fen.active == 'w') {
         _active = WHITE;
     } else {
         _active = BLACK;
     }
 
-    for (const char &c: castling_rights) {
+    for (const char &c: fen.castling_availability) {
         switch (c) {
             case 'Q':
                 _castling_availability += WHITE_QUEEN;
@@ -388,60 +396,22 @@ void Board::SetFromFen(const std::string &piece_placements,
         }
     }
 
-    if (en_passant != "-") {
-        int en_passant_file = en_passant[0] - 'a';
-        int en_passant_rank = en_passant[1] - '1';
+    if (fen.en_passant_square != "-") {
+        int en_passant_file = fen.en_passant_square[0] - 'a';
+        int en_passant_rank = fen.en_passant_square[1] - '1';
         _en_passant_square = utils::get_square((Rank) en_passant_rank, (File) en_passant_file);
     } else {
         _en_passant_square = EMPTY_SQUARE;
     }
 
-    _half_move_clock = std::stoi(halfmove_clock);
+    _half_move_clock = fen.half_move_clock;
 
-    _full_move_number = std::stoi(fullmove_number);
+    _full_move_number = fen.full_move_number;
 
     UpdateBitboards();
 
     _hash_key = zobrist::generate_hash_key(*this);
 }
-
-// std::ostream &operator<<(std::ostream &os, const Board &board) noexcept {
-//     const int offset = board._ascii ? 0 : 13;
-//
-//     if (!board._white_on_bottom) {
-//         os << "      h   g   f   e   d   c   b   a\n";
-//         for (int rank = RANK_1; rank < RANK_8; rank++) {
-//             os << "    +---+---+---+---+---+---+---+---+\n"
-//                << "    |";
-//             for (int file = FILE_H; file >= FILE_A; file--) {
-//                 Board::Piece piece = board._piece[Board::get_square((Rank) rank, (File) file)];
-//                 os << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
-//             }
-//             os << std::setw(3) << rank + 1 << "\n";
-//         }
-//         os << "    +---+---+---+---+---+---+---+---+\n";
-//     } else {
-//         for (int rank = RANK_8; rank >= RANK_1; rank--) {
-//             os << "    +---+---+---+---+---+---+---+---+\n" << std::setw(3) << rank + 1 << " |";
-//
-//             for (int file = 0; file < 8; file++) {
-//                 Board::Piece piece = board._piece[Board::get_square((Rank) rank, (File) file)];
-//                 os << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
-//             }
-//             os << '\n';
-//         }
-//         os << "    +---+---+---+---+---+---+---+---+\n"
-//            << "      a   b   c   d   e   f   g   h\n";
-//     }
-//
-//     os << "Side to move: " << (board._active == WHITE ? "White" : "Black") << '\n';
-//     os << "Castling rights: " << board.castling_availability() << '\n';
-//     os << "En passant square: " << board.en_passant_square() << '\n';
-//     os << "Half move clock: " << board.half_move_clock() << '\n';
-//     os << "Full move number: " << board.full_move_number() << '\n';
-//
-//     return os;
-// }
 
 constexpr bool operator==(const Board &b1, const Board &b2) noexcept {
     if (b1.active() != b2.active()) { return false; }
@@ -514,3 +484,41 @@ void Board::UpdateBitboards() noexcept {
 
     UpdateOccupancies();
 }
+
+// std::ostream &operator<<(std::ostream &os, const Board &board) noexcept {
+//     const int offset = board._ascii ? 0 : 13;
+//
+//     if (!board._white_on_bottom) {
+//         os << "      h   g   f   e   d   c   b   a\n";
+//         for (int rank = RANK_1; rank < RANK_8; rank++) {
+//             os << "    +---+---+---+---+---+---+---+---+\n"
+//                << "    |";
+//             for (int file = FILE_H; file >= FILE_A; file--) {
+//                 Board::Piece piece = board._piece[Board::get_square((Rank) rank, (File) file)];
+//                 os << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
+//             }
+//             os << std::setw(3) << rank + 1 << "\n";
+//         }
+//         os << "    +---+---+---+---+---+---+---+---+\n";
+//     } else {
+//         for (int rank = RANK_8; rank >= RANK_1; rank--) {
+//             os << "    +---+---+---+---+---+---+---+---+\n" << std::setw(3) << rank + 1 << " |";
+//
+//             for (int file = 0; file < 8; file++) {
+//                 Board::Piece piece = board._piece[Board::get_square((Rank) rank, (File) file)];
+//                 os << " " << PIECE_REPR[piece.type + offset + (6 * piece.color)] << " |";
+//             }
+//             os << '\n';
+//         }
+//         os << "    +---+---+---+---+---+---+---+---+\n"
+//            << "      a   b   c   d   e   f   g   h\n";
+//     }
+//
+//     os << "Side to move: " << (board._active == WHITE ? "White" : "Black") << '\n';
+//     os << "Castling rights: " << board.castling_availability() << '\n';
+//     os << "En passant square: " << board.en_passant_square() << '\n';
+//     os << "Half move clock: " << board.half_move_clock() << '\n';
+//     os << "Full move number: " << board.full_move_number() << '\n';
+//
+//     return os;
+// }

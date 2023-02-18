@@ -3,41 +3,41 @@
 #include <codlib/bitboard.hpp>
 #include <codlib/utils.hpp>
 
-using bitboard::u64;
+using bitboard::Bitboard;
 
 namespace attacks {
 
-u64 ATTACKS_KING[N_SQUARES];
+Bitboard ATTACKS_KING[N_SQUARES];
 
-u64 ATTACKS_KNIGHT[N_SQUARES];
+Bitboard ATTACKS_KNIGHT[N_SQUARES];
 
-u64 ATTACKS_PAWN[N_SIDES][N_SQUARES];
+Bitboard ATTACKS_PAWN[N_SIDES][N_SQUARES];
 
 /// @brief Bitboard masks for each rook attack
 /// @note The init() function must be called before using this
 /// @note The function get_rook_attacks() should be used to get the actual attacks
-auto ATTACKS_ROOK = std::vector<std::vector<u64>>(N_SQUARES, std::vector<u64>(N_ROOK_MAGICS));
+auto ATTACKS_ROOK = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_ROOK_MAGICS));
 
 /// @brief Bitboard masks for each bishop attack
 /// @note The init() function must be called before using this
 /// @note The function get_bishop_attacks() should be used to get the actual attacks
-auto ATTACKS_BISHOP = std::vector<std::vector<u64>>(N_SQUARES, std::vector<u64>(N_BISHOP_MAGICS));
+auto ATTACKS_BISHOP = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_BISHOP_MAGICS));
 
 /// @brief Returns a bitboard of all the knight attacks.
 /// @param knights A bitboard of knights.
 /// @return A bitboard of all the knight attacks.
-[[nodiscard]] constexpr u64 mask_knight_attacks(const u64 knights) noexcept
+[[nodiscard]] constexpr Bitboard mask_knight_attacks(const Bitboard knights) noexcept
 {
-  constexpr u64 CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
-  constexpr u64 CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
+  constexpr Bitboard CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
+  constexpr Bitboard CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
 
-  u64 l1 = (knights >> 1) & utils::MASK_CLEAR_FILE[7];
-  u64 r1 = (knights << 1) & utils::MASK_CLEAR_FILE[0];
-  u64 h1 = l1 | r1;
+  Bitboard l1 = (knights >> 1) & utils::MASK_CLEAR_FILE[7];
+  Bitboard r1 = (knights << 1) & utils::MASK_CLEAR_FILE[0];
+  Bitboard h1 = l1 | r1;
 
-  u64 l2 = (knights >> 2) & CLEAR_FILE_HG;
-  u64 r2 = (knights << 2) & CLEAR_FILE_AB;
-  u64 h2 = l2 | r2;
+  Bitboard l2 = (knights >> 2) & CLEAR_FILE_HG;
+  Bitboard r2 = (knights << 2) & CLEAR_FILE_AB;
+  Bitboard h2 = l2 | r2;
 
   return (h1 << 16) | (h1 >> 16) | (h2 << 8) | (h2 >> 8);
 }
@@ -45,9 +45,9 @@ auto ATTACKS_BISHOP = std::vector<std::vector<u64>>(N_SQUARES, std::vector<u64>(
 /// @brief Returns a bitboard of all the king attacks.
 /// @param kings A bitboard of kings.
 /// @return A bitboard of all the king attacks.
-[[nodiscard]] constexpr u64 mask_king_attacks(u64 kings) noexcept
+[[nodiscard]] constexpr Bitboard mask_king_attacks(Bitboard kings) noexcept
 {
-  u64 attacks = bitboard::east_one(kings) | bitboard::west_one(kings);
+  Bitboard attacks = bitboard::east_one(kings) | bitboard::west_one(kings);
   kings |= attacks;
   attacks |= bitboard::nort_one(kings) | bitboard::sout_one(kings);
   return attacks;
@@ -70,7 +70,7 @@ void init() noexcept
     int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_BISHOP[sq];
     for (int i = 0; i < occupancy_indices; ++i) {
       magics::Magic magic = magics::MAGIC_TABLE_BISHOP[sq];
-      u64 occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_BISHOP[sq], magic.mask);
+      Bitboard occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_BISHOP[sq], magic.mask);
       int index = static_cast<int>((occupancy * magic.magic) >> magic.shift);
       ATTACKS_BISHOP[sq][index] = attacks::mask_bishop_xray_attacks((Square)sq, occupancy);
     }
@@ -80,20 +80,20 @@ void init() noexcept
     int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_ROOK[sq];
     for (int i = 0; i < occupancy_indices; ++i) {
       magics::Magic magic = magics::MAGIC_TABLE_ROOK[sq];
-      u64 occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_ROOK[sq], magic.mask);
+      Bitboard occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_ROOK[sq], magic.mask);
       int index = (int)((occupancy * magic.magic) >> magic.shift);
       ATTACKS_ROOK[sq][index] = attacks::mask_rook_xray_attacks((Square)sq, occupancy);
     }
   }
 }
 
-u64 get_bishop_attacks(const Square sq, const u64 occ) noexcept
+Bitboard get_bishop_attacks(const Square sq, const Bitboard occ) noexcept
 {
   const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_BISHOP[sq]);
   return ATTACKS_BISHOP[sq][idx];
 }
 
-u64 get_rook_attacks(const Square sq, const u64 occ) noexcept
+Bitboard get_rook_attacks(const Square sq, const Bitboard occ) noexcept
 {
   const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_ROOK[sq]);
   return ATTACKS_ROOK[sq][idx];
