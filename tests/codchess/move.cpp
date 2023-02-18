@@ -1,6 +1,6 @@
-#include <catch2/catch_test_macros.hpp>
+#include "catch2/catch_test_macros.hpp"
 
-#include <codlib/move.hpp>
+#include "codlib/move.hpp"
 
 // TODO: Missing tests for get_uci()
 

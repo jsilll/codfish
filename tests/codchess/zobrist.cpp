@@ -1,7 +1,7 @@
 #include "catch2/catch_test_macros.hpp"
 
-#include <codlib/codlib.hpp>
-#include <codlib/perft.hpp>
+#include "codlib/codlib.hpp"
+#include "codlib/perft.hpp"
 // #include <codlib/zobrist.hpp>
 
 TEST_CASE("hash_key")

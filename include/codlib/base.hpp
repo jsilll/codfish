@@ -102,7 +102,7 @@ enum Square : int {
     /// @brief Used for iterating over the squares
     N_SQUARES [[maybe_unused]],
     /// @brief Used for representing an empty square
-    EMPTY_SQUARE [[maybe_unused]]
+    EMPTY_SQUARE [[maybe_unused]] = 64,
 };
 
 /// @brief The colors of the pieces
@@ -111,7 +111,7 @@ enum Color : int {
     WHITE [[maybe_unused]],
     BLACK [[maybe_unused]],
     /// @brief Used for iterating over the colors not including BOTH
-    N_SIDES [[maybe_unused]],
+    N_COLORS [[maybe_unused]],
     /// @brief Used for representing both colors for occupancy bitboards
     BOTH [[maybe_unused]] = 2,
 };
@@ -131,8 +131,8 @@ enum PieceType : int {
     EMPTY_PIECE [[maybe_unused]] = 6,
 };
 
-/// @brief The different types of castling rights
-/// @note The values are powers of 2 so that each bit represents a different castling right: 0001 = WHITE_KING, 0010 = WHITE_QUEEN, 0100 = BLACK_KING, 1000 = BLACK_QUEEN
+/// @brief The different types of castling_availability rights
+/// @note The values are powers of 2 so that each bit represents a different castling_availability right: 0001 = WHITE_KING, 0010 = WHITE_QUEEN, 0100 = BLACK_KING, 1000 = BLACK_QUEEN
 enum CastlingAvailability : int {
     NONE [[maybe_unused]] = 0,
     WHITE_KING [[maybe_unused]] = 1,

@@ -1,6 +1,6 @@
 #include "catch2/catch_test_macros.hpp"
 
-#include <codlib/codlib.hpp>
+#include "codlib/codlib.hpp"
 // #include <codlib/movegen/attacks.hpp>
 
 TEST_CASE("Test Pawn Moves") {

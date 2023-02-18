@@ -7,7 +7,21 @@
 #include <codlib/utils.hpp>
 #include <codlib/display.hpp>
 
-using bitboard::u64;
+using bitboard::Bitboard;
+
+Board::Fen Board::ParseFen(const std::string &fen) noexcept {
+    Fen res;
+    std::stringstream ss(fen);
+
+    std::getline(ss, res.position, ' ');
+    ss >> res.active;
+    ss >> res.castling_availability;
+    ss >> res.en_passant_square;
+    ss >> res.half_move_clock;
+    ss >> res.full_move_number;
+
+    return res;
+}
 
 [[maybe_unused]] std::string Board::GetFen() const noexcept {
     std::string piece_placements;
@@ -50,37 +64,33 @@ using bitboard::u64;
     active_color = _active == WHITE ? "w" : "b";
 
     char castling_rights_buf[5];
-    snprintf(castling_rights_buf,
-             5,
-             "%s%s%s%s",
-             (_castling_availability & WHITE_KING) ? "K" : "",
-             (_castling_availability & WHITE_QUEEN) ? "Q" : "",
-             (_castling_availability & BLACK_KING) ? "k" : "",
+    snprintf(castling_rights_buf, 5, "%s%s%s%s", (_castling_availability & WHITE_KING) ? "K" : "",
+             (_castling_availability & WHITE_QUEEN) ? "Q" : "", (_castling_availability & BLACK_KING) ? "k" : "",
              (_castling_availability & BLACK_QUEEN) ? "q" : "");
     castling_rights = std::string(castling_rights_buf);
     if (castling_rights.empty()) { castling_rights = "-"; }
 
-    std::string fen = piece_placements + " " + active_color + " " + castling_rights + " "
-                      + SQUARE_NAMES[en_passant_square() == -1 ? 64 : en_passant_square()] + " "
-                      + std::to_string(_half_move_clock) + " " + std::to_string(_full_move_number);
+    std::string fen =
+            piece_placements + " " + active_color + " " + castling_rights + " " + SQUARE_NAMES[en_passant_square()] +
+            " " + std::to_string(_half_move_clock) + " " + std::to_string(_full_move_number);
 
     return fen.substr(1, std::string::npos);
 }
 
 bool Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
-    u64 pawns = _pieces[attacker][PAWN];
+    Bitboard pawns = _pieces[attacker][PAWN];
     if (attacks::ATTACKS_PAWN[utils::get_opponent(attacker)][sq] & pawns) { return true; }
 
-    u64 knights = _pieces[attacker][KNIGHT];
+    Bitboard knights = _pieces[attacker][KNIGHT];
     if (attacks::ATTACKS_KNIGHT[sq] & knights) { return true; }
 
-    u64 king = _pieces[attacker][KING];
+    Bitboard king = _pieces[attacker][KING];
     if (attacks::ATTACKS_KING[sq] & king) { return true; }
 
-    u64 bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
+    Bitboard bishopsQueens = _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
     if (attacks::get_bishop_attacks(sq, _occupancies[BOTH]) & bishopsQueens) { return true; }
 
-    u64 rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
+    Bitboard rooksQueens = _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
     if (attacks::get_rook_attacks(sq, _occupancies[BOTH]) & rooksQueens) { return true; }
 
     return false;
@@ -88,16 +98,10 @@ bool Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
 
 void Board::Make(Move move) noexcept {
     // clang-format off
-    static const int castling_rights[64] = {
-            13, 15, 15, 15, 12, 15, 15, 14,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            15, 15, 15, 15, 15, 15, 15, 15,
-            7, 15, 15, 15, 3, 15, 15, 11,
-    };
+    static const int castling_rights[64] = {13, 15, 15, 15, 12, 15, 15, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+                                            15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+                                            15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 7,
+                                            15, 15, 15, 3, 15, 15, 11,};
     // clang-format on
 
     Square from_square = move.get_from_square();
@@ -161,10 +165,10 @@ void Board::Make(Move move) noexcept {
             rook_to_square = _active == WHITE ? D1 : D8;
         }
 
-        _piece[rook_from_square].type = EMPTY_PIECE;
-        _piece[rook_from_square].color = BLACK;
         _piece[rook_to_square].type = ROOK;
         _piece[rook_to_square].color = _active;
+        _piece[rook_from_square].color = BLACK;
+        _piece[rook_from_square].type = EMPTY_PIECE;
 
         bitboard::pop_bit(_pieces[_active][ROOK], rook_from_square);
 
@@ -180,7 +184,7 @@ void Board::Make(Move move) noexcept {
     // Remove from hash key en passant square
     if (_en_passant_square != EMPTY_SQUARE) { _hash_key ^= zobrist::en_passant_keys[_en_passant_square]; }
 
-    // Remove from hash key castling rights
+    // Remove from hash key castling_availability rights
     _hash_key ^= zobrist::castle_keys[_castling_availability];
 
     _en_passant_square = is_double_push ? (Square) (to_square + pawn_push_en_passant_offset) : EMPTY_SQUARE;
@@ -190,7 +194,7 @@ void Board::Make(Move move) noexcept {
     // Update hash key with en passant square
     if (_en_passant_square != EMPTY_SQUARE) { _hash_key ^= zobrist::en_passant_keys[_en_passant_square]; }
 
-    // Update hash key with castling rights
+    // Update hash key with castling_availability rights
     _hash_key ^= zobrist::castle_keys[_castling_availability];
 
     if (piece_type == PAWN || (is_capture)) {
@@ -211,7 +215,7 @@ void Board::Make(Move move) noexcept {
     UpdateOccupancies();
 }
 
-void Board::Unmake(Move move, StateBackup info_board) noexcept {
+void Board::Unmake(Move move, StateBackup backup) noexcept {
     switch_active();
 
     Square from_square = move.get_from_square();
@@ -271,27 +275,25 @@ void Board::Unmake(Move move, StateBackup info_board) noexcept {
 
     if (_active == BLACK) { _full_move_number--; }
 
-    _en_passant_square = info_board.en_passant_square;
-    _castling_availability = info_board.castling_rights;
-    _half_move_clock = info_board.half_move_clock;
-    _hash_key = info_board.hash_key;
+    _hash_key = backup.hash_key;
+    _half_move_clock = backup.half_move_clock;
+    _full_move_number = backup.full_move_number;
+    _en_passant_square = backup.en_passant_square;
+    _castling_availability = backup.castling_availability;
 
     UpdateOccupancies();
 }
 
-void Board::SetFromFen(const std::string &piece_placements,
-                       const std::string &active_color,
-                       const std::string &castling_rights,
-                       const std::string &en_passant,
-                       const std::string &halfmove_clock,
-                       const std::string &fullmove_number) noexcept {
-    for (int i = 0; i < Square::N_SQUARES; ++i) {
+void Board::SetFromFen(const std::string &fen_str) noexcept {
+    const Fen fen = ParseFen(fen_str);
+
+    for (int i = A1; i < N_SQUARES; ++i) {
         _piece[i].color = BOTH;
         _piece[i].type = EMPTY_PIECE;
     }
 
     int file = FILE_A, rank = RANK_8;
-    for (const char &c: piece_placements) {
+    for (const char &c: fen.position) {
         switch (c) {
             case 'p':
                 _piece[utils::get_square((Rank) rank, (File) file)].type = PAWN;
@@ -363,13 +365,13 @@ void Board::SetFromFen(const std::string &piece_placements,
         }
     }
 
-    if (active_color == "w") {
+    if (fen.active == 'w') {
         _active = WHITE;
     } else {
         _active = BLACK;
     }
 
-    for (const char &c: castling_rights) {
+    for (const char &c: fen.castling_availability) {
         switch (c) {
             case 'Q':
                 _castling_availability += WHITE_QUEEN;
@@ -388,21 +390,96 @@ void Board::SetFromFen(const std::string &piece_placements,
         }
     }
 
-    if (en_passant != "-") {
-        int en_passant_file = en_passant[0] - 'a';
-        int en_passant_rank = en_passant[1] - '1';
+    if (fen.en_passant_square != "-") {
+        int en_passant_file = fen.en_passant_square[0] - 'a';
+        int en_passant_rank = fen.en_passant_square[1] - '1';
         _en_passant_square = utils::get_square((Rank) en_passant_rank, (File) en_passant_file);
     } else {
         _en_passant_square = EMPTY_SQUARE;
     }
 
-    _half_move_clock = std::stoi(halfmove_clock);
+    _half_move_clock = fen.half_move_clock;
 
-    _full_move_number = std::stoi(fullmove_number);
+    _full_move_number = fen.full_move_number;
 
     UpdateBitboards();
 
     _hash_key = zobrist::generate_hash_key(*this);
+}
+
+constexpr bool operator==(const Board &b1, const Board &b2) noexcept {
+    if (b1.active() != b2.active()) { return false; }
+    if (b1.castling_availability() != b2.castling_availability()) { return false; }
+    if (b1.en_passant_square() != b2.en_passant_square()) { return false; }
+    if (b1.half_move_clock() != b2.half_move_clock()) { return false; }
+    if (b1.full_move_number() != b2.full_move_number()) { return false; }
+    for (int side = 0; side < N_COLORS; side++) {
+        for (int piece = 0; piece < N_PIECES; piece++) {
+            if (b1.pieces(static_cast<Color>(side), static_cast<PieceType>(piece)) !=
+                b2.pieces(static_cast<Color>(side), static_cast<PieceType>(piece))) {
+                return false;
+            }
+        }
+    }
+
+    for (int side = 0; side < N_COLORS + 1; side++) {
+        if (b1.occupancies(static_cast<Color>(side)) != b2.occupancies(static_cast<Color>(side))) { return false; }
+    }
+
+    for (int square = 0; square < N_SQUARES; square++) {
+        if (b1.piece(static_cast<Square>(square)) != b2.piece(static_cast<Square>(square))) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void Board::UpdateOccupancies() noexcept {
+    // Reset occupancies
+    _occupancies[BOTH] = bitboard::ZERO;
+    _occupancies[WHITE] = bitboard::ZERO;
+    _occupancies[BLACK] = bitboard::ZERO;
+
+    // Update white occupancies
+    _occupancies[WHITE] |= _pieces[WHITE][PAWN];
+    _occupancies[WHITE] |= _pieces[WHITE][KNIGHT];
+    _occupancies[WHITE] |= _pieces[WHITE][BISHOP];
+    _occupancies[WHITE] |= _pieces[WHITE][ROOK];
+    _occupancies[WHITE] |= _pieces[WHITE][QUEEN];
+    _occupancies[WHITE] |= _pieces[WHITE][KING];
+
+    // Update black occupancies
+    _occupancies[BLACK] |= _pieces[BLACK][PAWN];
+    _occupancies[BLACK] |= _pieces[BLACK][KNIGHT];
+    _occupancies[BLACK] |= _pieces[BLACK][BISHOP];
+    _occupancies[BLACK] |= _pieces[BLACK][ROOK];
+    _occupancies[BLACK] |= _pieces[BLACK][QUEEN];
+    _occupancies[BLACK] |= _pieces[BLACK][KING];
+
+    // Update occupancies for both sides
+    _occupancies[BOTH] |= _occupancies[WHITE];
+    _occupancies[BOTH] |= _occupancies[BLACK];
+}
+
+void Board::UpdateBitboards() noexcept {
+    // Reset bitboards
+    for (int piece_type = PAWN; piece_type < N_PIECES; ++piece_type) {
+        _pieces[WHITE][piece_type] = bitboard::ZERO;
+        _pieces[BLACK][piece_type] = bitboard::ZERO;
+    }
+
+    // Update bitboards
+    for (int sq = A1; sq < N_SQUARES; ++sq) {
+        if (_piece[sq].type != EMPTY_PIECE) {
+            const auto color = _piece[sq].color;
+            const auto type = _piece[sq].type;
+            bitboard::set_bit(_pieces[color][type], static_cast<Square>(sq));
+        }
+    }
+
+    // Update occupancies
+    UpdateOccupancies();
 }
 
 // std::ostream &operator<<(std::ostream &os, const Board &board) noexcept {
@@ -442,75 +519,3 @@ void Board::SetFromFen(const std::string &piece_placements,
 //
 //     return os;
 // }
-
-constexpr bool operator==(const Board &b1, const Board &b2) noexcept {
-    if (b1.active() != b2.active()) { return false; }
-    if (b1.castling_availability() != b2.castling_availability()) { return false; }
-    if (b1.en_passant_square() != b2.en_passant_square()) { return false; }
-    if (b1.half_move_clock() != b2.half_move_clock()) { return false; }
-    if (b1.full_move_number() != b2.full_move_number()) { return false; }
-    for (int side = 0; side < N_SIDES; side++) {
-        for (int piece = 0; piece < N_PIECES; piece++) {
-            if (b1.pieces(static_cast<Color>(side), static_cast<PieceType>(piece))
-                != b2.pieces(static_cast<Color>(side), static_cast<PieceType>(piece))) {
-                return false;
-            }
-        }
-    }
-
-    for (int side = 0; side < N_SIDES + 1; side++) {
-        if (b1.occupancies(static_cast<Color>(side)) !=
-            b2.occupancies(static_cast<Color>(side))) { return false; }
-    }
-
-    for (int square = 0; square < N_SQUARES; square++) {
-        if (b1.piece(static_cast<Square>(square))
-            != b2.piece(static_cast<Square>(square))) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void Board::UpdateOccupancies() noexcept {
-    // Reset occupancies
-    _occupancies[BOTH] = bitboard::kZERO;
-    _occupancies[WHITE] = bitboard::kZERO;
-    _occupancies[BLACK] = bitboard::kZERO;
-
-    // Update white occupancies
-    _occupancies[WHITE] |= _pieces[WHITE][PAWN];
-    _occupancies[WHITE] |= _pieces[WHITE][KNIGHT];
-    _occupancies[WHITE] |= _pieces[WHITE][BISHOP];
-    _occupancies[WHITE] |= _pieces[WHITE][ROOK];
-    _occupancies[WHITE] |= _pieces[WHITE][QUEEN];
-    _occupancies[WHITE] |= _pieces[WHITE][KING];
-
-    // Update black occupancies
-    _occupancies[BLACK] |= _pieces[BLACK][PAWN];
-    _occupancies[BLACK] |= _pieces[BLACK][KNIGHT];
-    _occupancies[BLACK] |= _pieces[BLACK][BISHOP];
-    _occupancies[BLACK] |= _pieces[BLACK][ROOK];
-    _occupancies[BLACK] |= _pieces[BLACK][QUEEN];
-    _occupancies[BLACK] |= _pieces[BLACK][KING];
-
-    // Update occupancies for both sides
-    _occupancies[BOTH] |= _occupancies[WHITE];
-    _occupancies[BOTH] |= _occupancies[BLACK];
-}
-
-void Board::UpdateBitboards() noexcept {
-    for (int piece_type = PAWN; piece_type < N_PIECES; ++piece_type) {
-        _pieces[WHITE][piece_type] = bitboard::kZERO;
-        _pieces[BLACK][piece_type] = bitboard::kZERO;
-    }
-
-    for (int sq = A1; sq < N_SQUARES; ++sq) {
-        if (_piece[sq].type != EMPTY_PIECE) {
-            bitboard::set_bit(_pieces[_piece[sq].color][_piece[sq].type], static_cast<Square>(sq));
-        }
-    }
-
-    UpdateOccupancies();
-}

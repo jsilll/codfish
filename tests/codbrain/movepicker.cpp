@@ -3,7 +3,6 @@
 
 TEST_CASE("Checkmate in one move")
 {
-//
 //     Board board = Board();
 //     MovePicker ai = MovePicker(board);
 //     ai.set_max_depth(3);
