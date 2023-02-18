@@ -108,11 +108,8 @@ enum Square : int {
 /// @brief The colors of the pieces
 /// @note This enum is used both for iterating over the colors and for indexing into arrays
 enum Color : int {
-    WHITE [[maybe_unused]],
-    BLACK [[maybe_unused]],
-    /// @brief Used for iterating over the colors not including BOTH
-    N_COLORS [[maybe_unused]],
-    /// @brief Used for representing both colors for occupancy bitboards
+    WHITE [[maybe_unused]], BLACK [[maybe_unused]], /// @brief Used for iterating over the colors not including BOTH
+    N_COLORS [[maybe_unused]], /// @brief Used for representing both colors for occupancy bitboards
     BOTH [[maybe_unused]] = 2,
 };
 

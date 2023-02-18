@@ -1,8 +1,8 @@
 #pragma once
 
-#include "codlib/base.hpp"
-#include "codlib/bitboard.hpp"
-#include "utils.hpp"
+#include <codlib/base.hpp>
+#include <codlib/bitboard.hpp>
+#include <codlib/utils.hpp>
 
 #include <string>
 #include <vector>
@@ -54,13 +54,13 @@ namespace utils {
     // -- Relevant Bits --
 
     /// @brief Relevant bits count for each square for the bishop
-    constexpr int RELEVANT_BITS_COUNT_BISHOP[N_SQUARES] = {6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7,
+    constexpr int BISHOP_RELEVANT_BITS_COUNT[N_SQUARES] = {6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7,
                                                            7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
                                                            5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5,
                                                            5, 5, 5, 6,};
 
     /// @brief Relevant bits count for each square for the rook
-    constexpr int RELEVANT_BITS_COUNT_ROOK[N_SQUARES] = {12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
+    constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
                                                          11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
                                                          11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
                                                          11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11,
@@ -71,7 +71,7 @@ namespace utils {
     /// @brief Returns the inactive color
     /// @param to_move The color to move
     /// @return The inactive color
-    [[nodiscard]] constexpr Color get_opponent(const Color to_move) noexcept {
+    [[nodiscard]] constexpr Color GetOpponent(const Color to_move) noexcept {
         return static_cast<Color>((int) to_move ^ 1);
     }
 
@@ -80,18 +80,18 @@ namespace utils {
     /// @brief Returns the file of a square
     /// @param sq The square
     /// @return The file
-    [[nodiscard]] constexpr File get_file(const Square sq) noexcept { return static_cast<File>(sq & 7); }
+    [[nodiscard]] constexpr File GetFile(const Square sq) noexcept { return static_cast<File>(sq & 7); }
 
     /// @brief Returns the rank of a square
     /// @param sq The square
     /// @return The rank
-    [[nodiscard]] constexpr Rank get_rank(const Square sq) noexcept { return static_cast<Rank>(sq >> 3); }
+    [[nodiscard]] constexpr Rank GetRank(const Square sq) noexcept { return static_cast<Rank>(sq >> 3); }
 
     /// @brief Returns the square of a rank and file
     /// @param rk The rank
     /// @param fl The file
     /// @return The square
-    [[nodiscard]] constexpr Square get_square(const Rank rk, const File fl) noexcept {
+    [[nodiscard]] constexpr Square GetSquare(const Rank rk, const File fl) noexcept {
         return static_cast<Square>(8 * rk + fl);
     }
 

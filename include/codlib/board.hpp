@@ -43,9 +43,9 @@ public:
         std::uint64_t hash_key;
 
         friend constexpr bool operator==(const StateBackup &s1, const StateBackup &s2) {
-            return s1.en_passant_square == s2.en_passant_square && s1.castling_availability == s2.castling_availability
-                   && s1.half_move_clock == s2.half_move_clock && s1.full_move_number == s2.full_move_number
-                   && s1.hash_key == s2.hash_key;
+            return s1.en_passant_square == s2.en_passant_square &&
+                   s1.castling_availability == s2.castling_availability && s1.half_move_clock == s2.half_move_clock &&
+                   s1.full_move_number == s2.full_move_number && s1.hash_key == s2.hash_key;
         }
 
         friend constexpr bool operator!=(const StateBackup &s1, const StateBackup &s2) {

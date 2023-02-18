@@ -18,30 +18,30 @@ namespace bitboard {
 
     // -- Bitboard manipulation functions --
 
-    /// @brief Pops the last bit in a bitboard
-    /// @param bb The bitboard
-    constexpr void pop_last_bit(Bitboard &bb) noexcept { bb &= bb - ONE; }
-
     /// @brief Sets a bit in a bitboard
     /// @param bb The bitboard
     /// @param sq The square
-    constexpr void set_bit(Bitboard &bb, Square sq) noexcept { bb |= (ONE << sq); }
+    constexpr void SetBit(Bitboard &bb, Square sq) noexcept { bb |= (ONE << sq); }
 
     /// @brief Pops a bit in a bitboard
     /// @param bn The bitboard
     /// @param sq The square
-    constexpr void pop_bit(Bitboard &bb, Square sq) noexcept { bb &= ~(ONE << sq); }
+    constexpr void PopBit(Bitboard &bb, Square sq) noexcept { bb &= ~(ONE << sq); }
+
+    /// @brief Pops the last bit in a bitboard
+    /// @param bb The bitboard
+    constexpr void PopLastBit(Bitboard &bb) noexcept { bb &= bb - ONE; }
 
     /// @brief Gets a bit in a bitboard
     /// @param bb The bitboard
     /// @param sq The square
     /// @return Whether the bit is set or not
-    [[nodiscard]] constexpr bool get_bit(const Bitboard bb, const Square sq) noexcept { return ((bb >> sq) & ONE); }
+    [[nodiscard]] constexpr bool GetBit(const Bitboard bb, const Square sq) noexcept { return ((bb >> sq) & ONE); }
 
     /// @brief Returns the number of bits in a bitboard
     /// @param bb The bitboard
     /// @return The number of bits in the bitboard
-    [[nodiscard]] constexpr int bit_count(Bitboard bb) noexcept {
+    [[nodiscard]] constexpr int BitCount(Bitboard bb) noexcept {
         unsigned int count = 0;
         while (bb) {
             count++;
@@ -53,9 +53,9 @@ namespace bitboard {
     /// @brief Returns index of LSB bit
     /// @param bb The bitboard
     /// @return The index of the LSB bit
-    [[maybe_unused]] [[nodiscard]] constexpr Square bit_scan(const Bitboard bb) noexcept {
+    [[maybe_unused]] [[nodiscard]] constexpr Square BitScan(const Bitboard bb) noexcept {
         if (bb) {
-            return (Square) bit_count((bb & -bb) - 1);
+            return (Square) BitCount((bb & -bb) - 1);
         } else {
             return EMPTY_SQUARE;
         }
@@ -64,7 +64,7 @@ namespace bitboard {
     /// @brief Returns index of LSB bit
     /// @param bb The bitboard
     /// @return The index of the LSB bit
-    [[nodiscard]] constexpr Square bit_scan_forward(const Bitboard bb) noexcept {
+    [[nodiscard]] constexpr Square BitScanForward(const Bitboard bb) noexcept {
         // clang-format off
         const int index64[64] = {0, 47, 1, 56, 48, 27, 2, 60, 57, 49, 41, 37, 28, 16, 3, 61, 54, 58, 35, 52, 50, 42, 21,
                                  44, 38, 32, 29, 23, 17, 11, 4, 62, 46, 55, 26, 59, 40, 36, 15, 53, 34, 51, 20, 43, 31,
@@ -91,56 +91,29 @@ namespace bitboard {
         N_DIRECTIONS [[maybe_unused]] = 8,
     };
 
-    /// @brief Shifts a bitboard one square south
+    /// @brief Returns the bitboard shifted in a direction
+    /// @tparam D The direction
     /// @param bb The bitboard
     /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard sout_one(const Bitboard bb) noexcept { return (bb >> Direction::NORTH); }
-
-    /// @brief Shifts a bitboard one square north
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard nort_one(const Bitboard bb) noexcept { return (bb << Direction::NORTH); }
-
-    /// @brief Shifts a bitboard one square east
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard east_one(const Bitboard bb) noexcept {
-        return (bb << Direction::EAST) & 0xFEFEFEFEFEFEFEFE;
-    }
-
-    /// @brief Shifts a bitboard one square west
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard west_one(const Bitboard bb) noexcept {
-        return (bb >> Direction::EAST) & 0x7F7F7F7F7F7F7F7F;
-    }
-
-    /// @brief Shifts a bitboard one square north east
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard no_ea_one(const Bitboard bb) noexcept {
-        return (bb << Direction::NORTH_EAST) & 0xFEFEFEFEFEFEFEFE;
-    }
-
-    /// @brief Shifts a bitboard one square north west
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard no_we_one(const Bitboard bb) noexcept {
-        return (bb << Direction::NORTH_WEST) & 0x7F7F7F7F7F7F7F7F;
-    }
-
-    /// @brief Shifts a bitboard one square south east
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard so_ea_one(const Bitboard bb) noexcept {
-        return (bb >> Direction::NORTH_WEST) & 0xFEFEFEFEFEFEFEFE;
-    }
-
-    /// @brief Shifts a bitboard one square south west
-    /// @param bb The bitboard
-    /// @return The shifted bitboard
-    [[nodiscard]] constexpr Bitboard so_we_one(const Bitboard bb) noexcept {
-        return (bb >> Direction::NORTH_EAST) & 0x7F7F7F7F7F7F7F7F;
+    template<Direction D>
+    [[nodiscard]] constexpr Bitboard ShiftOne(const Bitboard bb) noexcept {
+        if constexpr (D == Direction::NORTH) {
+            return bb << Direction::NORTH;
+        } else if constexpr (D == Direction::SOUTH) {
+            return bb >> Direction::NORTH;
+        } else if constexpr (D == Direction::EAST) {
+            return (bb << Direction::EAST) & 0xFEFEFEFEFEFEFEFE;
+        } else if constexpr (D == Direction::WEST) {
+            return (bb >> Direction::EAST) & 0x7F7F7F7F7F7F7F7F;
+        } else if constexpr (D == Direction::NORTH_EAST) {
+            return (bb << Direction::NORTH_EAST) & 0xFEFEFEFEFEFEFEFE;
+        } else if constexpr (D == Direction::NORTH_WEST) {
+            return (bb << Direction::NORTH_WEST) & 0x7F7F7F7F7F7F7F7F;
+        } else if constexpr (D == Direction::SOUTH_EAST) {
+            return (bb >> Direction::NORTH_WEST) & 0xFEFEFEFEFEFEFEFE;
+        } else if constexpr (D == Direction::SOUTH_WEST) {
+            return (bb >> Direction::NORTH_EAST) & 0x7F7F7F7F7F7F7F7F;
+        }
     }
 
     /// @brief Sets the occupancy bits
@@ -148,7 +121,7 @@ namespace bitboard {
     /// @param bits_in_mask Number of bits in the mask
     /// @param attack_mask The attack mask
     /// @return The occupancy bits
-    [[nodiscard]] Bitboard set_occupancy(int index, int bits_in_mask, Bitboard attack_mask) noexcept;
+    [[nodiscard]] Bitboard SetOccupancy(int index, int bits_in_mask, Bitboard attack_mask) noexcept;
 
     // -- Operator Overloads --
 

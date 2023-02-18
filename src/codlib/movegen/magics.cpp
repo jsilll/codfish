@@ -7,7 +7,7 @@ using bitboard::Bitboard;
 
 namespace magics {
     /// @brief Pre-computed magic numbers for bishops.
-    constexpr Bitboard MAGICS_BISHOP[Square::N_SQUARES] = {0x40040844404084ULL, 0x2004208a004208ULL,
+    constexpr Bitboard BISHOP_MAGICS[Square::N_SQUARES] = {0x40040844404084ULL, 0x2004208a004208ULL,
                                                            0x10190041080202ULL, 0x108060845042010ULL,
                                                            0x581104180800210ULL, 0x2112080446200010ULL,
                                                            0x1080820820060210ULL, 0x3c0808410220200ULL,
@@ -40,7 +40,7 @@ namespace magics {
                                                            0x4010011029020020ULL};
 
     /// @brief Pre-computed magic numbers for rooks.
-    constexpr Bitboard MAGICS_ROOK[N_SQUARES] = {0x8a80104000800020ULL, 0x140002000100040ULL, 0x2801880a0017001ULL,
+    constexpr Bitboard ROOK_MAGICS[N_SQUARES] = {0x8a80104000800020ULL, 0x140002000100040ULL, 0x2801880a0017001ULL,
                                                  0x100081001000420ULL, 0x200020010080420ULL, 0x3001c0002010008ULL,
                                                  0x8480008002000100ULL, 0x2080088004402900ULL, 0x800098204000ULL,
                                                  0x2024401000200040ULL, 0x100802000801000ULL, 0x120800800801000ULL,
@@ -64,33 +64,33 @@ namespace magics {
                                                  0x1004081002402ULL};
 
     /// @brief Array of pre-computed magic numbers, masks and shifts for rooks.
-    Magic MAGIC_TABLE_ROOK[N_SQUARES];
+    Magic ROOK_MAGIC_TABLE[N_SQUARES];
 
     /// @brief Array of pre-computed magic numbers, masks and shifts for bishops.
-    Magic MAGIC_TABLE_BISHOP[N_SQUARES];
+    Magic BISHOP_MAGIC_TABLE[N_SQUARES];
 
     /// @brief Returns a bitboard of all the bishop attacks from a given square.
     /// @param sq The square to generate attacks from.
     /// @return A bitboard of all the bishop attacks from a given square.
-    [[nodiscard]] constexpr Bitboard mask_bishop_attack_rays(const Square sq) noexcept {
-        const auto rank = utils::get_rank(sq);
-        const auto file = utils::get_file(sq);
+    [[nodiscard]] constexpr Bitboard BishopXrayAttacks(const Square sq) noexcept {
+        const auto rank = utils::GetRank(sq);
+        const auto file = utils::GetFile(sq);
 
         Bitboard attacks = bitboard::ZERO;
         for (int r = rank + 1, f = file + 1; r < RANK_8 && f < FILE_H; ++r, ++f) {
-            attacks |= (bitboard::ONE << utils::get_square((Rank) r, (File) f));
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
         }
 
         for (int r = rank + 1, f = file - 1; r < RANK_8 && f > FILE_A; ++r, --f) {
-            attacks |= (bitboard::ONE << utils::get_square((Rank) r, (File) f));
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
         }
 
         for (int r = rank - 1, f = file + 1; r > RANK_1 && f < FILE_H; --r, ++f) {
-            attacks |= (bitboard::ONE << utils::get_square((Rank) r, (File) f));
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
         }
 
         for (int r = rank - 1, f = file - 1; r > RANK_1 && f > FILE_A; --r, --f) {
-            attacks |= (bitboard::ONE << utils::get_square((Rank) r, (File) f));
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
         }
 
         return attacks;
@@ -99,33 +99,33 @@ namespace magics {
     /// @brief Returns a bitboard of all the rook attacks from a given square.
     /// @param sq The square to generate attacks from.
     /// @return A bitboard of all the rook attacks from a given square.
-    [[nodiscard]] constexpr Bitboard mask_rook_attack_rays(const Square sq) noexcept {
-        const auto rank = utils::get_rank(sq);
-        const auto file = utils::get_file(sq);
+    [[nodiscard]] constexpr Bitboard RookXrayAttacks(const Square sq) noexcept {
+        const auto rank = utils::GetRank(sq);
+        const auto file = utils::GetFile(sq);
 
         Bitboard attacks = bitboard::ZERO;
-        for (int r = rank + 1; r < RANK_8; ++r) { attacks |= (bitboard::ONE << utils::get_square((Rank) r, file)); }
+        for (int r = rank + 1; r < RANK_8; ++r) { attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, file)); }
 
-        for (int r = rank - 1; r > RANK_1; --r) { attacks |= (bitboard::ONE << utils::get_square((Rank) r, file)); }
+        for (int r = rank - 1; r > RANK_1; --r) { attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, file)); }
 
-        for (int f = file + 1; f < FILE_H; ++f) { attacks |= (bitboard::ONE << utils::get_square(rank, (File) f)); }
+        for (int f = file + 1; f < FILE_H; ++f) { attacks |= (bitboard::ONE << utils::GetSquare(rank, (File) f)); }
 
-        for (int f = file - 1; f > FILE_A; --f) { attacks |= (bitboard::ONE << utils::get_square(rank, (File) f)); }
+        for (int f = file - 1; f > FILE_A; --f) { attacks |= (bitboard::ONE << utils::GetSquare(rank, (File) f)); }
 
         return attacks;
     }
 
-    void init() noexcept {
+    void Init() noexcept {
         for (int sq = A1; sq < N_SQUARES; sq++) {
-            MAGIC_TABLE_BISHOP[sq].mask = mask_bishop_attack_rays((Square) sq);
-            MAGIC_TABLE_BISHOP[sq].magic = MAGICS_BISHOP[sq];
-            MAGIC_TABLE_BISHOP[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_BISHOP[sq];
+            BISHOP_MAGIC_TABLE[sq].mask = BishopXrayAttacks((Square) sq);
+            BISHOP_MAGIC_TABLE[sq].magic = BISHOP_MAGICS[sq];
+            BISHOP_MAGIC_TABLE[sq].shift = 64 - utils::BISHOP_RELEVANT_BITS_COUNT[sq];
         }
 
         for (int sq = A1; sq < N_SQUARES; sq++) {
-            MAGIC_TABLE_ROOK[sq].mask = mask_rook_attack_rays((Square) sq);
-            MAGIC_TABLE_ROOK[sq].magic = MAGICS_ROOK[sq];
-            MAGIC_TABLE_ROOK[sq].shift = 64 - utils::RELEVANT_BITS_COUNT_ROOK[sq];
+            ROOK_MAGIC_TABLE[sq].mask = RookXrayAttacks((Square) sq);
+            ROOK_MAGIC_TABLE[sq].magic = ROOK_MAGICS[sq];
+            ROOK_MAGIC_TABLE[sq].shift = 64 - utils::ROOK_RELEVANT_BITS_COUNT[sq];
         }
     }
 }// namespace magics

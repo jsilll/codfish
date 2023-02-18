@@ -1,11 +1,13 @@
-#include "catch2/catch_test_macros.hpp"
+#include <catch2/catch_test_macros.hpp>
 
-#include "codlib/board.hpp"
+#include <codlib/codlib.hpp>
 
 #include <iostream>
 
 TEST_CASE("Board::active() returns the correct color", "[board]")
 {
+    codlib::Init();
+
     SECTION("Position 1")
     {
         const auto board = Board();
@@ -30,6 +32,8 @@ TEST_CASE("Board::active() returns the correct color", "[board]")
 
 TEST_CASE("Board::inactive() returns the correct color", "[board]")
 {
+    codlib::Init();
+
     SECTION("Position 1")
     {
         const auto board = Board();
@@ -52,7 +56,10 @@ TEST_CASE("Board::inactive() returns the correct color", "[board]")
     }
 }
 
-TEST_CASE("Board::castling_availability() returns the correct castling_availability availability", "[board]") {
+TEST_CASE("Board::castling_availability() returns the correct castling_availability availability", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -151,7 +158,10 @@ TEST_CASE("Board::castling_availability() returns the correct castling_availabil
     }
 }
 
-TEST_CASE("Board::half_move_clock() returns the correct half move clock", "[board]") {
+TEST_CASE("Board::half_move_clock() returns the correct half move clock", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -183,7 +193,10 @@ TEST_CASE("Board::half_move_clock() returns the correct half move clock", "[boar
     }
 }
 
-TEST_CASE("Board::en_passant_square() returns the correct en passant square", "[board]") {
+TEST_CASE("Board::en_passant_square() returns the correct en passant square", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -215,7 +228,10 @@ TEST_CASE("Board::en_passant_square() returns the correct en passant square", "[
     }
 }
 
-TEST_CASE("Board::piece() returns the correct piece", "[board]") {
+TEST_CASE("Board::piece() returns the correct piece", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -293,7 +309,10 @@ TEST_CASE("Board::piece() returns the correct piece", "[board]") {
     }
 }
 
-TEST_CASE("Board::full_move_number() returns the correct full move number", "[board]") {
+TEST_CASE("Board::full_move_number() returns the correct full move number", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -319,7 +338,10 @@ TEST_CASE("Board::full_move_number() returns the correct full move number", "[bo
     }
 }
 
-TEST_CASE("Board::pieces() returns the correct bitboard", "[board]") {
+TEST_CASE("Board::pieces() returns the correct bitboard", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -339,7 +361,10 @@ TEST_CASE("Board::pieces() returns the correct bitboard", "[board]") {
     }
 }
 
-TEST_CASE("Board::occupancies() returns the correct bitboard", "[board]") {
+TEST_CASE("Board::occupancies() returns the correct bitboard", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -349,7 +374,10 @@ TEST_CASE("Board::occupancies() returns the correct bitboard", "[board]") {
     }
 }
 
-TEST_CASE("Board::GetStateBackup() returns the correct state backup", "[board]") {
+TEST_CASE("Board::GetStateBackup() returns the correct state backup", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -362,7 +390,10 @@ TEST_CASE("Board::GetStateBackup() returns the correct state backup", "[board]")
     }
 }
 
-TEST_CASE("Board::GetFen() returns the correct FEN", "[board]") {
+TEST_CASE("Board::GetFen() returns the correct FEN", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -394,7 +425,10 @@ TEST_CASE("Board::GetFen() returns the correct FEN", "[board]") {
     }
 }
 
-TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
+TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]")
+{
+    codlib::Init();
+
     SECTION("Position 1") {
         const auto board = Board();
 
@@ -414,83 +448,112 @@ TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
     }
 }
 
-TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
+TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]")
+{
+    codlib::Init();
 
     SECTION("Pawn Move")
     {
         const std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
+
         Move move = Move(E2, E4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("Knight Capture")
     {
         const std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
+
         Move move = Move(B1, H7, KNIGHT, PAWN, EMPTY_PIECE, false, false, false);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("Castle")
     {
         const std::string fen = "rnbqkbnr/3ppppp/8/ppp5/6P1/5N1B/PPPPPP1P/RNBQK2R w KQkq - 0 4";
         auto board = Board(fen);
+
         Move move = Move(E1, G1, KING, EMPTY_PIECE, EMPTY_PIECE, false, false, true);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("Pawn Capture")
     {
         const std::string fen = "rnbqkbnr/3ppppp/8/ppp5/2P3P1/5N1B/PP1PPP1P/RNBQK2R b KQkq - 0 4";
         auto board = Board(fen);
+
         Move move = Move(B5, C4, PAWN, PAWN, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.is_capture() == true);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("Pawn Promotion")
     {
         const std::string fen = "4kbnr/P2ppppp/3q4/8/6P1/5N1B/PP1PPP1P/RNBQK1KR w k - 0 4";
         auto board = Board(fen);
+
         Move move = Move(A7, A8, PAWN, EMPTY_PIECE, QUEEN, false, false, false);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("En Passant Move ")
     {
         const std::string fen = "rnbqkbnr/3ppppp/8/p1p5/2pP2P1/5N1B/PP2PP1P/RNBQK2R b KQkq d3 0 5";
         auto board = Board(fen);
+
         Move move = Move(C4, D3, PAWN, PAWN, EMPTY_PIECE, false, true, false);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 
     SECTION("Double Push")
     {
         const std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
+
         Move move = Move(D2, D4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
-        Board::StateBackup state = board.GetStateBackup();
+        Board::StateBackup backup = board.GetStateBackup();
+
         board.Make(move);
-        board.Unmake(move, state);
+        board.Unmake(move, backup);
+
         REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.hash_key() == backup.hash_key);
     }
 }

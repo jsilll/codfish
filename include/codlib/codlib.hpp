@@ -19,6 +19,6 @@ namespace codlib {
 
     /// @brief Initializes all codlib functionality.
     /// @note This function must be called before any other codlib functionality is used.
-    [[maybe_unused]] void init() noexcept;
+    [[maybe_unused]] void Init() noexcept;
 
 }// namespace codlib

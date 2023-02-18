@@ -7,26 +7,26 @@ using bitboard::Bitboard;
 
 namespace attacks {
 
-    Bitboard ATTACKS_KING[N_SQUARES];
+    Bitboard KING_ATTACKS[N_SQUARES];
 
-    Bitboard ATTACKS_KNIGHT[N_SQUARES];
+    Bitboard KNIGHT_ATTACKS[N_SQUARES];
 
-    Bitboard ATTACKS_PAWN[N_COLORS][N_SQUARES];
+    Bitboard PAWN_ATTACKS[N_COLORS][N_SQUARES];
 
     /// @brief Bitboard masks for each rook attack
-    /// @note The init() function must be called before using this
-    /// @note The function get_rook_attacks() should be used to get the actual attacks
-    auto ATTACKS_ROOK = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_ROOK_MAGICS));
+    /// @note The Init() function must be called before using this
+    /// @note The function RookAttacks() should be used to get the actual attacks
+    auto ROOK_ATTACKS = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_ROOK_MAGICS));
 
     /// @brief Bitboard masks for each bishop attack
-    /// @note The init() function must be called before using this
-    /// @note The function get_bishop_attacks() should be used to get the actual attacks
-    auto ATTACKS_BISHOP = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_BISHOP_MAGICS));
+    /// @note The Init() function must be called before using this
+    /// @note The function BishopAttacks() should be used to get the actual attacks
+    auto BISHOP_ATTACKS = std::vector<std::vector<Bitboard>>(N_SQUARES, std::vector<Bitboard>(N_BISHOP_MAGICS));
 
     /// @brief Returns a bitboard of all the knight attacks.
     /// @param knights A bitboard of knights.
     /// @return A bitboard of all the knight attacks.
-    [[nodiscard]] constexpr Bitboard mask_knight_attacks(const Bitboard knights) noexcept {
+    [[nodiscard]] constexpr Bitboard KnightAttacks(const Bitboard knights) noexcept {
         constexpr Bitboard CLEAR_FILE_HG = 0x3f3f3f3f3f3f3f3f;
         constexpr Bitboard CLEAR_FILE_AB = 0xfcfcfcfcfcfcfcfc;
 
@@ -44,56 +44,124 @@ namespace attacks {
     /// @brief Returns a bitboard of all the king attacks.
     /// @param kings A bitboard of kings.
     /// @return A bitboard of all the king attacks.
-    [[nodiscard]] constexpr Bitboard mask_king_attacks(Bitboard kings) noexcept {
-        Bitboard attacks = bitboard::east_one(kings) | bitboard::west_one(kings);
+    [[nodiscard]] constexpr Bitboard KingAttacks(Bitboard kings) noexcept {
+        Bitboard attacks = bitboard::ShiftOne<bitboard::Direction::EAST>(kings) |
+                           bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
         kings |= attacks;
-        attacks |= bitboard::nort_one(kings) | bitboard::sout_one(kings);
+        attacks |= bitboard::ShiftOne<bitboard::Direction::NORTH>(kings) |
+                   bitboard::ShiftOne<bitboard::Direction::SOUTH>(kings);
         return attacks;
     }
 
-    void init() noexcept {
+    /// @brief Returns a bitboard of all the bishop attacks from a given square with
+    /// a given block.
+    /// @param sq The square to generate attacks from.
+    /// @param block A bitboard of the blocked squares.
+    /// @return A bitboard of all the bishop attacks.
+    [[nodiscard]] constexpr bitboard::Bitboard
+    BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
+        bitboard::Bitboard attacks = bitboard::ZERO;
+        Rank rank = utils::GetRank(sq);
+        File file = utils::GetFile(sq);
+        for (int r = rank + 1, f = file + 1; r < N_RANKS && f < N_FILES; ++r, ++f) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, (File) f)) & block) { break; }
+        }
+
+        for (int r = rank + 1, f = file - 1; r < N_RANKS && f >= FILE_A; ++r, --f) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, (File) f)) & block) { break; }
+        }
+
+        for (int r = rank - 1, f = file + 1; r >= RANK_1 && f < N_FILES; --r, ++f) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, (File) f)) & block) { break; }
+        }
+
+        for (int r = rank - 1, f = file - 1; r >= RANK_1 && f >= FILE_A; --r, --f) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, (File) f));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, (File) f)) & block) { break; }
+        }
+
+        return attacks;
+    }
+
+    /// @brief Returns a bitboard of all the rook attacks from a given square with a
+    /// given block.
+    /// @param sq The square to generate attacks from.
+    /// @param block A bitboard of the blocked squares.
+    /// @return A bitboard of all the rook attacks.
+    [[nodiscard]] constexpr bitboard::Bitboard
+    RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
+        bitboard::Bitboard attacks = bitboard::ZERO;
+        Rank rank = utils::GetRank(sq);
+        File file = utils::GetFile(sq);
+        for (int r = rank + 1; r < N_RANKS; ++r) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, file));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, file)) & block) { break; }
+        }
+
+        for (int r = rank - 1; r >= RANK_1; --r) {
+            attacks |= (bitboard::ONE << utils::GetSquare((Rank) r, file));
+            if ((bitboard::ONE << utils::GetSquare((Rank) r, file)) & block) { break; }
+        }
+
+        for (int f = file + 1; f < N_FILES; ++f) {
+            attacks |= (bitboard::ONE << utils::GetSquare(rank, (File) f));
+            if ((bitboard::ONE << utils::GetSquare(rank, (File) f)) & block) { break; }
+        }
+
+        for (int f = file - 1; f >= FILE_A; --f) {
+            attacks |= (bitboard::ONE << utils::GetSquare(rank, (File) f));
+            if ((bitboard::ONE << utils::GetSquare(rank, (File) f)) & block) { break; }
+        }
+
+        return attacks;
+    }
+
+    void Init() noexcept {
         // Initializing Leaper Piece Attack Tables
         for (int sq = A1; sq < N_SQUARES; ++sq) {
-            ATTACKS_PAWN[WHITE][sq] = attacks::mask_white_pawn_any_attacks(utils::SQUARE_BB[sq]);
-            ATTACKS_PAWN[BLACK][sq] = attacks::mask_black_pawn_any_attacks(utils::SQUARE_BB[sq]);
+            PAWN_ATTACKS[WHITE][sq] = attacks::PawnAllAttacks<Color::WHITE>(utils::SQUARE_BB[sq]);
+            PAWN_ATTACKS[BLACK][sq] = attacks::PawnAllAttacks<Color::BLACK>(utils::SQUARE_BB[sq]);
         }
 
         for (int sq = A1; sq < N_SQUARES; ++sq) {
-            ATTACKS_KNIGHT[sq] = attacks::mask_knight_attacks(utils::SQUARE_BB[sq]);
+            KNIGHT_ATTACKS[sq] = attacks::KnightAttacks(utils::SQUARE_BB[sq]);
         }
 
-        for (int sq = A1; sq < N_SQUARES; ++sq) { ATTACKS_KING[sq] = attacks::mask_king_attacks(utils::SQUARE_BB[sq]); }
+        for (int sq = A1; sq < N_SQUARES; ++sq) { KING_ATTACKS[sq] = attacks::KingAttacks(utils::SQUARE_BB[sq]); }
 
         // Initialize Slider Piece Attack Tables
         for (int sq = A1; sq < N_SQUARES; ++sq) {
-            int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_BISHOP[sq];
+            int occupancy_indices = 1 << utils::BISHOP_RELEVANT_BITS_COUNT[sq];
             for (int i = 0; i < occupancy_indices; ++i) {
-                magics::Magic magic = magics::MAGIC_TABLE_BISHOP[sq];
-                Bitboard occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_BISHOP[sq], magic.mask);
+                magics::Magic magic = magics::BISHOP_MAGIC_TABLE[sq];
+                Bitboard occupancy = bitboard::SetOccupancy(i, utils::BISHOP_RELEVANT_BITS_COUNT[sq], magic.mask);
                 int index = static_cast<int>((occupancy * magic.magic) >> magic.shift);
-                ATTACKS_BISHOP[sq][index] = attacks::mask_bishop_xray_attacks((Square) sq, occupancy);
+                BISHOP_ATTACKS[sq][index] = attacks::BishopNoXrayAttacks((Square) sq, occupancy);
             }
         }
 
         for (int sq = A1; sq < N_SQUARES; ++sq) {
-            int occupancy_indices = 1 << utils::RELEVANT_BITS_COUNT_ROOK[sq];
+            int occupancy_indices = 1 << utils::ROOK_RELEVANT_BITS_COUNT[sq];
             for (int i = 0; i < occupancy_indices; ++i) {
-                magics::Magic magic = magics::MAGIC_TABLE_ROOK[sq];
-                Bitboard occupancy = bitboard::set_occupancy(i, utils::RELEVANT_BITS_COUNT_ROOK[sq], magic.mask);
+                magics::Magic magic = magics::ROOK_MAGIC_TABLE[sq];
+                Bitboard occupancy = bitboard::SetOccupancy(i, utils::ROOK_RELEVANT_BITS_COUNT[sq], magic.mask);
                 int index = (int) ((occupancy * magic.magic) >> magic.shift);
-                ATTACKS_ROOK[sq][index] = attacks::mask_rook_xray_attacks((Square) sq, occupancy);
+                ROOK_ATTACKS[sq][index] = attacks::RookNoXrayAttacks((Square) sq, occupancy);
             }
         }
     }
 
-    Bitboard get_bishop_attacks(const Square sq, const Bitboard occ) noexcept {
-        const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_BISHOP[sq]);
-        return ATTACKS_BISHOP[sq][idx];
+    Bitboard BishopAttacks(const Square sq, const Bitboard block) noexcept {
+        const auto idx = magics::MagicIndex(block, magics::BISHOP_MAGIC_TABLE[sq]);
+        return BISHOP_ATTACKS[sq][idx];
     }
 
-    Bitboard get_rook_attacks(const Square sq, const Bitboard occ) noexcept {
-        const auto idx = magics::magic_index(occ, magics::MAGIC_TABLE_ROOK[sq]);
-        return ATTACKS_ROOK[sq][idx];
+    Bitboard RookAttacks(const Square sq, const Bitboard block) noexcept {
+        const auto idx = magics::MagicIndex(block, magics::ROOK_MAGIC_TABLE[sq]);
+        return ROOK_ATTACKS[sq][idx];
     }
 
 }// namespace attacks
