@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <codlib/codlib.hpp>
-#include <codlib/perft.hpp>
+#include <codchess/codlib.hpp>
+#include <codchess/perft.hpp>
 
 TEST_CASE("Perft doesn't modify the board", "[perft]") {
     codlib::Init();

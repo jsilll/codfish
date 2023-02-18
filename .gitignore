@@ -32,3 +32,6 @@ $RECYCLE.BIN/
 .TemporaryItems
 ehthumbs.db
 Thumbs.db
+
+# Documentation Files
+docs/html/
