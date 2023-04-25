@@ -35,17 +35,15 @@ KnightAttacks(const bitboard::Bitboard knights) noexcept {
     constexpr bitboard::Bitboard CLEAR_FILE_AB =
         utils::MASK_CLEAR_FILE[FILE_A] | utils::MASK_CLEAR_FILE[FILE_B];
 
-    bitboard::Bitboard l1 =
-        (bitboard::ShiftOne<bitboard::Direction::WEST>(knights)) &
-        utils::MASK_CLEAR_FILE[7];
-    bitboard::Bitboard r1 =
-        (bitboard::ShiftOne<bitboard::Direction::EAST>(knights)) &
-        utils::MASK_CLEAR_FILE[0];
+    const auto l1 = (bitboard::ShiftOne<bitboard::Direction::WEST>(knights)) &
+                    utils::MASK_CLEAR_FILE[7];
+    const auto r1 = (bitboard::ShiftOne<bitboard::Direction::EAST>(knights)) &
+                    utils::MASK_CLEAR_FILE[0];
 
-    bitboard::Bitboard h1 = l1 | r1;
-    bitboard::Bitboard l2 = (knights >> 2) & CLEAR_FILE_HG;
-    bitboard::Bitboard r2 = (knights << 2) & CLEAR_FILE_AB;
-    bitboard::Bitboard h2 = l2 | r2;
+    const auto h1 = l1 | r1;
+    const auto l2 = (knights >> 2) & CLEAR_FILE_HG;
+    const auto r2 = (knights << 2) & CLEAR_FILE_AB;
+    const auto h2 = l2 | r2;
 
     return (h1 << 16) | (h1 >> 16) | (h2 << 8) | (h2 >> 8);
 }
@@ -55,9 +53,8 @@ KnightAttacks(const bitboard::Bitboard knights) noexcept {
 /// @return A bitboard of all the king attacks.
 [[nodiscard]] constexpr bitboard::Bitboard
 KingAttacks(bitboard::Bitboard kings) noexcept {
-    bitboard::Bitboard attacks =
-        bitboard::ShiftOne<bitboard::Direction::EAST>(kings) |
-        bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
+    auto attacks = bitboard::ShiftOne<bitboard::Direction::EAST>(kings) |
+                   bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
 
     kings |= attacks;
     attacks |= bitboard::ShiftOne<bitboard::Direction::NORTH>(kings) |
@@ -192,8 +189,8 @@ Init() noexcept {
     for (int sq = A1; sq < N_SQUARES; ++sq) {
         int occupancy_indices = 1 << utils::BISHOP_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
-            magics::Magic magic = magics::BISHOP_MAGIC_TABLE[sq];
-            bitboard::Bitboard occupancy = bitboard::SetOccupancy(
+            const auto magic = magics::BISHOP_MAGIC_TABLE[sq];
+            const auto occupancy = bitboard::SetOccupancy(
                 i, utils::BISHOP_RELEVANT_BITS_COUNT[sq], magic.mask);
             const auto index =
                 static_cast<int>((occupancy * magic.magic) >> magic.shift);
@@ -205,8 +202,8 @@ Init() noexcept {
     for (int sq = A1; sq < N_SQUARES; ++sq) {
         int occupancy_indices = 1 << utils::ROOK_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
-            magics::Magic magic = magics::ROOK_MAGIC_TABLE[sq];
-            bitboard::Bitboard occupancy = bitboard::SetOccupancy(
+            const auto magic = magics::ROOK_MAGIC_TABLE[sq];
+            const auto occupancy = bitboard::SetOccupancy(
                 i, utils::ROOK_RELEVANT_BITS_COUNT[sq], magic.mask);
             int index = (int) ((occupancy * magic.magic) >> magic.shift);
             ROOK_ATTACKS[sq][index] =

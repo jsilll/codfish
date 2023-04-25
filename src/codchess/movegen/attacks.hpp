@@ -95,16 +95,13 @@ PawnDoublePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
     static_assert(C == Color::WHITE || C == Color::BLACK);
 
+    const auto pushes =
+        PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);
+
     if constexpr (C == Color::WHITE) {
-        bitboard::Bitboard single_pushes =
-            PawnSinglePushes<Color::WHITE>(pawns, empty);
-        return bitboard::ShiftOne<bitboard::Direction::NORTH>(single_pushes) &
-               empty & utils::MASK_RANK[RANK_3];
+        return pushes & utils::MASK_RANK[RANK_3];
     } else {
-        bitboard::Bitboard single_pushes =
-            PawnSinglePushes<Color::BLACK>(pawns, empty);
-        return bitboard::ShiftOne<bitboard::Direction::SOUTH>(single_pushes) &
-               empty & utils::MASK_RANK[RANK_4];
+        return pushes & utils::MASK_RANK[RANK_4];
     }
 }
 

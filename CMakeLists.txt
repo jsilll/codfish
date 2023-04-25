@@ -61,5 +61,5 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(tests)
 endif ()
 
-# -- Executable --
-# add_subdirectory(apps)
+# -- Executables --
+add_subdirectory(apps)

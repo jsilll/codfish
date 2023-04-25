@@ -27,6 +27,6 @@ namespace codchess::zobrist {
     /// @brief Generates the hash key for a board
     /// @param board The board
     /// @return The hash key
-    std::uint64_t generate_hash_key(const Board &board) noexcept;
+    std::uint64_t Hash(const Board &board) noexcept;
 
 }// namespace codchess::zobrist

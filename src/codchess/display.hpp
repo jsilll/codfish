@@ -17,7 +17,7 @@ const std::string SQUARE_DISPLAY[N_SQUARES + 1] = {
 
 /// @brief The representation of the pieces aligned with the PieceType enum
 /// @note The first 13 elements are the ascii representation of the pieces and
-/// the last 13 are the unicode representation
+/// @note the last 13 are the unicode representation
 const std::string PIECE_DISPLAY[] = {
     // White pieces in ascii format
     "P",

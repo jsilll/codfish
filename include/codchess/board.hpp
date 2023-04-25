@@ -226,7 +226,15 @@ class Board {
         /// @note Constructs a FEN object from a FEN string
         /// @param fen The FEN string
         /// @note The fen string is assumed to be valid
-        [[nodiscard]] Fen(const std::string &fen) noexcept;
+        [[nodiscard]] Fen(const std::string &fen) noexcept {
+            std::stringstream ss(fen);
+            std::getline(ss, position, ' ');
+            ss >> active;
+            ss >> castling_availability;
+            ss >> en_passant_square;
+            ss >> half_move_clock;
+            ss >> full_move_number;
+        }
     };
 
     /// @brief The default starting position FEN

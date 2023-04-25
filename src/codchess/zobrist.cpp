@@ -45,7 +45,7 @@ Init() noexcept {
 }
 
 bitboard::Bitboard
-generate_hash_key(const Board &board) noexcept {
+Hash(const Board &board) noexcept {
     auto final_key{bitboard::ZERO};
 
     for (int piece = PAWN; piece < N_PIECES; ++piece) {

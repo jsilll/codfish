@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <iostream>
+
 #include <codchess/codchess.hpp>
 #include <codchess/perft.hpp>
 

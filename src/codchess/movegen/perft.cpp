@@ -11,7 +11,7 @@ Perft(Board &board, const int depth) noexcept {
         return 1;
     }
 
-    int nodes = 0;
+    int nodes{0};
     for (const Move &move : movegen::PseudoLegal(board)) {
         const auto board_info = board.GetStateBackup();
 

@@ -8,26 +8,10 @@
 #include <codchess/zobrist.hpp>
 
 namespace codchess {
-Board::Fen::Fen(const std::string &fen) noexcept {
-    std::stringstream ss(fen);
-    std::getline(ss, position, ' ');
-    ss >> active;
-    ss >> castling_availability;
-    ss >> en_passant_square;
-    ss >> half_move_clock;
-    ss >> full_move_number;
-}
-
 [[maybe_unused]] std::string
 Board::GetFen() const noexcept {
-    std::string piece_placements;
-    std::string active_color;
-    std::string castling_rights;
-    std::string en_passant;
-    std::string half_move_clock;
-    std::string full_move_number;
-
     int empty_squares{0};
+    std::string piece_placements;
     for (int rank = RANK_8; rank >= RANK_1; rank--) {
         for (int file = FILE_A; file < N_FILES; file++) {
             Square sq = utils::GetSquare(static_cast<Rank>(rank),
@@ -59,7 +43,7 @@ Board::GetFen() const noexcept {
         }
     }
 
-    active_color = _active == WHITE ? "w" : "b";
+    const auto active_color = _active == WHITE ? "w" : "b";
 
     char castling_rights_buf[5];
     snprintf(castling_rights_buf, 5, "%s%s%s%s",
@@ -67,7 +51,7 @@ Board::GetFen() const noexcept {
              (_castling_availability & WHITE_QUEEN) ? "Q" : "",
              (_castling_availability & BLACK_KING) ? "k" : "",
              (_castling_availability & BLACK_QUEEN) ? "q" : "");
-    castling_rights = std::string(castling_rights_buf);
+    auto castling_rights = std::string(castling_rights_buf);
     if (castling_rights.empty()) {
         castling_rights = "-";
     }
@@ -489,7 +473,7 @@ Board::SetFromFen(const std::string &fen_str) noexcept {
 
     UpdateBitboards();
 
-    _hash_key = zobrist::generate_hash_key(*this);
+    _hash_key = zobrist::Hash(*this);
 }
 
 void

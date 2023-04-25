@@ -45,6 +45,7 @@ CastlingMoves(std::vector<Move> &move_list, const Board &board) noexcept {
             !bitboard::GetBit(board.occupancies(BOTH), CASTLE_G_SQ)) {
             if (!board.IsSquareAttacked(CASTLE_F_SQ, Opponent) &&
                 !board.IsSquareAttacked(CASTLE_G_SQ, Opponent)) {
+
                 move_list.emplace_back(CASTLE_E_SQ, CASTLE_G_SQ, KING,
                                        EMPTY_PIECE, EMPTY_PIECE, false, false,
                                        true);
@@ -56,6 +57,7 @@ CastlingMoves(std::vector<Move> &move_list, const Board &board) noexcept {
             !bitboard::GetBit(board.occupancies(BOTH), CASTLE_B_SQ)) {
             if (!board.IsSquareAttacked(CASTLE_D_SQ, Opponent) &&
                 !board.IsSquareAttacked(CASTLE_C_SQ, Opponent)) {
+
                 move_list.emplace_back(CASTLE_E_SQ, CASTLE_C_SQ, KING,
                                        EMPTY_PIECE, EMPTY_PIECE, false, false,
                                        true);
@@ -74,14 +76,17 @@ EnPassantCaptures(std::vector<Move> &move_list, const Board &board) noexcept {
     constexpr Color Opponent = ToMove == WHITE ? BLACK : WHITE;
 
     if (board.en_passant_square() != -1) {
-        bitboard::Bitboard pawns_can_en_passant =
+        auto pawns_can_en_passant =
             attacks::PAWN_ATTACKS[Opponent][board.en_passant_square()] &
             board.pieces(ToMove, PAWN);
+
         while (pawns_can_en_passant) {
             int from_square = bitboard::BitScanForward(pawns_can_en_passant);
+
             move_list.emplace_back(from_square, board.en_passant_square(), PAWN,
                                    board.piece(board.en_passant_square()).type,
                                    EMPTY_PIECE, false, true, false);
+
             bitboard::PopLastBit(pawns_can_en_passant);
         }
     }
@@ -98,10 +103,10 @@ PawnSinglePushPromotions(std::vector<Move> &move_list,
                          const Board &board) noexcept {
     constexpr auto PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
 
-    const auto pawn_single_pushes = attacks::PawnSinglePushes<ToMove>(
-        board.pieces(ToMove, PAWN), ~board.occupancies(BOTH));
     auto pawn_single_pushes_promo =
-        pawn_single_pushes & (utils::MASK_RANK[0] | utils::MASK_RANK[7]);
+        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
+                                          ~board.occupancies(BOTH)) &
+        (utils::MASK_RANK[0] | utils::MASK_RANK[7]);
 
     while (pawn_single_pushes_promo) {
         const auto to_square =
@@ -110,10 +115,13 @@ PawnSinglePushPromotions(std::vector<Move> &move_list,
 
         move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, QUEEN,
                                false, false, false);
+
         move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE,
                                KNIGHT, false, false, false);
+
         move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE, ROOK,
                                false, false, false);
+
         move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE,
                                BISHOP, false, false, false);
 
@@ -135,17 +143,19 @@ PawnSinglePushesNoPromotion(std::vector<Move> &move_list,
                             const Board &board) noexcept {
     constexpr auto PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
 
-    const auto pawn_single_pushes = attacks::PawnSinglePushes<ToMove>(
-        board.pieces(ToMove, PAWN), ~board.occupancies(BOTH));
-    auto pawn_single_pushes_no_promo = pawn_single_pushes &
-                                       utils::MASK_CLEAR_RANK[0] &
-                                       utils::MASK_CLEAR_RANK[7];
+    auto pawn_single_pushes_no_promo =
+        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
+                                          ~board.occupancies(BOTH)) &
+        utils::MASK_CLEAR_RANK[0] & utils::MASK_CLEAR_RANK[7];
 
     while (pawn_single_pushes_no_promo) {
-        int to_square = bitboard::BitScanForward(pawn_single_pushes_no_promo);
-        int from_square = to_square + PAWN_SINGLE_PUSH_OFFSET;
+        const auto to_square =
+            bitboard::BitScanForward(pawn_single_pushes_no_promo);
+        const auto from_square = to_square + PAWN_SINGLE_PUSH_OFFSET;
+
         move_list.emplace_back(from_square, to_square, PAWN, EMPTY_PIECE,
                                EMPTY_PIECE, false, false, false);
+
         bitboard::PopLastBit(pawn_single_pushes_no_promo);
     }
 }
@@ -179,12 +189,15 @@ PawnCapturesPromotion(std::vector<Move> &move_list, const Board &board) {
             move_list.emplace_back(from_square, to_square, PAWN,
                                    board.piece(to_square).type, QUEEN, false,
                                    false, false);
+
             move_list.emplace_back(from_square, to_square, PAWN,
                                    board.piece(to_square).type, KNIGHT, false,
                                    false, false);
+
             move_list.emplace_back(from_square, to_square, PAWN,
                                    board.piece(to_square).type, ROOK, false,
                                    false, false);
+
             move_list.emplace_back(from_square, to_square, PAWN,
                                    board.piece(to_square).type, BISHOP, false,
                                    false, false);
@@ -224,6 +237,7 @@ PawnCapturesNoPromotion(std::vector<Move> &move_list,
         while (pawn_captures_no_promo) {
             const auto to_square =
                 bitboard::BitScanForward(pawn_captures_no_promo);
+
             move_list.emplace_back(from_square, to_square, PAWN,
                                    board.piece(to_square).type, EMPTY_PIECE,
                                    false, false, false);
@@ -371,7 +385,7 @@ SliderMoves(std::vector<Move> &move_list, const Board &board) {
     }
 }
 
-[[maybe_unused]] std::vector<Move>
+std::vector<Move>
 PseudoLegal(const Board &board) noexcept {
     std::vector<Move> moves;
     moves.reserve(kMaxMoves);
@@ -423,7 +437,7 @@ PseudoLegal(const Board &board) noexcept {
     return moves;
 }
 
-[[maybe_unused]] std::vector<Move>
+std::vector<Move>
 PseudoLegalCaptures(const Board &board) noexcept {
     std::vector<Move> moves;
     moves.reserve(kMaxMoves);
@@ -455,38 +469,18 @@ PseudoLegalCaptures(const Board &board) noexcept {
     return moves;
 }
 
-[[maybe_unused]] bool
-HasLegalMoves(Board &board) noexcept {
-    const auto state = board.GetStateBackup();
-
-    for (const Move &move : PseudoLegal(board)) {
-        board.Make(move);
-
-        const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
-        if (!board.IsSquareAttacked(king_sq, board.active())) {
-            board.Unmake(move, state);
-            return true;
-        }
-
-        board.Unmake(move, state);
-    }
-
-    return false;
-}
-
-[[maybe_unused]] std::vector<Move>
-LegalMoves(Board &board) noexcept {
+std::vector<Move>
+Legal(Board &board) noexcept {
     std::vector<Move> moves;
     moves.reserve(kMaxMoves);
 
     const auto state = board.GetStateBackup();
-
     for (const Move &move : movegen::PseudoLegal(board)) {
         board.Make(move);
 
         const auto king_sq =
             bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             moves.push_back(move);
         }
@@ -497,18 +491,18 @@ LegalMoves(Board &board) noexcept {
     return moves;
 }
 
-[[maybe_unused]] std::vector<Move>
+std::vector<Move>
 LegalCaptures(Board &board) noexcept {
     std::vector<Move> captures;
     captures.reserve(kMaxMoves);
 
     const auto state = board.GetStateBackup();
-
     for (const Move &move : movegen::PseudoLegalCaptures(board)) {
         board.Make(move);
 
         const auto king_sq =
             bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             captures.push_back(move);
         }
@@ -517,5 +511,25 @@ LegalCaptures(Board &board) noexcept {
     }
 
     return captures;
+}
+
+bool
+HasLegal(Board &board) noexcept {
+    const auto state = board.GetStateBackup();
+    for (const Move &move : PseudoLegal(board)) {
+        board.Make(move);
+
+        const auto king_sq =
+            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+
+        if (!board.IsSquareAttacked(king_sq, board.active())) {
+            board.Unmake(move, state);
+            return true;
+        }
+
+        board.Unmake(move, state);
+    }
+
+    return false;
 }
 }   // namespace codchess::movegen

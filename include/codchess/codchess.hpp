@@ -12,9 +12,6 @@
 // The namespace for move generation functionality.
 #include <codchess/movegen.hpp>
 
-// The namespace for all zobrist functionality.
-#include <codchess/movegen.hpp>
-
 namespace codchess {
 /// @brief Initializes all codchess functionality.
 /// @note This function must be called before any other codchess functionality
