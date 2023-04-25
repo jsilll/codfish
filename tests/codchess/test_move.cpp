@@ -1,14 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <codchess/codlib.hpp>
+#include <codchess/codchess.hpp>
 
-TEST_CASE("Move Class", "[move]")
-{
-    codlib::Init();
+TEST_CASE("Move Class", "[move]") {
+    codchess::Init();
+    using namespace codchess;
 
-    SECTION("Impossible Move")
-    {
-        Move move = Move(0, 63, PAWN, QUEEN, QUEEN, true, false, true);
+    SECTION("Impossible Move") {
+        const auto move = Move(0, 63, PAWN, QUEEN, QUEEN, true, false, true);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 63);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -21,9 +20,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1h8q");
     }
 
-    SECTION("Pawn Takes King")
-    {
-        Move move = Move(0, 1, PAWN, KING, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes King") {
+        const auto move =
+            Move(0, 1, PAWN, KING, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -39,9 +38,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Queen")
-    {
-        Move move = Move(0, 1, PAWN, QUEEN, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes Queen") {
+        const auto move =
+            Move(0, 1, PAWN, QUEEN, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -55,9 +54,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Rook")
-    {
-        Move move = Move(0, 1, PAWN, ROOK, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes Rook") {
+        const auto move =
+            Move(0, 1, PAWN, ROOK, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -72,9 +71,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Bishop")
-    {
-        Move move = Move(0, 1, PAWN, BISHOP, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes Bishop") {
+        const auto move =
+            Move(0, 1, PAWN, BISHOP, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -88,9 +87,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Knight")
-    {
-        Move move = Move(0, 1, PAWN, KNIGHT, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes Knight") {
+        const auto move =
+            Move(0, 1, PAWN, KNIGHT, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);
@@ -104,9 +103,9 @@ TEST_CASE("Move Class", "[move]")
         REQUIRE(move.Uci() == "a1b1");
     }
 
-    SECTION("Pawn Takes Pawn")
-    {
-        Move move = Move(0, 1, PAWN, PAWN, EMPTY_PIECE, false, false, false);
+    SECTION("Pawn Takes Pawn") {
+        const auto move =
+            Move(0, 1, PAWN, PAWN, EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == 0);
         REQUIRE(move.ToSquare() == 1);
         REQUIRE(move.MovedPiece() == PAWN);

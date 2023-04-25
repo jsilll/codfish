@@ -2,8 +2,10 @@
 
 #include <string>
 
+namespace codchess {
 /// @brief The ranks of the board
-/// @note This enum is used both for iterating over the ranks and for indexing into arrays
+/// @note This enum is used both for iterating over the ranks and for indexing
+/// @note into arrays
 enum Rank : int {
     RANK_1 [[maybe_unused]],
     RANK_2 [[maybe_unused]],
@@ -18,7 +20,8 @@ enum Rank : int {
 };
 
 /// @brief The files of the board
-/// @note This enum is used both for iterating over the files and for indexing into arrays
+/// @note This enum is used both for iterating over the files and for indexing
+/// @note into arrays
 enum File : int {
     FILE_A [[maybe_unused]],
     FILE_B [[maybe_unused]],
@@ -33,7 +36,8 @@ enum File : int {
 };
 
 /// @brief The squares of the board
-/// @note This enum is used both for iterating over the squares and for indexing into arrays
+/// @note This enum is used both for iterating over the squares and for indexing
+/// @note into arrays
 enum Square : int {
     A1 [[maybe_unused]],
     B1 [[maybe_unused]],
@@ -106,15 +110,20 @@ enum Square : int {
 };
 
 /// @brief The colors of the pieces
-/// @note This enum is used both for iterating over the colors and for indexing into arrays
+/// @note This enum is used both for iterating over the colors and for indexing
+/// @note into arrays
 enum Color : int {
-    WHITE [[maybe_unused]], BLACK [[maybe_unused]], /// @brief Used for iterating over the colors not including BOTH
-    N_COLORS [[maybe_unused]], /// @brief Used for representing both colors for occupancy bitboards
+    WHITE [[maybe_unused]],
+    BLACK [[maybe_unused]],
+    /// @brief Used for iterating over the colors not including BOTH
+    N_COLORS [[maybe_unused]],
+    /// @brief Used for representing both colors for occupancy bitboards
     BOTH [[maybe_unused]] = 2,
 };
 
 /// @brief The types of pieces
-/// @note This enum is used both for iterating over the piece types and for indexing into arrays
+/// @note This enum is used both for iterating over the piece types and for
+/// @note indexing into arrays
 enum PieceType : int {
     PAWN [[maybe_unused]],
     KNIGHT [[maybe_unused]],
@@ -129,7 +138,8 @@ enum PieceType : int {
 };
 
 /// @brief The different types of castling_availability rights
-/// @note The values are powers of 2 so that each bit represents a different castling_availability right: 0001 = WHITE_KING, 0010 = WHITE_QUEEN, 0100 = BLACK_KING, 1000 = BLACK_QUEEN
+/// @note The values are powers of 2 so that each bit represents a different
+/// @note castling_availability right
 enum CastlingAvailability : int {
     NONE [[maybe_unused]] = 0,
     WHITE_KING [[maybe_unused]] = 1,
@@ -138,3 +148,4 @@ enum CastlingAvailability : int {
     BLACK_QUEEN [[maybe_unused]] = 8,
     ALL [[maybe_unused]] = 15,
 };
+}   // namespace codchess

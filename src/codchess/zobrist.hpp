@@ -4,7 +4,7 @@
 #include <codchess/bitboard.hpp>
 #include <codchess/board.hpp>
 
-namespace zobrist {
+namespace codchess::zobrist {
 
     /// @brief Initializes the zobrist keys
     void Init() noexcept;
@@ -29,4 +29,4 @@ namespace zobrist {
     /// @return The hash key
     std::uint64_t generate_hash_key(const Board &board) noexcept;
 
-}// namespace zobrist
+}// namespace codchess::zobrist

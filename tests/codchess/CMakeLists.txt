@@ -1,5 +1,5 @@
 # -- Test Sources --
-file(GLOB SOURCES *.cpp)
+file(GLOB SOURCES test_*.cpp)
 
 # -- Test Executables --
 foreach (SOURCE ${SOURCES})
@@ -9,7 +9,7 @@ foreach (SOURCE ${SOURCES})
 
     target_link_libraries(${TEST}
             PRIVATE Catch2::Catch2WithMain
-            PRIVATE codlib)
+            PRIVATE codchess)
 
     add_test(${TEST} ${TEST})
 endforeach ()
