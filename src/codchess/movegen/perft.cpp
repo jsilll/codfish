@@ -5,13 +5,9 @@
 #include <codchess/movegen.hpp>
 
 namespace codchess::perft {
-int
-Perft(Board &board, const int depth) noexcept {
-    if (depth == 0) {
-        return 1;
-    }
-
-    int nodes{0};
+std::uint32_t
+Perft(Board &board, std::uint32_t depth) noexcept {
+    std::uint32_t nodes{0};
     for (const Move &move : movegen::PseudoLegal(board)) {
         const auto board_info = board.GetStateBackup();
 
@@ -19,8 +15,13 @@ Perft(Board &board, const int depth) noexcept {
 
         const auto king_sq =
             bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+
         if (!board.IsSquareAttacked(king_sq, board.active())) {
-            nodes += Perft(board, depth - 1);
+            if (depth == 1) {
+                nodes++;
+            } else {
+                nodes += Perft(board, depth - 1);
+            }
         }
 
         board.Unmake(move, board_info);

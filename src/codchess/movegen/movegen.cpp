@@ -75,13 +75,14 @@ static void
 EnPassantCaptures(std::vector<Move> &move_list, const Board &board) noexcept {
     constexpr Color Opponent = ToMove == WHITE ? BLACK : WHITE;
 
-    if (board.en_passant_square() != -1) {
+    if (board.en_passant_square() != EMPTY_SQUARE) {
         auto pawns_can_en_passant =
             attacks::PAWN_ATTACKS[Opponent][board.en_passant_square()] &
             board.pieces(ToMove, PAWN);
 
         while (pawns_can_en_passant) {
-            int from_square = bitboard::BitScanForward(pawns_can_en_passant);
+            const auto from_square =
+                bitboard::BitScanForward(pawns_can_en_passant);
 
             move_list.emplace_back(from_square, board.en_passant_square(), PAWN,
                                    board.piece(board.en_passant_square()).type,
@@ -284,10 +285,7 @@ LeaperMoves(std::vector<Move> &move_list, const Board &board) noexcept {
                   "Unsupported piece type in generateLeaperMoves()");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
-
     auto to_move_pieces = board.pieces(ToMove, PType);
-    const auto to_move_occupancies = board.occupancies(ToMove);
-    const auto opponent_occupancies = board.occupancies(Opponent);
 
     while (to_move_pieces) {
         const auto from_square = bitboard::BitScanForward(to_move_pieces);
@@ -295,14 +293,17 @@ LeaperMoves(std::vector<Move> &move_list, const Board &board) noexcept {
         auto moves{bitboard::ZERO};
 
         if constexpr (GType == QUIETS) {
+            const auto both_occupancies = board.occupancies(BOTH);
             if constexpr (PType == KNIGHT) {
                 moves =
-                    attacks::KNIGHT_ATTACKS[from_square] & ~to_move_occupancies;
+                    attacks::KNIGHT_ATTACKS[from_square] & ~both_occupancies;
             } else {
                 moves =
-                    attacks::KING_ATTACKS[from_square] & ~to_move_occupancies;
+                    attacks::KING_ATTACKS[from_square] & ~both_occupancies;
             }
         } else {
+            const auto to_move_occupancies = board.occupancies(ToMove);
+            const auto opponent_occupancies = board.occupancies(Opponent);
             if constexpr (PType == KNIGHT) {
                 moves = attacks::KNIGHT_ATTACKS[from_square] &
                         ~to_move_occupancies & opponent_occupancies;

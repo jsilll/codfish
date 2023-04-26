@@ -99,9 +99,9 @@ PawnDoublePushes(const bitboard::Bitboard pawns,
         PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);
 
     if constexpr (C == Color::WHITE) {
-        return pushes & utils::MASK_RANK[RANK_3];
-    } else {
         return pushes & utils::MASK_RANK[RANK_4];
+    } else {
+        return pushes & utils::MASK_RANK[RANK_5];
     }
 }
 

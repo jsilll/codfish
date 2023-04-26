@@ -207,6 +207,12 @@ class Board {
     /// @param backup The previous game state
     void Unmake(Move move, const StateBackup &backup) noexcept;
 
+    /// @brief Displays the board
+    /// @param os The output stream 
+    /// @param ascii Whether to display the board in ASCII 
+    /// @param color Whether to display the board with white on bottom
+    void Display(std::ostream &os, bool ascii = true, bool white_on_bottom = true) const noexcept;
+
   private:
     /// @brief Represents a FEN string
     struct Fen {

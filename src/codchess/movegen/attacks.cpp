@@ -30,10 +30,10 @@ auto BISHOP_ATTACKS = std::vector<std::vector<bitboard::Bitboard>>(
 /// @return A bitboard of all the knight attacks.
 [[nodiscard]] constexpr bitboard::Bitboard
 KnightAttacks(const bitboard::Bitboard knights) noexcept {
-    constexpr bitboard::Bitboard CLEAR_FILE_HG =
-        utils::MASK_CLEAR_FILE[FILE_H] | utils::MASK_CLEAR_FILE[FILE_G];
-    constexpr bitboard::Bitboard CLEAR_FILE_AB =
-        utils::MASK_CLEAR_FILE[FILE_A] | utils::MASK_CLEAR_FILE[FILE_B];
+    constexpr auto CLEAR_FILE_HG =
+        utils::MASK_CLEAR_FILE[FILE_H] & utils::MASK_CLEAR_FILE[FILE_G];
+    constexpr auto CLEAR_FILE_AB =
+        utils::MASK_CLEAR_FILE[FILE_A] & utils::MASK_CLEAR_FILE[FILE_B];
 
     const auto l1 = (bitboard::ShiftOne<bitboard::Direction::WEST>(knights)) &
                     utils::MASK_CLEAR_FILE[7];

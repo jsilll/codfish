@@ -459,10 +459,11 @@ Board::SetFromFen(const std::string &fen_str) noexcept {
     }
 
     if (fen.en_passant_square != "-") {
-        int en_passant_file = fen.en_passant_square[0] - 'a';
-        int en_passant_rank = fen.en_passant_square[1] - '1';
+        const int en_passant_file = fen.en_passant_square[0] - 'a';
+        const int en_passant_rank = fen.en_passant_square[1] - '1';
         _en_passant_square =
-            utils::GetSquare((Rank) en_passant_rank, (File) en_passant_file);
+            utils::GetSquare(static_cast<Rank>(en_passant_rank),
+                             static_cast<File>(en_passant_file));
     } else {
         _en_passant_square = EMPTY_SQUARE;
     }
@@ -525,46 +526,47 @@ Board::UpdateBitboards() noexcept {
     UpdateOccupancies();
 }
 
-// std::ostream &operator<<(std::ostream &os, const Board &board) noexcept {
-//     const int offset = board._ascii ? 0 : 13;
-//
-//     if (!board._white_on_bottom) {
-//         os << "      h   g   f   e   d   c   b   a\n";
-//         for (int rank = RANK_1; rank < RANK_8; rank++) {
-//             os << "    +---+---+---+---+---+---+---+---+\n"
-//                << "    |";
-//             for (int file = FILE_H; file >= FILE_A; file--) {
-//                 Board::Piece piece = board._piece[Board::GetSquare((Rank)
-//                 rank, static_cast<File>(file))]; os << " " <<
-//                 PIECE_DISPLAY[piece.type + offset + (6 * piece.color)] << "
-//                 |";
-//             }
-//             os << std::setw(3) << rank + 1 << "\n";
-//         }
-//         os << "    +---+---+---+---+---+---+---+---+\n";
-//     } else {
-//         for (int rank = RANK_8; rank >= RANK_1; rank--) {
-//             os << "    +---+---+---+---+---+---+---+---+\n" << std::setw(3)
-//             << rank + 1 << " |";
-//
-//             for (int file = 0; file < 8; file++) {
-//                 Board::Piece piece = board._piece[Board::GetSquare((Rank)
-//                 rank, static_cast<File>(file))]; os << " " <<
-//                 PIECE_DISPLAY[piece.type + offset + (6 * piece.color)] << "
-//                 |";
-//             }
-//             os << '\n';
-//         }
-//         os << "    +---+---+---+---+---+---+---+---+\n"
-//            << "      a   b   c   d   e   f   g   h\n";
-//     }
-//
-//     os << "Side to move: " << (board._active == WHITE ? "White" : "Black") <<
-//     '\n'; os << "Castling rights: " << board.castling_availability() << '\n';
-//     os << "En passant square: " << board.en_passant_square() << '\n';
-//     os << "Half move clock: " << board.half_move_clock() << '\n';
-//     os << "Full move number: " << board.full_move_number() << '\n';
-//
-//     return os;
-// }
+void
+Board::Display(std::ostream &os, const bool ascii,
+               const bool white_on_bottom) const noexcept {
+    const int offset = ascii ? 0 : 13;
+
+    if (!white_on_bottom) {
+        os << "      h   g   f   e   d   c   b   a\n";
+        for (int rank = RANK_1; rank < RANK_8; rank++) {
+            os << "    +---+---+---+---+---+---+---+---+\n"
+               << "    |";
+            for (int file = FILE_H; file >= FILE_A; file--) {
+                Board::Piece piece = _piece[utils::GetSquare(
+                    static_cast<Rank>(rank), static_cast<File>(file))];
+                os << " "
+                   << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
+                   << " |";
+            }
+            os << std::setw(3) << rank + 1 << "\n";
+        }
+        os << "    +---+---+---+---+---+---+---+---+\n";
+    } else {
+        for (int rank = RANK_8; rank >= RANK_1; rank--) {
+            os << "    +---+---+---+---+---+---+---+---+\n"
+               << std::setw(3) << rank + 1 << " |";
+            for (int file = 0; file < 8; file++) {
+                Board::Piece piece = _piece[utils::GetSquare(
+                    static_cast<Rank>(rank), static_cast<File>(file))];
+                os << " "
+                   << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
+                   << " |";
+            }
+            os << '\n';
+        }
+        os << "    +---+---+---+---+---+---+---+---+\n"
+           << "      a   b   c   d   e   f   g   h\n";
+    }
+
+    os << "Side to move: " << (_active == WHITE ? "White" : "Black") << '\n';
+    os << "Castling rights: " << _castling_availability << '\n';
+    os << "En passant square: " << _en_passant_square << '\n';
+    os << "Half move clock: " << _half_move_clock << '\n';
+    os << "Full move number: " << _full_move_number << '\n';
+}
 }   // namespace codchess
