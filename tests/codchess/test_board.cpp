@@ -10,17 +10,17 @@ TEST_CASE("Board::active() returns the correct color", "[board]") {
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.active() == Color::WHITE);
+        REQUIRE(board.active() == WHITE);
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        REQUIRE(board.active() == Color::WHITE);
+        REQUIRE(board.active() == WHITE);
     }
 
     SECTION("Position 3") {
         const auto board = Board("8/8/8/8/8/8/8/8 b - - 0 1");
-        REQUIRE(board.active() == Color::BLACK);
+        REQUIRE(board.active() == BLACK);
     }
 }
 
@@ -30,17 +30,17 @@ TEST_CASE("Board::inactive() returns the correct color", "[board]") {
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.inactive() == Color::BLACK);
+        REQUIRE(board.inactive() == BLACK);
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        REQUIRE(board.inactive() == Color::BLACK);
+        REQUIRE(board.inactive() == BLACK);
     }
 
     SECTION("Position 3") {
         const auto board = Board("8/8/8/8/8/8/8/8 b - - 0 1");
-        REQUIRE(board.inactive() == Color::WHITE);
+        REQUIRE(board.inactive() == WHITE);
     }
 }
 
@@ -219,140 +219,140 @@ TEST_CASE("Board::piece() returns the correct piece", "[board]") {
         const auto board = Board();
 
         REQUIRE(board.piece(Square::A1) ==
-                Board::Piece{Color::WHITE, PieceType::ROOK});
+                Board::Piece{WHITE, ROOK});
         REQUIRE(board.piece(Square::B1) ==
-                Board::Piece{Color::WHITE, PieceType::KNIGHT});
+                Board::Piece{WHITE, KNIGHT});
         REQUIRE(board.piece(Square::C1) ==
-                Board::Piece{Color::WHITE, PieceType::BISHOP});
+                Board::Piece{WHITE, BISHOP});
         REQUIRE(board.piece(Square::D1) ==
-                Board::Piece{Color::WHITE, PieceType::QUEEN});
+                Board::Piece{WHITE, QUEEN});
         REQUIRE(board.piece(Square::E1) ==
-                Board::Piece{Color::WHITE, PieceType::KING});
+                Board::Piece{WHITE, KING});
         REQUIRE(board.piece(Square::F1) ==
-                Board::Piece{Color::WHITE, PieceType::BISHOP});
+                Board::Piece{WHITE, BISHOP});
         REQUIRE(board.piece(Square::G1) ==
-                Board::Piece{Color::WHITE, PieceType::KNIGHT});
+                Board::Piece{WHITE, KNIGHT});
         REQUIRE(board.piece(Square::H1) ==
-                Board::Piece{Color::WHITE, PieceType::ROOK});
+                Board::Piece{WHITE, ROOK});
 
         REQUIRE(board.piece(Square::A2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::B2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::C2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::D2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::E2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::F2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::G2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
         REQUIRE(board.piece(Square::H2) ==
-                Board::Piece{Color::WHITE, PieceType::PAWN});
+                Board::Piece{WHITE, PAWN});
 
         REQUIRE(board.piece(Square::A3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::B3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::C3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::D3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::E3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::F3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::G3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::H3) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
 
         REQUIRE(board.piece(Square::A4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::B4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::C4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::D4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::E4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::F4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::G4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::H4) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
 
         REQUIRE(board.piece(Square::A5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::B5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::C5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::D5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::E5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::F5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::G5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::H5) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
 
         REQUIRE(board.piece(Square::A6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::B6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::C6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::D6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::E6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::F6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::G6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
         REQUIRE(board.piece(Square::H6) ==
-                Board::Piece{Color::BOTH, PieceType::EMPTY_PIECE});
+                Board::Piece{BLACK, EMPTY_PIECE});
 
         REQUIRE(board.piece(Square::A7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::B7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::C7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::D7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::E7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::F7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::G7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
         REQUIRE(board.piece(Square::H7) ==
-                Board::Piece{Color::BLACK, PieceType::PAWN});
+                Board::Piece{BLACK, PAWN});
 
         REQUIRE(board.piece(Square::A8) ==
-                Board::Piece{Color::BLACK, PieceType::ROOK});
+                Board::Piece{BLACK, ROOK});
         REQUIRE(board.piece(Square::B8) ==
-                Board::Piece{Color::BLACK, PieceType::KNIGHT});
+                Board::Piece{BLACK, KNIGHT});
         REQUIRE(board.piece(Square::C8) ==
-                Board::Piece{Color::BLACK, PieceType::BISHOP});
+                Board::Piece{BLACK, BISHOP});
         REQUIRE(board.piece(Square::D8) ==
-                Board::Piece{Color::BLACK, PieceType::QUEEN});
+                Board::Piece{BLACK, QUEEN});
         REQUIRE(board.piece(Square::E8) ==
-                Board::Piece{Color::BLACK, PieceType::KING});
+                Board::Piece{BLACK, KING});
         REQUIRE(board.piece(Square::F8) ==
-                Board::Piece{Color::BLACK, PieceType::BISHOP});
+                Board::Piece{BLACK, BISHOP});
         REQUIRE(board.piece(Square::G8) ==
-                Board::Piece{Color::BLACK, PieceType::KNIGHT});
+                Board::Piece{BLACK, KNIGHT});
         REQUIRE(board.piece(Square::H8) ==
-                Board::Piece{Color::BLACK, PieceType::ROOK});
+                Board::Piece{BLACK, ROOK});
     }
 }
 
@@ -389,30 +389,30 @@ TEST_CASE("Board::pieces() returns the correct bitboard", "[board]") {
     SECTION("Position 1") {
         const auto board = Board();
 
-        REQUIRE(board.pieces(Color::WHITE, PieceType::PAWN) ==
+        REQUIRE(board.pieces(WHITE, PAWN) ==
                 0x000000000000FF00);
-        REQUIRE(board.pieces(Color::WHITE, PieceType::KNIGHT) ==
+        REQUIRE(board.pieces(WHITE, KNIGHT) ==
                 0x0000000000000042);
-        REQUIRE(board.pieces(Color::WHITE, PieceType::BISHOP) ==
+        REQUIRE(board.pieces(WHITE, BISHOP) ==
                 0x0000000000000024);
-        REQUIRE(board.pieces(Color::WHITE, PieceType::ROOK) ==
+        REQUIRE(board.pieces(WHITE, ROOK) ==
                 0x0000000000000081);
-        REQUIRE(board.pieces(Color::WHITE, PieceType::QUEEN) ==
+        REQUIRE(board.pieces(WHITE, QUEEN) ==
                 0x0000000000000008);
-        REQUIRE(board.pieces(Color::WHITE, PieceType::KING) ==
+        REQUIRE(board.pieces(WHITE, KING) ==
                 0x0000000000000010);
 
-        REQUIRE(board.pieces(Color::BLACK, PieceType::PAWN) ==
+        REQUIRE(board.pieces(BLACK, PAWN) ==
                 0x00FF000000000000);
-        REQUIRE(board.pieces(Color::BLACK, PieceType::KNIGHT) ==
+        REQUIRE(board.pieces(BLACK, KNIGHT) ==
                 0x4200000000000000);
-        REQUIRE(board.pieces(Color::BLACK, PieceType::BISHOP) ==
+        REQUIRE(board.pieces(BLACK, BISHOP) ==
                 0x2400000000000000);
-        REQUIRE(board.pieces(Color::BLACK, PieceType::ROOK) ==
+        REQUIRE(board.pieces(BLACK, ROOK) ==
                 0x8100000000000000);
-        REQUIRE(board.pieces(Color::BLACK, PieceType::QUEEN) ==
+        REQUIRE(board.pieces(BLACK, QUEEN) ==
                 0x0800000000000000);
-        REQUIRE(board.pieces(Color::BLACK, PieceType::KING) ==
+        REQUIRE(board.pieces(BLACK, KING) ==
                 0x1000000000000000);
     }
 }
@@ -423,9 +423,9 @@ TEST_CASE("Board::occupancies() returns the correct bitboard", "[board]") {
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.occupancies(Color::WHITE) == 0x000000000000FFFF);
-        REQUIRE(board.occupancies(Color::BLACK) == 0xFFFF000000000000);
-        REQUIRE(board.occupancies(Color::BOTH) == 0xFFFF00000000FFFF);
+        REQUIRE(board.occupancies(WHITE) == 0x000000000000FFFF);
+        REQUIRE(board.occupancies(BLACK) == 0xFFFF000000000000);
+        REQUIRE(board.occupancies(BOTH) == 0xFFFF00000000FFFF);
     }
 }
 
@@ -484,22 +484,22 @@ TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
 
         for (int square = A3; square <= H3; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::WHITE) == true);
+                                           WHITE) == true);
         }
 
         for (int square = A6; square <= H6; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::BLACK) == true);
+                                           BLACK) == true);
         }
 
         for (int square = A4; square < N_SQUARES; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::WHITE) == false);
+                                           WHITE) == false);
         }
 
         for (int square = A1; square <= H5; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::BLACK) == false);
+                                           BLACK) == false);
         }
     }
 
@@ -507,9 +507,9 @@ TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
         for (int square = 0; square < 64; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::WHITE) == false);
+                                           WHITE) == false);
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           Color::BLACK) == false);
+                                           BLACK) == false);
         }
     }
 }

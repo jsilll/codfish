@@ -57,10 +57,9 @@ KingAttacks(bitboard::Bitboard kings) noexcept {
                    bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
 
     kings |= attacks;
-    attacks |= bitboard::ShiftOne<bitboard::Direction::NORTH>(kings) |
-               bitboard::ShiftOne<bitboard::Direction::SOUTH>(kings);
 
-    return attacks;
+    return attacks | bitboard::ShiftOne<bitboard::Direction::NORTH>(kings) |
+           bitboard::ShiftOne<bitboard::Direction::SOUTH>(kings);
 }
 
 /// @brief Returns a bitboard of all the bishop attacks from a given square with
@@ -74,7 +73,6 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
     const auto file = utils::GetFile(sq);
 
     auto attacks{bitboard::ZERO};
-
     for (int r = rank + 1, f = file + 1; r < N_RANKS && f < N_FILES; ++r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
@@ -173,9 +171,9 @@ void
 Init() noexcept {
     for (int sq = A1; sq < N_SQUARES; ++sq) {
         PAWN_ATTACKS[WHITE][sq] =
-            attacks::PawnAllAttacks<Color::WHITE>(utils::SQUARE_BB[sq]);
+            attacks::PawnAllAttacks<WHITE>(utils::SQUARE_BB[sq]);
         PAWN_ATTACKS[BLACK][sq] =
-            attacks::PawnAllAttacks<Color::BLACK>(utils::SQUARE_BB[sq]);
+            attacks::PawnAllAttacks<BLACK>(utils::SQUARE_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {

@@ -11,7 +11,7 @@ void cli::MoveCommand::execute(std::vector<std::string> &args)
         return;
     }
 
-    for (const Move &move : movegen::generateLegalMoves(_board))
+    for (const auto move : movegen::generateLegalMoves(_board))
     {
         if (move.get_uci() == args[0])
         {

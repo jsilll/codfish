@@ -38,11 +38,11 @@ extern bitboard::Bitboard PAWN_ATTACKS[N_COLORS][N_SQUARES];
 template <Color C, bitboard::Direction D>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == Color::WHITE || C == Color::BLACK);
+    static_assert(C == WHITE || C == BLACK);
     static_assert(D == bitboard::Direction::WEST ||
                   D == bitboard::Direction::EAST);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == WHITE) {
         if constexpr (D == bitboard::Direction::WEST) {
             return bitboard::ShiftOne<bitboard::Direction::NORTH_WEST>(pawns);
         } else {
@@ -60,7 +60,7 @@ PawnAttacks(const bitboard::Bitboard pawns) noexcept {
 template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAllAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == Color::WHITE || C == Color::BLACK);
+    static_assert(C == WHITE || C == BLACK);
 
     return PawnAttacks<C, bitboard::Direction::WEST>(pawns) |
            PawnAttacks<C, bitboard::Direction::EAST>(pawns);
@@ -75,9 +75,9 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnSinglePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == Color::WHITE || C == Color::BLACK);
+    static_assert(C == WHITE || C == BLACK);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == WHITE) {
         return bitboard::ShiftOne<bitboard::Direction::NORTH>(pawns) & empty;
     } else {
         return bitboard::ShiftOne<bitboard::Direction::SOUTH>(pawns) & empty;
@@ -93,12 +93,12 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnDoublePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == Color::WHITE || C == Color::BLACK);
+    static_assert(C == WHITE || C == BLACK);
 
     const auto pushes =
         PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == WHITE) {
         return pushes & utils::MASK_RANK[RANK_4];
     } else {
         return pushes & utils::MASK_RANK[RANK_5];

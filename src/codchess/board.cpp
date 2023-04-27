@@ -120,8 +120,7 @@ Board::Make(Move move) noexcept {
     const auto pawn_push_en_passant_offset = _active == WHITE ? -8 : 8;
 
     bitboard::PopBit(_pieces[_active][piece_type], (Square) from_square);
-    _piece[from_square].type = EMPTY_PIECE;
-    _piece[from_square].color = BLACK;
+    _piece[from_square] = {BLACK, EMPTY_PIECE};
 
     // Remove from hash key moved piece
     _hash_key ^= zobrist::PIECE_KEY[_active][piece_type][from_square];
@@ -129,8 +128,7 @@ Board::Make(Move move) noexcept {
     if (is_en_passant) {
         const auto captured_piece_square =
             static_cast<Square>(to_square + pawn_push_en_passant_offset);
-        _piece[captured_piece_square].type = EMPTY_PIECE;
-        _piece[captured_piece_square].color = BLACK;
+        _piece[captured_piece_square] = {BLACK, EMPTY_PIECE};
         bitboard::PopBit(_pieces[inactive()][PAWN], captured_piece_square);
 
         // Remove from hash key captured pawn
@@ -169,10 +167,8 @@ Board::Make(Move move) noexcept {
             rook_to_square = _active == WHITE ? D1 : D8;
         }
 
-        _piece[rook_to_square].type = ROOK;
-        _piece[rook_to_square].color = _active;
-        _piece[rook_from_square].color = BLACK;
-        _piece[rook_from_square].type = EMPTY_PIECE;
+        _piece[rook_to_square] = {_active, ROOK};
+        _piece[rook_from_square] = {BLACK, EMPTY_PIECE};
 
         bitboard::PopBit(_pieces[_active][ROOK], rook_from_square);
 
@@ -256,15 +252,13 @@ Board::Unmake(const Move move, const StateBackup &backup) noexcept {
         _piece[captured_piece_square].color = inactive();
         bitboard::SetBit(_pieces[inactive()][PAWN], captured_piece_square);
 
-        _piece[to_square].type = EMPTY_PIECE;
-        _piece[to_square].color = BLACK;
+        _piece[to_square] = {BLACK, EMPTY_PIECE};
     } else if (is_capture) {
         _piece[to_square].type = captured_piece;
         _piece[to_square].color = inactive();
         bitboard::SetBit(_pieces[inactive()][captured_piece], to_square);
     } else {
-        _piece[to_square].type = EMPTY_PIECE;
-        _piece[to_square].color = BLACK;
+        _piece[to_square] = {BLACK, EMPTY_PIECE};
     }
 
     if (is_promotion) {
@@ -281,12 +275,10 @@ Board::Unmake(const Move move, const StateBackup &backup) noexcept {
             rook_to_square = _active == WHITE ? D1 : D8;
         }
 
-        _piece[rook_to_square].type = EMPTY_PIECE;
-        _piece[rook_to_square].color = BLACK;
+        _piece[rook_to_square] = {BLACK, EMPTY_PIECE};
         bitboard::PopBit(_pieces[_active][ROOK], rook_to_square);
 
-        _piece[rook_from_square].type = ROOK;
-        _piece[rook_from_square].color = _active;
+        _piece[rook_from_square] = {_active, ROOK};
         bitboard::SetBit(_pieces[_active][ROOK], rook_from_square);
     }
 
@@ -308,8 +300,7 @@ Board::SetFromFen(const std::string &fen_str) noexcept {
     const auto fen = Fen(fen_str);
 
     for (int i = A1; i < N_SQUARES; ++i) {
-        _piece[i].color = BOTH;
-        _piece[i].type = EMPTY_PIECE;
+        _piece[i] = {BLACK, EMPTY_PIECE};
     }
 
     int file = FILE_A, rank = RANK_8;
@@ -537,7 +528,7 @@ Board::Display(std::ostream &os, const bool ascii,
             os << "    +---+---+---+---+---+---+---+---+\n"
                << "    |";
             for (int file = FILE_H; file >= FILE_A; file--) {
-                Board::Piece piece = _piece[utils::GetSquare(
+                const auto piece = _piece[utils::GetSquare(
                     static_cast<Rank>(rank), static_cast<File>(file))];
                 os << " "
                    << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
@@ -551,7 +542,7 @@ Board::Display(std::ostream &os, const bool ascii,
             os << "    +---+---+---+---+---+---+---+---+\n"
                << std::setw(3) << rank + 1 << " |";
             for (int file = 0; file < 8; file++) {
-                Board::Piece piece = _piece[utils::GetSquare(
+                const auto piece = _piece[utils::GetSquare(
                     static_cast<Rank>(rank), static_cast<File>(file))];
                 os << " "
                    << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
@@ -563,10 +554,8 @@ Board::Display(std::ostream &os, const bool ascii,
            << "      a   b   c   d   e   f   g   h\n";
     }
 
-    os << "Side to move: " << (_active == WHITE ? "White" : "Black") << '\n';
-    os << "Castling rights: " << _castling_availability << '\n';
-    os << "En passant square: " << _en_passant_square << '\n';
-    os << "Half move clock: " << _half_move_clock << '\n';
-    os << "Full move number: " << _full_move_number << '\n';
+    auto fen = GetFen();
+    fen = fen.substr(fen.find(' ') + 1);
+    os << "\n    " << fen << "\n";
 }
 }   // namespace codchess

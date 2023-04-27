@@ -8,7 +8,7 @@
 
 static std::optional<Move> parse_move(std::string move_uci, Board &board)
 {
-    for (Move const &move : movegen::generateLegalMoves(board))
+    for (const auto move : movegen::generateLegalMoves(board))
     {
         if (move.get_uci() == move_uci)
         {

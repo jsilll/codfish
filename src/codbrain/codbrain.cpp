@@ -67,7 +67,7 @@ int MovePicker::search(int depth, int alpha, int beta)
 
     Move best_move = Move();
     Board::GameState state = _board.get_state();
-    for (const Move &move : moves)
+    for (const auto move : moves)
     {
         _board.make(move);
 
@@ -159,7 +159,7 @@ int MovePicker::negamax(int alpha, int beta, int depth)
     int n_moves_searched = 0;
     bool has_legal_moves = false;
     int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
-    for (const Move &move : moves)
+    for (const auto move : moves)
     {
         _board.make(move);
 

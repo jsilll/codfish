@@ -59,6 +59,7 @@ add_subdirectory(src)
 # -- Testing only available when building Standalone --
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(tests)
+    add_subdirectory(benchmarks)
 endif ()
 
 # -- Executables --

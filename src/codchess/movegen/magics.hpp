@@ -29,7 +29,7 @@ extern Magic BISHOP_MAGIC_TABLE[N_SQUARES];
 /// @param magic The magic entry
 /// @return The magic index
 [[nodiscard]] constexpr bitboard::Bitboard
-MagicIndex(bitboard::Bitboard occ, const magics::Magic &magic) noexcept {
+MagicIndex(bitboard::Bitboard occ, const Magic &magic) noexcept {
     occ &= magic.mask;
     occ *= magic.magic;
     occ >>= magic.shift;

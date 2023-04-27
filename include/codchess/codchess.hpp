@@ -1,6 +1,6 @@
 #pragma once
 
-// The base namespace for all  functionality.
+// The enums for all  functionality.
 #include <codchess/base.hpp>
 
 // The namespace for all move encoding and decoding functionality.

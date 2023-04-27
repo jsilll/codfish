@@ -12,7 +12,7 @@ static void dperft(int depth, Board &board)
 {
     int total_nodes = 0;
     std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-    for (const Move &move : movegen::generate_pseudo_legal_moves(board))
+    for (const auto move : movegen::generate_pseudo_legal_moves(board))
     {
         Board::GameState state = board.get_state();
         board.make(move);
