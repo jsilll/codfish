@@ -6,7 +6,11 @@ add_library(codbrain STATIC ${SOURCES})
 
 # -- Include Directory --
 target_include_directories(codbrain
-        PUBLIC ${CMAKE_SOURCE_DIR}/include)
+        PUBLIC ../include)
+
+# -- Link Libraries --
+target_link_libraries(codbrain
+        PRIVATE codchess)
 
 # -- All Warnings as Errors --
 if (MSVC)

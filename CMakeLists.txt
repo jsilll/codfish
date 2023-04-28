@@ -53,8 +53,11 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif ()
 endif ()
 
-# -- Library --
-add_subdirectory(src)
+# -- Codchess --
+add_subdirectory(codchess)
+
+# -- Codlib -- 
+# add_subdirectory(codbrain)
 
 # -- Testing only available when building Standalone --
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -62,5 +65,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(benchmarks)
 endif ()
 
-# -- Executables --
-add_subdirectory(apps)
+# -- Examples --
+# add_subdirectory(examples)
+
+# -- Codfish --
+# add_subdirectory(codfish)

@@ -6,7 +6,7 @@ add_library(codchess STATIC ${SOURCES})
 
 # -- Include Directory --
 target_include_directories(codchess
-        PUBLIC ${CMAKE_SOURCE_DIR}/include)
+        PUBLIC ../include)
 
 # -- All Warnings as Errors --
 if (MSVC)
