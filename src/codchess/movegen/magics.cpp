@@ -1,4 +1,4 @@
-#include <codchess/movegen/magics.hpp>
+#include "magics.hpp"
 
 #include <codchess/bitboard.hpp>
 #include <codchess/utils.hpp>

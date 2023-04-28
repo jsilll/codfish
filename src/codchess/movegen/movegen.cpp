@@ -1,9 +1,8 @@
 #include <codchess/movegen.hpp>
 
 #include <codchess/bitboard.hpp>
-#include <codchess/board.hpp>
-#include <codchess/move.hpp>
-#include <codchess/movegen/attacks.hpp>
+
+#include "attacks.hpp"
 
 namespace codchess::movegen {
 /// @brief The type of move generation to perform.

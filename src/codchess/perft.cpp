@@ -1,8 +1,6 @@
 #include <codchess/perft.hpp>
 
 #include <codchess/bitboard.hpp>
-#include <codchess/move.hpp>
-#include <codchess/movegen.hpp>
 
 namespace codchess::perft {
 /// @brief Auxiliary function for perft

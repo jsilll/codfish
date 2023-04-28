@@ -1,11 +1,12 @@
 #include <codchess/board.hpp>
 
 #include <codchess/bitboard.hpp>
-#include <codchess/display.hpp>
-#include <codchess/move.hpp>
-#include <codchess/movegen/attacks.hpp>
 #include <codchess/utils.hpp>
-#include <codchess/zobrist.hpp>
+
+#include "display.hpp"
+#include "zobrist.hpp"
+
+#include "movegen/attacks.hpp"
 
 namespace codchess {
 [[maybe_unused]] std::string

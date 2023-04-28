@@ -2,4 +2,4 @@
 add_subdirectory(codchess)
 
 # -- Codbrain --
-# TODO: add_subdirectory(codbrain)
+add_subdirectory(codbrain)

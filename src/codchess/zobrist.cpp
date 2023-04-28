@@ -1,4 +1,4 @@
-#include <codchess/zobrist.hpp>
+#include "zobrist.hpp"
 
 namespace codchess::zobrist {
 /// @brief The keys for the side to move

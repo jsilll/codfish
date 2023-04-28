@@ -1,23 +1,26 @@
-#include <codchess/movepicker/ttable.hpp>
+#include <codbrain/ttable.hpp>
 
 #include <cstring>
 #include <iostream>
 
-TTable::~TTable()
-{
-    delete[] _table;
-}
+#include <codchess/bitboard.hpp>
 
-void TTable::clear()
-{
-    for (int p = 0; p < TABLE_SIZE; p++)
-    {
+using namespace codchess;
+using namespace bitboard;
+
+namespace codbrain {
+TTable::~TTable() { delete[] _table; }
+
+void
+TTable::clear() {
+    for (int p = 0; p < TABLE_SIZE; p++) {
         _table[p] = {0ULL, 0, 0, 0, {}};
     }
 }
 
-void TTable::set_entry(u64 hash_key, int depth, int flag, int score, std::vector<Move> moves)
-{
+void
+TTable::set_entry(std::uint64_t hash_key, int depth, int flag, int score,
+                  std::vector<Move> moves) {
     int entry = hash_key % TABLE_SIZE;
     _table[entry].depth = depth;
     _table[entry].flag = flag;
@@ -25,28 +28,25 @@ void TTable::set_entry(u64 hash_key, int depth, int flag, int score, std::vector
     _table[entry].moves = moves;
 }
 
-TTable::TTOutput TTable::read_hash(u64 hash_key, int alpha, int beta, int depth)
-{
+TTable::TTOutput
+TTable::read_hash(Bitboard hash_key, int alpha, int beta, int depth) {
     TTOutput search_result = {false, 0, {}};
     TTEntry hash_entry = _table[hash_key % TABLE_SIZE];
-    if ((hash_entry.hash_key == hash_key) && (hash_entry.depth >= depth))
-    {
+    if ((hash_entry.hash_key == hash_key) && (hash_entry.depth >= depth)) {
         search_result.found = true;
         search_result.moves = hash_entry.moves;
-        if (hash_entry.flag == HASH_FLAG_SCORE)
-        {
+        if (hash_entry.flag == HASH_FLAG_SCORE) {
             search_result.score = hash_entry.score;
             search_result.moves = hash_entry.moves;
         }
 
-        if ((hash_entry.flag == HASH_FLAG_ALPHA) && (hash_entry.score <= alpha))
-        {
+        if ((hash_entry.flag == HASH_FLAG_ALPHA) &&
+            (hash_entry.score <= alpha)) {
             search_result.score = alpha;
             search_result.moves = hash_entry.moves;
         }
 
-        if ((hash_entry.flag == HASH_FLAG_BETA) && (hash_entry.score > beta))
-        {
+        if ((hash_entry.flag == HASH_FLAG_BETA) && (hash_entry.score > beta)) {
             search_result.score = beta;
             search_result.moves = hash_entry.moves;
         }
@@ -54,3 +54,4 @@ TTable::TTOutput TTable::read_hash(u64 hash_key, int alpha, int beta, int depth)
 
     return search_result;
 }
+}   // namespace codbrain

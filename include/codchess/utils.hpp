@@ -5,7 +5,6 @@
 
 #include <codchess/base.hpp>
 #include <codchess/bitboard.hpp>
-#include <codchess/utils.hpp>
 
 namespace codchess::utils {
 /// @brief Bitboard masks for each rank
@@ -117,7 +116,7 @@ constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
 /// @brief Returns the inactive color
 /// @param to_move The color to move
 /// @return The inactive color
-[[nodiscard]] constexpr Color
+[[nodiscard]] constexpr auto
 GetOpponent(const Color to_move) noexcept {
     return static_cast<Color>(static_cast<int>(to_move) ^ 1);
 }
@@ -125,7 +124,7 @@ GetOpponent(const Color to_move) noexcept {
 /// @brief Returns the file of a square
 /// @param sq The square
 /// @return The file
-[[nodiscard]] constexpr File
+[[nodiscard]] constexpr auto
 GetFile(const Square sq) noexcept {
     return static_cast<File>(sq & 7);
 }
@@ -133,7 +132,7 @@ GetFile(const Square sq) noexcept {
 /// @brief Returns the rank of a square
 /// @param sq The square
 /// @return The rank
-[[nodiscard]] constexpr Rank
+[[nodiscard]] constexpr auto
 GetRank(const Square sq) noexcept {
     return static_cast<Rank>(sq >> 3);
 }
@@ -142,7 +141,7 @@ GetRank(const Square sq) noexcept {
 /// @param rk The rank
 /// @param fl The file
 /// @return The square
-[[nodiscard]] constexpr Square
+[[nodiscard]] constexpr auto
 GetSquare(const Rank rk, const File fl) noexcept {
     return static_cast<Square>(8 * rk + fl);
 }

@@ -1,6 +1,6 @@
 #include <codchess/move.hpp>
 
-#include <codchess/display.hpp>
+#include "display.hpp"
 
 namespace codchess {
 /// @brief Returns the move in UCI format

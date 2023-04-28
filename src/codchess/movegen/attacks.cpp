@@ -1,4 +1,4 @@
-#include <codchess/movegen/attacks.hpp>
+#include "attacks.hpp"
 
 #include <codchess/bitboard.hpp>
 #include <codchess/utils.hpp>

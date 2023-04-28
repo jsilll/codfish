@@ -1,8 +1,6 @@
 #pragma once
 
-#include <codchess/base.hpp>
-
-class Board;
+#include <codchess/board.hpp>
 
 namespace eval
 {
@@ -16,6 +14,6 @@ namespace eval
      * @param board
      * @return absolute evaluation
      */
-    int eval(const Board &board);
+    int eval(const codchess::Board &board);
 
 } // namespace eval

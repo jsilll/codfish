@@ -3,8 +3,9 @@
 #include <vector>
 
 #include <codchess/bitboard.hpp>
-#include <codchess/movegen/magics.hpp>
 #include <codchess/utils.hpp>
+
+#include "magics.hpp"
 
 namespace codchess::attacks {
 /// @brief Initializes all the attack tables

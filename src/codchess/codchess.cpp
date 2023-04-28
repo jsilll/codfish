@@ -1,8 +1,9 @@
 #include <codchess/codchess.hpp>
 
-#include <codchess/movegen/attacks.hpp>
-#include <codchess/movegen/magics.hpp>
-#include <codchess/zobrist.hpp>
+#include "zobrist.hpp"
+
+#include "movegen/attacks.hpp"
+#include "movegen/magics.hpp"
 
 namespace codchess {
 /// @brief Initializes all codchess functionality.

@@ -1,16 +1,12 @@
-#include <codchess/movepicker/histtable.hpp>
+#include <codbrain/histtable.hpp>
 
-HistoryTable::~HistoryTable()
-{
-    delete[] _hist_table;
-}
+namespace codbrain {
+HistoryTable::~HistoryTable() { delete[] _hist_table; }
 
-bool HistoryTable::is_repetition(u64 key) const
-{
-    for (int index = 0; index < _index; index++)
-    {
-        if (_hist_table[index] == key)
-        {
+bool
+HistoryTable::is_repetition(std::uint64_t key) const {
+    for (int index = 0; index < _index; index++) {
+        if (_hist_table[index] == key) {
             return true;
         }
     }
@@ -18,17 +14,18 @@ bool HistoryTable::is_repetition(u64 key) const
     return false;
 }
 
-void HistoryTable::push(u64 key)
-{
+void
+HistoryTable::push(std::uint64_t key) {
     _hist_table[_index++] = key;
 }
 
-void HistoryTable::pop()
-{
+void
+HistoryTable::pop() {
     --_index;
 }
 
-void HistoryTable::clear()
-{
+void
+HistoryTable::clear() {
     _index = 0;
 }
+}   // namespace codbrain
