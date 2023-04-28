@@ -170,12 +170,6 @@ class Board {
     [[nodiscard]] bool IsSquareAttacked(Square sq,
                                         Color attacker) const noexcept;
 
-    /// @brief Switches the side to move
-    /// @return The new side to move
-    constexpr auto SwitchActive() noexcept {
-        return _active = FlipColor(_active);
-    }
-
     /// @brief Sets the current en passant square
     /// @param sq The en passant square
     [[maybe_unused]] void en_passant_square(const Square sq) noexcept {
@@ -187,6 +181,20 @@ class Board {
     [[maybe_unused]] void
     castling_availability(const int castling_availability) noexcept {
         _castling_availability = castling_availability;
+    }
+
+    constexpr void SetStateBackup(const StateBackup &sb) noexcept {
+        _hash_key = sb.hash_key;
+        _half_move_clock = sb.half_move_clock;
+        _full_move_number = sb.full_move_number;
+        _en_passant_square = sb.en_passant_square;
+        _castling_availability = sb.castling_availability;
+    }
+
+    /// @brief Switches the side to move
+    /// @return The new side to move
+    constexpr auto SwitchActive() noexcept {
+        return _active = FlipColor(_active);
     }
 
     /// @brief Sets the board to the starting position
@@ -208,10 +216,11 @@ class Board {
     void Unmake(Move move, const StateBackup &backup) noexcept;
 
     /// @brief Displays the board
-    /// @param os The output stream 
-    /// @param ascii Whether to display the board in ASCII 
+    /// @param os The output stream
+    /// @param ascii Whether to display the board in ASCII
     /// @param color Whether to display the board with white on bottom
-    void Display(std::ostream &os, bool ascii = true, bool white_on_bottom = true) const noexcept;
+    void Display(std::ostream &os, bool ascii = true,
+                 bool white_on_bottom = true) const noexcept;
 
   private:
     /// @brief Represents a FEN string
