@@ -17,45 +17,14 @@
 #define WINDOW_EXPANSION 50
 #define MIN_EVAL         (INT_MIN + 1)
 
+using namespace codchess;
+
 namespace codbrain {
 static bool
 can_lmr(const Move move) {
     // Move can't be a capture nor a promotion for LMR to happen
     /* TODO: missing check moves and in check moves */
     return !move.IsCapture() && !move.IsPromotion();
-}
-
-int
-MovePicker::score(const Move move) {
-    // clang-format off
-    static const int MVV_LVA[6][6] = {
-        {10105, 10205, 10305, 10405, 10505, 10605}, 
-        {10104, 10204, 10304, 10404, 10504, 10604},
-        {10103, 10203, 10303, 10403, 10503, 10603},
-        {10102, 10202, 10302, 10402, 10502, 10602},
-        {10101, 10201, 10301, 10401, 10501, 10601},
-        {10100, 10200, 10300, 10400, 10500, 10600}
-    };
-    // clang-format on
-
-    if (_pv_table.get_pv_move(_current_depth) == move) {
-        return 20000;
-    }
-
-    if (move.IsCapture()) {
-        return MVV_LVA[move.MovedPiece()][move.CapturedPiece()];
-    }
-
-    if (_killer_moves[0][_current_depth] == move) {
-        return 9000;
-    }
-
-    if (_killer_moves[1][_current_depth] == move) {
-        return 8000;
-    }
-
-    return _history_moves[_board.active()][move.MovedPiece()]
-                         [move.ToSquare()];
 }
 
 int
@@ -69,8 +38,8 @@ MovePicker::search(int depth, int alpha, int beta) {
         _board.Make(move);
 
         Color attacker_side = _board.active();
-        Square king_sq = bitboard::BitScanForward(
-            _board.pieces(_board.inactive(), KING));
+        Square king_sq =
+            bitboard::BitScanForward(_board.pieces(_board.inactive(), KING));
         if (!_board.IsSquareAttacked(king_sq, attacker_side)) {
             _current_depth++;
             _hist_table.push(state.hash_key);
@@ -112,7 +81,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     }
 
     TTable::TTOutput hash_read =
-        _tt.read_hash(_board.hash_key(), alpha, beta, depth);
+        _ttable.read_hash(_board.hash_key(), alpha, beta, depth);
     if (hash_read.found) {
         _pv_table.add_pv_from_depth(hash_read.moves, _current_depth);
         return hash_read.score;
@@ -137,8 +106,9 @@ MovePicker::negamax(int alpha, int beta, int depth) {
         _board.SetStateBackup(state);
         _board.SwitchActive();
         if (score >= beta) {
-            _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA, beta,
-                          _pv_table.get_pv_from_depth(_current_depth));
+            _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
+                              beta,
+                              _pv_table.get_pv_from_depth(_current_depth));
             return beta;
         }
     }
@@ -153,8 +123,8 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     for (const auto move : moves) {
         _board.Make(move);
 
-        Square king_sq = bitboard::BitScanForward(
-            _board.pieces(_board.inactive(), KING));
+        Square king_sq =
+            bitboard::BitScanForward(_board.pieces(_board.inactive(), KING));
         if (!_board.IsSquareAttacked(king_sq, _board.active())) {
             has_legal_moves = true;
 
@@ -209,9 +179,9 @@ MovePicker::negamax(int alpha, int beta, int depth) {
 
                 _board.Unmake(move, state);
 
-                _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
-                              beta,
-                              _pv_table.get_pv_from_depth(_current_depth));
+                _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
+                                  beta,
+                                  _pv_table.get_pv_from_depth(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
@@ -235,23 +205,23 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     // Terminal Node
     if (!has_legal_moves) {
         // Check Mate
-        Square king_sq = bitboard::BitScanForward(
-            _board.pieces(_board.active(), KING));
+        Square king_sq =
+            bitboard::BitScanForward(_board.pieces(_board.active(), KING));
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
-            _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
-                          MIN_EVAL + _current_depth,
-                          _pv_table.get_pv_from_depth(_current_depth));
+            _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
+                              MIN_EVAL + _current_depth,
+                              _pv_table.get_pv_from_depth(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
-        _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE, 0,
-                      _pv_table.get_pv_from_depth(_current_depth));
+        _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE, 0,
+                          _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
-    _tt.set_entry(state.hash_key, depth, alpha_cutoff, alpha,
-                  _pv_table.get_pv_from_depth(_current_depth));
+    _ttable.set_entry(state.hash_key, depth, alpha_cutoff, alpha,
+                      _pv_table.get_pv_from_depth(_current_depth));
     return alpha;
 }
 
@@ -260,23 +230,23 @@ MovePicker::quiescence(int alpha, int beta) {
     _current_nodes++;
 
     if (_board.half_move_clock() == 100) {
-        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                      _pv_table.get_pv_from_depth(_current_depth));
+        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+                          _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
     if (!movegen::HasLegal(_board)) {
-        Square king_sq = bitboard::BitScanForward(
-            _board.pieces(_board.active(), KING));
+        Square king_sq =
+            bitboard::BitScanForward(_board.pieces(_board.active(), KING));
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
-            _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
-                          MIN_EVAL + _current_depth,
-                          _pv_table.get_pv_from_depth(_current_depth));
+            _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
+                              MIN_EVAL + _current_depth,
+                              _pv_table.get_pv_from_depth(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
-        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                      _pv_table.get_pv_from_depth(_current_depth));
+        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+                          _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
@@ -284,8 +254,8 @@ MovePicker::quiescence(int alpha, int beta) {
 
     int stand_pat = eval::eval(_board);
     if (stand_pat >= beta) {
-        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
-                      _pv_table.get_pv_from_depth(_current_depth));
+        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
+                          _pv_table.get_pv_from_depth(_current_depth));
         return beta;
     } else if (stand_pat > alpha) {
 
@@ -301,8 +271,8 @@ MovePicker::quiescence(int alpha, int beta) {
     for (const Move &capture : captures) {
         _board.Make(capture);
 
-        Square king_sq = bitboard::BitScanForward(
-            _board.pieces(_board.inactive(), KING));
+        Square king_sq =
+            bitboard::BitScanForward(_board.pieces(_board.inactive(), KING));
         if (!_board.IsSquareAttacked(king_sq, _board.active())) {
             _current_depth++;
             int score = -quiescence(-beta, -alpha);
@@ -310,8 +280,8 @@ MovePicker::quiescence(int alpha, int beta) {
 
             if (score >= beta) {
                 _board.Unmake(capture, state);
-                _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
-                              _pv_table.get_pv_from_depth(_current_depth));
+                _ttable.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
+                                  _pv_table.get_pv_from_depth(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
@@ -323,8 +293,8 @@ MovePicker::quiescence(int alpha, int beta) {
         _board.Unmake(capture, state);
     }
 
-    _tt.set_entry(_board.hash_key(), 0, alpha_cutoff, alpha,
-                  _pv_table.get_pv_from_depth(_current_depth));
+    _ttable.set_entry(_board.hash_key(), 0, alpha_cutoff, alpha,
+                      _pv_table.get_pv_from_depth(_current_depth));
     return alpha;
 }
 
@@ -340,44 +310,20 @@ MovePicker::add_to_killer_moves(const Move move) {
 void
 MovePicker::add_to_history_moves(const Move move) {
     // History Move Heuristic
-    _history_moves[_board.active()][move.MovedPiece()]
-                  [move.ToSquare()] += _current_depth;
-}
-
-void
-MovePicker::clear_search_counters() {
-    _current_nodes = 0;
-    _current_depth = 0;
-}
-
-// Public Methods
-
-int
-MovePicker::get_max_depth() const {
-    return _max_depth;
-}
-
-void
-MovePicker::set_max_depth(int depth) {
-    if (depth <= 0) {
-        throw std::invalid_argument("Depth argument must be positive integer.");
-    } else if (depth > DEFAULT_MAX_DEPTH) {
-        throw std::invalid_argument("Depth argument must be less than 64.");
-    }
-
-    _max_depth = depth;
+    _history_moves[_board.active()][move.MovedPiece()][move.ToSquare()] +=
+        _current_depth;
 }
 
 MovePicker::SearchResult
-MovePicker::find_best_move() {
+MovePicker::FindBestMove() noexcept {
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
 
-    this->clear_move_tables();
+    ClearMoveTables();
 
     // Iterative Deepening
-    for (int depth = 1; depth <= _max_depth; depth++) {
-        this->clear_search_counters();
+    for (std::uint32_t depth = 1; depth <= _max_depth; depth++) {
+        ClearCounters();
         int score = search(depth, alpha, beta);
 
         // Aspiration Window
@@ -399,41 +345,4 @@ MovePicker::find_best_move() {
     return result;
 }
 
-/**
- * @brief This function corresponds to one of
- * the loops of find_best_move()
- *
- * @param depth
- * @return MovePicker::SearchResult
- */
-MovePicker::SearchResult
-MovePicker::find_best_move(int depth, int alpha, int beta) {
-    this->clear_search_counters();
-    int score = search(depth, alpha, beta);
-    auto result = SearchResult{score, _current_nodes, _pv_table.get_pv()};
-    return result;
-}
-
-void
-MovePicker::clear_move_tables() {
-    memset(_history_moves, 0, sizeof(_history_moves));
-    memset(_killer_moves, 0, sizeof(_killer_moves));
-    memset(_killer_moves, 0, sizeof(_killer_moves));
-    _pv_table.clear();
-}
-
-void
-MovePicker::clear_transposition_table() {
-    _tt.clear();
-}
-
-void
-MovePicker::add_to_history(bitboard::Bitboard key) {
-    _hist_table.push(key);
-}
-
-void
-MovePicker::clear_history() {
-    _hist_table.clear();
-}
 }   // namespace codbrain

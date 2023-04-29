@@ -9,7 +9,7 @@ using namespace codchess;
 
 namespace codbrain {
 Move
-PVTable::get_pv_move(int depth) {
+PVTable::get_pv_move(int depth) const {
     return _table[depth][depth];
 }
 

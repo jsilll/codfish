@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 
 #include <codchess/base.hpp>
@@ -11,116 +12,163 @@
 #include <codbrain/pvtable.hpp>
 #include <codbrain/ttable.hpp>
 
+#define MAX_DEPTH     64
+#define DEFAULT_DEPTH 6
+
 namespace codbrain {
+/// @brief Class that implements the search algorithm
 class MovePicker {
+  public:
+    /// @brief Search result
+    struct SearchResult {
+        /// @brief The score of the position
+        int score;
+        /// @brief The number of nodes searched
+        std::uint64_t nodes;
+        /// @brief The principal variation
+        std::vector<codchess::Move> pv;
+    };
+
+    /// @brief Default constructor
+    [[nodiscard]] MovePicker() noexcept : _move_more_than_key{*this} {}
+
+    /// @brief Returns a reference to the board
+    /// @return The board
+    [[nodiscard]] constexpr auto &board() const noexcept { return _board; }
+
+    /// @brief Returns the current max depth for the search
+    /// @return The max depth
+    [[nodiscard]] constexpr auto max_depth() const noexcept {
+        return _max_depth;
+    }
+
+    /// @brief Sets the max depth for the search
+    /// @param depth The max depth
+    void max_depth(const std::uint32_t depth) {
+        if (depth == 0) {
+            throw std::invalid_argument(
+                "Depth argument must be positive integer.");
+        } else if (depth > MAX_DEPTH) {
+            throw std::invalid_argument("Depth argument must be less than 64.");
+        } else {
+            _max_depth = depth;
+        }
+    }
+
+    /// @brief Clears the transposition table
+    void ClearTTable() noexcept { _ttable.clear(); }
+
+    /// @brief Clears all known game history
+    void ClearHistory() noexcept { _hist_table.clear(); }
+
+    /// @brief Clears all the move tables
+    void ClearMoveTables() noexcept {
+        _pv_table.clear();
+        std::memset(_killer_moves.data(), 0, _killer_moves.size());
+        std::memset(_history_moves.data(), 0, _history_moves.size());
+    }
+
+    /// @brief Adds a board hash to the current known history
+    /// @param key The board hash
+    void AddToHistory(const codchess::bitboard::Bitboard key) noexcept {
+        _hist_table.push(key);
+    }
+
+    /// @brief Searches the current position
+    /// @return A search result
+    SearchResult FindBestMove() noexcept;
+
+    /// @brief Searches the current position with the given depth
+    /// @param depth The depth
+    /// @param alpha The alpha value
+    /// @param beta The beta value
+    /// @return A search result
+    /// @note This function correspondes ton one of the loops of FindBestMove()
+    SearchResult FindBestMove(int depth, int alpha, int beta) {
+        ClearCounters();
+        const auto score = search(depth, alpha, beta);
+        return {score, _current_nodes, _pv_table.get_pv()};
+    }
+
   private:
-    static const int DEFAULT_MAX_DEPTH = 64;
+    /// @brief Board to be searched
+    codchess::Board _board{};
+    /// @brief Max depth for the search
+    std::uint32_t _max_depth{6};
+    /// @brief Current number of nodes searched
+    std::uint64_t _current_nodes{0};
+    /// @brief Current depth of the search
+    std::uint32_t _current_depth{0};
+    /// @brief Killer moves
+    std::array<std::array<codchess::Move, MAX_DEPTH>, 2> _killer_moves{};
+    /// @brief History moves
+    std::array<
+        std::array<std::array<int, codchess::N_SQUARES>, codchess::N_PIECES>,
+        codchess::N_COLORS>
+        _history_moves{};
 
-    Board &_board;
+    /// @brief Transposition table
+    TTable _ttable{};
+    /// @brief Principal variation table
+    PVTable _pv_table{};
+    /// @brief History table
+    HistoryTable _hist_table{};
 
-    int _max_depth;
-    int _current_nodes;
-    int _current_depth;
-
-    int _history_moves[codchess::N_COLORS][codchess::N_PIECES]
-                      [codchess::N_SQUARES]{};
-    Move _killer_moves[2][DEFAULT_MAX_DEPTH]{};
-
-    PVTable _pv_table;
-    HistoryTable _hist_table;
-    TTable _tt;
-
+    /// @brief Functor to compare moves
     [[maybe_unused]] struct MoveMoreThanKey {
-        MovePicker &move_picker;
-        inline bool operator()(const Move &move1, const Move &move2) const {
+        const MovePicker &move_picker;
+        inline bool operator()(const codchess::Move &move1,
+                               const codchess::Move &move2) const {
             return (move_picker.score(move1) > move_picker.score(move2));
         }
     } _move_more_than_key;
 
-    /**
-     * @brief Evaluates a given move using a few heuristics:
-     * - MVV LVA
-     * - Killer Heuristic
-     * - History Heuristic
-     *
-     * It is used for sorting the list of moves upon
-     * generation, ini order to cause the most alpha-beta cuts.
-     *
-     * @param move
-     * @return move score
-     */
-    int score(const Move move);
+    /// @brief Scores a given move using heuristics like MVV LVA, Killer and
+    /// History
+    /// @param move The move to be scored
+    /// @return The score
+    /// @note This function is used for sorting the list of moves upon
+    /// generation in order to cause the most alpha-beta cuts.
+    [[nodiscard]] int score(const codchess::Move move) const {
+        static const int MVV_LVA[6][6] = {
+            {10105, 10205, 10305, 10405, 10505, 10605},
+            {10104, 10204, 10304, 10404, 10504, 10604},
+            {10103, 10203, 10303, 10403, 10503, 10603},
+            {10102, 10202, 10302, 10402, 10502, 10602},
+            {10101, 10201, 10301, 10401, 10501, 10601},
+            {10100, 10200, 10300, 10400, 10500, 10600}};
+
+        if (_pv_table.get_pv_move(_current_depth) == move) {
+            return 20000;
+        }
+
+        if (move.IsCapture()) {
+            return MVV_LVA[move.MovedPiece()][move.CapturedPiece()];
+        }
+
+        if (_killer_moves[0][_current_depth] == move) {
+            return 9000;
+        }
+
+        if (_killer_moves[1][_current_depth] == move) {
+            return 8000;
+        }
+
+        return _history_moves[_board.active()][move.MovedPiece()]
+                             [move.ToSquare()];
+    }
 
     int search(int depth, int alpha, int beta);
     int negamax(int alpha, int beta, int depth);
     int quiescence(int alpha, int beta);
 
-    void add_to_killer_moves(const Move move);
-    void add_to_history_moves(const Move move);
+    void add_to_killer_moves(const codchess::Move move);
+    void add_to_history_moves(const codchess::Move move);
 
-    void clear_search_counters();
-
-  public:
-    struct SearchResult {
-        int score{};
-        int nodes{};
-        std::vector<Move> pv;
-    };
-
-    explicit MovePicker(Board &board)
-        : _board(board), _max_depth(6),
-          _current_nodes(0), _move_more_than_key{*this} {}
-
-    [[nodiscard]] int get_max_depth() const;
-
-    /**
-     * @brief Set the max depth for the search
-     *
-     * @param depth
-     */
-    void set_max_depth(int depth);
-
-    /**
-     * @brief Adds a board hash to the current known history
-     *
-     * @param key
-     */
-    void add_to_history(codchess::bitboard::Bitboard key);
-
-    /**
-     * @brief Clears all known game history
-     *
-     */
-    void clear_history();
-
-    /**
-     * @brief Clears all the move tables
-     *
-     */
-    void clear_move_tables();
-
-    /**
-     * @brief Clears the transposition table
-     *
-     */
-    void clear_transposition_table();
-
-    /**
-     * @brief Searches the current position with max_depth
-     *
-     * @return SearchResult
-     */
-    SearchResult find_best_move();
-
-    /**
-     * @brief Searches the current position with the given depth
-     *
-     * It can also be used to implement iterative deepening outside
-     * of the ai class (for uci prints, for example)
-     *
-     * @param depth
-     * @return SearchResult
-     */
-    SearchResult find_best_move(int depth, int alpha, int beta);
+    /// @brief Clears the search counters
+    constexpr void ClearCounters() noexcept {
+        _current_nodes = 0;
+        _current_depth = 0;
+    }
 };
 }   // namespace codbrain
