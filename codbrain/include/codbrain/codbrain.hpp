@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <codchess/base.hpp>
+#include <codchess/bitboard.hpp>
 #include <codchess/board.hpp>
 #include <codchess/move.hpp>
 

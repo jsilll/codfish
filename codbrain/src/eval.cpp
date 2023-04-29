@@ -4,7 +4,6 @@
 #include <codchess/board.hpp>
 
 using namespace codchess;
-using namespace bitboard;
 
 namespace eval {
 // TODO: Move to utils.hpp
@@ -153,26 +152,26 @@ eval(const Board &board) {
     int eg[2]{};
 
     for (int piece_type = PAWN; piece_type < N_PIECES; piece_type++) {
-        const auto pieces_white =
+        auto pieces_white =
             board.pieces(WHITE, static_cast<PieceType>(piece_type));
         while (pieces_white) {
-            const auto sq = BitScanForward(pieces_white);
+            const auto sq = bitboard::BitScanForward(pieces_white);
             mg[WHITE] += MG_TABLE[WHITE][piece_type][sq];
             eg[WHITE] += EG_TABLE[WHITE][piece_type][sq];
             material[WHITE] += PIECE_SCORES[piece_type];
             game_phase += GAME_PHASE_INC[piece_type];
-            PopLastBit(pieces_white);
+            bitboard::PopLastBit(pieces_white);
         }
 
-        const auto pieces_black =
+        auto pieces_black =
             board.pieces(BLACK, static_cast<PieceType>(piece_type));
         while (pieces_black) {
-            Square sq = BitScanForward(pieces_black);
+            Square sq = bitboard::BitScanForward(pieces_black);
             mg[BLACK] += MG_TABLE[BLACK][piece_type][sq];
             eg[BLACK] += EG_TABLE[BLACK][piece_type][sq];
             material[BLACK] += PIECE_SCORES[piece_type];
             game_phase += GAME_PHASE_INC[piece_type];
-            PopLastBit(pieces_black);
+            bitboard::PopLastBit(pieces_black);
         }
     }
 

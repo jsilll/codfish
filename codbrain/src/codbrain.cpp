@@ -1,15 +1,15 @@
 #include <codbrain/codbrain.hpp>
 
-#include <codbrain/eval.hpp>
+#include <algorithm>
+#include <climits>
+#include <cstring>
 
 #include <codchess/bitboard.hpp>
 #include <codchess/board.hpp>
 #include <codchess/move.hpp>
-#include <codchess/movegen/movegen.hpp>
+#include <codchess/movegen.hpp>
 
-#include <algorithm>
-#include <climits>
-#include <cstring>
+#include "eval.hpp"
 
 #define R                2
 #define REDUCTION_LIMIT  3

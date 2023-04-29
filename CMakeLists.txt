@@ -57,16 +57,10 @@ endif ()
 add_subdirectory(codchess)
 
 # -- Codlib -- 
-# add_subdirectory(codbrain)
-
-# -- Testing only available when building Standalone --
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(tests)
-    add_subdirectory(benchmarks)
-endif ()
-
-# -- Examples --
-# add_subdirectory(examples)
+add_subdirectory(codbrain)
 
 # -- Codfish --
 # add_subdirectory(codfish)
+
+# -- Examples --
+add_subdirectory(examples)

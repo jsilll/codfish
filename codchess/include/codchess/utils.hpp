@@ -145,4 +145,12 @@ GetRank(const Square sq) noexcept {
 GetSquare(const Rank rk, const File fl) noexcept {
     return static_cast<Square>(8 * rk + fl);
 }
+
+/// @brief Returns the square flipped vertically
+/// @param sq The square 
+/// @return The flipped square 
+[[nodiscard]] [[maybe_unused]] constexpr auto
+FlipSquare(const Square sq) {
+    return static_cast<Square>(sq ^ 56);
+}
 }   // namespace codchess::utils
