@@ -50,7 +50,7 @@ Perft(Board &board, std::uint64_t depth) noexcept {
 
         if (!cboard.IsSquareAttacked(king_sq, cboard.active())) {
             if (depth == 1) {
-                nodes++;
+                ++nodes;
             } else {
                 nodes += PerftAux(cboard, depth - 1);
             }

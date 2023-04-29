@@ -30,7 +30,7 @@ class MovePicker {
     HistoryTable _hist_table;
     TTable _tt;
 
-    struct MoveMoreThanKey {
+    [[maybe_unused]] struct MoveMoreThanKey {
         MovePicker &move_picker;
         inline bool operator()(const Move &move1, const Move &move2) const {
             return (move_picker.score(move1) > move_picker.score(move2));

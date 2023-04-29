@@ -3,7 +3,7 @@
 
 #include <codchess/perft.hpp>
 
-TEST_CASE("Benchmark Perft", "[benchmark]") {
+TEST_CASE("Benchmark Perft", "[!benchmark]") {
     codchess::Init();
     using namespace codchess;
 

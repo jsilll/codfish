@@ -17,11 +17,12 @@
 #define WINDOW_EXPANSION 50
 #define MIN_EVAL         (INT_MIN + 1)
 
+namespace codbrain {
 static bool
 can_lmr(const Move move) {
     // Move can't be a capture nor a promotion for LMR to happen
     /* TODO: missing check moves and in check moves */
-    return !move.is_capture() && !move.is_promotion();
+    return !move.IsCapture() && !move.IsPromotion();
 }
 
 int
@@ -41,8 +42,8 @@ MovePicker::score(const Move move) {
         return 20000;
     }
 
-    if (move.is_capture()) {
-        return MVV_LVA[move.get_piece_type()][move.get_captured_piece_type()];
+    if (move.IsCapture()) {
+        return MVV_LVA[move.MovedPiece()][move.CapturedPiece()];
     }
 
     if (_killer_moves[0][_current_depth] == move) {
@@ -53,24 +54,24 @@ MovePicker::score(const Move move) {
         return 8000;
     }
 
-    return _history_moves[_board.get_side_to_move()][move.get_piece_type()]
-                         [move.get_to_square()];
+    return _history_moves[_board.active()][move.MovedPiece()]
+                         [move.ToSquare()];
 }
 
 int
 MovePicker::search(int depth, int alpha, int beta) {
-    auto moves = movegen::generate_pseudo_legal_moves(_board);
-    std::sort(moves.begin(), moves.end(), _move_more_than_key);
+    auto moves = movegen::PseudoLegal(_board);
+    // std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
     Move best_move = Move();
-    Board::GameState state = _board.get_state();
+    const auto state = _board.GetStateBackup();
     for (const auto move : moves) {
-        _board.make(move);
+        _board.Make(move);
 
-        Color attacker_side = _board.get_side_to_move();
-        Square king_sq = bitboard::bit_scan_forward(
-            _board.get_pieces(_board.get_opponent(), KING));
-        if (!_board.is_square_attacked(king_sq, attacker_side)) {
+        Color attacker_side = _board.active();
+        Square king_sq = bitboard::BitScanForward(
+            _board.pieces(_board.inactive(), KING));
+        if (!_board.IsSquareAttacked(king_sq, attacker_side)) {
             _current_depth++;
             _hist_table.push(state.hash_key);
             int score = -negamax(-beta, -alpha, depth - 1);
@@ -78,7 +79,7 @@ MovePicker::search(int depth, int alpha, int beta) {
             _current_depth--;
             if (score > alpha) {
                 // History Move Heuristic
-                if (!move.is_capture()) {
+                if (!move.IsCapture()) {
                     this->add_to_history_moves(move);
                 }
 
@@ -88,7 +89,7 @@ MovePicker::search(int depth, int alpha, int beta) {
             }
         }
 
-        _board.unmake(move, state);
+        _board.Unmake(move, state);
     }
 
     return alpha;
@@ -99,19 +100,19 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     _current_nodes++;
 
     // Terminal Node
-    if (_board.get_half_move_clock() == 100) {
+    if (_board.half_move_clock() == 100) {
         // Draw
         return 0;
     }
 
     // Terminal Node
-    if (_hist_table.is_repetition(_board.get_hash_key())) {
+    if (_hist_table.is_repetition(_board.hash_key())) {
         // Three-Fold Draw
         return 0;
     }
 
     TTable::TTOutput hash_read =
-        _tt.read_hash(_board.get_hash_key(), alpha, beta, depth);
+        _tt.read_hash(_board.hash_key(), alpha, beta, depth);
     if (hash_read.found) {
         _pv_table.add_pv_from_depth(hash_read.moves, _current_depth);
         return hash_read.score;
@@ -123,18 +124,18 @@ MovePicker::negamax(int alpha, int beta, int depth) {
         return quiescence(alpha, beta);
     }
 
-    Board::GameState state = _board.get_state();
+    const auto state = _board.GetStateBackup();
 
     // Null Move Pruning
     // TODO: Zugzwang checking
     if (depth >= 3) {
-        _board.switch_side_to_move();
-        _board.set_en_passant_square(EMPTY_SQUARE);
+        _board.SwitchActive();
+        _board.en_passant_square(EMPTY_SQUARE);
         _current_depth += 2;
         int score = -negamax(-beta, -beta + 1, depth - 1 - R);
         _current_depth -= 2;
-        _board.set_state(state);
-        _board.switch_side_to_move();
+        _board.SetStateBackup(state);
+        _board.SwitchActive();
         if (score >= beta) {
             _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA, beta,
                           _pv_table.get_pv_from_depth(_current_depth));
@@ -142,19 +143,19 @@ MovePicker::negamax(int alpha, int beta, int depth) {
         }
     }
 
-    auto moves = movegen::generate_pseudo_legal_moves(_board);
-    std::sort(moves.begin(), moves.end(), _move_more_than_key);
+    auto moves = movegen::PseudoLegal(_board);
+    // std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
     Move best_move = Move();
     int n_moves_searched = 0;
     bool has_legal_moves = false;
     int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
     for (const auto move : moves) {
-        _board.make(move);
+        _board.Make(move);
 
-        Square king_sq = bitboard::bit_scan_forward(
-            _board.get_pieces(_board.get_opponent(), KING));
-        if (!_board.is_square_attacked(king_sq, _board.get_side_to_move())) {
+        Square king_sq = bitboard::BitScanForward(
+            _board.pieces(_board.inactive(), KING));
+        if (!_board.IsSquareAttacked(king_sq, _board.active())) {
             has_legal_moves = true;
 
             int score;
@@ -202,11 +203,11 @@ MovePicker::negamax(int alpha, int beta, int depth) {
 
             if (score >= beta) {
                 // Killer Move Heuristic
-                if (!move.is_capture()) {
+                if (!move.IsCapture()) {
                     this->add_to_killer_moves(move);
                 }
 
-                _board.unmake(move, state);
+                _board.Unmake(move, state);
 
                 _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
                               beta,
@@ -215,7 +216,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
             } else if (score > alpha) {
 
                 // History Move Heuristic
-                if (!move.is_capture()) {
+                if (!move.IsCapture()) {
                     this->add_to_history_moves(move);
                 }
 
@@ -228,15 +229,15 @@ MovePicker::negamax(int alpha, int beta, int depth) {
             n_moves_searched++;
         }
 
-        _board.unmake(move, state);
+        _board.Unmake(move, state);
     }
 
     // Terminal Node
     if (!has_legal_moves) {
         // Check Mate
-        Square king_sq = bitboard::bit_scan_forward(
-            _board.get_pieces(_board.get_side_to_move(), KING));
-        if (_board.is_square_attacked(king_sq, _board.get_opponent())) {
+        Square king_sq = bitboard::BitScanForward(
+            _board.pieces(_board.active(), KING));
+        if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
             _tt.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
                           MIN_EVAL + _current_depth,
                           _pv_table.get_pv_from_depth(_current_depth));
@@ -258,23 +259,23 @@ int
 MovePicker::quiescence(int alpha, int beta) {
     _current_nodes++;
 
-    if (_board.get_half_move_clock() == 100) {
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+    if (_board.half_move_clock() == 100) {
+        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
                       _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
 
-    if (!movegen::has_legal_moves(_board)) {
-        Square king_sq = bitboard::bit_scan_forward(
-            _board.get_pieces(_board.get_side_to_move(), KING));
-        if (_board.is_square_attacked(king_sq, _board.get_opponent())) {
-            _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE,
+    if (!movegen::HasLegal(_board)) {
+        Square king_sq = bitboard::BitScanForward(
+            _board.pieces(_board.active(), KING));
+        if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
+            _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
                           MIN_EVAL + _current_depth,
                           _pv_table.get_pv_from_depth(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
                       _pv_table.get_pv_from_depth(_current_depth));
         return 0;
     }
@@ -283,7 +284,7 @@ MovePicker::quiescence(int alpha, int beta) {
 
     int stand_pat = eval::eval(_board);
     if (stand_pat >= beta) {
-        _tt.set_entry(_board.get_hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
+        _tt.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
                       _pv_table.get_pv_from_depth(_current_depth));
         return beta;
     } else if (stand_pat > alpha) {
@@ -292,23 +293,23 @@ MovePicker::quiescence(int alpha, int beta) {
         alpha = stand_pat;
     }
 
-    auto captures = movegen::generate_pseudo_legal_captures(_board);
-    std::sort(captures.begin(), captures.end(), _move_more_than_key);
+    auto captures = movegen::PseudoLegalCaptures(_board);
+    // std::sort(captures.begin(), captures.end(), _move_more_than_key);
 
-    u64 hash_key = _board.get_hash_key();
-    Board::GameState state = _board.get_state();
+    const auto hash_key = _board.hash_key();
+    const auto state = _board.GetStateBackup();
     for (const Move &capture : captures) {
-        _board.make(capture);
+        _board.Make(capture);
 
-        Square king_sq = bitboard::bit_scan_forward(
-            _board.get_pieces(_board.get_opponent(), KING));
-        if (!_board.is_square_attacked(king_sq, _board.get_side_to_move())) {
+        Square king_sq = bitboard::BitScanForward(
+            _board.pieces(_board.inactive(), KING));
+        if (!_board.IsSquareAttacked(king_sq, _board.active())) {
             _current_depth++;
             int score = -quiescence(-beta, -alpha);
             _current_depth--;
 
             if (score >= beta) {
-                _board.unmake(capture, state);
+                _board.Unmake(capture, state);
                 _tt.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
                               _pv_table.get_pv_from_depth(_current_depth));
                 return beta;
@@ -319,10 +320,10 @@ MovePicker::quiescence(int alpha, int beta) {
             }
         }
 
-        _board.unmake(capture, state);
+        _board.Unmake(capture, state);
     }
 
-    _tt.set_entry(_board.get_hash_key(), 0, alpha_cutoff, alpha,
+    _tt.set_entry(_board.hash_key(), 0, alpha_cutoff, alpha,
                   _pv_table.get_pv_from_depth(_current_depth));
     return alpha;
 }
@@ -339,8 +340,8 @@ MovePicker::add_to_killer_moves(const Move move) {
 void
 MovePicker::add_to_history_moves(const Move move) {
     // History Move Heuristic
-    _history_moves[_board.get_side_to_move()][move.get_piece_type()]
-                  [move.get_to_square()] += _current_depth;
+    _history_moves[_board.active()][move.MovedPiece()]
+                  [move.ToSquare()] += _current_depth;
 }
 
 void
@@ -427,7 +428,7 @@ MovePicker::clear_transposition_table() {
 }
 
 void
-MovePicker::add_to_history(u64 key) {
+MovePicker::add_to_history(bitboard::Bitboard key) {
     _hist_table.push(key);
 }
 
@@ -435,3 +436,4 @@ void
 MovePicker::clear_history() {
     _hist_table.clear();
 }
+}   // namespace codbrain

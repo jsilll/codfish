@@ -1,5 +1,4 @@
 #include <codchess/codchess.hpp>
-#include <codchess/perft.hpp>
 
 using namespace codchess;
 

@@ -57,7 +57,7 @@ Board::GetFen() const noexcept {
         castling_rights = "-";
     }
 
-    std::string fen = piece_placements + " " + active_color + " " +
+    const auto fen = piece_placements + " " + active_color + " " +
                       castling_rights + " " +
                       SQUARE_DISPLAY[en_passant_square()] + " " +
                       std::to_string(_half_move_clock) + " " +

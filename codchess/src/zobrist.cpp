@@ -17,10 +17,8 @@ bitboard::Bitboard PIECE_KEY[N_COLORS][N_PIECES][N_SQUARES];
 /// @return The random number
 bitboard::Bitboard
 RandomBitboard() noexcept {
-    bitboard::Bitboard n1 =
-        (static_cast<bitboard::Bitboard>(std::rand()));   // NOLINT
-    bitboard::Bitboard n2 =
-        (static_cast<bitboard::Bitboard>(std::rand()));   // NOLINT
+    bitboard::Bitboard n1 = (static_cast<bitboard::Bitboard>(std::rand()));
+    bitboard::Bitboard n2 = (static_cast<bitboard::Bitboard>(std::rand()));
     return n1 | (n2 << 32);
 }
 

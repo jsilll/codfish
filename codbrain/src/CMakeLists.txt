@@ -10,7 +10,7 @@ target_include_directories(codbrain
 
 # -- Link Libraries --
 target_link_libraries(codbrain
-        PRIVATE codchess)
+        PUBLIC codchess)
 
 # -- All Warnings as Errors --
 if (MSVC)

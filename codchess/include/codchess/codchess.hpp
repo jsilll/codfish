@@ -1,15 +1,11 @@
 #pragma once
 
-// The enums for all  functionality.
 #include <codchess/base.hpp>
 
-// The namespace for all move encoding and decoding functionality.
 #include <codchess/move.hpp>
 
-// The namespace for all board functionality.
 #include <codchess/board.hpp>
 
-// The namespace for move generation functionality.
 #include <codchess/movegen.hpp>
 
 namespace codchess {

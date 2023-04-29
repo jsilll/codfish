@@ -43,14 +43,6 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     # -- Support for folders in IDEs --
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-    # -- Docs only available when building Standalone --
-    find_package(Doxygen)
-    if (Doxygen_FOUND)
-        add_subdirectory(docs)
-    else ()
-        message(STATUS "Doxygen not found, not able to build docs")
-    endif ()
 endif ()
 
 # -- Codchess --
@@ -61,6 +53,3 @@ add_subdirectory(codbrain)
 
 # -- Codfish --
 # add_subdirectory(codfish)
-
-# -- Examples --
-add_subdirectory(examples)

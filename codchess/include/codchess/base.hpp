@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace codchess {
 /// @brief The ranks of the board
 /// @note This enum is used both for iterating over the ranks and for indexing

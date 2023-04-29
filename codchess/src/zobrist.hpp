@@ -5,7 +5,6 @@
 #include <codchess/board.hpp>
 
 namespace codchess::zobrist {
-
 /// @brief Initializes the zobrist keys
 void Init() noexcept;
 
@@ -28,5 +27,4 @@ extern bitboard::Bitboard PIECE_KEY[N_COLORS][N_PIECES][N_SQUARES];
 /// @param board The board
 /// @return The hash key
 std::uint64_t Hash(const Board &board) noexcept;
-
 }   // namespace codchess::zobrist

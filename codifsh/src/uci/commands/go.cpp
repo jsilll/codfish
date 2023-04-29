@@ -226,7 +226,7 @@ void uci::GoCommand::execute(std::vector<std::string> &args)
     std::promise<void> signal_exit;
     std::future<void> signal_exit_future = signal_exit.get_future();
     std::thread search_thread(search, std::move(signal_exit_future), std::ref(_move_picker), std::ref(result));
-    if ((_board.get_side_to_move() == WHITE && wtime) || (_board.get_side_to_move() == BLACK && btime))
+    if ((_board.active() == WHITE && wtime) || (_board.active() == BLACK && btime))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, _board)));
         signal_exit.set_value();
