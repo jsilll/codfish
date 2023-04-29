@@ -34,7 +34,7 @@ class MovePicker {
 
     /// @brief Returns a reference to the board
     /// @return The board
-    [[nodiscard]] constexpr auto &board() const noexcept { return _board; }
+    [[nodiscard]] constexpr auto &board() noexcept { return _board; }
 
     /// @brief Returns the current max depth for the search
     /// @return The max depth
@@ -59,7 +59,7 @@ class MovePicker {
     void ClearTTable() noexcept { _ttable.clear(); }
 
     /// @brief Clears all known game history
-    void ClearHistory() noexcept { _hist_table.clear(); }
+    void ClearHistory() noexcept { _hist_table.Clear(); }
 
     /// @brief Clears all the move tables
     void ClearMoveTables() noexcept {
@@ -71,7 +71,7 @@ class MovePicker {
     /// @brief Adds a board hash to the current known history
     /// @param key The board hash
     void AddToHistory(const codchess::bitboard::Bitboard key) noexcept {
-        _hist_table.push(key);
+        _hist_table.Push(key);
     }
 
     /// @brief Searches the current position
@@ -84,9 +84,9 @@ class MovePicker {
     /// @param beta The beta value
     /// @return A search result
     /// @note This function correspondes ton one of the loops of FindBestMove()
-    SearchResult FindBestMove(int depth, int alpha, int beta) {
+    SearchResult FindBestMove(int depth, int alpha, int beta) noexcept {
         ClearCounters();
-        const auto score = search(depth, alpha, beta);
+        const auto score = Search(depth, alpha, beta);
         return {score, _current_nodes, _pv_table.get_pv()};
     }
 
@@ -118,10 +118,32 @@ class MovePicker {
     [[maybe_unused]] struct MoveMoreThanKey {
         const MovePicker &move_picker;
         inline bool operator()(const codchess::Move &move1,
-                               const codchess::Move &move2) const {
-            return (move_picker.score(move1) > move_picker.score(move2));
+                               const codchess::Move &move2) const noexcept {
+            return (move_picker.Score(move1) > move_picker.Score(move2));
         }
     } _move_more_than_key;
+
+    /// @brief Clears the search counters
+    constexpr void ClearCounters() noexcept {
+        _current_nodes = 0;
+        _current_depth = 0;
+    }
+
+    /// @brief Adds a move to the killer moves
+    /// @param move The move
+    void AddToKillerMoves(codchess::Move move) noexcept {
+        if (move != _killer_moves[0][_current_depth]) {
+            _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
+        }
+        _killer_moves[0][_current_depth] = move;
+    }
+
+    /// @brief Adds a move to the move history
+    /// @param move The move
+    void AddToHistoryMoves(codchess::Move move) noexcept {
+        _history_moves[_board.active()][move.MovedPiece()][move.ToSquare()] +=
+            _current_depth;
+    }
 
     /// @brief Scores a given move using heuristics like MVV LVA, Killer and
     /// History
@@ -129,7 +151,7 @@ class MovePicker {
     /// @return The score
     /// @note This function is used for sorting the list of moves upon
     /// generation in order to cause the most alpha-beta cuts.
-    [[nodiscard]] int score(const codchess::Move move) const {
+    [[nodiscard]] std::int32_t Score(const codchess::Move move) const noexcept {
         static const int MVV_LVA[6][6] = {
             {10105, 10205, 10305, 10405, 10505, 10605},
             {10104, 10204, 10304, 10404, 10504, 10604},
@@ -158,17 +180,24 @@ class MovePicker {
                              [move.ToSquare()];
     }
 
-    int search(int depth, int alpha, int beta);
-    int negamax(int alpha, int beta, int depth);
-    int quiescence(int alpha, int beta);
+    /// @brief Performs a quiescence search on the current position
+    /// @param alpha The alpha value
+    /// @param beta The beta value
+    /// @return The score
+    std::int32_t Quiescence(int alpha, int beta) noexcept;
 
-    void add_to_killer_moves(const codchess::Move move);
-    void add_to_history_moves(const codchess::Move move);
+    /// @brief Performs a search on the current position
+    /// @param depth The depth
+    /// @param alpha The alpha value
+    /// @param beta The beta value
+    /// @return The score
+    std::int32_t Search(int alpha, int beta, int depth) noexcept;
 
-    /// @brief Clears the search counters
-    constexpr void ClearCounters() noexcept {
-        _current_nodes = 0;
-        _current_depth = 0;
-    }
+    /// @brief Performs a negamax search on the current position
+    /// @param alpha The alpha value
+    /// @param beta The beta value
+    /// @param depth The depth
+    /// @return The score
+    std::int32_t Negamax(int alpha, int beta, int depth) noexcept;
 };
 }   // namespace codbrain

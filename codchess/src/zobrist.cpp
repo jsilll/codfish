@@ -50,7 +50,7 @@ Hash(const Board &board) noexcept {
         for (int side = WHITE; side < BOTH; ++side) {
             auto bitboard = board.pieces((Color) side, (PieceType) piece);
             while (bitboard) {
-                Square sq = bitboard::BitScanForward(bitboard);
+                const auto sq = bitboard::BitScanForward(bitboard);
                 final_key ^= PIECE_KEY[side][piece][sq];
                 bitboard::PopBit(bitboard, sq);
             }

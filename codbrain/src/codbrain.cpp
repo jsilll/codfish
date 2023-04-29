@@ -28,7 +28,7 @@ can_lmr(const Move move) {
 }
 
 int
-MovePicker::search(int depth, int alpha, int beta) {
+MovePicker::Search(int alpha, int beta, int depth) {
     auto moves = movegen::PseudoLegal(_board);
     // std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
@@ -42,14 +42,14 @@ MovePicker::search(int depth, int alpha, int beta) {
             bitboard::BitScanForward(_board.pieces(_board.inactive(), KING));
         if (!_board.IsSquareAttacked(king_sq, attacker_side)) {
             _current_depth++;
-            _hist_table.push(state.hash_key);
-            int score = -negamax(-beta, -alpha, depth - 1);
-            _hist_table.pop();
+            _hist_table.Push(state.hash_key);
+            int score = -Negamax(-beta, -alpha, depth - 1);
+            _hist_table.Pop();
             _current_depth--;
             if (score > alpha) {
                 // History Move Heuristic
                 if (!move.IsCapture()) {
-                    this->add_to_history_moves(move);
+                    AddToHistoryMoves(move);
                 }
 
                 alpha = score;
@@ -64,8 +64,8 @@ MovePicker::search(int depth, int alpha, int beta) {
     return alpha;
 }
 
-int
-MovePicker::negamax(int alpha, int beta, int depth) {
+std::int32_t
+MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
     _current_nodes++;
 
     // Terminal Node
@@ -75,7 +75,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     }
 
     // Terminal Node
-    if (_hist_table.is_repetition(_board.hash_key())) {
+    if (_hist_table.IsRepetition(_board.hash_key())) {
         // Three-Fold Draw
         return 0;
     }
@@ -90,7 +90,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
     // Forced Terminal Node
     if (depth <= 0) {
         _pv_table.set_length(_current_depth);
-        return quiescence(alpha, beta);
+        return Quiescence(alpha, beta);
     }
 
     const auto state = _board.GetStateBackup();
@@ -101,7 +101,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
         _board.SwitchActive();
         _board.en_passant_square(EMPTY_SQUARE);
         _current_depth += 2;
-        int score = -negamax(-beta, -beta + 1, depth - 1 - R);
+        int score = -Negamax(-beta, -beta + 1, depth - 1 - R);
         _current_depth -= 2;
         _board.SetStateBackup(state);
         _board.SwitchActive();
@@ -132,9 +132,9 @@ MovePicker::negamax(int alpha, int beta, int depth) {
             // First move, then use Full Window Search
             if (n_moves_searched == 0) {
                 _current_depth++;
-                _hist_table.push(state.hash_key);
-                score = -negamax(-beta, -alpha, depth - 1);
-                _hist_table.pop();
+                _hist_table.Push(state.hash_key);
+                score = -Negamax(-beta, -alpha, depth - 1);
+                _hist_table.Pop();
                 _current_depth--;
             } else {
                 // For all the others moves, we assume they are worse moves than
@@ -143,9 +143,9 @@ MovePicker::negamax(int alpha, int beta, int depth) {
                     depth >= REDUCTION_LIMIT && can_lmr(move)) {
                     // Perform a Null Window Search
                     _current_depth++;
-                    _hist_table.push(state.hash_key);
-                    score = -negamax(-(alpha + 1), -alpha, depth - 2);
-                    _hist_table.pop();
+                    _hist_table.Push(state.hash_key);
+                    score = -Negamax(-(alpha + 1), -alpha, depth - 2);
+                    _hist_table.Pop();
                     _current_depth--;
                 } else {
                     // Hack to ensure that Full Depth Search is done
@@ -156,16 +156,16 @@ MovePicker::negamax(int alpha, int beta, int depth) {
                 // bounds
                 if (score > alpha) {
                     _current_depth++;
-                    _hist_table.push(state.hash_key);
-                    score = -negamax(-(alpha + 1), -alpha, depth - 1);
-                    _hist_table.pop();
+                    _hist_table.Push(state.hash_key);
+                    score = -Negamax(-(alpha + 1), -alpha, depth - 1);
+                    _hist_table.Pop();
                     _current_depth--;
 
                     if ((score > alpha) && (score < beta)) {
                         _current_depth++;
-                        _hist_table.push(state.hash_key);
-                        score = -negamax(-beta, -alpha, depth - 1);
-                        _hist_table.pop();
+                        _hist_table.Push(state.hash_key);
+                        score = -Negamax(-beta, -alpha, depth - 1);
+                        _hist_table.Pop();
                         _current_depth--;
                     }
                 }
@@ -174,7 +174,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
             if (score >= beta) {
                 // Killer Move Heuristic
                 if (!move.IsCapture()) {
-                    this->add_to_killer_moves(move);
+                    AddToKillerMoves(move);
                 }
 
                 _board.Unmake(move, state);
@@ -187,7 +187,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
 
                 // History Move Heuristic
                 if (!move.IsCapture()) {
-                    this->add_to_history_moves(move);
+                    AddToHistoryMoves(move);
                 }
 
                 alpha = score;
@@ -226,7 +226,7 @@ MovePicker::negamax(int alpha, int beta, int depth) {
 }
 
 int
-MovePicker::quiescence(int alpha, int beta) {
+MovePicker::Quiescence(int alpha, int beta) {
     _current_nodes++;
 
     if (_board.half_move_clock() == 100) {
@@ -275,7 +275,7 @@ MovePicker::quiescence(int alpha, int beta) {
             bitboard::BitScanForward(_board.pieces(_board.inactive(), KING));
         if (!_board.IsSquareAttacked(king_sq, _board.active())) {
             _current_depth++;
-            int score = -quiescence(-beta, -alpha);
+            int score = -Quiescence(-beta, -alpha);
             _current_depth--;
 
             if (score >= beta) {
@@ -298,22 +298,6 @@ MovePicker::quiescence(int alpha, int beta) {
     return alpha;
 }
 
-void
-MovePicker::add_to_killer_moves(const Move move) {
-    // Killer Move Heuristic
-    if (move != _killer_moves[0][_current_depth]) {
-        _killer_moves[1][_current_depth] = _killer_moves[0][_current_depth];
-    }
-    _killer_moves[0][_current_depth] = move;
-}
-
-void
-MovePicker::add_to_history_moves(const Move move) {
-    // History Move Heuristic
-    _history_moves[_board.active()][move.MovedPiece()][move.ToSquare()] +=
-        _current_depth;
-}
-
 MovePicker::SearchResult
 MovePicker::FindBestMove() noexcept {
     int alpha = MIN_EVAL;
@@ -324,7 +308,7 @@ MovePicker::FindBestMove() noexcept {
     // Iterative Deepening
     for (std::uint32_t depth = 1; depth <= _max_depth; depth++) {
         ClearCounters();
-        int score = search(depth, alpha, beta);
+        int score = Search(alpha, beta, depth);
 
         // Aspiration Window
         if ((score <= alpha) || (score >= beta)) {
