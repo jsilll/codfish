@@ -17,7 +17,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == true);
         REQUIRE(move.IsCapture() == true);
-        REQUIRE(move.Uci() == "a1h8q");
+        REQUIRE(move.ToString() == "a1h8q");
     }
 
     SECTION("Pawn Takes King") {
@@ -35,7 +35,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsCapture() == true);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsPromotion() == false);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 
     SECTION("Pawn Takes Queen") {
@@ -51,7 +51,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == false);
         REQUIRE(move.IsCapture() == true);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 
     SECTION("Pawn Takes Rook") {
@@ -68,7 +68,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsCastle() == false);
         REQUIRE(move.IsCapture() == true);
         REQUIRE(move.IsPromotion() == false);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 
     SECTION("Pawn Takes Bishop") {
@@ -84,7 +84,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == false);
         REQUIRE(move.IsCapture() == true);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 
     SECTION("Pawn Takes Knight") {
@@ -100,7 +100,7 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == false);
         REQUIRE(move.IsCapture() == true);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 
     SECTION("Pawn Takes Pawn") {
@@ -115,6 +115,6 @@ TEST_CASE("Move Class", "[move]") {
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == false);
         REQUIRE(move.IsCapture() == true);
-        REQUIRE(move.Uci() == "a1b1");
+        REQUIRE(move.ToString() == "a1b1");
     }
 }

@@ -9,7 +9,7 @@ namespace codchess::zobrist {
 void Init() noexcept;
 
 /// @brief The number of castling_availability keys
-constexpr std::size_t N_CASTLING_KEYS = 16;
+constexpr std::size_t N_CASTLING_KEYS{16};
 
 /// @brief The keys for the side to move
 extern bitboard::Bitboard SIDE_KEY[BOTH];

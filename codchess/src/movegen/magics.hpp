@@ -12,7 +12,7 @@ struct Magic {
     /// @brief The magic number for a given square.
     bitboard::Bitboard magic;
     /// @brief The shift for a given square.
-    int shift;
+    std::int32_t shift;
 };
 
 /// @brief Initializes the magic tables.

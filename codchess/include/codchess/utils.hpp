@@ -118,7 +118,7 @@ constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
 /// @return The inactive color
 [[nodiscard]] constexpr auto
 GetOpponent(const Color to_move) noexcept {
-    return static_cast<Color>(static_cast<int>(to_move) ^ 1);
+    return static_cast<Color>(to_move ^ 1);
 }
 
 /// @brief Returns the file of a square
@@ -147,10 +147,31 @@ GetSquare(const Rank rk, const File fl) noexcept {
 }
 
 /// @brief Returns the square flipped vertically
-/// @param sq The square 
-/// @return The flipped square 
-[[nodiscard]] [[maybe_unused]] constexpr auto
+/// @param sq The square
+/// @return The flipped square
+[[nodiscard]] constexpr auto
 FlipSquare(const Square sq) {
     return static_cast<Square>(sq ^ 56);
 }
+
+/// @brief Returns the inactive color
+/// @param to_move The color to move
+/// @return The inactive color
+[[nodiscard]] constexpr auto
+FlipColor(const Color to_move) noexcept {
+    return static_cast<Color>(static_cast<int>(to_move) ^ 1);
+}
+
+/// @brief Returns the string representation of a square
+/// @param sq The square
+/// @return The string representation
+[[nodiscard]] std::string SquareToString(Square sq) noexcept;
+
+/// @brief Returns the string representation of a piece
+/// @param piece The piece
+/// @param color The color
+/// @param ascii Whether to use ascii or unicode characters
+/// @return The string representation
+[[nodiscard]] std::string PieceToString(PieceType piece, Color color,
+                                        bool ascii = true) noexcept;
 }   // namespace codchess::utils

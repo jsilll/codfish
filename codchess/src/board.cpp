@@ -34,7 +34,7 @@ Board::GetFen() const noexcept {
                     empty_squares = 0;
                 }
                 piece_placements +=
-                    PIECE_DISPLAY[_piece[sq].type + (6 * _piece[sq].color)];
+                    utils::PieceToString(_piece[sq].type, _piece[sq].color);
                 break;
             }
         }
@@ -58,10 +58,10 @@ Board::GetFen() const noexcept {
     }
 
     const auto fen = piece_placements + " " + active_color + " " +
-                      castling_rights + " " +
-                      SQUARE_DISPLAY[en_passant_square()] + " " +
-                      std::to_string(_half_move_clock) + " " +
-                      std::to_string(_full_move_number);
+                     castling_rights + " " +
+                     utils::SquareToString(en_passant_square()) + " " +
+                     std::to_string(_half_move_clock) + " " +
+                     std::to_string(_full_move_number);
 
     return fen.substr(1, std::string::npos);
 }
@@ -521,8 +521,6 @@ Board::UpdateBitboards() noexcept {
 void
 Board::Display(std::ostream &os, const bool ascii,
                const bool white_on_bottom) const noexcept {
-    const int offset = ascii ? 0 : 13;
-
     if (!white_on_bottom) {
         os << "      h   g   f   e   d   c   b   a\n";
         for (int rank = RANK_1; rank < RANK_8; rank++) {
@@ -532,7 +530,7 @@ Board::Display(std::ostream &os, const bool ascii,
                 const auto piece = _piece[utils::GetSquare(
                     static_cast<Rank>(rank), static_cast<File>(file))];
                 os << " "
-                   << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
+                   << utils::PieceToString(piece.type, piece.color, ascii)
                    << " |";
             }
             os << std::setw(3) << rank + 1 << "\n";
@@ -546,7 +544,7 @@ Board::Display(std::ostream &os, const bool ascii,
                 const auto piece = _piece[utils::GetSquare(
                     static_cast<Rank>(rank), static_cast<File>(file))];
                 os << " "
-                   << PIECE_DISPLAY[piece.type + offset + (6 * piece.color)]
+                   << utils::PieceToString(piece.type, piece.color, ascii)
                    << " |";
             }
             os << '\n';

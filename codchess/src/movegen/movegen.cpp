@@ -21,39 +21,40 @@ enum GenType {
 template <Color ToMove>
 static void
 CastlingMoves(MoveList &move_list, const Board &board) noexcept {
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
     constexpr auto Opponent = (ToMove == WHITE ? BLACK : WHITE);
 
-    constexpr auto CASTLE_B_SQ = (ToMove == WHITE ? B1 : B8);
-    constexpr auto CASTLE_C_SQ = (ToMove == WHITE ? C1 : C8);
-    constexpr auto CASTLE_D_SQ = (ToMove == WHITE ? D1 : D8);
-    constexpr auto CASTLE_E_SQ = (ToMove == WHITE ? E1 : E8);
-    constexpr auto CASTLE_F_SQ = (ToMove == WHITE ? F1 : F8);
-    constexpr auto CASTLE_G_SQ = (ToMove == WHITE ? G1 : G8);
+    constexpr auto CastleBSq = (ToMove == WHITE ? B1 : B8);
+    constexpr auto CastleCSq = (ToMove == WHITE ? C1 : C8);
+    constexpr auto CastleDSq = (ToMove == WHITE ? D1 : D8);
+    constexpr auto CastleESq = (ToMove == WHITE ? E1 : E8);
+    constexpr auto CastleFSq = (ToMove == WHITE ? F1 : F8);
+    constexpr auto CastleGSq = (ToMove == WHITE ? G1 : G8);
 
-    constexpr auto CASTLE_KING_MASK =
-        (ToMove == WHITE ? WHITE_KING : BLACK_KING);
-    constexpr auto CASTLE_QUEEN_MASK =
+    constexpr auto CastleKingMask = (ToMove == WHITE ? WHITE_KING : BLACK_KING);
+    constexpr auto CastleQueenMask =
         (ToMove == WHITE ? WHITE_QUEEN : BLACK_QUEEN);
 
-    if (!board.IsSquareAttacked(CASTLE_E_SQ, Opponent)) {
-        if ((board.castling_availability() & CASTLE_KING_MASK) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CASTLE_F_SQ) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CASTLE_G_SQ)) {
-            if (!board.IsSquareAttacked(CASTLE_F_SQ, Opponent) &&
-                !board.IsSquareAttacked(CASTLE_G_SQ, Opponent)) {
+    if (!board.IsSquareAttacked(CastleESq, Opponent)) {
+        if ((board.castling_availability() & CastleKingMask) &&
+            !bitboard::GetBit(board.occupancies(BOTH), CastleFSq) &&
+            !bitboard::GetBit(board.occupancies(BOTH), CastleGSq)) {
+            if (!board.IsSquareAttacked(CastleFSq, Opponent) &&
+                !board.IsSquareAttacked(CastleGSq, Opponent)) {
 
-                move_list.Insert({CASTLE_E_SQ, CASTLE_G_SQ, KING, EMPTY_PIECE,
+                move_list.Insert({CastleESq, CastleGSq, KING, EMPTY_PIECE,
                                   EMPTY_PIECE, false, false, true});
             }
         }
-        if ((board.castling_availability() & CASTLE_QUEEN_MASK) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CASTLE_D_SQ) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CASTLE_C_SQ) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CASTLE_B_SQ)) {
-            if (!board.IsSquareAttacked(CASTLE_D_SQ, Opponent) &&
-                !board.IsSquareAttacked(CASTLE_C_SQ, Opponent)) {
+        if ((board.castling_availability() & CastleQueenMask) &&
+            !bitboard::GetBit(board.occupancies(BOTH), CastleDSq) &&
+            !bitboard::GetBit(board.occupancies(BOTH), CastleCSq) &&
+            !bitboard::GetBit(board.occupancies(BOTH), CastleBSq)) {
+            if (!board.IsSquareAttacked(CastleDSq, Opponent) &&
+                !board.IsSquareAttacked(CastleCSq, Opponent)) {
 
-                move_list.Insert({CASTLE_E_SQ, CASTLE_C_SQ, KING, EMPTY_PIECE,
+                move_list.Insert({CastleESq, CastleCSq, KING, EMPTY_PIECE,
                                   EMPTY_PIECE, false, false, true});
             }
         }
@@ -67,7 +68,9 @@ CastlingMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
-    constexpr Color Opponent = ToMove == WHITE ? BLACK : WHITE;
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
+    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
 
     if (board.en_passant_square() != EMPTY_SQUARE) {
         auto pawns_can_en_passant =
@@ -95,7 +98,9 @@ EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
-    constexpr auto PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
+    constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
 
     auto pawn_single_pushes_promo =
         attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
@@ -105,7 +110,7 @@ PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
     while (pawn_single_pushes_promo) {
         const auto to_square =
             bitboard::BitScanForward(pawn_single_pushes_promo);
-        const auto from_square = to_square + PAWN_SINGLE_PUSH_OFFSET;
+        const auto from_square = to_square + PawnSinglePushOffset;
 
         move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE, QUEEN,
                           false, false, false});
@@ -134,7 +139,9 @@ PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
-    constexpr auto PAWN_SINGLE_PUSH_OFFSET = ToMove == WHITE ? -8 : 8;
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
+    constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
 
     auto pawn_single_pushes_no_promo =
         attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
@@ -144,7 +151,7 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
     while (pawn_single_pushes_no_promo) {
         const auto to_square =
             bitboard::BitScanForward(pawn_single_pushes_no_promo);
-        const auto from_square = to_square + PAWN_SINGLE_PUSH_OFFSET;
+        const auto from_square = to_square + PawnSinglePushOffset;
 
         move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE,
                           EMPTY_PIECE, false, false, false});
@@ -163,11 +170,13 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnCapturesPromotion(MoveList &move_list, const Board &board) {
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr auto MASK_INDEX = ToMove == WHITE ? 6 : 1;
+    constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
 
     auto pawns_can_capture_with_promo =
-        board.pieces(ToMove, PAWN) & utils::MASK_RANK[MASK_INDEX];
+        board.pieces(ToMove, PAWN) & utils::MASK_RANK[MaskIndex];
 
     while (pawns_can_capture_with_promo) {
         const auto from_square =
@@ -213,11 +222,13 @@ PawnCapturesPromotion(MoveList &move_list, const Board &board) {
 template <Color ToMove>
 static void
 PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr auto MASK_INDEX = ToMove == WHITE ? 6 : 1;
+    constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
 
     auto pawns_can_capture_no_promo =
-        board.pieces(ToMove, PAWN) & utils::MASK_CLEAR_RANK[MASK_INDEX];
+        board.pieces(ToMove, PAWN) & utils::MASK_CLEAR_RANK[MaskIndex];
 
     while (pawns_can_capture_no_promo) {
         const auto from_square =
@@ -252,14 +263,16 @@ PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
-    constexpr auto PAWN_DOUBLE_PUSH_OFFSET = ToMove == WHITE ? -16 : 16;
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+
+    constexpr auto PawnDoublePushOffset = ToMove == WHITE ? -16 : 16;
 
     auto pawn_double_pushes = attacks::PawnDoublePushes<ToMove>(
         board.pieces(ToMove, PAWN), ~board.occupancies(BOTH));
 
     while (pawn_double_pushes) {
         const auto to_square = bitboard::BitScanForward(pawn_double_pushes);
-        const auto from_square = to_square + PAWN_DOUBLE_PUSH_OFFSET;
+        const auto from_square = to_square + PawnDoublePushOffset;
 
         move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE,
                           EMPTY_PIECE, true, false, false});
@@ -283,8 +296,8 @@ PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, PieceType PType, GenType GType>
 static void
 LeaperMoves(MoveList &move_list, const Board &board) noexcept {
-    static_assert(PType == KNIGHT || PType == KING,
-                  "Unsupported piece type in generateLeaperMoves()");
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(PType == KNIGHT || PType == KING, "Invalid piece type");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
 
@@ -342,8 +355,9 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, PieceType PType, GenType GType>
 static void
 SliderMoves(MoveList &move_list, const Board &board) {
+    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
     static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN,
-                  "Unsupported piece type in SliderMoves()");
+                  "Invalid piece type");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
 

@@ -9,6 +9,7 @@
 
 #include <codchess/base.hpp>
 #include <codchess/move.hpp>
+#include <codchess/utils.hpp>
 
 namespace codchess {
 /// @brief Represents a chess board
@@ -97,7 +98,7 @@ class Board {
     /// @brief Returns the current inactive color
     /// @return The current inactive color
     [[nodiscard]] constexpr auto inactive() const noexcept {
-        return FlipColor(_active);
+        return utils::FlipColor(_active);
     }
 
     /// @brief Returns the castling_availability availability
@@ -194,11 +195,13 @@ class Board {
     /// @brief Switches the side to move
     /// @return The new side to move
     constexpr auto SwitchActive() noexcept {
-        return _active = FlipColor(_active);
+        return _active = utils::FlipColor(_active);
     }
 
     /// @brief Sets the board to the starting position
-    void SetStartingPosition() noexcept { SetFromFen(_kStartingPosition); }
+    void SetStartingPosition() noexcept {
+        SetFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR, w KQkq - 0 1");
+    }
 
     /// @brief Sets the board from a FEN string
     /// @param fen The FEN string
@@ -252,16 +255,14 @@ class Board {
         }
     };
 
-    /// @brief The default starting position FEN
-    static constexpr char _kStartingPosition[]{
-        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR, w KQkq - 0 1"};
-
     /// @brief The squares representation of the board
-    /// @details This is always maintains the same state as the bitboards
+    /// @note This should be synced with the bitboards
     std::array<Piece, N_SQUARES> _piece{};
     /// @brief The occupancy bitboards
+    /// @note This should be synced with the bitboards
     std::array<std::uint64_t, N_COLORS + 1> _occupancies{};
     /// @brief The bitboards for the pieces
+    /// @note This should be synced with the arrays above
     std::array<std::array<std::uint64_t, N_PIECES>, N_COLORS> _pieces{};
 
     /// @brief The side to move
@@ -285,14 +286,6 @@ class Board {
 
     /// @brief Updates the occupancy bitboards from the pieces bitboards
     /// @note This function is called after a move is made
-    void UpdateOccupancies() noexcept;
-
-    /// @brief Returns the inactive color
-    /// @param to_move The color to move
-    /// @return The inactive color
-    [[nodiscard]] static constexpr Color
-    FlipColor(const Color to_move) noexcept {
-        return static_cast<Color>(static_cast<int>(to_move) ^ 1);
-    }
+    void UpdateOccupancies() noexcept; 
 };
 }   // namespace codchess

@@ -13,11 +13,11 @@ void Init() noexcept;
 
 /// @brief Number of rook magics
 /// @note 4096 is the number of unique 12-bit numbers
-constexpr std::size_t N_ROOK_MAGICS = 4096;
+constexpr std::size_t N_ROOK_MAGICS{4096};
 
 /// @brief Number of bishop magics
 /// @note 512 is the number of unique 9-bit numbers
-constexpr std::size_t N_BISHOP_MAGICS = 512;
+constexpr std::size_t N_BISHOP_MAGICS{512};
 
 /// @brief Bitboard masks for each king attack
 /// @note The Init() function must be called before using this

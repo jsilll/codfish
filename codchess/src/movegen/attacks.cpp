@@ -53,8 +53,8 @@ KnightAttacks(const bitboard::Bitboard knights) noexcept {
 /// @return A bitboard of all the king attacks.
 [[nodiscard]] constexpr bitboard::Bitboard
 KingAttacks(bitboard::Bitboard kings) noexcept {
-    auto attacks = bitboard::ShiftOne<bitboard::Direction::EAST>(kings) |
-                   bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
+    const auto attacks = bitboard::ShiftOne<bitboard::Direction::EAST>(kings) |
+                         bitboard::ShiftOne<bitboard::Direction::WEST>(kings);
 
     kings |= attacks;
 
@@ -73,6 +73,7 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
     const auto file = utils::GetFile(sq);
 
     auto attacks{bitboard::ZERO};
+
     for (int r = rank + 1, f = file + 1; r < N_RANKS && f < N_FILES; ++r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
@@ -185,7 +186,8 @@ Init() noexcept {
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {
-        int occupancy_indices = 1 << utils::BISHOP_RELEVANT_BITS_COUNT[sq];
+        const int occupancy_indices = 1
+                                      << utils::BISHOP_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
             const auto magic = magics::BISHOP_MAGIC_TABLE[sq];
             const auto occupancy = bitboard::SetOccupancy(
@@ -198,12 +200,13 @@ Init() noexcept {
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {
-        int occupancy_indices = 1 << utils::ROOK_RELEVANT_BITS_COUNT[sq];
+        const int occupancy_indices = 1 << utils::ROOK_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
             const auto magic = magics::ROOK_MAGIC_TABLE[sq];
             const auto occupancy = bitboard::SetOccupancy(
                 i, utils::ROOK_RELEVANT_BITS_COUNT[sq], magic.mask);
-            int index = (int) ((occupancy * magic.magic) >> magic.shift);
+            const auto index =
+                static_cast<int>((occupancy * magic.magic) >> magic.shift);
             ROOK_ATTACKS[sq][index] =
                 attacks::RookNoXrayAttacks((Square) sq, occupancy);
         }

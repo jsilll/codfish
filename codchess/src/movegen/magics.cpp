@@ -69,6 +69,7 @@ BishopXrayAttacks(const Square sq) noexcept {
     const auto file = utils::GetFile(sq);
 
     auto attacks{bitboard::ZERO};
+
     for (int r = rank + 1, f = file + 1; r < RANK_8 && f < FILE_H; ++r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
@@ -101,6 +102,7 @@ RookXrayAttacks(const Square sq) noexcept {
     const auto file = utils::GetFile(sq);
 
     auto attacks{bitboard::ZERO};
+
     for (int r = rank + 1; r < RANK_8; ++r) {
         attacks |=
             (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r), file));
@@ -126,7 +128,7 @@ RookXrayAttacks(const Square sq) noexcept {
 
 void
 Init() noexcept {
-    for (int sq = A1; sq < N_SQUARES; sq++) {
+    for (int sq = A1; sq < N_SQUARES; ++sq) {
         BISHOP_MAGIC_TABLE[sq].mask =
             BishopXrayAttacks(static_cast<Square>(sq));
         BISHOP_MAGIC_TABLE[sq].magic = BISHOP_MAGICS[sq];
@@ -134,7 +136,7 @@ Init() noexcept {
             N_SQUARES - utils::BISHOP_RELEVANT_BITS_COUNT[sq];
     }
 
-    for (int sq = A1; sq < N_SQUARES; sq++) {
+    for (int sq = A1; sq < N_SQUARES; ++sq) {
         ROOK_MAGIC_TABLE[sq].mask = RookXrayAttacks(static_cast<Square>(sq));
         ROOK_MAGIC_TABLE[sq].magic = ROOK_MAGICS[sq];
         ROOK_MAGIC_TABLE[sq].shift =

@@ -48,8 +48,8 @@ endif ()
 # -- Codchess --
 add_subdirectory(codchess)
 
-# -- Codlib -- 
-add_subdirectory(codbrain)
+# -- Codbrain -- 
+# add_subdirectory(codbrain)
 
 # -- Codfish --
 # add_subdirectory(codfish)

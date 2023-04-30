@@ -8,7 +8,7 @@ namespace codchess::perft {
 /// @param depth The depth
 /// @return The number of nodes
 std::uint64_t
-PerftAux(Board &board, std::uint64_t depth) noexcept {
+PerftAux(Board &board, std::uint32_t depth) noexcept {
     std::uint64_t nodes{0};
 
     const auto board_info = board.GetStateBackup();
@@ -33,12 +33,11 @@ PerftAux(Board &board, std::uint64_t depth) noexcept {
 }
 
 std::uint64_t
-Perft(Board &board, std::uint64_t depth) noexcept {
-    std::uint64_t nodes{0};
-
+Perft(Board &board, std::uint32_t depth) noexcept {
     const auto moves = movegen::PseudoLegal(board);
     const auto board_info = board.GetStateBackup();
 
+    std::uint64_t nodes{0};
 #pragma omp parallel for reduction(+ : nodes) schedule(dynamic)
     for (auto it = moves.begin(); it != moves.end(); ++it) {
         auto cboard = board;

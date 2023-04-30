@@ -3,6 +3,7 @@
 #include <string>
 
 #include <codchess/base.hpp>
+#include <codchess/utils.hpp>
 
 namespace codchess {
 /// @brief Encodes a chess move
@@ -20,11 +21,10 @@ class Move {
     /// @param is_double_push If if double push
     /// @param is_en_passant If is en passant
     /// @param is_castle If is castle
-    [[maybe_unused]] [[nodiscard]] Move(
-        int source_square, const int target_square, const int piece,
-        const int captured_piece, const int promoted_piece,
-        const bool is_double_push, const bool is_en_passant,
-        const bool is_castle) noexcept
+    [[nodiscard]] Move(const int source_square, const int target_square,
+                       const int piece, const int captured_piece,
+                       const int promoted_piece, const bool is_double_push,
+                       const bool is_en_passant, const bool is_castle) noexcept
         : _encoded(static_cast<std::uint32_t>(source_square) |
                    (static_cast<std::uint32_t>(target_square << 6)) |
                    (static_cast<std::uint32_t>(piece << 12)) |
@@ -99,7 +99,16 @@ class Move {
 
     /// @brief Returns the move in UCI format
     /// @return The move in UCI format
-    [[maybe_unused]] [[nodiscard]] std::string Uci() const noexcept;
+    [[maybe_unused]] [[nodiscard]] std::string ToString() const noexcept {
+        if (IsPromotion()) {
+            return utils::SquareToString(FromSquare()) +
+                   utils::SquareToString(ToSquare()) +
+                   utils::PieceToString(PromotedPiece(), BLACK);
+        } else {
+            return utils::SquareToString(FromSquare()) +
+                   utils::SquareToString(ToSquare());
+        }
+    }
 
     /// @brief Returns the encoded move
     /// @return The encoded move
@@ -127,6 +136,6 @@ class Move {
 
   private:
     /// @brief The encoded move for memory efficiency
-    std::uint32_t _encoded{};
+    std::uint32_t _encoded{0};
 };
 }   // namespace codchess

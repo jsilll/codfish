@@ -17,8 +17,8 @@ bitboard::Bitboard PIECE_KEY[N_COLORS][N_PIECES][N_SQUARES];
 /// @return The random number
 bitboard::Bitboard
 RandomBitboard() noexcept {
-    bitboard::Bitboard n1 = (static_cast<bitboard::Bitboard>(std::rand()));
-    bitboard::Bitboard n2 = (static_cast<bitboard::Bitboard>(std::rand()));
+    const auto n1 = (static_cast<bitboard::Bitboard>(std::rand()));
+    const auto n2 = (static_cast<bitboard::Bitboard>(std::rand()));
     return n1 | (n2 << 32);
 }
 
@@ -32,8 +32,8 @@ Init() noexcept {
         castle_key = RandomBitboard();
     }
 
-    for (int piece = PAWN; piece < N_PIECES; piece++) {
-        for (int square = A1; square < N_SQUARES; square++) {
+    for (int piece = PAWN; piece < N_PIECES; ++piece) {
+        for (int square = A1; square < N_SQUARES; ++square) {
             PIECE_KEY[WHITE][piece][square] = RandomBitboard();
             PIECE_KEY[BLACK][piece][square] = RandomBitboard();
         }
@@ -45,10 +45,10 @@ Init() noexcept {
 bitboard::Bitboard
 Hash(const Board &board) noexcept {
     auto final_key{bitboard::ZERO};
-
     for (int piece = PAWN; piece < N_PIECES; ++piece) {
         for (int side = WHITE; side < BOTH; ++side) {
-            auto bitboard = board.pieces((Color) side, (PieceType) piece);
+            auto bitboard = board.pieces(static_cast<Color>(side),
+                                         static_cast<PieceType>(piece));
             while (bitboard) {
                 const auto sq = bitboard::BitScanForward(bitboard);
                 final_key ^= PIECE_KEY[side][piece][sq];

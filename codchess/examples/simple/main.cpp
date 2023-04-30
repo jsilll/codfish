@@ -16,17 +16,20 @@ main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
 
         if (input == "quit") {
             break;
-        } else if (input == "go") {
-            const auto moves = movegen::Legal(board);
-            if (!moves.Empty()) {
-                board.Make(*moves.begin());
-            }
         } else {
             const auto moves = movegen::Legal(board);
+
+            bool found{false};
             for (const auto move : moves) {
-                if (move.Uci() == input) {
+                if (move.ToString() == input) {
                     board.Make(move);
+                    found = true;
+                    break;
                 }
+            }
+
+            if (!found and !moves.empty()) {
+                board.Make(*moves.begin());
             }
         }
     }
