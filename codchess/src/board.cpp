@@ -1,7 +1,7 @@
 #include <codchess/board.hpp>
 
+#include "attacks.hpp"
 #include "zobrist.hpp"
-#include "movegen/attacks.hpp"
 
 namespace codchess {
 [[maybe_unused]] std::string

@@ -9,4 +9,4 @@ set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE HEADERS ../include/*.hpp)
 
 # -- Building Documentation --
-doxygen_add_docs(codchess-docs ${HEADERS} COMMENT "Generating Documentation")
+doxygen_add_docs(codchess-docs ${HEADERS} COMMENT "Generating Documentation for CodChess")
