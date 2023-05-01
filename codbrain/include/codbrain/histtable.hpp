@@ -4,7 +4,8 @@
 
 namespace codbrain {
 /// @brief Class that implements the history table
-class HistoryTable {
+/// @tparam S The size of the table
+template <std::size_t S> class HistoryTable {
   public:
     /// @brief Returns whether the position is a repetition
     /// @param key The key to check
@@ -15,23 +16,24 @@ class HistoryTable {
                 return true;
             }
         }
+
         return false;
     }
 
     /// @brief Pops the last key from the history table
     void Pop() noexcept { --_size; }
 
-    /// @brief Clears the history table 
+    /// @brief Clears the history table
     void Clear() noexcept { _size = 0; }
 
-    /// @brief Pushes a key to the history table 
-    /// @param key The key to push 
+    /// @brief Pushes a key to the history table
+    /// @param key The key to push
     void Push(const std::uint64_t key) noexcept { _hist[_size++] = key; }
 
   private:
     /// @brief The size of the history table
     std::size_t _size{0};
     /// @brief The history table
-    std::array<std::uint64_t, 128> _hist;
+    std::uint64_t _hist[S]{};
 };
 }   // namespace codbrain

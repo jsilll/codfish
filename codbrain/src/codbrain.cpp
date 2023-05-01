@@ -28,7 +28,7 @@ can_lmr(const Move move) {
 }
 
 int
-MovePicker::Search(int alpha, int beta, int depth) {
+MovePicker::Search(int alpha, int beta, int depth) noexcept {
     auto moves = movegen::PseudoLegal(_board);
     // std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
@@ -54,7 +54,7 @@ MovePicker::Search(int alpha, int beta, int depth) {
 
                 alpha = score;
                 best_move = move;
-                _pv_table.add(best_move, _current_depth);
+                _pv_table.Add(best_move, _current_depth);
             }
         }
 
@@ -89,7 +89,7 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
 
     // Forced Terminal Node
     if (depth <= 0) {
-        _pv_table.set_length(_current_depth);
+        _pv_table.SetDepth(_current_depth);
         return Quiescence(alpha, beta);
     }
 
@@ -107,14 +107,13 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
         _board.SwitchActive();
         if (score >= beta) {
             _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
-                              beta,
-                              _pv_table.get_pv_from_depth(_current_depth));
+                              beta, _pv_table.PV(_current_depth));
             return beta;
         }
     }
 
     auto moves = movegen::PseudoLegal(_board);
-    // std::sort(moves.begin(), moves.end(), _move_more_than_key);
+    // TODO: std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
     Move best_move = Move();
     int n_moves_searched = 0;
@@ -181,7 +180,7 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
 
                 _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
                                   beta,
-                                  _pv_table.get_pv_from_depth(_current_depth));
+                                  _pv_table.PV(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
@@ -193,7 +192,7 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
                 alpha = score;
                 alpha_cutoff = TTable::HASH_FLAG_SCORE;
                 best_move = move;
-                _pv_table.add(best_move, _current_depth);
+                _pv_table.Add(best_move, _current_depth);
             }
 
             n_moves_searched++;
@@ -210,28 +209,28 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
             _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
                               MIN_EVAL + _current_depth,
-                              _pv_table.get_pv_from_depth(_current_depth));
+                              _pv_table.PV(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
         _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.get_pv_from_depth(_current_depth));
+                          _pv_table.PV(_current_depth));
         return 0;
     }
 
     _ttable.set_entry(state.hash_key, depth, alpha_cutoff, alpha,
-                      _pv_table.get_pv_from_depth(_current_depth));
+                      _pv_table.PV(_current_depth));
     return alpha;
 }
 
 int
-MovePicker::Quiescence(int alpha, int beta) {
+MovePicker::Quiescence(int alpha, int beta) noexcept {
     _current_nodes++;
 
     if (_board.half_move_clock() == 100) {
         _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.get_pv_from_depth(_current_depth));
+                          _pv_table.PV(_current_depth));
         return 0;
     }
 
@@ -241,12 +240,12 @@ MovePicker::Quiescence(int alpha, int beta) {
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
             _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
                               MIN_EVAL + _current_depth,
-                              _pv_table.get_pv_from_depth(_current_depth));
+                              _pv_table.PV(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
         _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.get_pv_from_depth(_current_depth));
+                          _pv_table.PV(_current_depth));
         return 0;
     }
 
@@ -255,7 +254,7 @@ MovePicker::Quiescence(int alpha, int beta) {
     int stand_pat = eval::eval(_board);
     if (stand_pat >= beta) {
         _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
-                          _pv_table.get_pv_from_depth(_current_depth));
+                          _pv_table.PV(_current_depth));
         return beta;
     } else if (stand_pat > alpha) {
 
@@ -281,7 +280,7 @@ MovePicker::Quiescence(int alpha, int beta) {
             if (score >= beta) {
                 _board.Unmake(capture, state);
                 _ttable.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
-                                  _pv_table.get_pv_from_depth(_current_depth));
+                                  _pv_table.PV(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
@@ -294,7 +293,7 @@ MovePicker::Quiescence(int alpha, int beta) {
     }
 
     _ttable.set_entry(_board.hash_key(), 0, alpha_cutoff, alpha,
-                      _pv_table.get_pv_from_depth(_current_depth));
+                      _pv_table.PV(_current_depth));
     return alpha;
 }
 
@@ -325,8 +324,7 @@ MovePicker::FindBestMove() noexcept {
         beta = score + WINDOW_EXPANSION;
     }
 
-    auto result = SearchResult{alpha, _current_nodes, _pv_table.get_pv()};
-    return result;
+    return {alpha, _current_nodes, _pv_table.PV()};
 }
 
 }   // namespace codbrain

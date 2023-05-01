@@ -12,10 +12,9 @@
 #include <codbrain/pvtable.hpp>
 #include <codbrain/ttable.hpp>
 
-#define MAX_DEPTH     64
-#define DEFAULT_DEPTH 6
-
 namespace codbrain {
+#define MAX_DEPTH 64
+
 /// @brief Class that implements the search algorithm
 class MovePicker {
   public:
@@ -30,7 +29,10 @@ class MovePicker {
     };
 
     /// @brief Default constructor
-    [[nodiscard]] MovePicker() noexcept : _move_more_than_key{*this} {}
+    [[nodiscard]] MovePicker(const std::uint32_t depth)
+        : _max_depth{depth}, _move_more_than_key{*this} {
+        CheckDepth(depth);
+    }
 
     /// @brief Returns a reference to the board
     /// @return The board
@@ -45,14 +47,8 @@ class MovePicker {
     /// @brief Sets the max depth for the search
     /// @param depth The max depth
     void max_depth(const std::uint32_t depth) {
-        if (depth == 0) {
-            throw std::invalid_argument(
-                "Depth argument must be positive integer.");
-        } else if (depth > MAX_DEPTH) {
-            throw std::invalid_argument("Depth argument must be less than 64.");
-        } else {
-            _max_depth = depth;
-        }
+        CheckDepth(depth);
+        _max_depth = depth;
     }
 
     /// @brief Clears the transposition table
@@ -63,9 +59,9 @@ class MovePicker {
 
     /// @brief Clears all the move tables
     void ClearMoveTables() noexcept {
-        _pv_table.clear();
-        std::memset(_killer_moves.data(), 0, _killer_moves.size());
-        std::memset(_history_moves.data(), 0, _history_moves.size());
+        _pv_table.Clear();
+        std::memset(_killer_moves, 0, sizeof(_killer_moves));
+        std::memset(_history_moves, 0, sizeof(_history_moves));
     }
 
     /// @brief Adds a board hash to the current known history
@@ -87,32 +83,30 @@ class MovePicker {
     SearchResult FindBestMove(int depth, int alpha, int beta) noexcept {
         ClearCounters();
         const auto score = Search(depth, alpha, beta);
-        return {score, _current_nodes, _pv_table.get_pv()};
+        return {score, _current_nodes, _pv_table.PV()};
     }
 
   private:
     /// @brief Board to be searched
     codchess::Board _board{};
     /// @brief Max depth for the search
-    std::uint32_t _max_depth{6};
+    std::uint32_t _max_depth;
     /// @brief Current number of nodes searched
     std::uint64_t _current_nodes{0};
     /// @brief Current depth of the search
     std::uint32_t _current_depth{0};
-    /// @brief Killer moves
-    std::array<std::array<codchess::Move, MAX_DEPTH>, 2> _killer_moves{};
-    /// @brief History moves
-    std::array<
-        std::array<std::array<int, codchess::N_SQUARES>, codchess::N_PIECES>,
-        codchess::N_COLORS>
-        _history_moves{};
 
     /// @brief Transposition table
     TTable _ttable{};
     /// @brief Principal variation table
-    PVTable _pv_table{};
+    PVTable<MAX_DEPTH> _pv_table{};
     /// @brief History table
-    HistoryTable _hist_table{};
+    HistoryTable<128> _hist_table{};
+    /// @brief Killer moves TODO: encapsulate
+    codchess::Move _killer_moves[2][MAX_DEPTH]{};
+    /// @brief History moves
+    std::uint32_t _history_moves[codchess::N_COLORS][codchess::N_PIECES]
+                                [codchess::N_SQUARES]{};
 
     /// @brief Functor to compare moves
     [[maybe_unused]] struct MoveMoreThanKey {
@@ -122,6 +116,15 @@ class MovePicker {
             return (move_picker.Score(move1) > move_picker.Score(move2));
         }
     } _move_more_than_key;
+
+    static void CheckDepth(const std::uint32_t depth) {
+        if (depth == 0) {
+            throw std::invalid_argument(
+                "Depth argument must be positive integer.");
+        } else if (depth > MAX_DEPTH) {
+            throw std::invalid_argument("Depth argument must be less than 64.");
+        }
+    }
 
     /// @brief Clears the search counters
     constexpr void ClearCounters() noexcept {
@@ -160,7 +163,7 @@ class MovePicker {
             {10101, 10201, 10301, 10401, 10501, 10601},
             {10100, 10200, 10300, 10400, 10500, 10600}};
 
-        if (_pv_table.get_pv_move(_current_depth) == move) {
+        if (_pv_table.PVMove(_current_depth) == move) {
             return 20000;
         }
 

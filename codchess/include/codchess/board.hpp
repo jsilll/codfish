@@ -257,13 +257,13 @@ class Board {
 
     /// @brief The squares representation of the board
     /// @note This should be synced with the bitboards
-    std::array<Piece, N_SQUARES> _piece{};
+    Piece _piece[N_SQUARES]{};
     /// @brief The occupancy bitboards
     /// @note This should be synced with the bitboards
-    std::array<std::uint64_t, N_COLORS + 1> _occupancies{};
+    std::uint64_t _occupancies[N_COLORS + 1]{};
     /// @brief The bitboards for the pieces
     /// @note This should be synced with the arrays above
-    std::array<std::array<std::uint64_t, N_PIECES>, N_COLORS> _pieces{};
+    std::uint64_t _pieces[N_COLORS][N_PIECES]{};
 
     /// @brief The side to move
     Color _active{};
@@ -286,6 +286,6 @@ class Board {
 
     /// @brief Updates the occupancy bitboards from the pieces bitboards
     /// @note This function is called after a move is made
-    void UpdateOccupancies() noexcept; 
+    void UpdateOccupancies() noexcept;
 };
 }   // namespace codchess
