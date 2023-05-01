@@ -244,7 +244,7 @@ class Board {
         /// @note Constructs a FEN object from a FEN string
         /// @param fen The FEN string
         /// @note The fen string is assumed to be valid
-        [[nodiscard]] Fen(const std::string &fen) noexcept {
+        [[nodiscard]] explicit Fen(const std::string &fen) noexcept {
             std::stringstream ss(fen);
             std::getline(ss, position, ' ');
             ss >> active;

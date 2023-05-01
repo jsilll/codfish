@@ -1,11 +1,8 @@
 #pragma once
 
 #include <codchess/base.hpp>
-
 #include <codchess/move.hpp>
-
 #include <codchess/board.hpp>
-
 #include <codchess/movegen.hpp>
 
 namespace codchess {

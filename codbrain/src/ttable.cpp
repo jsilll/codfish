@@ -14,7 +14,7 @@ TTable::~TTable() { delete[] _table; }
 void
 TTable::clear() {
     for (int p = 0; p < TABLE_SIZE; p++) {
-        _table[p] = {0ULL, 0, 0, 0, {}};
+        _table[p] = {0, 0, 0, 0, {}};
     }
 }
 

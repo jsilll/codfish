@@ -1,7 +1,5 @@
 #include <codchess/perft.hpp>
 
-#include <codchess/bitboard.hpp>
-
 namespace codchess::perft {
 /// @brief Auxiliary function for perft
 /// @param board The board

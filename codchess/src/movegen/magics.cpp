@@ -5,7 +5,7 @@
 
 namespace codchess::magics {
 /// @brief Pre-computed magic numbers for bishops.
-constexpr bitboard::Bitboard BISHOP_MAGICS[N_SQUARES] = {
+static constexpr bitboard::Bitboard BISHOP_MAGICS[N_SQUARES] = {
     0x40040844404084ULL,   0x2004208a004208ULL,   0x10190041080202ULL,
     0x108060845042010ULL,  0x581104180800210ULL,  0x2112080446200010ULL,
     0x1080820820060210ULL, 0x3c0808410220200ULL,  0x4050404440404ULL,
@@ -30,7 +30,7 @@ constexpr bitboard::Bitboard BISHOP_MAGICS[N_SQUARES] = {
     0x4010011029020020ULL};
 
 /// @brief Pre-computed magic numbers for rooks.
-constexpr bitboard::Bitboard ROOK_MAGICS[N_SQUARES] = {
+static constexpr bitboard::Bitboard ROOK_MAGICS[N_SQUARES] = {
     0x8a80104000800020ULL, 0x140002000100040ULL,  0x2801880a0017001ULL,
     0x100081001000420ULL,  0x200020010080420ULL,  0x3001c0002010008ULL,
     0x8480008002000100ULL, 0x2080088004402900ULL, 0x800098204000ULL,

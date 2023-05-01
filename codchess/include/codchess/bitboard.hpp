@@ -75,7 +75,7 @@ BitScan(const Bitboard bb) noexcept {
 /// @brief Returns index of LSB bit
 /// @param bb The bitboard
 /// @return The square of the LSB bit
-[[nodiscard]] Square BitScanForward(const Bitboard bb) noexcept;
+[[nodiscard]] Square BitScanForward(Bitboard bb) noexcept;
 
 /// @brief The directions of the board represented as offsets
 enum Direction : int {

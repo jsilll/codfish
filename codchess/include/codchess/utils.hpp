@@ -8,30 +8,30 @@
 
 namespace codchess::utils {
 /// @brief Bitboard masks for each rank
-constexpr bitboard::Bitboard MASK_RANK[] = {
+static constexpr bitboard::Bitboard MASK_RANK[] = {
     0xFF,         0xFF00,         0xFF0000,         0xFF000000,
     0xFF00000000, 0xFF0000000000, 0xFF000000000000, 0xFF00000000000000};
 
 /// @brief Bitboard masks for each file
-constexpr bitboard::Bitboard MASK_FILE[] = {
+[[maybe_unused]] static constexpr bitboard::Bitboard MASK_FILE[] = {
     0x0101010101010101, 0x202020202020202,  0x404040404040404,
     0x808080808080808,  0x1010101010101010, 0x2020202020202020,
     0x4040404040404040, 0x8080808080808080};
 
 /// @brief Bitboard masks for clearing each rank
-constexpr bitboard::Bitboard MASK_CLEAR_RANK[] = {
+static constexpr bitboard::Bitboard MASK_CLEAR_RANK[] = {
     0xFFFFFFFFFFFFFF00, 0xFFFFFFFFFFFF00FF, 0xFFFFFFFFFF00FFFF,
     0xFFFFFFFF00FFFFFF, 0xFFFFFF00FFFFFFFF, 0xFFFF00FFFFFFFFFF,
     0xFF00FFFFFFFFFFFF, 0x00FFFFFFFFFFFFFF};
 
 /// @brief Bitboard masks for clearing each file
-constexpr bitboard::Bitboard MASK_CLEAR_FILE[] = {
+static constexpr bitboard::Bitboard MASK_CLEAR_FILE[] = {
     0xFEFEFEFEFEFEFEFE, 0xFDFDFDFDFDFDFDFD, 0xFBFBFBFBFBFBFBFB,
     0xF7F7F7F7F7F7F7F7, 0xEFEFEFEFEFEFEFEF, 0xDFDFDFDFDFDFDFDF,
     0xBFBFBFBFBFBFBFBF, 0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard representation of each square
-constexpr bitboard::Bitboard SQUARE_BB[N_SQUARES] = {
+static constexpr bitboard::Bitboard SQUARE_BB[N_SQUARES] = {
     0x1ULL,
     0x2ULL,
     0x4ULL,
@@ -99,14 +99,14 @@ constexpr bitboard::Bitboard SQUARE_BB[N_SQUARES] = {
 };
 
 /// @brief Relevant bits count for each square for the bishop
-constexpr int BISHOP_RELEVANT_BITS_COUNT[N_SQUARES] = {
+static constexpr int BISHOP_RELEVANT_BITS_COUNT[N_SQUARES] = {
     6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
     5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
     7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
 };
 
 /// @brief Relevant bits count for each square for the rook
-constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
+static constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
     12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,

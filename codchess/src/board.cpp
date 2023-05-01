@@ -1,11 +1,6 @@
 #include <codchess/board.hpp>
 
-#include <codchess/bitboard.hpp>
-#include <codchess/utils.hpp>
-
-#include "display.hpp"
 #include "zobrist.hpp"
-
 #include "movegen/attacks.hpp"
 
 namespace codchess {
@@ -100,7 +95,7 @@ Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
 
 void
 Board::Make(Move move) noexcept {
-    static const int castling_rights[64] = {
+    static constexpr int castling_rights[64] = {
         13, 15, 15, 15, 12, 15, 15, 14, 15, 15, 15, 15, 15, 15, 15, 15,
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,

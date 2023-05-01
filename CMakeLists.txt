@@ -49,7 +49,7 @@ endif ()
 add_subdirectory(codchess)
 
 # -- Codbrain -- 
-add_subdirectory(codbrain)
+# add_subdirectory(codbrain)
 
 # -- Codfish --
 # add_subdirectory(codfish)

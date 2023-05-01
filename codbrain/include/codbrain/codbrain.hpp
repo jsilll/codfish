@@ -152,7 +152,7 @@ class MovePicker {
     /// @note This function is used for sorting the list of moves upon
     /// generation in order to cause the most alpha-beta cuts.
     [[nodiscard]] std::int32_t Score(const codchess::Move move) const noexcept {
-        static const int MVV_LVA[6][6] = {
+        static constexpr int MVV_LVA[6][6] = {
             {10105, 10205, 10305, 10405, 10505, 10605},
             {10104, 10204, 10304, 10404, 10504, 10604},
             {10103, 10203, 10303, 10403, 10503, 10603},

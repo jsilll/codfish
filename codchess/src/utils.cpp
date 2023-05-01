@@ -5,7 +5,7 @@ std::string
 SquareToString(const Square sq) noexcept {
     /// @brief The names of the squares aligned with the Square enum
     /// @note The names are compliant with the UCI format
-    static const std::string SQUARE[N_SQUARES + 1] = {
+    static constexpr std::string SQUARE[N_SQUARES + 1] = {
         "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
         "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3",
         "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5",
@@ -23,7 +23,7 @@ PieceToString(const PieceType piece, const Color color,
     /// @note The first 13 elements are the ascii representation of the pieces
     /// and
     /// @note the last 13 are the unicode representation
-    static const std::string PIECE[] = {
+    static constexpr std::string PIECE[] = {
         // White pieces in ascii format
         "P",
         "N",
