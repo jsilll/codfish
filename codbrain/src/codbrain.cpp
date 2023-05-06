@@ -20,19 +20,35 @@
 using namespace codchess;
 
 namespace codbrain {
-static bool
-can_lmr(const Move move) {
-    // Move can't be a capture nor a promotion for LMR to happen
-    /* TODO: missing check moves and in check moves */
-    return !move.IsCapture() && !move.IsPromotion();
+std::int32_t
+Brain::Score(const codchess::Move move) const noexcept {
+    static constexpr int MVV_LVA[6][6] = {
+        {10105, 10205, 10305, 10405, 10505, 10605},
+        {10104, 10204, 10304, 10404, 10504, 10604},
+        {10103, 10203, 10303, 10403, 10503, 10603},
+        {10102, 10202, 10302, 10402, 10502, 10602},
+        {10101, 10201, 10301, 10401, 10501, 10601},
+        {10100, 10200, 10300, 10400, 10500, 10600}};
+
+    if (_pv_table.PVMove(_current_depth) == move) {
+        return 20000;
+    } else if (move.IsCapture()) {
+        return MVV_LVA[move.MovedPiece()][move.CapturedPiece()];
+    } else if (_killer_table.First(_current_depth) == move) {
+        return 9000;
+    } else if (_killer_table.Second(_current_depth) == move) {
+        return 8000;
+    } else {
+        return _hist_moves.Get(_board.active(), move);
+    }
 }
 
 int
-MovePicker::Search(int alpha, int beta, int depth) noexcept {
+Brain::Search(int alpha, int beta, int depth) noexcept {
     auto moves = movegen::PseudoLegal(_board);
-    // std::sort(moves.begin(), moves.end(), _move_more_than_key);
+    std::sort(moves.begin(), moves.end(), _move_more_than_key);
 
-    Move best_move = Move();
+    Move best{};
     const auto state = _board.GetStateBackup();
     for (const auto move : moves) {
         _board.Make(move);
@@ -49,12 +65,12 @@ MovePicker::Search(int alpha, int beta, int depth) noexcept {
             if (score > alpha) {
                 // History Move Heuristic
                 if (!move.IsCapture()) {
-                    AddToHistoryMoves(move);
+                    _hist_moves.Add(_board.active(), move, _current_depth);
                 }
 
                 alpha = score;
-                best_move = move;
-                _pv_table.Add(best_move, _current_depth);
+                best = move;
+                _pv_table.Add(best, _current_depth);
             }
         }
 
@@ -65,7 +81,7 @@ MovePicker::Search(int alpha, int beta, int depth) noexcept {
 }
 
 std::int32_t
-MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
+Brain::Negamax(int alpha, int beta, int depth) noexcept {
     _current_nodes++;
 
     // Terminal Node
@@ -80,10 +96,9 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
         return 0;
     }
 
-    TTable::TTOutput hash_read =
-        _ttable.read_hash(_board.hash_key(), alpha, beta, depth);
+    const auto hash_read = _ttable.Read(_board.hash_key(), alpha, beta, depth);
     if (hash_read.found) {
-        _pv_table.add_pv_from_depth(hash_read.moves, _current_depth);
+        _pv_table.Add(hash_read.moves, _current_depth);
         return hash_read.score;
     }
 
@@ -106,8 +121,8 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
         _board.SetStateBackup(state);
         _board.SwitchActive();
         if (score >= beta) {
-            _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
-                              beta, _pv_table.PV(_current_depth));
+            _ttable.Set(state.hash_key, depth, TTable::HASH_FLAG_BETA, beta,
+                        _pv_table.PV(_current_depth));
             return beta;
         }
     }
@@ -139,7 +154,7 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
                 // For all the others moves, we assume they are worse moves than
                 // the first one, so let's try to use Null Window Search first
                 if (n_moves_searched >= FULL_DEPTH_MOVES &&
-                    depth >= REDUCTION_LIMIT && can_lmr(move)) {
+                    depth >= REDUCTION_LIMIT && CanLMR(move)) {
                     // Perform a Null Window Search
                     _current_depth++;
                     _hist_table.Push(state.hash_key);
@@ -173,20 +188,19 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
             if (score >= beta) {
                 // Killer Move Heuristic
                 if (!move.IsCapture()) {
-                    AddToKillerMoves(move);
+                    _killer_table.Push(move, _current_depth);
                 }
 
                 _board.Unmake(move, state);
 
-                _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_BETA,
-                                  beta,
-                                  _pv_table.PV(_current_depth));
+                _ttable.Set(state.hash_key, depth, TTable::HASH_FLAG_BETA, beta,
+                            _pv_table.PV(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
                 // History Move Heuristic
                 if (!move.IsCapture()) {
-                    AddToHistoryMoves(move);
+                    _hist_moves.Add(_board.active(), move, _current_depth);
                 }
 
                 alpha = score;
@@ -207,30 +221,30 @@ MovePicker::Negamax(int alpha, int beta, int depth) noexcept {
         Square king_sq =
             bitboard::BitScanForward(_board.pieces(_board.active(), KING));
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
-            _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
-                              MIN_EVAL + _current_depth,
-                              _pv_table.PV(_current_depth));
+            _ttable.Set(state.hash_key, depth, TTable::HASH_FLAG_SCORE,
+                        MIN_EVAL + _current_depth,
+                        _pv_table.PV(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
         // Stale Mate
-        _ttable.set_entry(state.hash_key, depth, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.PV(_current_depth));
+        _ttable.Set(state.hash_key, depth, TTable::HASH_FLAG_SCORE, 0,
+                    _pv_table.PV(_current_depth));
         return 0;
     }
 
-    _ttable.set_entry(state.hash_key, depth, alpha_cutoff, alpha,
-                      _pv_table.PV(_current_depth));
+    _ttable.Set(state.hash_key, depth, alpha_cutoff, alpha,
+                _pv_table.PV(_current_depth));
     return alpha;
 }
 
 int
-MovePicker::Quiescence(int alpha, int beta) noexcept {
+Brain::Quiescence(int alpha, int beta) noexcept {
     _current_nodes++;
 
     if (_board.half_move_clock() == 100) {
-        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.PV(_current_depth));
+        _ttable.Set(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+                    _pv_table.PV(_current_depth));
         return 0;
     }
 
@@ -238,14 +252,14 @@ MovePicker::Quiescence(int alpha, int beta) noexcept {
         Square king_sq =
             bitboard::BitScanForward(_board.pieces(_board.active(), KING));
         if (_board.IsSquareAttacked(king_sq, _board.inactive())) {
-            _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
-                              MIN_EVAL + _current_depth,
-                              _pv_table.PV(_current_depth));
+            _ttable.Set(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE,
+                        MIN_EVAL + _current_depth,
+                        _pv_table.PV(_current_depth));
             return MIN_EVAL + _current_depth;
         }
 
-        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
-                          _pv_table.PV(_current_depth));
+        _ttable.Set(_board.hash_key(), 0, TTable::HASH_FLAG_SCORE, 0,
+                    _pv_table.PV(_current_depth));
         return 0;
     }
 
@@ -253,8 +267,8 @@ MovePicker::Quiescence(int alpha, int beta) noexcept {
 
     int stand_pat = eval::eval(_board);
     if (stand_pat >= beta) {
-        _ttable.set_entry(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
-                          _pv_table.PV(_current_depth));
+        _ttable.Set(_board.hash_key(), 0, TTable::HASH_FLAG_BETA, beta,
+                    _pv_table.PV(_current_depth));
         return beta;
     } else if (stand_pat > alpha) {
 
@@ -279,8 +293,8 @@ MovePicker::Quiescence(int alpha, int beta) noexcept {
 
             if (score >= beta) {
                 _board.Unmake(capture, state);
-                _ttable.set_entry(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
-                                  _pv_table.PV(_current_depth));
+                _ttable.Set(hash_key, 0, TTable::HASH_FLAG_BETA, beta,
+                            _pv_table.PV(_current_depth));
                 return beta;
             } else if (score > alpha) {
 
@@ -292,13 +306,13 @@ MovePicker::Quiescence(int alpha, int beta) noexcept {
         _board.Unmake(capture, state);
     }
 
-    _ttable.set_entry(_board.hash_key(), 0, alpha_cutoff, alpha,
-                      _pv_table.PV(_current_depth));
+    _ttable.Set(_board.hash_key(), 0, alpha_cutoff, alpha,
+                _pv_table.PV(_current_depth));
     return alpha;
 }
 
-MovePicker::SearchResult
-MovePicker::FindBestMove() noexcept {
+Brain::Result
+Brain::FindBestMove() noexcept {
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
 

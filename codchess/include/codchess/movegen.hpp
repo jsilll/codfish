@@ -11,15 +11,19 @@ class MoveList {
   public:
     /// @brief Returns whehter the list is empty.
     /// @return True if the list is empty, false otherwise.
-    [[nodiscard]] bool empty() const noexcept { return _size == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return _size == 0; }
 
     /// @brief Returns an iterator to the beginning of the list.
     /// @return An iterator to the beginning of the list.
-    [[nodiscard]] auto begin() const noexcept { return _moves.begin(); }
+    [[nodiscard]] constexpr auto begin() const noexcept {
+        return _moves.begin();
+    }
 
     /// @brief Returns an iterator to the end of the list.
     /// @return An iterator to the end of the list.
-    [[nodiscard]] auto end() const noexcept { return _moves.begin() + _size; }
+    [[nodiscard]] constexpr auto end() const noexcept {
+        return _moves.begin() + _size;
+    }
 
     /// @brief Inserts a move into the list.
     /// @param move The move to insert.
