@@ -74,7 +74,7 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1, f = file + 1; r < N_RANKS && f < N_FILES; ++r, ++f) {
+    for (int r = rank + 1, f = file + 1; r < N_RANKS and f < N_FILES; ++r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
         if ((bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
@@ -84,7 +84,7 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank + 1, f = file - 1; r < N_RANKS && f >= FILE_A; ++r, --f) {
+    for (int r = rank + 1, f = file - 1; r < N_RANKS and f >= FILE_A; ++r, --f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
         if ((bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
@@ -94,7 +94,7 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank - 1, f = file + 1; r >= RANK_1 && f < N_FILES; --r, ++f) {
+    for (int r = rank - 1, f = file + 1; r >= RANK_1 and f < N_FILES; --r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
         if ((bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
@@ -104,7 +104,7 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank - 1, f = file - 1; r >= RANK_1 && f >= FILE_A; --r, --f) {
+    for (int r = rank - 1, f = file - 1; r >= RANK_1 and f >= FILE_A; --r, --f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
         if ((bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),

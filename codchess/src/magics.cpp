@@ -70,22 +70,22 @@ BishopXrayAttacks(const Square sq) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1, f = file + 1; r < RANK_8 && f < FILE_H; ++r, ++f) {
+    for (int r = rank + 1, f = file + 1; r < RANK_8 and f < FILE_H; ++r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
     }
 
-    for (int r = rank + 1, f = file - 1; r < RANK_8 && f > FILE_A; ++r, --f) {
+    for (int r = rank + 1, f = file - 1; r < RANK_8 and f > FILE_A; ++r, --f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
     }
 
-    for (int r = rank - 1, f = file + 1; r > RANK_1 && f < FILE_H; --r, ++f) {
+    for (int r = rank - 1, f = file + 1; r > RANK_1 and f < FILE_H; --r, ++f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
     }
 
-    for (int r = rank - 1, f = file - 1; r > RANK_1 && f > FILE_A; --r, --f) {
+    for (int r = rank - 1, f = file - 1; r > RANK_1 and f > FILE_A; --r, --f) {
         attacks |= (bitboard::ONE << utils::GetSquare(static_cast<Rank>(r),
                                                       static_cast<File>(f)));
     }

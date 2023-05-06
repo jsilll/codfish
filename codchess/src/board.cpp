@@ -119,7 +119,7 @@ Board::Make(Move move) noexcept {
     _piece[from_square] = {BLACK, EMPTY_PIECE};
 
     // Remove from hash key moved piece
-    _hash_key ^= zobrist::PIECE_KEY[_active][piece_type][from_square];
+    _hash ^= zobrist::PIECE_KEY[_active][piece_type][from_square];
 
     if (is_en_passant) {
         const auto captured_piece_square =
@@ -128,13 +128,13 @@ Board::Make(Move move) noexcept {
         bitboard::PopBit(_pieces[inactive()][PAWN], captured_piece_square);
 
         // Remove from hash key captured pawn
-        _hash_key ^=
+        _hash ^=
             zobrist::PIECE_KEY[inactive()][PAWN][captured_piece_square];
     } else if (is_capture) {
         bitboard::PopBit(_pieces[inactive()][captured_piece], to_square);
 
         // Remove from hash key captured piece
-        _hash_key ^= zobrist::PIECE_KEY[inactive()][captured_piece][to_square];
+        _hash ^= zobrist::PIECE_KEY[inactive()][captured_piece][to_square];
     }
 
     if (is_promotion) {
@@ -142,13 +142,13 @@ Board::Make(Move move) noexcept {
         bitboard::SetBit(_pieces[_active][promoted_piece], to_square);
 
         // Update hash key with promoted piece
-        _hash_key ^= zobrist::PIECE_KEY[_active][promoted_piece][to_square];
+        _hash ^= zobrist::PIECE_KEY[_active][promoted_piece][to_square];
     } else {
         _piece[to_square].type = piece_type;
         bitboard::SetBit(_pieces[_active][piece_type], to_square);
 
         // Update hash key with moved piece
-        _hash_key ^= zobrist::PIECE_KEY[_active][piece_type][to_square];
+        _hash ^= zobrist::PIECE_KEY[_active][piece_type][to_square];
     }
 
     _piece[to_square].color = _active;
@@ -169,21 +169,21 @@ Board::Make(Move move) noexcept {
         bitboard::PopBit(_pieces[_active][ROOK], rook_from_square);
 
         // Remove from hash key rook
-        _hash_key ^= zobrist::PIECE_KEY[_active][ROOK][rook_from_square];
+        _hash ^= zobrist::PIECE_KEY[_active][ROOK][rook_from_square];
 
         bitboard::SetBit(_pieces[_active][ROOK], rook_to_square);
 
         // Update hash key with rook
-        _hash_key ^= zobrist::PIECE_KEY[_active][ROOK][rook_to_square];
+        _hash ^= zobrist::PIECE_KEY[_active][ROOK][rook_to_square];
     }
 
     // Remove from hash key en passant square
     if (_en_passant_square != EMPTY_SQUARE) {
-        _hash_key ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
+        _hash ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
     }
 
     // Remove from hash key castling_availability rights
-    _hash_key ^= zobrist::CASTLE_KEY[_castling_availability];
+    _hash ^= zobrist::CASTLE_KEY[_castling_availability];
 
     _en_passant_square =
         is_double_push ? (Square) (to_square + pawn_push_en_passant_offset)
@@ -194,13 +194,13 @@ Board::Make(Move move) noexcept {
 
     // Update hash key with en passant square
     if (_en_passant_square != EMPTY_SQUARE) {
-        _hash_key ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
+        _hash ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
     }
 
     // Update hash key with castling_availability rights
-    _hash_key ^= zobrist::CASTLE_KEY[_castling_availability];
+    _hash ^= zobrist::CASTLE_KEY[_castling_availability];
 
-    if (piece_type == PAWN || (is_capture)) {
+    if (piece_type == PAWN or (is_capture)) {
         _half_move_clock = 0;
     } else {
         _half_move_clock++;
@@ -212,7 +212,7 @@ Board::Make(Move move) noexcept {
 
     // Remove (and Update) from hash key side to move
     // This works because zobrist::SIDE_KEY[WHITE] = 0
-    _hash_key ^= zobrist::SIDE_KEY[BLACK];
+    _hash ^= zobrist::SIDE_KEY[BLACK];
 
     SwitchActive();
 
@@ -282,7 +282,7 @@ Board::Unmake(const Move move, const StateBackup &backup) noexcept {
         _full_move_number--;
     }
 
-    _hash_key = backup.hash_key;
+    _hash = backup.hash;
     _half_move_clock = backup.half_move_clock;
     _full_move_number = backup.full_move_number;
     _en_passant_square = backup.en_passant_square;
@@ -461,7 +461,7 @@ Board::SetFromFen(const std::string &fen_str) noexcept {
 
     UpdateBitboards();
 
-    _hash_key = zobrist::Hash(*this);
+    _hash = zobrist::Hash(*this);
 }
 
 void

@@ -114,10 +114,7 @@ class Brain {
     /// @brief Functor to compare moves
     [[maybe_unused]] struct MoveMoreThanKey {
         const Brain &move_picker;
-        constexpr bool operator()(const codchess::Move move1,
-                                  const codchess::Move move2) const noexcept {
-            return (move_picker.Score(move1) > move_picker.Score(move2));
-        }
+        
     } _move_more_than_key;
 
     /// @brief Clears the search counters
@@ -152,7 +149,7 @@ class Brain {
     /// @return The score
     /// @note This function is used for sorting the list of moves upon
     /// generation in order to cause the most alpha-beta cuts.
-    [[nodiscard]] std::int32_t Score(const codchess::Move move) const noexcept;
+    [[nodiscard]] std::int32_t Score(const codchess::Move move) const noexcept; 
 
     /// @brief Returns whether a move can be pruned by LMR
     /// @param move The move
@@ -160,7 +157,7 @@ class Brain {
     /// @note Move can't be a capture nor a promotion for LMR to happen
     static constexpr bool CanLMR(const codchess::Move move) noexcept {
         // TODO: Missing check moves and in check moves
-        return !move.IsCapture() && !move.IsPromotion();
+        return !move.IsCapture() and !move.IsPromotion();
     }
 
     /// @brief Checks the depth argument

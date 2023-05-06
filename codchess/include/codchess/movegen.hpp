@@ -19,11 +19,19 @@ class MoveList {
         return _moves.begin();
     }
 
+    /// @brief Returns an iterator to the beginning of the list.
+    /// @return An iterator to the beginning of the list.
+    [[nodiscard]] auto begin() noexcept { return _moves.begin(); }
+
     /// @brief Returns an iterator to the end of the list.
     /// @return An iterator to the end of the list.
     [[nodiscard]] constexpr auto end() const noexcept {
         return _moves.begin() + _size;
     }
+
+    /// @brief Returns an iterator to the end of the list.
+    /// @return An iterator to the end of the list.
+    [[nodiscard]] auto end() noexcept { return _moves.begin() + _size; }
 
     /// @brief Inserts a move into the list.
     /// @param move The move to insert.

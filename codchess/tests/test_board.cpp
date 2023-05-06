@@ -531,7 +531,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("Knight Capture") {
@@ -547,7 +547,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("Castle") {
@@ -563,7 +563,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("Pawn Capture") {
@@ -579,7 +579,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("Pawn Promotion") {
@@ -595,7 +595,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("En Passant Move ") {
@@ -611,7 +611,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 
     SECTION("Double Push") {
@@ -627,6 +627,6 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Unmake(move, backup);
 
         REQUIRE(board.GetFen() == fen);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 }

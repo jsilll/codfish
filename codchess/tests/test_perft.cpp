@@ -10,7 +10,7 @@ TEST_CASE("Perft doesn't modify the board", "[perft]") {
         auto board = Board();
         const auto backup = board.GetStateBackup();
         perft::Perft(board, 5);
-        REQUIRE(board.hash_key() == backup.hash_key);
+        REQUIRE(board.hash() == backup.hash);
     }
 }
 

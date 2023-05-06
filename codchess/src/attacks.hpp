@@ -39,7 +39,7 @@ extern bitboard::Bitboard PAWN_ATTACKS[N_COLORS][N_SQUARES];
 template <Color C, bitboard::Direction D>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == WHITE || C == BLACK);
+    static_assert(C == WHITE or C == BLACK);
     static_assert(D == bitboard::Direction::WEST ||
                   D == bitboard::Direction::EAST);
 
@@ -61,7 +61,7 @@ PawnAttacks(const bitboard::Bitboard pawns) noexcept {
 template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAllAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == WHITE || C == BLACK);
+    static_assert(C == WHITE or C == BLACK);
 
     return PawnAttacks<C, bitboard::Direction::WEST>(pawns) |
            PawnAttacks<C, bitboard::Direction::EAST>(pawns);
@@ -76,7 +76,7 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnSinglePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == WHITE || C == BLACK);
+    static_assert(C == WHITE or C == BLACK);
 
     if constexpr (C == WHITE) {
         return bitboard::ShiftOne<bitboard::Direction::NORTH>(pawns) & empty;
@@ -94,7 +94,7 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnDoublePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == WHITE || C == BLACK);
+    static_assert(C == WHITE or C == BLACK);
 
     const auto pushes =
         PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);

@@ -21,7 +21,7 @@ enum GenType {
 template <Color ToMove>
 static void
 CastlingMoves(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto Opponent = (ToMove == WHITE ? BLACK : WHITE);
 
@@ -68,7 +68,7 @@ CastlingMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
 
@@ -98,7 +98,7 @@ EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
 
@@ -139,7 +139,7 @@ PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
 
@@ -170,7 +170,7 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnCapturesPromotion(MoveList &move_list, const Board &board) {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
     constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
@@ -222,7 +222,7 @@ PawnCapturesPromotion(MoveList &move_list, const Board &board) {
 template <Color ToMove>
 static void
 PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
     constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
@@ -263,7 +263,7 @@ PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
 
     constexpr auto PawnDoublePushOffset = ToMove == WHITE ? -16 : 16;
 
@@ -296,8 +296,8 @@ PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, PieceType PType, GenType GType>
 static void
 LeaperMoves(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
-    static_assert(PType == KNIGHT || PType == KING, "Invalid piece type");
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(PType == KNIGHT or PType == KING, "Invalid piece type");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
 
@@ -355,8 +355,8 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, PieceType PType, GenType GType>
 static void
 SliderMoves(MoveList &move_list, const Board &board) {
-    static_assert(ToMove == WHITE || ToMove == BLACK, "Invalid color");
-    static_assert(PType == BISHOP || PType == ROOK || PType == QUEEN,
+    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(PType == BISHOP or PType == ROOK or PType == QUEEN,
                   "Invalid piece type");
 
     constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;

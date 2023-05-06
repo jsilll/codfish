@@ -27,7 +27,7 @@ static UCIScore score_to_uci(int score)
     {
         int check_mate_delta = (-MIN_EVAL) - score;
         int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
-        if (0 < moves_for_mate && moves_for_mate <= 16)
+        if (0 < moves_for_mate and moves_for_mate <= 16)
         {
             return UCIScore{std::string("mate ") + std::to_string(moves_for_mate), true};
         }
@@ -36,7 +36,7 @@ static UCIScore score_to_uci(int score)
     {
         int check_mate_delta = -(MIN_EVAL - score);
         int moves_for_mate = (check_mate_delta / 2) + (check_mate_delta % 2);
-        if (0 < moves_for_mate && moves_for_mate <= 16)
+        if (0 < moves_for_mate and moves_for_mate <= 16)
         {
             return UCIScore{std::string("mate ") + std::to_string(-moves_for_mate), true};
         }
@@ -99,7 +99,7 @@ static void search(std::future<void> future, MovePicker &move_picker, MovePicker
             break;
         }
 
-        if ((result.score <= alpha) || (result.score >= beta))
+        if ((result.score <= alpha) or (result.score >= beta))
         {
             alpha = MIN_EVAL;
             beta = -MIN_EVAL;
@@ -214,7 +214,7 @@ void uci::GoCommand::execute(std::vector<std::string> &args)
     }
 
     MovePicker::SearchResult result;
-    if (!depth && !infinite && wtime && btime)
+    if (!depth and !infinite and wtime and btime)
     {
         _move_picker.set_max_depth(DEFAULT_MAX_DEPTH);
     }
@@ -226,7 +226,7 @@ void uci::GoCommand::execute(std::vector<std::string> &args)
     std::promise<void> signal_exit;
     std::future<void> signal_exit_future = signal_exit.get_future();
     std::thread search_thread(search, std::move(signal_exit_future), std::ref(_move_picker), std::ref(result));
-    if ((_board.active() == WHITE && wtime) || (_board.active() == BLACK && btime))
+    if ((_board.active() == WHITE and wtime) or (_board.active() == BLACK and btime))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(timectl::get_time_budget_ms(wtime, btime, _board)));
         signal_exit.set_value();

@@ -28,7 +28,7 @@ class Board {
         /// @return True if the pieces are equal, false otherwise
         friend constexpr bool operator==(const Piece &p1,
                                          const Piece &p2) noexcept {
-            return p1.color == p2.color && p1.type == p2.type;
+            return p1.color == p2.color and p1.type == p2.type;
         }
 
         /// @brief Inequality operator
@@ -37,7 +37,7 @@ class Board {
         /// @return True if the pieces are not equal, false otherwise
         friend constexpr bool operator!=(const Piece &p1,
                                          const Piece &p2) noexcept {
-            return p1.color != p2.color || p1.type != p2.type;
+            return p1.color != p2.color or p1.type != p2.type;
         }
     };
 
@@ -52,7 +52,7 @@ class Board {
         /// @brief The full move number
         int full_move_number;
         /// @brief The hash key
-        std::uint64_t hash_key;
+        std::uint64_t hash;
 
         /// @brief Equality operator
         /// @param s1 State backup 1
@@ -64,7 +64,7 @@ class Board {
                    s1.castling_availability == s2.castling_availability &&
                    s1.half_move_clock == s2.half_move_clock &&
                    s1.full_move_number == s2.full_move_number &&
-                   s1.hash_key == s2.hash_key;
+                   s1.hash == s2.hash;
         }
 
         /// @brief Inequality operator
@@ -149,15 +149,15 @@ class Board {
 
     /// @brief Returns the hash key of the board
     /// @return The hash key of the board
-    [[maybe_unused]] [[nodiscard]] constexpr auto hash_key() const noexcept {
-        return _hash_key;
+    [[maybe_unused]] [[nodiscard]] constexpr auto hash() const noexcept {
+        return _hash;
     }
 
     /// @brief Returns the current game state
     /// @return The current game state
     [[nodiscard]] constexpr StateBackup GetStateBackup() const noexcept {
         return {_en_passant_square, _castling_availability, _half_move_clock,
-                _full_move_number, _hash_key};
+                _full_move_number, _hash};
     }
 
     /// @brief Returns the FEN string of the board
@@ -185,7 +185,7 @@ class Board {
     }
 
     constexpr void SetStateBackup(const StateBackup &sb) noexcept {
-        _hash_key = sb.hash_key;
+        _hash = sb.hash;
         _half_move_clock = sb.half_move_clock;
         _full_move_number = sb.full_move_number;
         _en_passant_square = sb.en_passant_square;
@@ -277,7 +277,7 @@ class Board {
     Square _en_passant_square{};
 
     /// @brief The hash key of the board
-    std::uint64_t _hash_key{};
+    std::uint64_t _hash{};
 
     /// @brief Updates the bitboards from the piece array
     /// @note This function is called when setting the board from a FEN
