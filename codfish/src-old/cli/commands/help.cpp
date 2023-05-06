@@ -1,4 +1,4 @@
-#include <interfaces/cli/commands/commands.hpp>
+#include "commands.hpp"
 
 #include <iostream>
 

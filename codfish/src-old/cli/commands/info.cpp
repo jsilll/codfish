@@ -1,8 +1,8 @@
-#include <interfaces/cli/commands/commands.hpp>
-
-#include "codlib/bitboard.hpp"
+#include "commands.hpp"
 
 #include <iostream>
+
+#include <codchess/bitboard.hpp>
 
 void cli::InfoCommand::execute([[maybe_unused]] std::vector<std::string> &args)
 {

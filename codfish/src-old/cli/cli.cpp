@@ -1,31 +1,22 @@
-#include <interfaces/cli/cli.hpp>
-
-#include <interfaces/utils.hpp>
-
-#include <interfaces/cli/commands/commands.hpp>
-
-#include <codchess/board.hpp>
-#include <codchess/move.hpp>
-
-#include <codchess/movegen/magics.hpp>
-#include <codchess/movegen/tables.hpp>
-
-#include "codlib/zobrist.hpp"
-#include <codchess/movepicker/eval.hpp>
+#include "cli.hpp"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
+#include "../utils.hpp"
+#include "commands/commands.hpp"
+
+#include <codchess/board.hpp>
+#include <codchess/move.hpp>
+
+using namespace codchess;
+
 namespace cli
 {
   void init()
   {
-    magics::init();
-    tables::init();
-    eval::init();
-    zobrist::init();
-
+    ::codchess::Init();
     Board board = Board();
 
     AsciiCommand ascii_command = AsciiCommand(board);

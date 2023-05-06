@@ -128,8 +128,7 @@ Board::Make(Move move) noexcept {
         bitboard::PopBit(_pieces[inactive()][PAWN], captured_piece_square);
 
         // Remove from hash key captured pawn
-        _hash ^=
-            zobrist::PIECE_KEY[inactive()][PAWN][captured_piece_square];
+        _hash ^= zobrist::PIECE_KEY[inactive()][PAWN][captured_piece_square];
     } else if (is_capture) {
         bitboard::PopBit(_pieces[inactive()][captured_piece], to_square);
 
@@ -516,6 +515,7 @@ Board::UpdateBitboards() noexcept {
 void
 Board::Display(std::ostream &os, const bool ascii,
                const bool white_on_bottom) const noexcept {
+    // TODO: some error here when white on top
     if (!white_on_bottom) {
         os << "      h   g   f   e   d   c   b   a\n";
         for (int rank = RANK_1; rank < RANK_8; rank++) {

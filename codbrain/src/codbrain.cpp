@@ -45,6 +45,8 @@ Brain::Score(const codchess::Move move) const noexcept {
 
 int
 Brain::Search(int alpha, int beta, int depth) noexcept {
+    _pv_table.SetDepth(depth);
+
     auto moves = movegen::PseudoLegal(_board);
     std::sort(moves.begin(), moves.end(),
               [this](const auto &m1, const auto &m2) noexcept {
@@ -108,7 +110,6 @@ Brain::Negamax(int alpha, int beta, int depth) noexcept {
 
     // Forced Terminal Node
     if (depth <= 0) {
-        _pv_table.SetDepth(_current_depth);
         return Quiescence(alpha, beta);
     }
 
@@ -124,12 +125,13 @@ Brain::Negamax(int alpha, int beta, int depth) noexcept {
         const auto score = -Negamax(-beta, -beta + 1, depth - 1 - R);
 
         _current_depth -= 2;
-        _board.SetStateBackup(state);
         _board.SwitchActive();
+        _board.SetStateBackup(state);
 
         if (score >= beta) {
             _ttable.Set(state.hash, depth, TTable::HASH_FLAG_BETA, beta,
                         _pv_table.PV(_current_depth));
+
             return beta;
         }
     }

@@ -32,10 +32,11 @@ namespace utils
     class Command
     {
     protected:
-        Board &_board;
+        codchess::Board &_board;
 
     public:
-        Command(Board &board) : _board(board){};
+        Command(codchess::Board &board) : _board(board){};
+        virtual ~Command(){};
         virtual void execute(std::vector<std::string> &args) = 0;
     };
 

@@ -1,9 +1,11 @@
-#include <interfaces/cli/commands/commands.hpp>
-
-#include "codlib/perft.hpp"
+#include "commands.hpp"
 
 #include <chrono>
 #include <iostream>
+
+#include <codchess/perft.hpp>
+
+using namespace codchess;
 
 static void timed_perft(int depth, Board &board)
 {

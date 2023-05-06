@@ -1,12 +1,10 @@
-#include <interfaces/cli/commands/commands.hpp>
-
-#include "codlib/bitboard.hpp"
-
-#include "codlib/perft.hpp"
-#include <codchess/movegen/movegen.hpp>
+#include "commands.hpp"
 
 #include <chrono>
 #include <iostream>
+
+#include <codchess/perft.hpp>
+#include <codchess/bitboard.hpp>
 
 static void dperft(int depth, Board &board)
 {

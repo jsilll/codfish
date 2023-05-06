@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/utils.hpp>
+#include "../../utils.hpp"
 
 #include <codchess/movepicker/movepicker.hpp>
 
