@@ -279,15 +279,13 @@ Brain::Quiescence(int alpha, int beta) noexcept {
         return 0;
     }
 
-    int alpha_cutoff = TTable::HASH_FLAG_ALPHA;
-
-    int stand_pat = eval::eval(_board);
+    const auto stand_pat = eval::eval(_board);
+    auto alpha_cutoff = TTable::HASH_FLAG_ALPHA;
     if (stand_pat >= beta) {
         _ttable.Set(_board.hash(), 0, TTable::HASH_FLAG_BETA, beta,
                     _pv_table.PV(_current_depth));
         return beta;
     } else if (stand_pat > alpha) {
-
         alpha_cutoff = TTable::HASH_FLAG_SCORE;
         alpha = stand_pat;
     }
