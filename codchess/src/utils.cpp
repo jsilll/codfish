@@ -1,5 +1,7 @@
 #include <codchess/utils.hpp>
 
+#include <regex>
+
 namespace codchess::utils {
 std::string
 SquareToString(const Square sq) noexcept {
@@ -64,5 +66,12 @@ PieceToString(const PieceType piece, const Color color,
     };
 
     return PIECE[piece + (color == WHITE ? 0 : 6) + (ascii ? 0 : 13)];
+}
+
+bool
+ValidFen(const std::string &fen) noexcept {
+    static const std::regex frgx(
+        R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8} (b|w) (-|K?Q?k?q?) (-|[a-h][3-6]) \d+ \d+)");
+    return std::regex_match(fen, frgx);
 }
 }   // namespace codchess::utils

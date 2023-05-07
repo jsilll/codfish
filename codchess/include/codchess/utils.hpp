@@ -174,4 +174,9 @@ FlipColor(const Color to_move) noexcept {
 /// @return The string representation
 [[nodiscard]] std::string PieceToString(PieceType piece, Color color,
                                         bool ascii = true) noexcept;
+
+/// @brief Returns whether the FEN is valid
+/// @param args The FEN split by spaces
+/// @return Whether the FEN is valid
+[[nodiscard]] bool ValidFen(const std::string &fen) noexcept;
 }   // namespace codchess::utils
