@@ -48,6 +48,10 @@ Codfish is meant to be built only for Unix systems (although it may be built for
 
 To compile the source code and the unit tests into their respective binaries:
 ```
+mkdir build
+cd build
+cmake ../
+cd ../
 cmake --build build --config Release --target all
 ```
 
