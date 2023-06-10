@@ -1,11 +1,14 @@
 #pragma once
 
 #include "repl.hpp"
-#include "time.hpp"
 
 namespace codfish::uci {
+void Go(repl::State &state, const repl::Tokens &args);
+
+void Position(repl::State &state, repl::Tokens &args);
+
 /// @brief The commands of the UCI.
-repl::Commands commands{
+inline repl::Commands commands{
     {"uci",
      [](auto &, const auto &) {
          std::cout << "id name Codfish\n";
@@ -24,23 +27,14 @@ repl::Commands commands{
          state.brain.board().SetStartingPosition();
      }},
 
-    {"position",
-     [](auto &, const auto &) {
-         std::cout << "TODO: implement position command\n";
-         // positionCommand.execute(args);
-     }},
-
     {"go",
-     [](auto &, const auto &) {
-         // std::cout << "TODO: implement go command\n";
-         // goCommand.execute(args);
-         // play first move
+     [](auto &state, const auto &args) {
+        Go(state, args);
      }},
 
-    {"stop",
-     [](auto &, const auto &) {
-         std::cout << "TODO: implement stop command\n";
-         // stopCommand.execute(args);
+    {"position",
+     [](auto &state, const auto &args) {
+        Position(state, const_cast<repl::Tokens&>(args));
      }},
 };
 }   // namespace codfish::uci
