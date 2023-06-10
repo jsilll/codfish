@@ -114,7 +114,6 @@ class Brain {
     /// @brief Functor to compare moves
     [[maybe_unused]] struct MoveMoreThanKey {
         const Brain &move_picker;
-        
     } _move_more_than_key;
 
     /// @brief Clears the search counters

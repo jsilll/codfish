@@ -2,7 +2,7 @@
 
 #include <codchess/movegen.hpp>
 
-#include "Repl.hpp"
+#include "repl.hpp"
 
 namespace codfish::cli {
 /// @brief The commands of the CLI.
@@ -43,8 +43,13 @@ repl::Commands commands{
                    << ".\n";
      }},
 
-    {"new", [](auto &state,
-               const auto &) { state.brain.board().SetStartingPosition(); }},
+    {"new",
+     [](auto &state, const auto &) {
+         state.brain.ClearTTable();
+         state.brain.ClearHistory();
+         state.brain.ClearMoveTables();
+         state.brain.board().SetStartingPosition();
+     }},
 
     {"moves",
      [](auto &state, const auto &) {

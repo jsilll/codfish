@@ -1,14 +1,12 @@
-#include <interfaces/uci/commands/commands.hpp>
-
-#include <codchess/move.hpp>
-
-#include <codchess/movegen/movegen.hpp>
+#include "uci.hpp"
 
 #include <optional>
 
-static std::optional<Move> parse_move(std::string move_uci, Board &board)
+#include <codfish/codfish.hpp>
+
+static std::optional<Move> ParseMove(std::string move_uci, Board &board)
 {
-    for (const auto move : movegen::generateLegalMoves(board))
+    for (const auto move : movegen::Legal(board))
     {
         if (move.get_uci() == move_uci)
         {
@@ -19,7 +17,7 @@ static std::optional<Move> parse_move(std::string move_uci, Board &board)
     return std::nullopt;
 }
 
-static void handle_moves(std::vector<std::string> &moves, Board &board, MovePicker &move_picker)
+static void HandleMoves(std::vector<std::string> &moves, Board &board, MovePicker &move_picker)
 {
     move_picker.add_to_history(board.get_hash_key()); // For Three-Fold Draws
     for (std::string move_uci : moves)
@@ -34,7 +32,7 @@ static void handle_moves(std::vector<std::string> &moves, Board &board, MovePick
     }
 }
 
-void uci::PositionCommand::execute(std::vector<std::string> &args)
+Position(std::vector<std::string> &args)
 {
     if (args.size() == 0)
     {

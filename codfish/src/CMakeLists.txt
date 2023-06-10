@@ -1,5 +1,5 @@
 # -- Source Files -- 
-file(GLOB_RECURSE SOURCES "*.cpp")
+file(GLOB SOURCES "*.cpp")
 
 # -- Codchess --
 add_executable(codfish ${SOURCES})

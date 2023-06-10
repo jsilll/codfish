@@ -37,7 +37,8 @@ template <std::size_t S> class KillerTable {
     }
 
   private:
+    static constexpr auto NUM_KILLER_MOVES = 2;
     /// @brief Killer moves
-    codchess::Move _killer_moves[2][S]{};
+    codchess::Move _killer_moves[NUM_KILLER_MOVES][S]{};
 };
 }   // namespace codbrain

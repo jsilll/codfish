@@ -62,12 +62,12 @@ template <std::size_t S> class PVTable {
             Add(moves[i], last_depth--);
         }
         // TODO: Is this necessary?
-        // for (auto current_depth = starting_depth - 1; current_depth >= 0;
-        //      --current_depth) {
-        //     memcpy(&_table[current_depth][current_depth + 1],
-        //            &_table[current_depth + 1][current_depth + 1],
-        //            _size[current_depth + 1] * sizeof(codchess::Move));
-        // }
+        for (auto current_depth = starting_depth - 1; current_depth >= 0;
+             --current_depth) {
+            memcpy(&_table[current_depth][current_depth + 1],
+                   &_table[current_depth + 1][current_depth + 1],
+                   _size[current_depth + 1] * sizeof(codchess::Move));
+        }
     }
 
   private:
