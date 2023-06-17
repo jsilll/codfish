@@ -1,5 +1,5 @@
-#include "cli.hpp"
-#include "uci.hpp"
+#include <codfish/cli.hpp>
+#include <codfish/uci.hpp>
 
 using namespace codfish;
 

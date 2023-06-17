@@ -1,8 +1,12 @@
 # -- Source Files -- 
 file(GLOB SOURCES "*.cpp")
 
-# -- Codchess --
+# -- Codfish --
 add_executable(codfish ${SOURCES})
+
+# -- Include Directory --
+target_include_directories(codbrain
+        PUBLIC ../include)
 
 # -- Link Libraries --
 target_link_libraries(codfish

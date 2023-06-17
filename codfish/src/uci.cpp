@@ -1,4 +1,4 @@
-#include "uci.hpp"
+#include <codfish/uci.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -9,7 +9,7 @@
 
 #include <codchess/movegen.hpp>
 
-#include "time.hpp"
+#include <codfish/time.hpp>
 
 #define DEFAULT_MIN_DEPTH 8
 #define DEFAULT_MAX_DEPTH 32
