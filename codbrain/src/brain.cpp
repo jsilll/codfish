@@ -1,4 +1,4 @@
-#include <codbrain/codbrain.hpp>
+#include <codbrain/brain.hpp>
 
 #include <algorithm>
 #include <climits>
@@ -9,7 +9,7 @@
 #include <codchess/move.hpp>
 #include <codchess/movegen.hpp>
 
-#include "eval.hpp"
+#include <codbrain/eval.hpp>
 
 #define R                2
 #define REDUCTION_LIMIT  3
@@ -281,7 +281,7 @@ Brain::Quiescence(int alpha, int beta) noexcept {
         return 0;
     }
 
-    const auto stand_pat = eval::eval(_board);
+    const auto stand_pat = eval::Static(_board);
     auto alpha_cutoff = TTable::HASH_FLAG_ALPHA;
     if (stand_pat >= beta) {
         _ttable.Set(_board.hash(), 0, TTable::HASH_FLAG_BETA, beta,

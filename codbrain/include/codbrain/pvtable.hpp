@@ -58,12 +58,12 @@ template <std::size_t S> class PVTable {
     constexpr void Add(const std::vector<codchess::Move> &moves,
                        const std::size_t starting_depth) noexcept {
         auto last_depth = starting_depth + moves.size() - 1;
-        for (auto i = moves.size() - 1; i >= 0; --i) {
+        for (auto i = static_cast<int>(moves.size() - 1); i >= 0; --i) {
             Add(moves[i], last_depth--);
         }
-        // TODO: Is this necessary?
-        for (auto current_depth = starting_depth - 1; current_depth >= 0;
-             --current_depth) {
+
+        for (auto current_depth = static_cast<int>(starting_depth - 1);
+             current_depth >= 0; --current_depth) {
             memcpy(&_table[current_depth][current_depth + 1],
                    &_table[current_depth + 1][current_depth + 1],
                    _size[current_depth + 1] * sizeof(codchess::Move));

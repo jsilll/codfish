@@ -11,7 +11,7 @@ set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT ON)
 
 # -- Project Metadata --
 project(Codfish
-        VERSION 1.0.0
+        VERSION 0.1.0
         DESCRIPTION "Codfish"
         HOMEPAGE_URL "https://github.com/jsilll/codfish"
         LANGUAGES CXX)
@@ -33,8 +33,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # -- Fetch Catch2 --
     FetchContent_Declare(
             Catch2
+            GIT_TAG v3.3.2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG v3.0.1
     )
     FetchContent_MakeAvailable(Catch2)
 

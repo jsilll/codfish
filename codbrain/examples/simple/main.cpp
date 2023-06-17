@@ -1,10 +1,10 @@
-#include <codchess/codchess.hpp>
+#include <codbrain/codbrain.hpp>
 
 using namespace codchess;
 
 int
 main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
-    ::codchess::Init();
+    ::codbrain::Init();
 
     std::string input;
     auto board = Board();

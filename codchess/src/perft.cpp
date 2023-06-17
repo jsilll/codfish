@@ -36,7 +36,6 @@ Perft(Board &board, std::uint32_t depth) noexcept {
     const auto board_info = board.GetStateBackup();
 
     std::uint64_t nodes{0};
-#pragma omp parallel for reduction(+ : nodes) schedule(dynamic)
     for (auto it = moves.begin(); it != moves.end(); ++it) {
         auto cboard = board;
 

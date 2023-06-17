@@ -2,9 +2,9 @@
 
 #include <codchess/board.hpp>
 
-namespace eval
+namespace codbrain::eval
 {
-    void init();
+    void Init() noexcept;
 
     /**
      * @brief Evaluates a given board
@@ -14,6 +14,6 @@ namespace eval
      * @param board
      * @return absolute evaluation
      */
-    int eval(const codchess::Board &board);
+    int Static(const codchess::Board &board) noexcept;
 
-} // namespace eval
+} // namespace codbrain::eval

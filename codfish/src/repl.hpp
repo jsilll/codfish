@@ -29,15 +29,16 @@ typedef std::unordered_map<std::string, Command> Commands;
 class Repl {
   public:
     /// @brief Construct a new Repl object.
-    [[nodiscard]] explicit Repl(Commands &&commands) noexcept
-        : _commands{std::move(commands)} {}
+    [[nodiscard]] Repl(Commands &&commands, bool prompt) noexcept
+        : _prompt(prompt), _commands{std::move(commands)} {}
 
     /// @brief Run the REPL.
     void Run() noexcept {
         std::string command{};
 
         while (true) {
-            std::cout << "codfish> ";
+            if (_prompt)
+                std::cout << "codfish> ";
 
             std::getline(std::cin, command);
             const auto tokens = Tokenize(command);
@@ -57,6 +58,8 @@ class Repl {
     }
 
   private:
+    /// @brief Whether the REPL should prompt the user for input.
+    bool _prompt;
     /// @brief The state of the REPL.
     State _state{};
     /// @brief The commands.

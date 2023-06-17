@@ -2,10 +2,10 @@
 
 #include <codbrain/codbrain.hpp>
 
-using namespace codchess;
-using namespace codbrain;
-
 TEST_CASE("Checkmate in one move") {
+    codbrain::Init();
+    using namespace codbrain;
+
     Brain brain{3};
 
     SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1") {

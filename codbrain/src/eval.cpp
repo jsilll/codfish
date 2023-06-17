@@ -1,11 +1,11 @@
-#include "eval.hpp"
+#include <codbrain/eval.hpp>
 
 #include <codchess/bitboard.hpp>
 #include <codchess/board.hpp>
 
 using namespace codchess;
 
-namespace eval {
+namespace codbrain::eval {
 /// @brief Piece square table for pawn during middlegame
 static constexpr int MG_PAWN_TABLE[64] = {
     0,   0,  0,   0,   0,   0,  0,  0,   98,  134, 61, 95,  68, 126, 34, -11,
@@ -119,7 +119,7 @@ static constexpr int GAME_PHASE_INC[N_PIECES] = {0, 1, 1, 2, 4, 0};
 static constexpr int PIECE_SCORES[N_PIECES] = {100, 280, 320, 479, 929, 60000};
 
 void
-Init() {
+Init() noexcept {
     for (int sq = A1; sq < N_SQUARES; sq++) {
         const auto flipd = utils::FlipSquare(static_cast<Square>(sq));
 
@@ -154,7 +154,7 @@ Init() {
 }
 
 int
-eval(const Board &board) {
+Static(const Board &board) noexcept {
     int mg[2]{};
     int eg[2]{};
     int material[2]{};
@@ -200,4 +200,4 @@ eval(const Board &board) {
     return ((mg_score * mg_phase + eg_score * eg_phase) / 24) + material_score;
 }
 
-}   // namespace eval
+}   // namespace codbrain::eval
