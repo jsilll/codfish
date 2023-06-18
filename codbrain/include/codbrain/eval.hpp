@@ -15,5 +15,4 @@ namespace codbrain::eval
      * @return absolute evaluation
      */
     int Static(const codchess::Board &board) noexcept;
-
 } // namespace codbrain::eval

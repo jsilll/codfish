@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <codbrain/codbrain.hpp>
+#include <codbrain/brain.hpp>
 
 namespace codfish::repl {
 /// @brief State of the REPL.

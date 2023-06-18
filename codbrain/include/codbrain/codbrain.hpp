@@ -6,7 +6,7 @@
 
 namespace codbrain {
 /// @brief Initializes the library
-inline void Init() noexcept {
+void Init() noexcept {
     eval::Init();
     codchess::Init();
 }
