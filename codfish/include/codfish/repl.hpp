@@ -13,6 +13,8 @@ namespace codfish::repl {
 struct State {
     /// @brief Whether the display should be in ASCII or in Unicode.
     bool ascii{true};
+    /// @brief Whether the debug mode is on.
+    bool debug{false};
     /// @brief The chess brain
     codbrain::Brain brain{6};
     /// @brief Whether the white pieces should be on the bottom.
@@ -21,7 +23,7 @@ struct State {
 
 typedef std::vector<std::string> Tokens;
 
-typedef std::function<void(State &, const Tokens &)> Command;
+typedef std::function<void(std::ostream &, State &, const Tokens &)> Command;
 
 typedef std::unordered_map<std::string, Command> Commands;
 
@@ -29,35 +31,46 @@ typedef std::unordered_map<std::string, Command> Commands;
 class Repl {
   public:
     /// @brief Construct a new Repl object.
-    [[nodiscard]] Repl(Commands &&commands, bool prompt) noexcept
-        : _prompt(prompt), _commands{std::move(commands)} {}
+    [[nodiscard]] Repl(std::istream &in, std::ostream &out, Commands &&commands,
+                       bool prompt) noexcept
+        : _in(in), _out(out), _prompt(prompt), _commands{std::move(commands)} {}
 
     /// @brief Run the REPL.
     void Run() noexcept {
-        std::string command{};
-
         while (true) {
-            if (_prompt)
-                std::cout << "codfish> ";
-
-            std::getline(std::cin, command);
-            const auto tokens = Tokenize(command);
-
-            if (tokens.empty()) {
-                continue;
-            } else if (tokens.front() == "exit") {
-                break;
-            } else if (_commands.contains(command)) {
-                _commands.at(command)(_state, tokens);
-            } else {
-                std::cerr << "Command not found.\n";
-            }
-
-            std::flush(std::cout);
+            RunOnce();
         }
     }
 
+    void RunOnce() noexcept {
+        std::string command{};
+
+        if (_prompt) {
+            _out << "codfish> ";
+            std::flush(_out);
+        }
+
+        std::getline(_in, command);
+        const auto tokens = Tokenize(command);
+
+        if (tokens.empty()) {
+            return;
+        } else if (tokens.front() == "exit") {
+            return;
+        } else if (_commands.contains(command)) {
+            _commands.at(command)(_out, _state, tokens);
+        } else {
+            _out << "Command not found.\n";
+        }
+
+        std::flush(_out);
+    }
+
   private:
+    /// @brief The input stream.
+    std::istream &_in;
+    /// @brief The output stream.
+    std::ostream &_out;
     /// @brief Whether the REPL should prompt the user for input.
     bool _prompt;
     /// @brief The state of the REPL.

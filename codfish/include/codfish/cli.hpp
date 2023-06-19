@@ -7,44 +7,39 @@
 namespace codfish::cli {
 /// @brief The commands of the CLI.
 repl::Commands commands{
-    {"fen",
-     [](auto &state, const auto &) {
-         std::cout << state.brain.board().GetFen() << '\n';
-     }},
+    {"fen", [](auto &out, auto &state,
+               const auto &) { out << state.brain.board().GetFen() << '\n'; }},
 
     {"display",
-     [](auto &state, const auto &) {
-         state.brain.board().Display(std::cout, state.ascii,
-                                     state.white_on_bottom);
+     [](auto &out, auto &state, const auto &) {
+         state.brain.board().Display(out, state.ascii, state.white_on_bottom);
      }},
 
     {"ascii",
-     [](auto &state, const auto &) {
-         std::cout << "Display set to "
-                   << ((state.ascii = !state.ascii) ? "ASCII" : "Unicode")
-                   << ".\n";
+     [](auto &out, auto &state, const auto &) {
+         out << "Display set to "
+             << ((state.ascii = !state.ascii) ? "ASCII" : "Unicode") << ".\n";
      }},
 
     {"rotate",
-     [](auto &state, const auto &) {
-         std::cout << "Bottom pieces set to "
-                   << ((state.white_on_bottom = !state.white_on_bottom)
-                           ? "white"
-                           : "black")
-                   << ".\n";
+     [](auto &out, auto &state, const auto &) {
+         out << "Bottom pieces set to "
+             << ((state.white_on_bottom = !state.white_on_bottom) ? "white"
+                                                                  : "black")
+             << ".\n";
      }},
 
     {"switch",
-     [](auto &state, const auto &) {
-         std::cout << "Side to play is now "
-                   << (state.brain.board().SwitchActive() == codchess::WHITE
-                           ? "white"
-                           : "black")
-                   << ".\n";
+     [](auto &out, auto &state, const auto &) {
+         out << "Side to play is now "
+             << (state.brain.board().SwitchActive() == codchess::WHITE
+                     ? "white"
+                     : "black")
+             << ".\n";
      }},
 
     {"new",
-     [](auto &state, const auto &) {
+     [](auto &, auto &state, const auto &) {
          state.brain.ClearTTable();
          state.brain.ClearHistory();
          state.brain.ClearMoveTables();
@@ -52,17 +47,17 @@ repl::Commands commands{
      }},
 
     {"moves",
-     [](auto &state, const auto &) {
-         std::cout << "Legal moves:\n";
+     [](auto &out, auto &state, const auto &) {
+         out << "Legal moves:\n";
          for (const auto m : codchess::movegen::Legal(state.brain.board())) {
-             std::cout << m.ToString() << '\n';
+             out << m.ToString() << '\n';
          }
      }},
 
     {"move",
-     [](auto &state, const auto &tokens) {
+     [](auto &out, auto &state, const auto &tokens) {
          if (tokens.size() < 2) {
-             std::cerr << "Usage: move <move>\n";
+             out << "Usage: move <move>\n";
          } else {
              const auto &move = tokens[1];
              for (const auto m :
@@ -72,29 +67,29 @@ repl::Commands commands{
                      return;
                  }
              }
-             std::cerr << "Invalid move.\n";
+             out << "Invalid move.\n";
          }
      }},
 
     {"go",
-     [](auto &state, const auto &) {
+     [](auto &out, auto &state, const auto &) {
          const auto res = state.brain.FindBestMove();
          if (!res.pv.empty()) {
-             std::cout << "Best move: " << res.pv[0].ToString() << '\n';
+             out << "Best move: " << res.pv[0].ToString() << '\n';
          } else {
-             std::cout << "No moves found.\n";
+             out << "No moves found.\n";
          }
      }},
 
     {
         "setfen",
-        [](auto &state, const auto &tokens) {
+        [](auto &out, auto &state, const auto &tokens) {
             if (tokens.size() < 2) {
-                std::cerr << "Usage: setfen <fen>\n";
+                out << "Usage: setfen <fen>\n";
             } else {
                 const auto &fen = tokens[1];
                 if (!codchess::utils::ValidFen(fen)) {
-                    std::cerr << "Invalid FEN.\n";
+                    out << "Invalid FEN.\n";
                     return;
                 }
                 state.brain.board().SetFromFen(fen);

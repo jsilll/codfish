@@ -45,10 +45,12 @@ main(const int argc, const char *argv[]) {
         const auto options = ParseOptions(argc, argv);
         switch (options.mode) {
         case CLI:
-            repl::Repl(std::move(cli::commands), true).Run();
+            repl::Repl(std::cin, std::cout, std::move(cli::commands), true)
+                .Run();
             break;
         case UCI:
-            repl::Repl(std::move(uci::commands), false).Run();
+            repl::Repl(std::cin, std::cout, std::move(uci::commands), false)
+                .Run();
             break;
         }
     } catch (const std::exception &e) {

@@ -9,7 +9,7 @@ foreach (SOURCE ${SOURCES})
 
     target_link_libraries(${TEST}
             PRIVATE Catch2::Catch2WithMain
-            PRIVATE codbrain)
+            PRIVATE codfish)
 
     add_test(${TEST} ${TEST})
 endforeach ()

@@ -1,11 +1,11 @@
 # -- Source Files -- 
-file(GLOB SOURCES "*.cpp")
+file(GLOB_RECURSE SOURCES "*.cpp")
 
-# -- Codfish --
-add_executable(codfish ${SOURCES})
+# -- Codchess --
+add_library(codfish STATIC ${SOURCES})
 
 # -- Include Directory --
-target_include_directories(codbrain
+target_include_directories(codfish
         PUBLIC ../include)
 
 # -- Link Libraries --
@@ -14,17 +14,17 @@ target_link_libraries(codfish
 
 # -- All Warnings as Errors --
 if (MSVC)
-    target_compile_options(codchess PRIVATE /WX)
+    target_compile_options(codfish PRIVATE /WX)
 else ()
-    target_compile_options(codchess PRIVATE -Werror)
+    target_compile_options(codfish PRIVATE -Werror)
 endif ()
 
 # -- Release and Debug Flags --
 if (CMAKE_BUILD_TYPE MATCHES Release)
-    target_compile_options(codchess PRIVATE -O3 -march=native)
+    target_compile_options(codfish PRIVATE -O3 -march=native)
 elseif (CMAKE_BUILD_TYPE MATCHES ReleaseCrossPlatform)
-    target_compile_options(codchess PRIVATE -O3 -march=x86-64)
+    target_compile_options(codfish PRIVATE -O3 -march=x86-64)
 elseif (CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_options(codchess PRIVATE -g -O0)
-    target_compile_definitions(codchess PRIVATE DEBUG)
+    target_compile_options(codfish PRIVATE -g -O0)
+    target_compile_definitions(codfish PRIVATE DEBUG)
 endif ()
