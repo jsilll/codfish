@@ -42,7 +42,7 @@ score_to_uci(int score) {
 }
 
 static bool
-display_search_iteration(codbrain::Brain::Result result, int depth,
+display_search_iteration(codbrain::Result result, int depth,
                          std::chrono::duration<double> elapsed) {
     UCIScore score = score_to_uci(result.score);
     std::cout << "info score " << score.repr << " depth " << depth << " nodes "
@@ -60,7 +60,7 @@ display_search_iteration(codbrain::Brain::Result result, int depth,
 
 static void
 Search(std::future<void> future, codbrain::Brain &move_picker,
-       codbrain::Brain::Result &result) {
+       codbrain::Result &result) {
     int alpha = MIN_EVAL;
     int beta = -MIN_EVAL;
 
@@ -169,7 +169,7 @@ Go(repl::State &state, const repl::Tokens &args) {
         }
     }
 
-    codbrain::Brain::Result result;
+    codbrain::Result result;
     if (!depth and !infinite and wtime and btime) {
         state.brain.max_depth(DEFAULT_MAX_DEPTH);
     } else {

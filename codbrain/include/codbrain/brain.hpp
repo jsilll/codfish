@@ -16,19 +16,19 @@
 #include <codbrain/ttable.hpp>
 
 namespace codbrain {
+/// @brief Search result
+struct Result {
+    /// @brief The score of the position
+    int score;
+    /// @brief The number of nodes searched
+    std::uint64_t nodes;
+    /// @brief The principal variation
+    std::vector<codchess::Move> pv;
+};
+
 /// @brief Class that implements the search algorithm
 class Brain {
   public:
-    /// @brief Search result
-    struct Result {
-        /// @brief The score of the position
-        int score;
-        /// @brief The number of nodes searched
-        std::uint64_t nodes;
-        /// @brief The principal variation
-        std::vector<codchess::Move> pv;
-    };
-
     /// @brief Maximum depth for the search
     static constexpr auto MAX_DEPTH = 64;
 

@@ -332,7 +332,7 @@ Brain::Quiescence(int alpha, int beta) noexcept {
     return alpha;
 }
 
-Brain::Result
+Result
 Brain::FindBestMove() noexcept {
     int alpha{MIN_EVAL}, beta{-MIN_EVAL};
 
