@@ -450,28 +450,28 @@ TEST_CASE("Board::GetFen() returns the correct FEN", "[board]") {
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.GetFen() ==
+        REQUIRE(board.ToFen() ==
                 "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        REQUIRE(board.GetFen() == "8/8/8/8/8/8/8/8 w - - 0 1");
+        REQUIRE(board.ToFen() == "8/8/8/8/8/8/8/8 w - - 0 1");
     }
 
     SECTION("Position 3") {
         const auto board = Board("8/8/8/8/8/8/8/8 w KQkq - 0 1");
-        REQUIRE(board.GetFen() == "8/8/8/8/8/8/8/8 w KQkq - 0 1");
+        REQUIRE(board.ToFen() == "8/8/8/8/8/8/8/8 w KQkq - 0 1");
     }
 
     SECTION("Position 4") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - e3 0 1");
-        REQUIRE(board.GetFen() == "8/8/8/8/8/8/8/8 w - e3 0 1");
+        REQUIRE(board.ToFen() == "8/8/8/8/8/8/8/8 w - e3 0 1");
     }
 
     SECTION("Position 5") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 1 1");
-        REQUIRE(board.GetFen() == "8/8/8/8/8/8/8/8 w - - 1 1");
+        REQUIRE(board.ToFen() == "8/8/8/8/8/8/8/8 w - - 1 1");
     }
 }
 
@@ -530,7 +530,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -546,7 +546,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -562,7 +562,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -578,7 +578,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -594,7 +594,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -610,7 +610,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 
@@ -626,7 +626,7 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         board.Make(move);
         board.Unmake(move, backup);
 
-        REQUIRE(board.GetFen() == fen);
+        REQUIRE(board.ToFen() == fen);
         REQUIRE(board.hash() == backup.hash);
     }
 }

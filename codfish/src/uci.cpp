@@ -244,7 +244,7 @@ Position(repl::State &state, repl::Tokens &args) {
         if (!codchess::utils::ValidFen(fen_string_concat)) {
             return;
         } else {
-            state.brain.board().SetFromFen(fen_string_concat);
+            state.brain.board().FromFen(fen_string_concat);
             args.erase(args.begin(), args.begin() + 6);
         }
     } else {

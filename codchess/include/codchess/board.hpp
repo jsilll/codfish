@@ -84,7 +84,7 @@ class Board {
     /// @brief Constructor from FEN
     /// @note The fen string is assumed to be valid
     [[nodiscard]] explicit Board(const std::string &fen) noexcept {
-        SetFromFen(fen);
+        FromFen(fen);
     }
 
     /// @brief Copy constructor
@@ -162,7 +162,7 @@ class Board {
 
     /// @brief Returns the FEN string of the board
     /// @return The FEN string of the board
-    [[maybe_unused]] [[nodiscard]] std::string GetFen() const noexcept;
+    [[maybe_unused]] [[nodiscard]] std::string ToFen() const noexcept;
 
     /// @brief Returns whether a square is attacked by a color
     /// @param sq The square
@@ -200,13 +200,13 @@ class Board {
 
     /// @brief Sets the board to the starting position
     void SetStartingPosition() noexcept {
-        SetFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR, w KQkq - 0 1");
+        FromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR, w KQkq - 0 1");
     }
 
     /// @brief Sets the board from a FEN string
     /// @param fen The FEN string
     /// @note The fen string is assumed to be valid
-    void SetFromFen(const std::string &fen) noexcept;
+    void FromFen(const std::string &fen) noexcept;
 
     /// @brief Makes a move on the board
     /// @param move The move

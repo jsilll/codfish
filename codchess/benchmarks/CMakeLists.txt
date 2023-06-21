@@ -8,8 +8,5 @@ foreach (SOURCE ${SOURCES})
     add_executable(${BENCH} ${SOURCE})
 
     target_link_libraries(${BENCH}
-            PRIVATE Catch2::Catch2WithMain
             PRIVATE codchess)
-
-    add_test(${BENCH} ${BENCH})
 endforeach ()

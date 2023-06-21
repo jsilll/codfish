@@ -5,7 +5,7 @@
 
 namespace codchess {
 [[maybe_unused]] std::string
-Board::GetFen() const noexcept {
+Board::ToFen() const noexcept {
     int empty_squares{0};
     std::string piece_placements;
     for (int rank = RANK_8; rank >= RANK_1; rank--) {
@@ -291,7 +291,7 @@ Board::Unmake(const Move move, const StateBackup &backup) noexcept {
 }
 
 void
-Board::SetFromFen(const std::string &fen_str) noexcept {
+Board::FromFen(const std::string &fen_str) noexcept {
     const auto fen = Fen(fen_str);
 
     for (int i = A1; i < N_SQUARES; ++i) {
@@ -548,7 +548,7 @@ Board::Display(std::ostream &os, const bool ascii,
            << "      a   b   c   d   e   f   g   h\n";
     }
 
-    auto fen = GetFen();
+    auto fen = ToFen();
     fen = fen.substr(fen.find(' ') + 1);
     os << "\n    " << fen << "\n";
 }

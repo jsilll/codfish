@@ -8,7 +8,7 @@ namespace codfish::cli {
 /// @brief The commands of the CLI.
 repl::Commands commands{
     {"fen", [](auto &out, auto &state,
-               const auto &) { out << state.brain.board().GetFen() << '\n'; }},
+               const auto &) { out << state.brain.board().ToFen() << '\n'; }},
 
     {"display",
      [](auto &out, auto &state, const auto &) {
@@ -92,7 +92,7 @@ repl::Commands commands{
                     out << "Invalid FEN.\n";
                     return;
                 }
-                state.brain.board().SetFromFen(fen);
+                state.brain.board().FromFen(fen);
             }
         },
 
