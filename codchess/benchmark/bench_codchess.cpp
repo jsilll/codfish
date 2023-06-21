@@ -24,7 +24,7 @@ BenchPerft(std::string &label, std::string &fen, std::uint32_t depth) {
     std::cout << "Nodes: " << nodes << " Time: " << duration_ms << "ms\n";
 
     auto nps_mill = nodes / (static_cast<double>(duration_ms) / 1000.0) / 1000000.0;
-    std::cout << "NPS: " << nps_mill << "\n";
+    std::cout << "MNPS: " << nps_mill << "\n";
 }
 
 #define BENCH_PERFT(label, fen, depth)                                         \

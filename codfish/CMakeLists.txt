@@ -6,7 +6,7 @@ add_subdirectory(app)
 
 # -- Testing only available when building standalone --
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(tests)
+    add_subdirectory(test)
     
     # -- Docs only available when building Standalone --
     find_package(Doxygen)
