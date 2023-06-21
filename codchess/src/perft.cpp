@@ -6,9 +6,8 @@ namespace codchess::perft {
 /// @param depth The depth
 /// @return The number of nodes
 std::uint64_t
-PerftAux(Board &board, std::uint32_t depth) noexcept {
+PerftUnmakeAux(Board &board, const std::uint32_t depth) noexcept {
     std::uint64_t nodes{0};
-
     const auto board_info = board.GetStateBackup();
     for (const auto move : movegen::PseudoLegal(board)) {
         board.Make(move);
@@ -20,7 +19,7 @@ PerftAux(Board &board, std::uint32_t depth) noexcept {
             if (depth == 1) {
                 nodes++;
             } else {
-                nodes += PerftAux(board, depth - 1);
+                nodes += PerftUnmakeAux(board, depth - 1);
             }
         }
 
@@ -31,31 +30,39 @@ PerftAux(Board &board, std::uint32_t depth) noexcept {
 }
 
 std::uint64_t
-Perft(Board &board, std::uint32_t depth) noexcept {
-    const auto moves = movegen::PseudoLegal(board);
-    const auto board_info = board.GetStateBackup();
+PerftUnmake(const Board &board, const std::uint32_t depth) noexcept {
+    auto cboard = board;
+    return PerftUnmakeAux(cboard, depth);
+}
 
+std::uint64_t
+PerftCopyAux(Board &board, const std::uint32_t depth) noexcept {
+    auto cboard = board;
     std::uint64_t nodes{0};
-    for (auto it = moves.begin(); it != moves.end(); ++it) {
-        auto cboard = board;
-
-        cboard.Make(*it);
+    for (const auto move : movegen::PseudoLegal(board)) {
+        board.Make(move);
 
         const auto king_sq =
-            bitboard::BitScanForward(cboard.pieces(cboard.inactive(), KING));
+            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
 
-        if (!cboard.IsSquareAttacked(king_sq, cboard.active())) {
+        if (!board.IsSquareAttacked(king_sq, board.active())) {
             if (depth == 1) {
-                ++nodes;
+                nodes++;
             } else {
-                nodes += PerftAux(cboard, depth - 1);
+                nodes += PerftCopyAux(board, depth - 1);
             }
         }
 
-        cboard.Unmake(*it, board_info);
+        board = cboard;
     }
 
     return nodes;
+}
+
+std::uint64_t
+PerftCopy(const Board &board, const std::uint32_t depth) noexcept {
+    auto cboard = board;
+    return PerftCopyAux(cboard, depth);
 }
 
 }   // namespace codchess::perft

@@ -4,6 +4,19 @@
 #include <codchess/perft.hpp>
 
 void
+PrintResults(auto start, auto end, std::uint64_t nodes) noexcept {
+    auto duration_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+            .count();
+
+    std::cout << "Nodes: " << nodes << " Time: " << duration_ms << "ms\n";
+
+    auto nps_mill =
+        nodes / (static_cast<double>(duration_ms) / 1000.0) / 1000000.0;
+    std::cout << "MNPS: " << nps_mill << "\n";
+}
+
+void
 BenchPerft(std::string &label, std::string &fen, std::uint32_t depth) {
     using namespace codchess;
 
@@ -14,17 +27,16 @@ BenchPerft(std::string &label, std::string &fen, std::uint32_t depth) {
     board.FromFen(fen);
 
     auto start = std::chrono::high_resolution_clock::now();
-    auto nodes = codchess::perft::Perft(board, depth);
+    auto nodes = codchess::perft::PerftUnmake(board, depth);
     auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "PerftUnmake: ";
+    PrintResults(start, end, nodes);
 
-    auto duration_ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count();
-
-    std::cout << "Nodes: " << nodes << " Time: " << duration_ms << "ms\n";
-
-    auto nps_mill = nodes / (static_cast<double>(duration_ms) / 1000.0) / 1000000.0;
-    std::cout << "MNPS: " << nps_mill << "\n";
+    start = std::chrono::high_resolution_clock::now();
+    nodes = codchess::perft::PerftCopy(board, depth);
+    end = std::chrono::high_resolution_clock::now();
+    std::cout << "PerftCopy: ";
+    PrintResults(start, end, nodes);  
 }
 
 #define BENCH_PERFT(label, fen, depth)                                         \
