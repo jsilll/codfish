@@ -1,7 +1,5 @@
 #pragma once
 
-#include <codchess/codchess.hpp>
-
 #include <codbrain/brain.hpp>
 
 namespace codbrain {
