@@ -87,10 +87,6 @@ class Board {
         FromFen(fen);
     }
 
-    /// @brief Copy constructor
-    /// @param board The board to copy
-    [[nodiscard]] Board(const Board &board) noexcept = default;
-
     /// @brief Returns the current side to move
     /// @return The current side to move
     [[nodiscard]] constexpr auto active() const noexcept { return _active; }
@@ -184,6 +180,8 @@ class Board {
         _castling_availability = castling_availability;
     }
 
+    /// @brief Sets the board's state from a state backup
+    /// @param sb The state backup 
     constexpr void SetStateBackup(const StateBackup &sb) noexcept {
         _hash = sb.hash;
         _half_move_clock = sb.half_move_clock;

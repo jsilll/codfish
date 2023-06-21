@@ -1,14 +1,14 @@
 #include <codchess/perft.hpp>
 
 namespace codchess::perft {
-/// @brief Auxiliary function for perft
+/// @brief Auxiliary function for unmake perft
 /// @param board The board
 /// @param depth The depth
 /// @return The number of nodes
 std::uint64_t
 PerftUnmakeAux(Board &board, const std::uint32_t depth) noexcept {
     std::uint64_t nodes{0};
-    const auto board_info = board.GetStateBackup();
+    const auto state_backup = board.GetStateBackup();
     for (const auto move : movegen::PseudoLegal(board)) {
         board.Make(move);
 
@@ -17,13 +17,13 @@ PerftUnmakeAux(Board &board, const std::uint32_t depth) noexcept {
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             if (depth == 1) {
-                nodes++;
+                ++nodes;
             } else {
                 nodes += PerftUnmakeAux(board, depth - 1);
             }
         }
 
-        board.Unmake(move, board_info);
+        board.Unmake(move, state_backup);
     }
 
     return nodes;
@@ -35,6 +35,10 @@ PerftUnmake(const Board &board, const std::uint32_t depth) noexcept {
     return PerftUnmakeAux(cboard, depth);
 }
 
+/// @brief Auxiliary function for copy perft
+/// @param board The board
+/// @param depth The depth
+/// @return The number of nodes 
 std::uint64_t
 PerftCopyAux(Board &board, const std::uint32_t depth) noexcept {
     auto cboard = board;
@@ -47,7 +51,7 @@ PerftCopyAux(Board &board, const std::uint32_t depth) noexcept {
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             if (depth == 1) {
-                nodes++;
+                ++nodes;
             } else {
                 nodes += PerftCopyAux(board, depth - 1);
             }
@@ -64,5 +68,4 @@ PerftCopy(const Board &board, const std::uint32_t depth) noexcept {
     auto cboard = board;
     return PerftCopyAux(cboard, depth);
 }
-
 }   // namespace codchess::perft
