@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <codchess/perft.hpp>
-#include <codchess/utils.hpp>
 
 using namespace codchess;
 

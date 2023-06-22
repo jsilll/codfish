@@ -5,47 +5,32 @@
 using namespace codbrain;
 
 TEST_CASE("Simple Checkmates") {
-    /*
-    This simple checkmates tests are designed
-    to test the optimality of the search algorithm.
-    */
-
     ::codbrain::Init();
     Brain brain{3};
 
     SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1") {
         brain.board().FromFen("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1");
-        const auto result = brain.FindBestMove();
+        const auto result = brain.Search();
         REQUIRE(!result.pv.empty());
         REQUIRE(result.pv.front().ToString() == "g1b6");
     }
 
     SECTION("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1") {
         brain.board().FromFen("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1");
-        const auto result = brain.FindBestMove();
+        const auto result = brain.Search();
         REQUIRE(!result.pv.empty());
         REQUIRE(result.pv.front().ToString() == "h8e8");
     }
 }
 
 TEST_CASE("Brakto-Kopec Test") {
-    /*
-    The Bratko-Kopec Test was designed by Dr. Ivan Bratko
-    and Dr. Danny Kopec in 1982 to evaluate human or machine
-    chess ability based on the presence or absence of certain
-    knowledge (i.e. Master, Expert, Novice, etc).
-    This test has been a standard for nearly 20 years in computer chess.
-    Experience has shown it very reliable in corresponding to the chess
-    rating of humans and machines.
-    */
-
     ::codbrain::Init();
     Brain brain{6};
 
     SECTION("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -") {
         brain.board().FromFen(
             "1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -");
-        const auto result = brain.FindBestMove();
+        const auto result = brain.Search();
         REQUIRE(!result.pv.empty());
         REQUIRE(result.pv.front().ToString() == "d6d1");
     }
@@ -53,7 +38,7 @@ TEST_CASE("Brakto-Kopec Test") {
     SECTION("3r1k2/4npp1/1ppr3p/p6P/P2PPPP1/1NR5/5K2/2R5 w - -") {
         brain.board().FromFen(
             "3r1k2/4npp1/1ppr3p/p6P/P2PPPP1/1NR5/5K2/2R5 w - -");
-        const auto result = brain.FindBestMove();
+        const auto result = brain.Search();
         REQUIRE(!result.pv.empty());
         REQUIRE(result.pv.front().ToString() == "d4d5");
     }

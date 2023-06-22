@@ -7,8 +7,6 @@
 #include <iostream>
 #include <optional>
 
-#include <codchess/movegen.hpp>
-
 #include <codfish/time.hpp>
 
 #define DEFAULT_MIN_DEPTH 8

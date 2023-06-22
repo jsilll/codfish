@@ -7,7 +7,7 @@
 
 namespace codchess::movegen {
 /// @brief A list of moves.
-class MoveList {
+class MoveList final {
   public:
     /// @brief Returns whehter the list is empty.
     /// @return True if the list is empty, false otherwise.

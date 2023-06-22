@@ -1,7 +1,5 @@
 #include <codchess/movegen.hpp>
 
-#include <codchess/bitboard.hpp>
-
 #include "attacks.hpp"
 
 namespace codchess::movegen {

@@ -13,7 +13,7 @@
 
 namespace codchess {
 /// @brief Represents a chess board
-class Board {
+class Board final {
   public:
     /// @brief A piece on the board
     struct Piece {

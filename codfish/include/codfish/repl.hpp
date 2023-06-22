@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <codbrain/brain.hpp>
+#include <codbrain/codbrain.hpp>
 
 namespace codfish::repl {
 /// @brief State of the REPL.
@@ -36,7 +36,7 @@ class Repl {
         : _in(in), _out(out), _prompt(prompt), _commands{std::move(commands)} {}
 
     /// @brief Run the REPL.
-    void Run() noexcept {
+    [[noreturn]] void Run() noexcept {
         while (true) {
             RunOnce();
         }

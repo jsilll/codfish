@@ -1,8 +1,5 @@
 #include "attacks.hpp"
 
-#include <codchess/bitboard.hpp>
-#include <codchess/utils.hpp>
-
 namespace codchess::attacks {
 /// @brief Stores the attacks for the king
 bitboard::Bitboard KING_ATTACKS[N_SQUARES];

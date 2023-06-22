@@ -7,7 +7,7 @@
 
 namespace codchess {
 /// @brief Encodes a chess move
-class Move {
+class Move final {
   public:
     /// @brief Default constructor
     [[maybe_unused]] [[nodiscard]] Move() noexcept = default;

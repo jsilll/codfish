@@ -11,4 +11,4 @@ file(GLOB_RECURSE SOURCES ../src/*.cpp)
 file(GLOB_RECURSE TESTS ../include/codfish/*.hpp)
 
 # -- Building Documentation --
-doxygen_add_docs(codfish-docs ${HEADERS} COMMENT "Generating Documentation for Codfish")
+doxygen_add_docs(docs_codfish ${HEADERS} COMMENT "Generating Documentation for Codfish")
