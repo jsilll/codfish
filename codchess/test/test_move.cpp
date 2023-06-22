@@ -2,9 +2,10 @@
 
 #include <codchess/codchess.hpp>
 
+using namespace codchess;
+
 TEST_CASE("Move Class", "[move]") {
-    codchess::Init();
-    using namespace codchess;
+    ::codchess::Init();
 
     SECTION("Impossible Move") {
         const auto move = Move(0, 63, PAWN, QUEEN, QUEEN, true, false, true);

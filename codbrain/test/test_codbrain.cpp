@@ -2,15 +2,15 @@
 
 #include <codbrain/codbrain.hpp>
 
+using namespace codbrain;
+
 TEST_CASE("Simple Checkmates") {
     /*
     This simple checkmates tests are designed
     to test the optimality of the search algorithm.
     */
 
-    codbrain::Init();
-    using namespace codbrain;
-
+    ::codbrain::Init();
     Brain brain{3};
 
     SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1") {
@@ -29,19 +29,17 @@ TEST_CASE("Simple Checkmates") {
 }
 
 TEST_CASE("Brakto-Kopec Test") {
-    /* 
+    /*
     The Bratko-Kopec Test was designed by Dr. Ivan Bratko
     and Dr. Danny Kopec in 1982 to evaluate human or machine
     chess ability based on the presence or absence of certain
-    knowledge (i.e. Master, Expert, Novice, etc). 
+    knowledge (i.e. Master, Expert, Novice, etc).
     This test has been a standard for nearly 20 years in computer chess.
-    Experience has shown it very reliable in corresponding to the chess 
-    rating of humans and machines. 
+    Experience has shown it very reliable in corresponding to the chess
+    rating of humans and machines.
     */
 
-    codbrain::Init();
-    using namespace codbrain;
-
+    ::codbrain::Init();
     Brain brain{6};
 
     SECTION("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -") {

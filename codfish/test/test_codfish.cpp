@@ -4,9 +4,10 @@
 
 #include <codfish/uci.hpp>
 
+using namespace codfish;
+
 TEST_CASE("codfish::uci::commands") {
-    codbrain::Init();
-    using namespace codfish;
+    ::codbrain::Init();
 
     std::string buffer{};
     std::stringstream in{};
