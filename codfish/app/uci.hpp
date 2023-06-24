@@ -9,149 +9,222 @@
 
 #include <boost/signals2.hpp>
 
-class uci final {
+/// @brief Universal Chess Interface.
+class Uci final {
   public:
-    enum class command {
-        search_moves,
-        ponder,
-        white_time,
-        black_time,
-        white_increment,
-        black_increment,
-        moves_to_go,
-        depth,
-        nodes,
-        mate,
-        move_time,
-        infinite
+    /// @brief UCI states.
+    enum class State {
+        /// @brief Checking state.
+        Checking,
+        /// @brief Ok state.
+        Ok,
+        /// @brief Error state.
+        Error
     };
-    enum class state { checking, ok, error };
-    enum class information {
-        depth,
-        selective_depth,
-        time,
-        nodes,
-        principle_variation,
-        multi_principle_variation,
-        score_centipawns,
-        score_mate,
-        score_lowerbound,
-        score_upperbound,
-        current_move,
-        current_move_number,
-        hash_full,
-        nodes_per_second,
-        table_base_hits,
-        cpu_load,
-        string,
-        refutation,
-        current_line
+
+    /// @brief UCI commands.
+    enum class Command {
+        /// @brief Search command.
+        SearchMoves,
+        /// @brief Ponder command.
+        Ponder,
+        /// @brief White time command.
+        WhiteTime,
+        /// @brief Black time command.
+        BlackTime,
+        /// @brief White increment command.
+        WhiteIncrement,
+        /// @brief Black increment command.
+        BlackIncrement,
+        /// @brief Moves to go command.
+        MovesToGo,
+        /// @brief Depth command.
+        Depth,
+        /// @brief Nodes command.
+        Nodes,
+        /// @brief Mate command.
+        Mate,
+        /// @brief Move time command.
+        MoveTime,
+        /// @brief Infinite command.
+        Infinite
     };
+
+    /// @brief UCI information.
+    enum class Information {
+        /// @brief Depth information.
+        Depth,
+        /// @brief Selective depth information.
+        SelectiveDepth,
+        /// @brief Time information.
+        Time,
+        /// @brief Nodes information.
+        Nodes,
+        /// @brief Principle variation information.
+        PrincipleVariation,
+        /// @brief Multi-principle variation information.
+        MultiPrincipleVariation,
+        /// @brief Score centipawns information.
+        ScoreCentipawns,
+        /// @brief Score mate information.
+        ScoreMate,
+        /// @brief Score lower bound information.
+        ScoreLowerBound,
+        /// @brief Score upper bound information.
+        ScoreUpperBound,
+        /// @brief Current move information.
+        CurrentMove,
+        /// @brief Current move number information.
+        CurrentMoveNumber,
+        /// @brief Hash full information.
+        HashFull,
+        /// @brief Nodes per second information.
+        NodesPerSecond,
+        /// @brief Table base hits information.
+        TableBaseHits,
+        /// @brief CPU load information.
+        CpuLoad,
+        /// @brief String information.
+        String,
+        /// @brief Refutation information.
+        Refutation,
+        /// @brief Current line information.
+        CurrentLine
+    };
+
+    /// @brief Receive 'uci' command signal.
+    boost::signals2::signal<void()> receive_uci;
+    /// @brief Receive 'stop' command signal.
+    boost::signals2::signal<void()> receive_stop;
+    /// @brief Receive 'quit' command signal.
+    boost::signals2::signal<void()> receive_quit;
+    /// @brief Receive 'isready' command signal.
+    boost::signals2::signal<void()> receive_is_ready;
+    /// @brief Receive 'ponderhit' command signal.
+    boost::signals2::signal<void()> receive_ponder_hit;
+    /// @brief Receive 'ucinewgame' command signal.
+    boost::signals2::signal<void()> receive_uci_new_game;
+    //// @brief Receive 'debug' command signal.
+    boost::signals2::signal<void(bool on)> receive_debug;
+    /// @brief Receive 'setoption' command signal.
+    boost::signals2::signal<void(const std::string &name,
+                                 const std::string &value)>
+        receive_set_option;
+    //// @brief Receive 'register' command signal.
+    boost::signals2::signal<void(bool later, const std::string &name,
+                                 const std::size_t &code)>
+        receive_register;
+    //// @brief Receive 'position' command signal.
+    boost::signals2::signal<void(const std::string &fen,
+                                 const std::vector<std::string> &moves)>
+        receive_position;
+    //// @brief Receive 'go' command signal.
+    boost::signals2::signal<void(
+        const std::map<Command, std::string> &parameters)>
+        receive_go;
 
     const std::string start_fen =
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    // UI to Engine.
-    boost::signals2::signal<void()> receive_uci;
-    boost::signals2::signal<void(bool on)> receive_debug;
-    boost::signals2::signal<void()> receive_is_ready;
-    boost::signals2::signal<void(const std::string &name,
-                                 const std::string &value)>
-        receive_set_option;
-    boost::signals2::signal<void(bool later, const std::string &name,
-                                 const std::size_t &code)>
-        receive_register;
-    boost::signals2::signal<void()> receive_uci_new_game;
-    boost::signals2::signal<void(const std::string &fen,
-                                 const std::vector<std::string> &moves)>
-        receive_position;
-    boost::signals2::signal<void(
-        const std::map<command, std::string> &parameters)>
-        receive_go;
-    boost::signals2::signal<void()> receive_stop;
-    boost::signals2::signal<void()> receive_ponder_hit;
-    boost::signals2::signal<void()> receive_quit;
-
-    // Engine to UI.
-    static void send_id(const std::string &name = "",
-                        const std::string &author = "") {
+    /// @brief Sends the engine id.
+    /// @param name The engine name.
+    /// @param author The engine author.
+    static void SendId(const std::string &name = "",
+                       const std::string &author = "") {
         std::cout << "id" << (!name.empty() ? " name " + name : "")
                   << (!author.empty() ? " author " + author : "") << std::endl;
     }
-    static void send_uci_ok() { std::cout << "uciok" << std::endl; }
-    static void send_ready_ok() { std::cout << "readyok" << std::endl; }
-    static void send_best_move([[maybe_unused]] const std::string &move,
-                               const bool ponder = false) {
+
+    /// @brief Send the 'uciok' response.
+    static void SendUciOk() { std::cout << "uciok" << std::endl; }
+
+    /// @brief Sends the 'readyok' response.
+    static void SendReadyOk() { std::cout << "readyok" << std::endl; }
+
+    /// @brief Sends the 'bestmove' response.
+    /// @param move
+    /// @param ponder
+    static void SendBestMove([[maybe_unused]] const std::string &move,
+                             const bool ponder = false) {
         std::cout << "bestmove" << (ponder ? " ponder" : "") << std::endl;
     }
-    static void send_copy_protection(const state state) {
+
+    /// @brief Sends the copy protection state.
+    /// @param state The state.
+    static void SendCopyProtection(const State state) {
         std::string string = "copyprotection";
-        if (state == state::checking)
+        if (state == State::Checking)
             string += " checking";
-        else if (state == state::ok)
+        else if (state == State::Ok)
             string += " ok";
-        else if (state == state::error)
+        else if (state == State::Error)
             string += " error";
         std::cout << string << std::endl;
     }
-    static void send_registration(const state state) {
+
+    /// @brief Sends the registration state.
+    /// @param state The state.
+    static void SendRegistration(const State state) {
         std::string string = "registration";
-        if (state == state::checking)
+        if (state == State::Checking)
             string += " checking";
-        else if (state == state::ok)
+        else if (state == State::Ok)
             string += " ok";
-        else if (state == state::error)
+        else if (state == State::Error)
             string += " error";
         std::cout << string << std::endl;
     }
+
+    /// @brief Sends the information.
+    /// @param parameters The parameters.
     static void
-    send_information(const std::map<information, std::string> &parameters) {
+    SendInformation(const std::map<Information, std::string> &parameters) {
         std::string string = "info";
         for (auto &parameter : parameters) {
             switch (parameter.first) {
-            case information::depth:
+            case Information::Depth:
                 string += " depth ";
                 break;
-            case information::selective_depth:
+            case Information::SelectiveDepth:
                 string += " seldepth ";
                 break;
-            case information::time:
+            case Information::Time:
                 string += " time ";
                 break;
-            case information::nodes:
+            case Information::Nodes:
                 string += " nodes ";
                 break;
-            case information::principle_variation:
+            case Information::PrincipleVariation:
                 string += " pv ";
                 break;
-            case information::multi_principle_variation:
+            case Information::MultiPrincipleVariation:
                 string += " multipv ";
                 break;
-            case information::current_move:
+            case Information::CurrentMove:
                 string += " currmove ";
                 break;
-            case information::current_move_number:
+            case Information::CurrentMoveNumber:
                 string += " currmovenumber ";
                 break;
-            case information::hash_full:
+            case Information::HashFull:
                 string += " hashfull ";
                 break;
-            case information::nodes_per_second:
+            case Information::NodesPerSecond:
                 string += " nps ";
                 break;
-            case information::table_base_hits:
+            case Information::TableBaseHits:
                 string += " tbhits ";
                 break;
-            case information::cpu_load:
+            case Information::CpuLoad:
                 string += " cpuload ";
                 break;
-            case information::string:
+            case Information::String:
                 string += " string ";
                 break;
-            case information::refutation:
+            case Information::Refutation:
                 string += " refutation ";
                 break;
-            case information::current_line:
+            case Information::CurrentLine:
                 string += " currline ";
                 break;
             default:
@@ -159,110 +232,175 @@ class uci final {
             }
             string += parameter.second;
         }
-        if (parameters.count(information::score_centipawns) > 0 ||
-            parameters.count(information::score_mate) > 0) {
+        if (parameters.count(Information::ScoreCentipawns) > 0 ||
+            parameters.count(Information::ScoreMate) > 0) {
             string += " score";
-            if (parameters.count(information::score_centipawns))
-                string += " cp " + parameters.at(information::score_centipawns);
-            if (parameters.count(information::score_mate))
-                string += " mate " + parameters.at(information::score_mate);
-            if (parameters.count(information::score_lowerbound))
+            if (parameters.count(Information::ScoreCentipawns))
+                string += " cp " + parameters.at(Information::ScoreCentipawns);
+            if (parameters.count(Information::ScoreMate))
+                string += " mate " + parameters.at(Information::ScoreMate);
+            if (parameters.count(Information::ScoreLowerBound))
                 string += " lowerbound";
-            if (parameters.count(information::score_upperbound))
+            if (parameters.count(Information::ScoreUpperBound))
                 string += " upperbound";
         }
         std::cout << string << std::endl;
     }
-    static void send_option_check_box(const std::string &name,
-                                      const bool initial = true) {
+
+    /// @brief Sends a check box option.
+    /// @param name The name.
+    /// @param initial The initial value.
+    static void SendOptionCheckBox(const std::string &name,
+                                   const bool initial = true) {
         std::cout << "option name " << name << " type check default "
                   << std::boolalpha << initial << std::endl;
     }
-    static void send_option_spin_wheel(const std::string &name,
-                                       const std::size_t &initial,
-                                       const std::size_t &minimum,
-                                       const std::size_t &maximum) {
+
+    /// @brief Sends a spin wheel option.
+    /// @param name The name.
+    /// @param initial The initial value.
+    static void SendOptionSpinWheel(const std::string &name,
+                                    const std::size_t &initial,
+                                    const std::size_t &minimum,
+                                    const std::size_t &maximum) {
         std::cout << "option name " << name << " type spin default " << initial
                   << " min " << minimum << " max " << maximum << std::endl;
     }
-    static void send_option_combo_box(const std::string &name,
-                                      const std::string &initial,
-                                      const std::vector<std::string> &values) {
+
+    /// @brief Sends a combo box option.
+    /// @param name The name.
+    /// @param initial The initial value.
+    /// @param values The values.
+    static void SendOptionComboBox(const std::string &name,
+                                   const std::string &initial,
+                                   const std::vector<std::string> &values) {
         auto string = "option name " + name + " type combo default " + initial;
         for (auto &value : values)
             string += " var " + value;
         std::cout << string << std::endl;
     }
-    static void send_option_button(const std::string &name) {
+
+    /// @brief Sends an button option.
+    /// @param name The name.
+    static void SendOptionButton(const std::string &name) {
         std::cout << "option name " << name << " type button" << std::endl;
     }
-    static void send_option_string(const std::string &name,
-                                   const std::string &initial) {
+
+    /// @brief Sends a string option.
+    /// @param name The name.
+    static void SendOptionString(const std::string &name,
+                                 const std::string &initial) {
         std::cout << "option name " << name << " type string default "
                   << initial << std::endl;
     }
 
-    // Base options.
+    /// @brief Sends the hash option.
+    /// @param initial The initial value.
+    /// @param minimum The minimum value.
+    /// @param maximum The maximum value.
     static void send_option_hash(const std::size_t &initial,
                                  const std::size_t &minimum,
                                  const std::size_t &maximum) {
-        send_option_spin_wheel("Hash", initial, minimum, maximum);
-    }
-    static void send_option_nalimov_path(const std::string &initial) {
-        send_option_string("NalimovPath", initial);
-    }
-    static void send_option_nalimov_cache(const std::size_t &initial,
-                                          const std::size_t &minimum,
-                                          const std::size_t &maximum) {
-        send_option_spin_wheel("NalimovCache", initial, minimum, maximum);
-    }
-    static void send_option_ponder(const bool initial = true) {
-        send_option_check_box("Ponder", initial);
-    }
-    static void send_option_own_book(const bool initial = true) {
-        send_option_check_box("OwnBook", initial);
-    }
-    static void
-    send_option_multi_principle_variation(const std::size_t &initial,
-                                          const std::size_t &minimum,
-                                          const std::size_t &maximum) {
-        send_option_spin_wheel("MultiPV", initial, minimum, maximum);
-    }
-    static void send_option_uci_show_current_line(const bool initial = true) {
-        send_option_check_box("UCI_ShowCurrLine", initial);
-    }
-    static void send_option_uci_show_refutations(const bool initial = true) {
-        send_option_check_box("UCI_ShowRefutations", initial);
-    }
-    static void send_option_uci_limit_strength(const bool initial = true) {
-        send_option_check_box("UCI_LimitStrength", initial);
-    }
-    static void send_option_uci_elo(const std::size_t &initial,
-                                    const std::size_t &minimum,
-                                    const std::size_t &maximum) {
-        send_option_spin_wheel("UCI_Elo", initial, minimum, maximum);
-    }
-    static void send_option_uci_analyse_mode(bool const initial = true) {
-        send_option_check_box("UCI_AnalyseMode", initial);
-    }
-    static void send_option_uci_opponent(const std::string &initial) {
-        send_option_string("UCI_Opponent", initial);
-    }
-    static void send_option_uci_about(const std::string &initial) {
-        send_option_string("UCI_EngineAbout", initial);
-    }
-    static void
-    send_option_uci_set_position_centipawns(const std::string &initial) {
-        send_option_string("UCI_SetPositionValue", initial);
+        SendOptionSpinWheel("Hash", initial, minimum, maximum);
     }
 
-    // Start console IO.
-    void launch() {
-        std::string line;
-        auto running = true;
+    /// @brief Sends the nalimov path option.
+    /// @param initial The initial value.
+    static void SendOptionNalimovPath(const std::string &initial) {
+        SendOptionString("NalimovPath", initial);
+    }
+
+    /// @brief Sends the nalimov cache option.
+    /// @param initial The initial value.
+    /// @param minimum The minimum value.
+    /// @param maximum The maximum value.
+    static void SendOptionNalimovCache(const std::size_t &initial,
+                                       const std::size_t &minimum,
+                                       const std::size_t &maximum) {
+        SendOptionSpinWheel("NalimovCache", initial, minimum, maximum);
+    }
+
+    /// @brief Sends the ponder option.
+    /// @param initial The initial value.
+    static void SendOptionPonder(const bool initial = true) {
+        SendOptionCheckBox("Ponder", initial);
+    }
+
+    /// @brief Sends the own book option.
+    /// @param initial The initial value.
+    static void SendOptionOwnBook(const bool initial = true) {
+        SendOptionCheckBox("OwnBook", initial);
+    }
+
+    /// @brief Sends the multi-principle variation option.
+    /// @param initial The initial value.
+    /// @param minimum The minimum value.
+    /// @param maximum The maximum value.
+    static void SendOptionMultiPrincipleVariation(const std::size_t &initial,
+                                                  const std::size_t &minimum,
+                                                  const std::size_t &maximum) {
+        SendOptionSpinWheel("MultiPV", initial, minimum, maximum);
+    }
+
+    /// @brief Sends the UCI_ShowCurrLine option.
+    /// @param initial The initial value.
+    static void SendOptionUciShowCurrentLine(const bool initial = true) {
+        SendOptionCheckBox("UCI_ShowCurrLine", initial);
+    }
+
+    /// @brief Sends the UCI_ShowRefutations option.
+    /// @param initial The initial value.
+    static void SendOptionUciShowRefutations(const bool initial = true) {
+        SendOptionCheckBox("UCI_ShowRefutations", initial);
+    }
+
+    /// @brief Sends the UCI_LimitStrength option.
+    /// @param initial The initial value.
+    static void SendOptionUciLimitStrength(const bool initial = true) {
+        SendOptionCheckBox("UCI_LimitStrength", initial);
+    }
+
+    /// @brief Sends the UCI_Elo option.
+    /// @param initial The initial value.
+    /// @param minimum The minimum value.
+    /// @param maximum The maximum value.
+    static void SendOptionUciElo(const std::size_t &initial,
+                                 const std::size_t &minimum,
+                                 const std::size_t &maximum) {
+        SendOptionSpinWheel("UCI_Elo", initial, minimum, maximum);
+    }
+
+    /// @brief Sends the UCI_AnalyseMode option.
+    /// @param initial The initial value.
+    static void SendOptionUciAnalyseMode(bool const initial = true) {
+        SendOptionCheckBox("UCI_AnalyseMode", initial);
+    }
+
+    /// @brief Sends the UCI_Opponent option.
+    /// @param initial The initial value.
+    static void SendOptionUciOpponent(const std::string &initial) {
+        SendOptionString("UCI_Opponent", initial);
+    }
+
+    /// @brief Sends the UCI_EngineAbout option.
+    /// @param initial The initial value.
+    static void SendOptionUciAbout(const std::string &initial) {
+        SendOptionString("UCI_EngineAbout", initial);
+    }
+
+    /// @brief Sends the UCI_SetPositionValue option.
+    /// @param initial The initial value.
+    static void SendOptionUciSetPositionCentipawns(const std::string &initial) {
+        SendOptionString("UCI_SetPositionValue", initial);
+    }
+
+    /// @brief Launches the UCI loop.
+    void Launch() {
+        std::string line{};
+        bool running{true};
         while (running && getline(std::cin, line)) {
+            std::string token{};
             std::istringstream iss(line);
-            std::string token;
             iss >> std::skipws >> token;
             if (token == "uci") {
                 receive_uci();
@@ -272,7 +410,7 @@ class uci final {
             } else if (token == "isready") {
                 receive_is_ready();
             } else if (token == "setoption") {
-                std::string name, value;
+                std::string name{}, value{};
                 iss >> token;
                 while (iss >> token && token != "value")
                     name += std::string(" ", name.empty() ? 0 : 1) + token;
@@ -280,9 +418,9 @@ class uci final {
                     value += std::string(" ", value.empty() ? 0 : 1) + token;
                 receive_set_option(name, value);
             } else if (token == "register") {
-                auto later = false;
-                std::string name;
-                std::size_t code = 0;
+                auto later{false};
+                std::string name{};
+                std::size_t code{0};
                 iss >> token;
                 if (token == "later")
                     later = true;
@@ -295,8 +433,8 @@ class uci final {
             } else if (token == "ucinewgame") {
                 receive_uci_new_game();
             } else if (token == "position") {
-                std::string fen;
-                std::vector<std::string> moves;
+                std::string fen{};
+                std::vector<std::string> moves{};
                 iss >> token;
                 if (token == "startpos") {
                     fen = start_fen;
@@ -310,38 +448,38 @@ class uci final {
                     moves.push_back(token);
                 receive_position(fen, moves);
             } else if (token == "go") {
-                std::map<command, std::string> commands;
+                std::map<Command, std::string> commands{};
                 while (iss >> token)
                     if (token == "searchmoves")
                         while (iss >> token)
-                            commands[command::search_moves] +=
+                            commands[Command::SearchMoves] +=
                                 std::string(
-                                    " ", commands[command::search_moves].empty()
+                                    " ", commands[Command::SearchMoves].empty()
                                              ? 0
                                              : 1) +
                                 token;
                     else if (token == "ponder")
-                        commands[command::ponder];
+                        commands[Command::Ponder];
                     else if (token == "wtime")
-                        iss >> commands[command::white_time];
+                        iss >> commands[Command::WhiteTime];
                     else if (token == "btime")
-                        iss >> commands[command::black_time];
+                        iss >> commands[Command::BlackTime];
                     else if (token == "winc")
-                        iss >> commands[command::white_increment];
+                        iss >> commands[Command::WhiteIncrement];
                     else if (token == "binc")
-                        iss >> commands[command::black_increment];
+                        iss >> commands[Command::BlackIncrement];
                     else if (token == "movestogo")
-                        iss >> commands[command::moves_to_go];
+                        iss >> commands[Command::MovesToGo];
                     else if (token == "depth")
-                        iss >> commands[command::depth];
+                        iss >> commands[Command::Depth];
                     else if (token == "nodes")
-                        iss >> commands[command::nodes];
+                        iss >> commands[Command::Nodes];
                     else if (token == "mate")
-                        iss >> commands[command::mate];
+                        iss >> commands[Command::Mate];
                     else if (token == "move_time")
-                        iss >> commands[command::move_time];
+                        iss >> commands[Command::MoveTime];
                     else if (token == "infinite")
-                        commands[command::infinite];
+                        commands[Command::Infinite];
                 receive_go(commands);
             } else if (token == "stop") {
                 receive_stop();
