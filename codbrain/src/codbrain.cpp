@@ -30,7 +30,7 @@ Brain::Brain() noexcept {
 
     _uci.receive_go.connect(
         [&](const std::map<Uci::Command, std::string> &) {
-            const auto result = Search();
+            const auto result = PickMove();
             _uci.SendBestMove(result.pv[0].ToString());
         });
 }

@@ -41,10 +41,10 @@ class Brain {
     virtual ~Brain() noexcept {}
 
     /// @brief Searches the position.
-    virtual Result Search() noexcept = 0;
+    virtual Result PickMove() noexcept = 0;
 
     /// @brief Launches the UCI.
-    void Launch() noexcept { _uci.Launch(); }  
+    void Launch() noexcept { _uci.Launch(); }
 
     /// @brief Returns the board.
     [[nodiscard]] auto &board() noexcept { return _board; }
@@ -56,15 +56,30 @@ class Brain {
     codchess::Board _board{};
 };
 
+/// @brief A simple brain that always plays the first legal move.
 class SimpleBrain final : public Brain {
   public:
     /// @brief Construct a new SimpleBrain object.
     SimpleBrain() noexcept : Brain() {}
 
     /// @brief Searches the position.
-    Result Search() noexcept override {
+    Result PickMove() noexcept override {
         const auto moves = codchess::movegen::Legal(_board);
         return Result{0, 0, {*moves.begin()}};
+    }
+};
+
+/// @brief A brain that picks a random legal move.
+class RandomBrain final : public Brain {
+  public:
+    /// @brief Construct a new RandomBrain object.
+    RandomBrain() noexcept : Brain() {}
+
+    /// @brief Searches the position.
+    Result PickMove() noexcept override {
+        const auto moves = codchess::movegen::Legal(_board);
+        const auto random_move = *(moves.begin() + (std::rand() % moves.size()));
+        return Result{0, 0, {random_move}};
     }
 };
 }   // namespace codbrain

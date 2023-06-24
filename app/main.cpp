@@ -5,7 +5,7 @@ using namespace codbrain;
 int
 main([[maybe_unused]] const int argc, [[maybe_unused]] const char *argv[]) {
     ::codbrain::Init();
-    SimpleBrain brain;
+    RandomBrain brain;
 
     try {
         brain.Launch();

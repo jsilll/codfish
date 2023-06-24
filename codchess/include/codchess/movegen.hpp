@@ -33,6 +33,10 @@ class MoveList final {
     /// @return An iterator to the end of the list.
     [[nodiscard]] auto end() noexcept { return _moves.begin() + _size; }
 
+    /// @brief Returns the number of moves in the list.
+    /// @return The number of moves in the list. 
+    [[nodiscard]] auto size() const noexcept { return _size; }
+
     /// @brief Inserts a move into the list.
     /// @param move The move to insert.
     void Insert(const Move move) noexcept { _moves[_size++] = move; }

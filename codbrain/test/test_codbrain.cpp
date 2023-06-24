@@ -10,14 +10,14 @@ TEST_CASE("Simple Checkmates") {
 
     // SECTION("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1") {
     //     brain.board().FromFen("1k6/p6p/K6P/8/8/8/8/1q4q1 b - - 0 1");
-    //     const auto result = brain.Search();
+    //     const auto result = brain.PickMove();
     //     REQUIRE(!result.pv.empty());
     //     REQUIRE(result.pv.front().ToString() == "g1b6");
     // }
 
     // SECTION("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1") {
     //     brain.board().FromFen("k6r/8/8/8/8/8/8/2bPKPb1 b - - 0 1");
-    //     const auto result = brain.Search();
+    //     const auto result = brain.PickMove();
     //     REQUIRE(!result.pv.empty());
     //     REQUIRE(result.pv.front().ToString() == "h8e8");
     // }
@@ -30,7 +30,7 @@ TEST_CASE("Brakto-Kopec Test") {
     // SECTION("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -") {
     //     brain.board().FromFen(
     //         "1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - -");
-    //     const auto result = brain.Search();
+    //     const auto result = brain.PickMove();
     //     REQUIRE(!result.pv.empty());
     //     REQUIRE(result.pv.front().ToString() == "d6d1");
     // }
@@ -38,7 +38,7 @@ TEST_CASE("Brakto-Kopec Test") {
     // SECTION("3r1k2/4npp1/1ppr3p/p6P/P2PPPP1/1NR5/5K2/2R5 w - -") {
     //     brain.board().FromFen(
     //         "3r1k2/4npp1/1ppr3p/p6P/P2PPPP1/1NR5/5K2/2R5 w - -");
-    //     const auto result = brain.Search();
+    //     const auto result = brain.PickMove();
     //     REQUIRE(!result.pv.empty());
     //     REQUIRE(result.pv.front().ToString() == "d4d5");
     // }
