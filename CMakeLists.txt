@@ -52,4 +52,4 @@ add_subdirectory(codchess)
 add_subdirectory(codbrain)
 
 # -- Codfish --
-add_subdirectory(codfish)
+add_subdirectory(app)

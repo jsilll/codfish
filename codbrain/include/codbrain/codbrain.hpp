@@ -1,10 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include <codchess/codchess.hpp>
+
+#include <codbrain/uci.hpp>
 
 namespace codbrain {
 /// @brief Initializes the library
-void
+inline void
 Init() noexcept {
     codchess::Init();
 }
@@ -30,24 +34,37 @@ struct Result {
     PrincipalVariation pv;
 };
 
-class Brain final {
+class Brain {
   public:
     /// @brief Construct a new Brain object.
-    explicit Brain(const Depth depth) noexcept : _depth{depth} {}
+    Brain() noexcept;
+    virtual ~Brain() noexcept {}
+
+    /// @brief Searches the position.
+    virtual Result Search() noexcept = 0;
+
+    /// @brief Launches the UCI.
+    void Launch() noexcept { _uci.Launch(); }  
 
     /// @brief Returns the board.
     [[nodiscard]] auto &board() noexcept { return _board; }
 
-    /// @brief Searches the position.
-    [[nodiscard]] Result Search() noexcept {
-        const auto legal_moves = codchess::movegen::Legal(_board);
-        return {0, 0, {*legal_moves.begin()}};
-    }
-
-  private:
-    /// @brief  The depth of the search.
-    [[maybe_unused]] Depth _depth;
+  protected:
+    /// @brief The UCI.
+    Uci _uci{};
     /// @brief The board.
     codchess::Board _board{};
+};
+
+class SimpleBrain final : public Brain {
+  public:
+    /// @brief Construct a new SimpleBrain object.
+    SimpleBrain() noexcept : Brain() {}
+
+    /// @brief Searches the position.
+    Result Search() noexcept override {
+        const auto moves = codchess::movegen::Legal(_board);
+        return Result{0, 0, {*moves.begin()}};
+    }
 };
 }   // namespace codbrain

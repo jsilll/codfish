@@ -1,3 +1,5 @@
+// Original Source Code: https://github.com/acdemiralp/uci
+
 #pragma once
 
 #include <cstddef>
@@ -9,6 +11,7 @@
 
 #include <boost/signals2.hpp>
 
+namespace codbrain {
 /// @brief Universal Chess Interface.
 class Uci final {
   public:
@@ -144,9 +147,10 @@ class Uci final {
     /// @brief Sends the 'bestmove' response.
     /// @param move
     /// @param ponder
-    static void SendBestMove([[maybe_unused]] const std::string &move,
+    static void SendBestMove(const std::string &move,
                              const bool ponder = false) {
-        std::cout << "bestmove" << (ponder ? " ponder" : "") << std::endl;
+        std::cout << "bestmove " << move << (ponder ? " ponder" : "")
+                  << std::endl;
     }
 
     /// @brief Sends the copy protection state.
@@ -394,6 +398,11 @@ class Uci final {
         SendOptionString("UCI_SetPositionValue", initial);
     }
 
+    /// @brief Sends an illegal move error.
+    static void SendErrorIllegalMove() {
+        std::cout << "Illegal move" << std::endl;
+    }
+
     /// @brief Launches the UCI loop.
     void Launch() {
         std::string line{};
@@ -412,23 +421,29 @@ class Uci final {
             } else if (token == "setoption") {
                 std::string name{}, value{};
                 iss >> token;
-                while (iss >> token && token != "value")
+                while (iss >> token && token != "value") {
                     name += std::string(" ", name.empty() ? 0 : 1) + token;
-                while (iss >> token)
+                }
+                while (iss >> token) {
                     value += std::string(" ", value.empty() ? 0 : 1) + token;
+                }
                 receive_set_option(name, value);
             } else if (token == "register") {
-                auto later{false};
+                bool later{false};
                 std::string name{};
                 std::size_t code{0};
                 iss >> token;
-                if (token == "later")
+                if (token == "later") {
                     later = true;
-                if (token == "name")
-                    while (iss >> token && token != "code")
+                }
+                if (token == "name") {
+                    while (iss >> token && token != "code") {
                         name += std::string(" ", name.empty() ? 0 : 1) + token;
-                if (token == "code")
+                    }
+                }
+                if (token == "code") {
                     iss >> code;
+                }
                 receive_register(later, name, code);
             } else if (token == "ucinewgame") {
                 receive_uci_new_game();
@@ -439,47 +454,52 @@ class Uci final {
                 if (token == "startpos") {
                     fen = start_fen;
                     iss >> token;
-                } else if (token == "fen")
-                    while (iss >> token && token != "moves")
+                } else if (token == "fen") {
+                    while (iss >> token && token != "moves") {
                         fen += token + " ";
-                else
+                    }
+                } else {
                     continue;
-                while (iss >> token)
+                }
+                while (iss >> token) {
                     moves.push_back(token);
+                }
                 receive_position(fen, moves);
             } else if (token == "go") {
                 std::map<Command, std::string> commands{};
                 while (iss >> token)
                     if (token == "searchmoves")
-                        while (iss >> token)
+                        while (iss >> token) {
                             commands[Command::SearchMoves] +=
                                 std::string(
                                     " ", commands[Command::SearchMoves].empty()
                                              ? 0
                                              : 1) +
                                 token;
-                    else if (token == "ponder")
+                        }
+                    else if (token == "ponder") {
                         commands[Command::Ponder];
-                    else if (token == "wtime")
+                    } else if (token == "wtime") {
                         iss >> commands[Command::WhiteTime];
-                    else if (token == "btime")
+                    } else if (token == "btime") {
                         iss >> commands[Command::BlackTime];
-                    else if (token == "winc")
+                    } else if (token == "winc") {
                         iss >> commands[Command::WhiteIncrement];
-                    else if (token == "binc")
+                    } else if (token == "binc") {
                         iss >> commands[Command::BlackIncrement];
-                    else if (token == "movestogo")
+                    } else if (token == "movestogo") {
                         iss >> commands[Command::MovesToGo];
-                    else if (token == "depth")
+                    } else if (token == "depth") {
                         iss >> commands[Command::Depth];
-                    else if (token == "nodes")
+                    } else if (token == "nodes") {
                         iss >> commands[Command::Nodes];
-                    else if (token == "mate")
+                    } else if (token == "mate") {
                         iss >> commands[Command::Mate];
-                    else if (token == "move_time")
+                    } else if (token == "move_time") {
                         iss >> commands[Command::MoveTime];
-                    else if (token == "infinite")
+                    } else if (token == "infinite") {
                         commands[Command::Infinite];
+                    }
                 receive_go(commands);
             } else if (token == "stop") {
                 receive_stop();
@@ -494,3 +514,4 @@ class Uci final {
         }
     }
 };
+}   // namespace codbrain
