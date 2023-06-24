@@ -6,7 +6,7 @@ add_executable(engine ${SOURCES})
 
 # -- Link Libraries --
 target_link_libraries(engine
-        PUBLIC codfish)
+        PUBLIC codbrain)
 
 # -- All Warnings as Errors --
 if (MSVC)
