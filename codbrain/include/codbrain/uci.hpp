@@ -403,6 +403,11 @@ class Uci final {
         std::cout << "Illegal move" << std::endl;
     }
 
+    /// @brief Sends an invalid fen error.
+    static void SendErrorInvalidFen() {
+        std::cout << "Invalid fen" << std::endl;
+    }
+
     /// @brief Launches the UCI loop.
     void Launch() {
         std::string line{};
