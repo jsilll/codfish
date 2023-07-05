@@ -113,14 +113,6 @@ static constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
     11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
 };
 
-/// @brief Returns the inactive color
-/// @param to_move The color to move
-/// @return The inactive color
-[[nodiscard]] constexpr auto
-GetOpponent(const Color to_move) noexcept {
-    return static_cast<Color>(to_move ^ 1);
-}
-
 /// @brief Returns the file of a square
 /// @param sq The square
 /// @return The file
@@ -154,11 +146,9 @@ FlipSquare(const Square sq) {
     return static_cast<Square>(sq ^ 56);
 }
 
-/// @brief Returns the inactive color
-/// @param to_move The color to move
-/// @return The inactive color
+/// @brief Returns the opposite color
 [[nodiscard]] constexpr auto
-FlipColor(const Color to_move) noexcept {
+GetOpponent(const Color to_move) noexcept {
     return static_cast<Color>(static_cast<int>(to_move) ^ 1);
 }
 

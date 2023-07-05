@@ -1,6 +1,9 @@
 # -- Source Files -- 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
+# -- Find Boost --
+find_package(Boost REQUIRED)
+
 # -- Codchess --
 add_library(codbrain STATIC ${SOURCES})
 
@@ -11,6 +14,9 @@ target_include_directories(codbrain
 # -- Link Libraries --
 target_link_libraries(codbrain
         PUBLIC codchess)
+
+target_link_libraries(codbrain
+        PUBLIC ${Boost_LIBRARIES})
 
 # -- All Warnings as Errors --
 if (MSVC)

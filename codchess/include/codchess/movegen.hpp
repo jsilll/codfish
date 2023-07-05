@@ -34,7 +34,7 @@ class MoveList final {
     [[nodiscard]] auto end() noexcept { return _moves.begin() + _size; }
 
     /// @brief Returns the number of moves in the list.
-    /// @return The number of moves in the list. 
+    /// @return The number of moves in the list.
     [[nodiscard]] auto size() const noexcept { return _size; }
 
     /// @brief Inserts a move into the list.

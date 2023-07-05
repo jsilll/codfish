@@ -1,19 +1,35 @@
 #include <codbrain/codbrain.hpp>
 
+#include "uci.hpp"
+
 namespace codbrain {
 Brain::Brain() noexcept {
-    _uci.receive_uci.connect([&]() {
-        _uci.SendId("Codfish", "Codfish");
-        _uci.SendOptionUciLimitStrength(false);
-        _uci.SendUciOk();
+    uci::receive_uci.connect([&]() {
+        uci::SendId("Codfish", "Codfish");
+        uci::SendOptionUciLimitStrength(false);
+        uci::SendUciOk();
     });
 
-    _uci.receive_is_ready.connect([&]() { _uci.SendReadyOk(); });
+    // TODO: receive_stop
 
-    _uci.receive_position.connect([&](const std::string &fen,
+    // TODO: receive_quit
+
+    uci::receive_is_ready.connect([&]() { uci::SendReadyOk(); });
+
+    // TODO: receive_ponder_hit
+
+    // TODO: receive_uci_new_game
+
+    // TODO: receive_debug
+
+    // TODO: receive_set_option
+
+    // TODO: receive_register
+
+    uci::receive_position.connect([&](const std::string &fen,
                                       const std::vector<std::string> &moves) {
         if (codchess::utils::ValidFen(fen) == false) {
-            _uci.SendErrorInvalidFen();
+            uci::SendErrorInvalidFen();
         } else {
             _board.FromFen(fen);
             for (const auto &move : moves) {
@@ -23,7 +39,7 @@ Brain::Brain() noexcept {
                                                  return m.ToString() == move;
                                              });
                 if (it == legal.end()) {
-                    _uci.SendErrorIllegalMove();
+                    uci::SendErrorIllegalMove();
                     return;
                 } else {
                     _board.Make(*it);
@@ -32,9 +48,14 @@ Brain::Brain() noexcept {
         }
     });
 
-    _uci.receive_go.connect([&](const std::map<Uci::Command, std::string> &) {
+    uci::receive_go.connect([&](const std::map<uci::Command, std::string> &) {
         const auto result = PickMove();
-        _uci.SendBestMove(result.pv[0].ToString());
+        uci::SendBestMove(result.pv[0].ToString());
     });
+}
+
+void
+Brain::Launch() noexcept {
+    uci::Launch();
 }
 }   // namespace codbrain

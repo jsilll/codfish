@@ -4,8 +4,6 @@
 
 #include <codchess/codchess.hpp>
 
-#include <codbrain/uci.hpp>
-
 namespace codbrain {
 /// @brief Initializes the library
 inline void
@@ -16,11 +14,11 @@ Init() noexcept {
 /// @brief The depth of the search.
 typedef std::uint8_t Depth;
 
+/// @brief The evaluation of a position.
+typedef double Evaluation;
+
 /// @brief The number of nodes searched.
 typedef std::uint64_t Nodes;
-
-/// @brief The evaluation of a position.
-typedef std::int16_t Evaluation;
 
 /// @brief The principal variation.
 typedef std::vector<codchess::Move> PrincipalVariation;
@@ -40,29 +38,29 @@ class Brain {
     Brain() noexcept;
     virtual ~Brain() noexcept {}
 
-    /// @brief Searches the position.
-    virtual Result PickMove() noexcept = 0;
-
     /// @brief Launches the UCI.
-    void Launch() noexcept { _uci.Launch(); }
+    void Launch() noexcept;
 
     /// @brief Returns the board.
     [[nodiscard]] auto &board() noexcept { return _board; }
 
+    /// @brief Searches the position.
+    /// @return The search result.
+    virtual Result PickMove() noexcept = 0;
+
   protected:
-    /// @brief The UCI.
-    Uci _uci{};
     /// @brief The board.
     codchess::Board _board{};
 };
 
 /// @brief A simple brain that always plays the first legal move.
-class SimpleBrain final : public Brain {
+class Simple final : public Brain {
   public:
-    /// @brief Construct a new SimpleBrain object.
-    SimpleBrain() noexcept : Brain() {}
+    /// @brief Construct a new Simple object.
+    Simple() noexcept : Brain() {}
 
     /// @brief Searches the position.
+    /// @return The search result.
     Result PickMove() noexcept override {
         const auto moves = codchess::movegen::Legal(_board);
         return Result{0, 0, {*moves.begin()}};
@@ -70,16 +68,29 @@ class SimpleBrain final : public Brain {
 };
 
 /// @brief A brain that picks a random legal move.
-class RandomBrain final : public Brain {
+class Random final : public Brain {
   public:
-    /// @brief Construct a new RandomBrain object.
-    RandomBrain() noexcept : Brain() {}
+    /// @brief Construct a new Random object.
+    Random() noexcept : Brain() {}
 
     /// @brief Searches the position.
+    /// @return The search result.
     Result PickMove() noexcept override {
         const auto moves = codchess::movegen::Legal(_board);
-        const auto random_move = *(moves.begin() + (std::rand() % moves.size()));
+        const auto random_move =
+            *(moves.begin() + (std::rand() % moves.size()));
         return Result{0, 0, {random_move}};
     }
+};
+
+/// @brief A brain that uses the monte carlo tree search algorithm.
+class Mcts final : public Brain {
+  public:
+    /// @brief Construct a new Mcts object.
+    Mcts() noexcept : Brain() {}
+
+    /// @brief Searches the position.
+    /// @return The search result.
+    Result PickMove() noexcept override;
 };
 }   // namespace codbrain

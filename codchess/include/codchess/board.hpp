@@ -94,7 +94,7 @@ class Board final {
     /// @brief Returns the current inactive color
     /// @return The current inactive color
     [[nodiscard]] constexpr auto inactive() const noexcept {
-        return utils::FlipColor(_active);
+        return utils::GetOpponent(_active);
     }
 
     /// @brief Returns the castling_availability availability
@@ -160,12 +160,36 @@ class Board final {
     /// @return The FEN string of the board
     [[maybe_unused]] [[nodiscard]] std::string ToFen() const noexcept;
 
+    /// @brief Returns whether the current side to move has legal moves
+    /// @return Whether the current side to move has legal moves
+    [[nodiscard]] bool HasLegalMoves() noexcept;
+
     /// @brief Returns whether a square is attacked by a color
     /// @param sq The square
     /// @param attacker The color
     /// @return Whether the square is attacked by the color
     [[nodiscard]] bool IsSquareAttacked(Square sq,
                                         Color attacker) const noexcept;
+
+    /// @brief Returns whether the current side to move is in check
+    /// @return Whether the current side to move is in check
+    [[nodiscard]] bool IsCheck() const noexcept {
+        const auto king_sq =
+            bitboard::BitScanForward(_pieces[_active][PieceType::KING]);
+        return IsSquareAttacked(king_sq, utils::GetOpponent(_active));
+    }
+
+    /// @brief Returns whether the current side to move is in stalemate
+    /// @return Whether the current side to move is in stalemate 
+    [[nodiscard]] bool IsStaleMate() noexcept {
+        return !IsCheck() && !HasLegalMoves();
+    }
+
+    /// @brief Returns whether the current side to move is in checkmate
+    /// @return Whether the current side to move is in checkmate
+    [[nodiscard]] bool IsCheckMate() noexcept {
+        return IsCheck() && !HasLegalMoves();
+    }
 
     /// @brief Sets the current en passant square
     /// @param sq The en passant square
@@ -181,7 +205,7 @@ class Board final {
     }
 
     /// @brief Sets the board's state from a state backup
-    /// @param sb The state backup 
+    /// @param sb The state backup
     constexpr void SetStateBackup(const StateBackup &sb) noexcept {
         _hash = sb.hash;
         _half_move_clock = sb.half_move_clock;
@@ -193,7 +217,7 @@ class Board final {
     /// @brief Switches the side to move
     /// @return The new side to move
     constexpr auto SwitchActive() noexcept {
-        return _active = utils::FlipColor(_active);
+        return _active = utils::GetOpponent(_active);
     }
 
     /// @brief Sets the board to the starting position

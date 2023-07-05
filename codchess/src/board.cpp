@@ -1,5 +1,7 @@
 #include <codchess/board.hpp>
 
+#include <codchess/movegen.hpp>
+
 #include "attacks.hpp"
 #include "zobrist.hpp"
 
@@ -59,6 +61,11 @@ Board::ToFen() const noexcept {
                      std::to_string(_full_move_number);
 
     return fen.substr(1, std::string::npos);
+}
+
+bool
+Board::HasLegalMoves() noexcept {
+    return movegen::Legal(*this).size() > 0;
 }
 
 bool
