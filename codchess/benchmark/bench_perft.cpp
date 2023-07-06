@@ -3,13 +3,15 @@
 
 #include <codchess/perft.hpp>
 
-using namespace codchess;
+using namespace cod;
+
+using chess::Board;
 
 class PerftBench {
   public:
     void Register(const std::string &label, const std::string &fen,
                   const std::uint32_t depth) {
-        if (!codchess::utils::ValidFen(fen)) {
+        if (!chess::utils::ValidFen(fen)) {
             throw std::runtime_error("Invalid FEN: " + fen);
         } else {
             instances_.push_back({label, fen, depth});
@@ -57,10 +59,10 @@ class PerftBench {
         std::cout << "\n" << label << " at depth " << depth << "\n";
 
         {
-            auto board = Board();
+            auto board = chess::Board();
             board.FromFen(fen);
             const auto start = std::chrono::high_resolution_clock::now();
-            const auto nodes = codchess::perft::PerftCopy(board, depth);
+            const auto nodes = chess::perft::PerftCopy(board, depth);
             const auto end = std::chrono::high_resolution_clock::now();
             const auto ms =
                 std::chrono::duration_cast<std::chrono::milliseconds>(end -
@@ -68,14 +70,14 @@ class PerftBench {
                     .count();
             res.copy_ms = ms;
             res.copy_nodes = nodes;
-            PrintInstanceResult("codchess::perft::PerftCopy", ms, nodes);
+            PrintInstanceResult("cod::chess::perft::PerftCopy", ms, nodes);
         }
 
         {
             auto board = Board();
             board.FromFen(fen);
             const auto start = std::chrono::high_resolution_clock::now();
-            const auto nodes = codchess::perft::PerftUnmake(board, depth);
+            const auto nodes = chess::perft::PerftUnmake(board, depth);
             const auto end = std::chrono::high_resolution_clock::now();
             const auto ms =
                 std::chrono::duration_cast<std::chrono::milliseconds>(end -
@@ -83,7 +85,7 @@ class PerftBench {
                     .count();
             res.unmake_ms = ms;
             res.unmake_nodes = nodes;
-            PrintInstanceResult("codchess::perft::PerftUnmake", ms, nodes);
+            PrintInstanceResult("cod::chess::perft::PerftUnmake", ms, nodes);
         }
 
         return res;
@@ -113,16 +115,16 @@ class PerftBench {
 
         std::cout << "\n"
                   << "Final stats:\n"
-                  << "codchess::perft::PerftCopy: Average MNPS: " << copy_nps
+                  << "cod::chess::perft::PerftCopy: Average MNPS: " << copy_nps
                   << "\n"
-                  << "codchess::perft::PerftUnmake: Average MNPS: "
+                  << "cod::chess::perft::PerftUnmake: Average MNPS: "
                   << unmake_nps << "\n";
     }
 };
 
 int
 main() {
-    ::codchess::Init();
+    chess::Init();
 
     PerftBench bench;
 

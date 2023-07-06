@@ -1,6 +1,6 @@
 #include <codchess/perft.hpp>
 
-namespace codchess::perft {
+namespace cod::chess::perft {
 /// @brief Auxiliary function for unmake perft
 /// @param board The board
 /// @param depth The depth
@@ -68,4 +68,4 @@ PerftCopy(const Board &board, const std::uint32_t depth) noexcept {
     auto cboard = board;
     return PerftCopyAux(cboard, depth);
 }
-}   // namespace codchess::perft
+}   // namespace cod::chess::perft

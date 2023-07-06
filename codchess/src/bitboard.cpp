@@ -5,7 +5,7 @@
 
 #include <codchess/utils.hpp>
 
-namespace codchess::bitboard {
+namespace cod::chess::bitboard {
 Bitboard
 SetOccupancy(const int index, const int bits_in_mask,
              Bitboard attack_mask) noexcept {
@@ -14,7 +14,7 @@ SetOccupancy(const int index, const int bits_in_mask,
         const auto lsb_sq = BitScanForward(attack_mask);
         PopBit(attack_mask, lsb_sq);
         if (index & (1 << bit)) {
-            occupancy |= utils::SQUARE_BB[lsb_sq];
+            occupancy |= utils::SQUARE_TO_BB[lsb_sq];
         }
     }
     return occupancy;
@@ -46,4 +46,4 @@ Display(std::ostream &os, const Bitboard &bb) noexcept {
     }
     os << "\n   a b c d e f g h\n";
 }
-}   // namespace codchess::bitboard
+}   // namespace cod::chess::bitboard

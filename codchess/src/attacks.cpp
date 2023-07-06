@@ -1,6 +1,6 @@
 #include "attacks.hpp"
 
-namespace codchess::attacks {
+namespace cod::chess::attacks {
 /// @brief Stores the attacks for the king
 bitboard::Bitboard KING_ATTACKS[N_SQUARES];
 
@@ -28,14 +28,14 @@ auto BISHOP_ATTACKS = std::vector<std::vector<bitboard::Bitboard>>(
 [[nodiscard]] constexpr bitboard::Bitboard
 KnightAttacks(const bitboard::Bitboard knights) noexcept {
     constexpr auto CLEAR_FILE_HG =
-        utils::MASK_CLEAR_FILE[FILE_H] & utils::MASK_CLEAR_FILE[FILE_G];
+        utils::MASK_NOT_FILE[FILE_H] & utils::MASK_NOT_FILE[FILE_G];
     constexpr auto CLEAR_FILE_AB =
-        utils::MASK_CLEAR_FILE[FILE_A] & utils::MASK_CLEAR_FILE[FILE_B];
+        utils::MASK_NOT_FILE[FILE_A] & utils::MASK_NOT_FILE[FILE_B];
 
     const auto l1 = (bitboard::ShiftOne<bitboard::Direction::WEST>(knights)) &
-                    utils::MASK_CLEAR_FILE[7];
+                    utils::MASK_NOT_FILE[7];
     const auto r1 = (bitboard::ShiftOne<bitboard::Direction::EAST>(knights)) &
-                    utils::MASK_CLEAR_FILE[0];
+                    utils::MASK_NOT_FILE[0];
 
     const auto h1 = l1 | r1;
     const auto l2 = (knights >> 2) & CLEAR_FILE_HG;
@@ -169,17 +169,17 @@ void
 Init() noexcept {
     for (int sq = A1; sq < N_SQUARES; ++sq) {
         PAWN_ATTACKS[WHITE][sq] =
-            attacks::PawnAllAttacks<WHITE>(utils::SQUARE_BB[sq]);
+            attacks::PawnAllAttacks<WHITE>(utils::SQUARE_TO_BB[sq]);
         PAWN_ATTACKS[BLACK][sq] =
-            attacks::PawnAllAttacks<BLACK>(utils::SQUARE_BB[sq]);
+            attacks::PawnAllAttacks<BLACK>(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {
-        KNIGHT_ATTACKS[sq] = attacks::KnightAttacks(utils::SQUARE_BB[sq]);
+        KNIGHT_ATTACKS[sq] = attacks::KnightAttacks(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {
-        KING_ATTACKS[sq] = attacks::KingAttacks(utils::SQUARE_BB[sq]);
+        KING_ATTACKS[sq] = attacks::KingAttacks(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = A1; sq < N_SQUARES; ++sq) {
@@ -221,4 +221,4 @@ RookAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
     const auto idx = magics::MagicIndex(block, magics::ROOK_MAGIC_TABLE[sq]);
     return ROOK_ATTACKS[sq][idx];
 }
-}   // namespace codchess::attacks
+}   // namespace cod::chess::attacks

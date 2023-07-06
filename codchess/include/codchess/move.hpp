@@ -5,7 +5,7 @@
 #include <codchess/base.hpp>
 #include <codchess/utils.hpp>
 
-namespace codchess {
+namespace cod::chess {
 /// @brief Encodes a chess move
 class Move final {
   public:
@@ -138,4 +138,4 @@ class Move final {
     /// @brief The encoded move for memory efficiency
     std::uint32_t _encoded{0};
 };
-}   // namespace codchess
+}   // namespace cod::chess

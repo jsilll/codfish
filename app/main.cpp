@@ -1,14 +1,16 @@
+#include <memory>
+
 #include <codbrain/codbrain.hpp>
 
-using namespace codbrain;
+using namespace cod;
 
 int
 main([[maybe_unused]] const int argc, [[maybe_unused]] const char *argv[]) {
-    ::codbrain::Init();
-    Mcts brain;
+    brain::Init();
+    auto brain = std::make_unique<brain::Simple>(); 
 
     try {
-        brain.Launch();
+        brain->Launch();
         return EXIT_SUCCESS;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

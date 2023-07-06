@@ -5,7 +5,7 @@
 #include <codchess/board.hpp>
 #include <codchess/move.hpp>
 
-namespace codchess::movegen {
+namespace cod::chess::movegen {
 /// @brief A list of moves.
 class MoveList final {
   public:
@@ -73,4 +73,4 @@ class MoveList final {
 /// @param board The board to check for legal moves.
 /// @return True if the board has legal moves, false otherwise.
 [[maybe_unused]] [[nodiscard]] bool HasLegal(Board &board) noexcept;
-}   // namespace codchess::movegen
+}   // namespace cod::chess::movegen

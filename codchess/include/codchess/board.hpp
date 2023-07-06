@@ -11,7 +11,7 @@
 #include <codchess/move.hpp>
 #include <codchess/utils.hpp>
 
-namespace codchess {
+namespace cod::chess {
 /// @brief Represents a chess board
 class Board final {
   public:
@@ -310,4 +310,4 @@ class Board final {
     /// @note This function is called after a move is made
     void UpdateOccupancies() noexcept;
 };
-}   // namespace codchess
+}   // namespace cod::chess

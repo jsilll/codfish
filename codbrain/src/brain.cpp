@@ -2,7 +2,7 @@
 
 #include "uci.hpp"
 
-namespace codbrain {
+namespace cod::brain {
 Brain::Brain() noexcept {
     uci::receive_uci.connect([&]() {
         uci::SendId("Codfish", "Codfish");
@@ -28,14 +28,14 @@ Brain::Brain() noexcept {
 
     uci::receive_position.connect([&](const std::string &fen,
                                       const std::vector<std::string> &moves) {
-        if (codchess::utils::ValidFen(fen) == false) {
+        if (chess::utils::ValidFen(fen) == false) {
             uci::SendErrorInvalidFen();
         } else {
             _board.FromFen(fen);
             for (const auto &move : moves) {
-                const auto legal = codchess::movegen::Legal(_board);
+                const auto legal = chess::movegen::Legal(_board);
                 const auto it = std::find_if(legal.begin(), legal.end(),
-                                             [&](const codchess::Move &m) {
+                                             [&](const chess::Move &m) {
                                                  return m.ToString() == move;
                                              });
                 if (it == legal.end()) {
@@ -58,4 +58,4 @@ void
 Brain::Launch() noexcept {
     uci::Launch();
 }
-}   // namespace codbrain
+}   // namespace cod::brain

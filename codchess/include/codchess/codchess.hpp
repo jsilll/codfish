@@ -5,9 +5,9 @@
 #include <codchess/board.hpp>
 #include <codchess/movegen.hpp>
 
-namespace codchess {
+namespace cod::chess {
 /// @brief Initializes all codchess functionality.
 /// @note This function must be called before any other codchess functionality
 /// @note is used.
 [[maybe_unused]] void Init() noexcept;
-}   // namespace codchess
+}   // namespace cod::chess

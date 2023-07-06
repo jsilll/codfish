@@ -4,7 +4,7 @@
 
 #include <codchess/base.hpp>
 
-namespace codchess::bitboard {
+namespace cod::chess::bitboard {
 /// @brief Bitboard type
 typedef std::uint64_t Bitboard;
 
@@ -16,6 +16,12 @@ constexpr Bitboard ZERO{0x0000000000000000};
 
 /// @brief Bitboard constant for bit manipulation
 constexpr Bitboard FULL{0xFFFFFFFFFFFFFFFF};
+
+/// @brief Bitboard constant for masking out the A file
+constexpr Bitboard NOT_A_FILE{0xFEFEFEFEFEFEFEFE};
+
+/// @brief Bitboard constant for masking out the A file
+constexpr Bitboard NOT_H_FILE{0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard Count type
 typedef std::uint8_t BitboardCount;
@@ -108,17 +114,17 @@ ShiftOne(const Bitboard bb) noexcept {
     } else if constexpr (D == Direction::SOUTH) {
         return bb >> Direction::NORTH;
     } else if constexpr (D == Direction::EAST) {
-        return (bb << Direction::EAST) & 0xFEFEFEFEFEFEFEFE;
+        return (bb << Direction::EAST) & NOT_A_FILE;
     } else if constexpr (D == Direction::WEST) {
-        return (bb >> Direction::EAST) & 0x7F7F7F7F7F7F7F7F;
+        return (bb >> Direction::EAST) & NOT_H_FILE;
     } else if constexpr (D == Direction::NORTH_EAST) {
-        return (bb << Direction::NORTH_EAST) & 0xFEFEFEFEFEFEFEFE;
+        return (bb << Direction::NORTH_EAST) & NOT_A_FILE;
     } else if constexpr (D == Direction::NORTH_WEST) {
-        return (bb << Direction::NORTH_WEST) & 0x7F7F7F7F7F7F7F7F;
+        return (bb << Direction::NORTH_WEST) & NOT_H_FILE;
     } else if constexpr (D == Direction::SOUTH_EAST) {
-        return (bb >> Direction::NORTH_WEST) & 0xFEFEFEFEFEFEFEFE;
+        return (bb >> Direction::NORTH_WEST) & NOT_A_FILE;
     } else if constexpr (D == Direction::SOUTH_WEST) {
-        return (bb >> Direction::NORTH_EAST) & 0x7F7F7F7F7F7F7F7F;
+        return (bb >> Direction::NORTH_EAST) & NOT_H_FILE;
     }
 }
 
@@ -135,4 +141,4 @@ ShiftOne(const Bitboard bb) noexcept {
 /// @param bb The bitboard
 /// @return The output stream
 [[maybe_unused]] void Display(std::ostream &os, const Bitboard &bb) noexcept;
-}   // namespace codchess::bitboard
+}   // namespace cod::chess::bitboard

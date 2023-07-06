@@ -2,7 +2,7 @@
 
 #include <codbrain/codbrain.hpp>
 
-using namespace codbrain;
+using namespace cod;
 
 TEST_CASE("Simple Checkmates") {
     // ::codbrain::Init();

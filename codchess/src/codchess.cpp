@@ -4,7 +4,7 @@
 #include "magics.hpp"
 #include "zobrist.hpp"
 
-namespace codchess {
+namespace cod::chess {
 /// @brief Initializes all codchess functionality.
 /// @note This function must be called before any other codchess functionality
 /// is used.
@@ -14,4 +14,4 @@ Init() noexcept {
     zobrist::Init();
     attacks::Init();
 }
-}   // namespace codchess
+}   // namespace cod::chess

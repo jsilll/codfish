@@ -4,11 +4,11 @@
 
 #include <codchess/codchess.hpp>
 
-namespace codbrain {
+namespace cod::brain {
 /// @brief Initializes the library
 inline void
 Init() noexcept {
-    codchess::Init();
+    chess::Init();
 }
 
 /// @brief The depth of the search.
@@ -21,7 +21,7 @@ typedef double Evaluation;
 typedef std::uint64_t Nodes;
 
 /// @brief The principal variation.
-typedef std::vector<codchess::Move> PrincipalVariation;
+typedef std::vector<chess::Move> PrincipalVariation;
 
 struct Result {
     /// @brief The depth of the search.
@@ -50,7 +50,7 @@ class Brain {
 
   protected:
     /// @brief The board.
-    codchess::Board _board{};
+    chess::Board _board{};
 };
 
 /// @brief A simple brain that always plays the first legal move.
@@ -62,7 +62,7 @@ class Simple final : public Brain {
     /// @brief Searches the position.
     /// @return The search result.
     Result PickMove() noexcept override {
-        const auto moves = codchess::movegen::Legal(_board);
+        const auto moves = chess::movegen::Legal(_board);
         return Result{0, 0, {*moves.begin()}};
     }
 };
@@ -76,7 +76,7 @@ class Random final : public Brain {
     /// @brief Searches the position.
     /// @return The search result.
     Result PickMove() noexcept override {
-        const auto moves = codchess::movegen::Legal(_board);
+        const auto moves = chess::movegen::Legal(_board);
         const auto random_move =
             *(moves.begin() + (std::rand() % moves.size()));
         return Result{0, 0, {random_move}};
@@ -93,4 +93,4 @@ class Mcts final : public Brain {
     /// @return The search result.
     Result PickMove() noexcept override;
 };
-}   // namespace codbrain
+}   // namespace cod::brain

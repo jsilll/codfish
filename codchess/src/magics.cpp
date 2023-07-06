@@ -2,7 +2,7 @@
 
 #include <codchess/utils.hpp>
 
-namespace codchess::magics {
+namespace cod::chess::magics {
 /// @brief Pre-computed magic numbers for bishops.
 static constexpr bitboard::Bitboard BISHOP_MAGICS[N_SQUARES] = {
     0x40040844404084ULL,   0x2004208a004208ULL,   0x10190041080202ULL,
@@ -142,4 +142,4 @@ Init() noexcept {
             N_SQUARES - utils::ROOK_RELEVANT_BITS_COUNT[sq];
     }
 }
-}   // namespace codchess::magics
+}   // namespace cod::chess::magics

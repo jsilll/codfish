@@ -3,7 +3,7 @@
 #include <codchess/base.hpp>
 #include <codchess/bitboard.hpp>
 
-namespace codchess::magics {
+namespace cod::chess::magics {
 /// @brief A struct that contains the magic number, the mask and the shift for a
 /// given square.
 struct Magic {
@@ -35,4 +35,4 @@ MagicIndex(bitboard::Bitboard occ, const Magic &magic) noexcept {
     occ >>= magic.shift;
     return occ;
 }
-}   // namespace codchess::magics
+}   // namespace cod::chess::magics

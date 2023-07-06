@@ -2,7 +2,7 @@
 
 #include <regex>
 
-namespace codchess::utils {
+namespace cod::chess::utils {
 std::string
 SquareToString(const Square sq) noexcept {
     /// @brief The names of the squares aligned with the Square enum
@@ -74,4 +74,4 @@ ValidFen(const std::string &fen) noexcept {
         R"((([pnbrqkPNBRQK1-8]{1,8})\/?){8} (b|w) (-|K?Q?k?q?) (-|[a-h][3-6]) \d+ \d+)");
     return std::regex_match(fen, frgx);
 }
-}   // namespace codchess::utils
+}   // namespace cod::chess::utils

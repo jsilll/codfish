@@ -1,6 +1,6 @@
 #include "zobrist.hpp"
 
-namespace codchess::zobrist {
+namespace cod::chess::zobrist {
 /// @brief The keys for the side to move
 bitboard::Bitboard SIDE_KEY[BOTH]{};
 
@@ -66,4 +66,4 @@ Hash(const Board &board) noexcept {
 
     return final_key;
 }
-}   // namespace codchess::zobrist
+}   // namespace cod::chess::zobrist

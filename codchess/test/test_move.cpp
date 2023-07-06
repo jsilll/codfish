@@ -2,18 +2,24 @@
 
 #include <codchess/codchess.hpp>
 
-using namespace codchess;
+using namespace cod;
+
+using chess::Move;
+using chess::PieceType;
+using chess::Square;
 
 TEST_CASE("Move Class", "[move]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Impossible Move") {
-        const auto move = Move(0, 63, PAWN, QUEEN, QUEEN, true, false, true);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 63);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == QUEEN);
-        REQUIRE(move.PromotedPiece() == QUEEN);
+        const auto move =
+            Move(Square::A1, Square::H8, PieceType::PAWN, PieceType::QUEEN,
+                 PieceType::QUEEN, true, false, true);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::H8);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::QUEEN);
+        REQUIRE(move.PromotedPiece() == PieceType::QUEEN);
         REQUIRE(move.IsDoublePush() == true);
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == true);
@@ -23,12 +29,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes King") {
         const auto move =
-            Move(0, 1, PAWN, KING, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == KING);
-        REQUIRE(move.PromotedPiece() == EMPTY_PIECE);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::KING,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::KING);
+        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -41,12 +48,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Queen") {
         const auto move =
-            Move(0, 1, PAWN, QUEEN, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == QUEEN);
-        REQUIRE(move.PromotedPiece() == EMPTY_PIECE);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::QUEEN,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::QUEEN);
+        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -57,12 +65,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Rook") {
         const auto move =
-            Move(0, 1, PAWN, ROOK, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == ROOK);
-        REQUIRE(move.PromotedPiece() == EMPTY_PIECE);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::ROOK,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::ROOK);
+        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -74,12 +83,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Bishop") {
         const auto move =
-            Move(0, 1, PAWN, BISHOP, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == BISHOP);
-        REQUIRE(move.PromotedPiece() == EMPTY_PIECE);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::BISHOP,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::BISHOP);
+        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -90,12 +100,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Knight") {
         const auto move =
-            Move(0, 1, PAWN, KNIGHT, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == KNIGHT);
-        REQUIRE(move.PromotedPiece() == EMPTY_PIECE);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::KNIGHT,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::KNIGHT);
+        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -106,11 +117,12 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Pawn") {
         const auto move =
-            Move(0, 1, PAWN, PAWN, EMPTY_PIECE, false, false, false);
-        REQUIRE(move.FromSquare() == 0);
-        REQUIRE(move.ToSquare() == 1);
-        REQUIRE(move.MovedPiece() == PAWN);
-        REQUIRE(move.CapturedPiece() == PAWN);
+            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::PAWN,
+                 PieceType::EMPTY_PIECE, false, false, false);
+        REQUIRE(move.FromSquare() == Square::A1);
+        REQUIRE(move.ToSquare() == Square::B1);
+        REQUIRE(move.MovedPiece() == PieceType::PAWN);
+        REQUIRE(move.CapturedPiece() == PieceType::PAWN);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);

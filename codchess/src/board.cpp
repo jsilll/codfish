@@ -5,7 +5,7 @@
 #include "attacks.hpp"
 #include "zobrist.hpp"
 
-namespace codchess {
+namespace cod::chess {
 [[maybe_unused]] std::string
 Board::ToFen() const noexcept {
     int empty_squares{0};
@@ -559,4 +559,4 @@ Board::Display(std::ostream &os, const bool ascii,
     fen = fen.substr(fen.find(' ') + 1);
     os << "\n    " << fen << "\n";
 }
-}   // namespace codchess
+}   // namespace cod::chess

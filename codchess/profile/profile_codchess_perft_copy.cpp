@@ -1,9 +1,9 @@
 #include <codchess/perft.hpp>
 
-using namespace codchess;
+using namespace cod;
 
 int main() {
-    auto board = Board();
-    perft::PerftCopy(board, 5);
-    return 0;
+    auto board = chess::Board();
+    chess::perft::PerftCopy(board, 5);
+    return EXIT_SUCCESS;
 }

@@ -1,13 +1,13 @@
 #include <codchess/codchess.hpp>
 
-using namespace codchess;
+using namespace cod;
 
 int
 main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
-    ::codchess::Init();
+    chess::Init();
 
     std::string input;
-    auto board = Board();
+    auto board = chess::Board();
 
     while (true) {
         board.Display(std::cout, false);
@@ -17,7 +17,7 @@ main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
         if (input == "quit") {
             break;
         } else {
-            const auto moves = movegen::Legal(board);
+            const auto moves = chess::movegen::Legal(board);
 
             bool found{false};
             for (const auto move : moves) {

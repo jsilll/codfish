@@ -6,7 +6,7 @@
 #include <codchess/base.hpp>
 #include <codchess/bitboard.hpp>
 
-namespace codchess::utils {
+namespace cod::chess::utils {
 /// @brief Bitboard masks for each rank
 static constexpr bitboard::Bitboard MASK_RANK[] = {
     0xFF,         0xFF00,         0xFF0000,         0xFF000000,
@@ -19,19 +19,19 @@ static constexpr bitboard::Bitboard MASK_RANK[] = {
     0x4040404040404040, 0x8080808080808080};
 
 /// @brief Bitboard masks for clearing each rank
-static constexpr bitboard::Bitboard MASK_CLEAR_RANK[] = {
+static constexpr bitboard::Bitboard MASK_NOT_RANK[] = {
     0xFFFFFFFFFFFFFF00, 0xFFFFFFFFFFFF00FF, 0xFFFFFFFFFF00FFFF,
     0xFFFFFFFF00FFFFFF, 0xFFFFFF00FFFFFFFF, 0xFFFF00FFFFFFFFFF,
     0xFF00FFFFFFFFFFFF, 0x00FFFFFFFFFFFFFF};
 
 /// @brief Bitboard masks for clearing each file
-static constexpr bitboard::Bitboard MASK_CLEAR_FILE[] = {
+static constexpr bitboard::Bitboard MASK_NOT_FILE[] = {
     0xFEFEFEFEFEFEFEFE, 0xFDFDFDFDFDFDFDFD, 0xFBFBFBFBFBFBFBFB,
     0xF7F7F7F7F7F7F7F7, 0xEFEFEFEFEFEFEFEF, 0xDFDFDFDFDFDFDFDF,
     0xBFBFBFBFBFBFBFBF, 0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard representation of each square
-static constexpr bitboard::Bitboard SQUARE_BB[N_SQUARES] = {
+static constexpr bitboard::Bitboard SQUARE_TO_BB[N_SQUARES] = {
     0x1ULL,
     0x2ULL,
     0x4ULL,
@@ -116,7 +116,7 @@ static constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
 /// @brief Returns the file of a square
 /// @param sq The square
 /// @return The file
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr File
 GetFile(const Square sq) noexcept {
     return static_cast<File>(sq & 7);
 }
@@ -124,7 +124,7 @@ GetFile(const Square sq) noexcept {
 /// @brief Returns the rank of a square
 /// @param sq The square
 /// @return The rank
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr Rank
 GetRank(const Square sq) noexcept {
     return static_cast<Rank>(sq >> 3);
 }
@@ -133,7 +133,7 @@ GetRank(const Square sq) noexcept {
 /// @param rk The rank
 /// @param fl The file
 /// @return The square
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr Square
 GetSquare(const Rank rk, const File fl) noexcept {
     return static_cast<Square>(8 * rk + fl);
 }
@@ -141,13 +141,13 @@ GetSquare(const Rank rk, const File fl) noexcept {
 /// @brief Returns the square flipped vertically
 /// @param sq The square
 /// @return The flipped square
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr Square
 FlipSquare(const Square sq) {
     return static_cast<Square>(sq ^ 56);
 }
 
 /// @brief Returns the opposite color
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr Color
 GetOpponent(const Color to_move) noexcept {
     return static_cast<Color>(static_cast<int>(to_move) ^ 1);
 }
@@ -169,4 +169,4 @@ GetOpponent(const Color to_move) noexcept {
 /// @param args The FEN split by spaces
 /// @return Whether the FEN is valid
 [[nodiscard]] bool ValidFen(const std::string &fen) noexcept;
-}   // namespace codchess::utils
+}   // namespace cod::chess::utils

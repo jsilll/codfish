@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace codchess {
+namespace cod::chess {
 /// @brief The ranks of the board
 /// @note This enum is used both for iterating over the ranks and for indexing
 /// @note into arrays
@@ -148,4 +148,4 @@ enum CastlingAvailability : std::uint8_t {
     BLACK_QUEEN [[maybe_unused]] = 8,
     ALL [[maybe_unused]] = 15,
 };
-}   // namespace codchess
+}   // namespace cod::chess

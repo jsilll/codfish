@@ -11,7 +11,7 @@
 
 #include <boost/signals2.hpp>
 
-namespace codbrain {
+namespace cod::brain {
 /// @brief Universal Chess Interface.
 namespace uci {
 /// @brief UCI states.
@@ -544,4 +544,4 @@ Launch() {
     }
 }
 }   // namespace uci
-}   // namespace codbrain
+}   // namespace cod::brain

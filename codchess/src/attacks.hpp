@@ -7,7 +7,7 @@
 
 #include "magics.hpp"
 
-namespace codchess::attacks {
+namespace cod::chess::attacks {
 /// @brief Initializes all the attack tables
 void Init() noexcept;
 
@@ -128,4 +128,4 @@ BishopAttacks(Square sq, bitboard::Bitboard block) noexcept;
 QueenAttacks(const Square sq, const bitboard::Bitboard occ) noexcept {
     return BishopAttacks(sq, occ) | RookAttacks(sq, occ);
 }
-}   // namespace codchess::attacks
+}   // namespace cod::chess::attacks

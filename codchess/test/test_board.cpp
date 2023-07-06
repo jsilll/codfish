@@ -4,49 +4,56 @@
 
 #include <codchess/codchess.hpp>
 
-using namespace codchess;
+using namespace cod;
+
+using chess::Board;
+using chess::CastlingAvailability;
+using chess::Color;
+using chess::Move;
+using chess::PieceType;
+using chess::Square;
 
 TEST_CASE("Board::active() returns the correct color", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.active() == WHITE);
+        REQUIRE(board.active() == Color::WHITE);
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        REQUIRE(board.active() == WHITE);
+        REQUIRE(board.active() == Color::WHITE);
     }
 
     SECTION("Position 3") {
         const auto board = Board("8/8/8/8/8/8/8/8 b - - 0 1");
-        REQUIRE(board.active() == BLACK);
+        REQUIRE(board.active() == Color::BLACK);
     }
 }
 
 TEST_CASE("Board::inactive() returns the correct color", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.inactive() == BLACK);
+        REQUIRE(board.inactive() == Color::BLACK);
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        REQUIRE(board.inactive() == BLACK);
+        REQUIRE(board.inactive() == Color::BLACK);
     }
 
     SECTION("Position 3") {
         const auto board = Board("8/8/8/8/8/8/8/8 b - - 0 1");
-        REQUIRE(board.inactive() == WHITE);
+        REQUIRE(board.inactive() == Color::WHITE);
     }
 }
 
 TEST_CASE("Board::castling_availability() returns the correct availability",
           "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -150,7 +157,7 @@ TEST_CASE("Board::castling_availability() returns the correct availability",
 
 TEST_CASE("Board::half_move_clock() returns the correct half move clock",
           "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -180,7 +187,7 @@ TEST_CASE("Board::half_move_clock() returns the correct half move clock",
 
 TEST_CASE("Board::en_passant_square() returns the correct en passant square",
           "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -209,88 +216,152 @@ TEST_CASE("Board::en_passant_square() returns the correct en passant square",
 }
 
 TEST_CASE("Board::piece() returns the correct piece", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
 
-        REQUIRE(board.piece(Square::A1) == Board::Piece{WHITE, ROOK});
-        REQUIRE(board.piece(Square::B1) == Board::Piece{WHITE, KNIGHT});
-        REQUIRE(board.piece(Square::C1) == Board::Piece{WHITE, BISHOP});
-        REQUIRE(board.piece(Square::D1) == Board::Piece{WHITE, QUEEN});
-        REQUIRE(board.piece(Square::E1) == Board::Piece{WHITE, KING});
-        REQUIRE(board.piece(Square::F1) == Board::Piece{WHITE, BISHOP});
-        REQUIRE(board.piece(Square::G1) == Board::Piece{WHITE, KNIGHT});
-        REQUIRE(board.piece(Square::H1) == Board::Piece{WHITE, ROOK});
+        REQUIRE(board.piece(Square::A1) ==
+                Board::Piece{Color::WHITE, PieceType::ROOK});
+        REQUIRE(board.piece(Square::B1) ==
+                Board::Piece{Color::WHITE, PieceType::KNIGHT});
+        REQUIRE(board.piece(Square::C1) ==
+                Board::Piece{Color::WHITE, PieceType::BISHOP});
+        REQUIRE(board.piece(Square::D1) ==
+                Board::Piece{Color::WHITE, PieceType::QUEEN});
+        REQUIRE(board.piece(Square::E1) ==
+                Board::Piece{Color::WHITE, PieceType::KING});
+        REQUIRE(board.piece(Square::F1) ==
+                Board::Piece{Color::WHITE, PieceType::BISHOP});
+        REQUIRE(board.piece(Square::G1) ==
+                Board::Piece{Color::WHITE, PieceType::KNIGHT});
+        REQUIRE(board.piece(Square::H1) ==
+                Board::Piece{Color::WHITE, PieceType::ROOK});
 
-        REQUIRE(board.piece(Square::A2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::B2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::C2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::D2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::E2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::F2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::G2) == Board::Piece{WHITE, PAWN});
-        REQUIRE(board.piece(Square::H2) == Board::Piece{WHITE, PAWN});
+        REQUIRE(board.piece(Square::A2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::B2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::C2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::D2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::E2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::F2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::G2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
+        REQUIRE(board.piece(Square::H2) ==
+                Board::Piece{Color::WHITE, PieceType::PAWN});
 
-        REQUIRE(board.piece(Square::A3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::B3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::C3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::D3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::E3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::F3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::G3) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::H3) == Board::Piece{BLACK, EMPTY_PIECE});
+        REQUIRE(board.piece(Square::A3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::B3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::C3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::D3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::E3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::F3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::G3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::H3) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
 
-        REQUIRE(board.piece(Square::A4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::B4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::C4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::D4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::E4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::F4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::G4) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::H4) == Board::Piece{BLACK, EMPTY_PIECE});
+        REQUIRE(board.piece(Square::A4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::B4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::C4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::D4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::E4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::F4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::G4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::H4) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
 
-        REQUIRE(board.piece(Square::A5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::B5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::C5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::D5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::E5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::F5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::G5) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::H5) == Board::Piece{BLACK, EMPTY_PIECE});
+        REQUIRE(board.piece(Square::A5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::B5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::C5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::D5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::E5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::F5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::G5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::H5) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
 
-        REQUIRE(board.piece(Square::A6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::B6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::C6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::D6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::E6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::F6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::G6) == Board::Piece{BLACK, EMPTY_PIECE});
-        REQUIRE(board.piece(Square::H6) == Board::Piece{BLACK, EMPTY_PIECE});
+        REQUIRE(board.piece(Square::A6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::B6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::C6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::D6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::E6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::F6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::G6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
+        REQUIRE(board.piece(Square::H6) ==
+                Board::Piece{Color::BLACK, PieceType::EMPTY_PIECE});
 
-        REQUIRE(board.piece(Square::A7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::B7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::C7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::D7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::E7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::F7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::G7) == Board::Piece{BLACK, PAWN});
-        REQUIRE(board.piece(Square::H7) == Board::Piece{BLACK, PAWN});
+        REQUIRE(board.piece(Square::A7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::B7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::C7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::D7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::E7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::F7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::G7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
+        REQUIRE(board.piece(Square::H7) ==
+                Board::Piece{Color::BLACK, PieceType::PAWN});
 
-        REQUIRE(board.piece(Square::A8) == Board::Piece{BLACK, ROOK});
-        REQUIRE(board.piece(Square::B8) == Board::Piece{BLACK, KNIGHT});
-        REQUIRE(board.piece(Square::C8) == Board::Piece{BLACK, BISHOP});
-        REQUIRE(board.piece(Square::D8) == Board::Piece{BLACK, QUEEN});
-        REQUIRE(board.piece(Square::E8) == Board::Piece{BLACK, KING});
-        REQUIRE(board.piece(Square::F8) == Board::Piece{BLACK, BISHOP});
-        REQUIRE(board.piece(Square::G8) == Board::Piece{BLACK, KNIGHT});
-        REQUIRE(board.piece(Square::H8) == Board::Piece{BLACK, ROOK});
+        REQUIRE(board.piece(Square::A8) ==
+                Board::Piece{Color::BLACK, PieceType::ROOK});
+        REQUIRE(board.piece(Square::B8) ==
+                Board::Piece{Color::BLACK, PieceType::KNIGHT});
+        REQUIRE(board.piece(Square::C8) ==
+                Board::Piece{Color::BLACK, PieceType::BISHOP});
+        REQUIRE(board.piece(Square::D8) ==
+                Board::Piece{Color::BLACK, PieceType::QUEEN});
+        REQUIRE(board.piece(Square::E8) ==
+                Board::Piece{Color::BLACK, PieceType::KING});
+        REQUIRE(board.piece(Square::F8) ==
+                Board::Piece{Color::BLACK, PieceType::BISHOP});
+        REQUIRE(board.piece(Square::G8) ==
+                Board::Piece{Color::BLACK, PieceType::KNIGHT});
+        REQUIRE(board.piece(Square::H8) ==
+                Board::Piece{Color::BLACK, PieceType::ROOK});
     }
 }
 
 TEST_CASE("Board::full_move_number() returns the correct full move number",
           "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -314,41 +385,53 @@ TEST_CASE("Board::full_move_number() returns the correct full move number",
 }
 
 TEST_CASE("Board::pieces() returns the correct bitboard", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
 
-        REQUIRE(board.pieces(WHITE, PAWN) == 0x000000000000FF00);
-        REQUIRE(board.pieces(WHITE, KNIGHT) == 0x0000000000000042);
-        REQUIRE(board.pieces(WHITE, BISHOP) == 0x0000000000000024);
-        REQUIRE(board.pieces(WHITE, ROOK) == 0x0000000000000081);
-        REQUIRE(board.pieces(WHITE, QUEEN) == 0x0000000000000008);
-        REQUIRE(board.pieces(WHITE, KING) == 0x0000000000000010);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::PAWN) ==
+                0x000000000000FF00);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::KNIGHT) ==
+                0x0000000000000042);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::BISHOP) ==
+                0x0000000000000024);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::ROOK) ==
+                0x0000000000000081);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::QUEEN) ==
+                0x0000000000000008);
+        REQUIRE(board.pieces(Color::WHITE, PieceType::KING) ==
+                0x0000000000000010);
 
-        REQUIRE(board.pieces(BLACK, PAWN) == 0x00FF000000000000);
-        REQUIRE(board.pieces(BLACK, KNIGHT) == 0x4200000000000000);
-        REQUIRE(board.pieces(BLACK, BISHOP) == 0x2400000000000000);
-        REQUIRE(board.pieces(BLACK, ROOK) == 0x8100000000000000);
-        REQUIRE(board.pieces(BLACK, QUEEN) == 0x0800000000000000);
-        REQUIRE(board.pieces(BLACK, KING) == 0x1000000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::PAWN) ==
+                0x00FF000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::KNIGHT) ==
+                0x4200000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::BISHOP) ==
+                0x2400000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::ROOK) ==
+                0x8100000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::QUEEN) ==
+                0x0800000000000000);
+        REQUIRE(board.pieces(Color::BLACK, PieceType::KING) ==
+                0x1000000000000000);
     }
 }
 
 TEST_CASE("Board::occupancies() returns the correct bitboard", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
-        REQUIRE(board.occupancies(WHITE) == 0x000000000000FFFF);
-        REQUIRE(board.occupancies(BLACK) == 0xFFFF000000000000);
-        REQUIRE(board.occupancies(BOTH) == 0xFFFF00000000FFFF);
+        REQUIRE(board.occupancies(Color::WHITE) == 0x000000000000FFFF);
+        REQUIRE(board.occupancies(Color::BLACK) == 0xFFFF000000000000);
+        REQUIRE(board.occupancies(Color::BOTH) == 0xFFFF00000000FFFF);
     }
 }
 
 TEST_CASE("Board::GetStateBackup() returns the correct state backup",
           "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -361,7 +444,7 @@ TEST_CASE("Board::GetStateBackup() returns the correct state backup",
 }
 
 TEST_CASE("Board::GetFen() returns the correct FEN", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
@@ -391,53 +474,54 @@ TEST_CASE("Board::GetFen() returns the correct FEN", "[board]") {
 }
 
 TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Position 1") {
         const auto board = Board();
 
-        for (int square = A3; square <= H3; ++square) {
+        for (int square = Square::A3; square <= Square::H3; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           WHITE) == true);
+                                           Color::WHITE) == true);
         }
 
-        for (int square = A6; square <= H6; ++square) {
+        for (int square = Square::A6; square <= Square::H6; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           BLACK) == true);
+                                           Color::BLACK) == true);
         }
 
-        for (int square = A4; square < N_SQUARES; ++square) {
+        for (int square = Square::A4; square < Square::N_SQUARES; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           WHITE) == false);
+                                           Color::WHITE) == false);
         }
 
-        for (int square = A1; square <= H5; ++square) {
+        for (int square = Square::A1; square <= Square::H5; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           BLACK) == false);
+                                           Color::BLACK) == false);
         }
     }
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        for (int square = 0; square < 64; ++square) {
+        for (int square = Square::A1; square < Square::N_SQUARES; ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           WHITE) == false);
+                                           Color::WHITE) == false);
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
-                                           BLACK) == false);
+                                           Color::BLACK) == false);
         }
     }
 }
 
 TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
-    ::codchess::Init();
+    chess::Init();
 
     SECTION("Pawn Move") {
         const std::string fen =
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
 
-        const auto move =
-            Move(E2, E4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
+        const auto move = Move(Square::E2, Square::E4, PieceType::PAWN,
+                               PieceType::EMPTY_PIECE, PieceType::EMPTY_PIECE,
+                               true, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -453,7 +537,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         auto board = Board(fen);
 
         const auto move =
-            Move(B1, H7, KNIGHT, PAWN, EMPTY_PIECE, false, false, false);
+            Move(Square::B1, Square::H7, PieceType::KNIGHT, PieceType::PAWN,
+                 PieceType::EMPTY_PIECE, false, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -468,8 +553,9 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/3ppppp/8/ppp5/6P1/5N1B/PPPPPP1P/RNBQK2R w KQkq - 0 4";
         auto board = Board(fen);
 
-        const auto move =
-            Move(E1, G1, KING, EMPTY_PIECE, EMPTY_PIECE, false, false, true);
+        const auto move = Move(Square::E1, Square::G1, PieceType::KING,
+                               PieceType::EMPTY_PIECE, PieceType::EMPTY_PIECE,
+                               false, false, true);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -485,7 +571,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         auto board = Board(fen);
 
         const auto move =
-            Move(B5, C4, PAWN, PAWN, EMPTY_PIECE, false, false, false);
+            Move(Square::B5, Square::C4, PieceType::PAWN, PieceType::PAWN,
+                 PieceType::EMPTY_PIECE, false, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -501,7 +588,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         auto board = Board(fen);
 
         const auto move =
-            Move(A7, A8, PAWN, EMPTY_PIECE, QUEEN, false, false, false);
+            Move(Square::A7, Square::A8, PieceType::PAWN,
+                 PieceType::EMPTY_PIECE, PieceType::QUEEN, false, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -517,7 +605,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         auto board = Board(fen);
 
         const auto move =
-            Move(C4, D3, PAWN, PAWN, EMPTY_PIECE, false, true, false);
+            Move(Square::C4, Square::D3, PieceType::PAWN, PieceType::PAWN,
+                 PieceType::EMPTY_PIECE, false, true, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -532,8 +621,9 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
 
-        const auto move =
-            Move(D2, D4, PAWN, EMPTY_PIECE, EMPTY_PIECE, true, false, false);
+        const auto move = Move(Square::D2, Square::D4, PieceType::PAWN,
+                               PieceType::EMPTY_PIECE, PieceType::EMPTY_PIECE,
+                               true, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);

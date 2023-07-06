@@ -2,7 +2,7 @@
 
 #include "attacks.hpp"
 
-namespace codchess::movegen {
+namespace cod::chess::movegen {
 /// @brief The type of move generation to perform.
 enum GenType {
     /// @brief Generate capture moves.
@@ -144,7 +144,7 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
     auto pawn_single_pushes_no_promo =
         attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
                                           ~board.occupancies(BOTH)) &
-        utils::MASK_CLEAR_RANK[0] & utils::MASK_CLEAR_RANK[7];
+        utils::MASK_NOT_RANK[0] & utils::MASK_NOT_RANK[7];
 
     while (pawn_single_pushes_no_promo) {
         const auto to_square =
@@ -226,7 +226,7 @@ PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
     constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
 
     auto pawns_can_capture_no_promo =
-        board.pieces(ToMove, PAWN) & utils::MASK_CLEAR_RANK[MaskIndex];
+        board.pieces(ToMove, PAWN) & utils::MASK_NOT_RANK[MaskIndex];
 
     while (pawns_can_capture_no_promo) {
         const auto from_square =
@@ -538,4 +538,4 @@ HasLegal(Board &board) noexcept {
 
     return false;
 }
-}   // namespace codchess::movegen
+}   // namespace cod::chess::movegen
