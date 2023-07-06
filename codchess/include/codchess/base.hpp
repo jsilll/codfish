@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstdint>
+
 namespace codchess {
 /// @brief The ranks of the board
 /// @note This enum is used both for iterating over the ranks and for indexing
 /// @note into arrays
-enum Rank : int {
+enum Rank : std::uint8_t {
     RANK_1 [[maybe_unused]],
     RANK_2 [[maybe_unused]],
     RANK_3 [[maybe_unused]],
@@ -20,7 +22,7 @@ enum Rank : int {
 /// @brief The files of the board
 /// @note This enum is used both for iterating over the files and for indexing
 /// @note into arrays
-enum File : int {
+enum File : std::uint8_t {
     FILE_A [[maybe_unused]],
     FILE_B [[maybe_unused]],
     FILE_C [[maybe_unused]],
@@ -36,7 +38,7 @@ enum File : int {
 /// @brief The squares of the board
 /// @note This enum is used both for iterating over the squares and for indexing
 /// @note into arrays
-enum Square : int {
+enum Square : std::uint8_t {
     A1 [[maybe_unused]],
     B1 [[maybe_unused]],
     C1 [[maybe_unused]],
@@ -110,7 +112,7 @@ enum Square : int {
 /// @brief The colors of the pieces
 /// @note This enum is used both for iterating over the colors and for indexing
 /// @note into arrays
-enum Color : int {
+enum Color : std::uint8_t {
     WHITE [[maybe_unused]],
     BLACK [[maybe_unused]],
     /// @brief Used for iterating over the colors not including BOTH
@@ -122,7 +124,7 @@ enum Color : int {
 /// @brief The types of pieces
 /// @note This enum is used both for iterating over the piece types and for
 /// @note indexing into arrays
-enum PieceType : int {
+enum PieceType : std::uint8_t {
     PAWN [[maybe_unused]],
     KNIGHT [[maybe_unused]],
     BISHOP [[maybe_unused]],
@@ -138,7 +140,7 @@ enum PieceType : int {
 /// @brief The different types of castling_availability rights
 /// @note The values are powers of 2 so that each bit represents a different
 /// @note castling_availability right
-enum CastlingAvailability : int {
+enum CastlingAvailability : std::uint8_t {
     NONE [[maybe_unused]] = 0,
     WHITE_KING [[maybe_unused]] = 1,
     WHITE_QUEEN [[maybe_unused]] = 2,

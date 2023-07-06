@@ -142,7 +142,7 @@ TEST_CASE("Board::castling_availability() returns the correct availability",
     }
 
     SECTION("Position 15") {
-        const auto board = Board("8/8/8/8/8/8/8/8 w q- 0 1");
+        const auto board = Board("8/8/8/8/8/8/8/8 w q - 0 1");
         REQUIRE(board.castling_availability() ==
                 (CastlingAvailability::BLACK_QUEEN));
     }

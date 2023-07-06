@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <iostream>
 
 #include <codchess/base.hpp>
@@ -10,16 +9,22 @@ namespace codchess::bitboard {
 typedef std::uint64_t Bitboard;
 
 /// @brief Bitboard constant for bit manipulation
-constexpr Bitboard ONE{1};
+constexpr Bitboard ONE{0x0000000000000001};
 
 /// @brief Bitboard constant for bit manipulation
-constexpr Bitboard ZERO{0};
+constexpr Bitboard ZERO{0x0000000000000000};
+
+/// @brief Bitboard constant for bit manipulation
+constexpr Bitboard FULL{0xFFFFFFFFFFFFFFFF};
+
+/// @brief Bitboard Count type
+typedef std::uint8_t BitboardCount;
 
 /// @brief Sets a bit in a bitboard
 /// @param bb The bitboard
 /// @param sq The square
 constexpr void
-SetBit(Bitboard &bb, Square sq) noexcept {
+SetBit(Bitboard &bb, const Square sq) noexcept {
     bb |= (ONE << sq);
 }
 
@@ -27,7 +32,7 @@ SetBit(Bitboard &bb, Square sq) noexcept {
 /// @param bn The bitboard
 /// @param sq The square
 constexpr void
-PopBit(Bitboard &bb, Square sq) noexcept {
+PopBit(Bitboard &bb, const Square sq) noexcept {
     bb &= ~(ONE << sq);
 }
 
@@ -42,7 +47,7 @@ PopLastBit(Bitboard &bb) noexcept {
 /// @param bb The bitboard
 /// @param sq The square
 /// @return Whether the bit is set or not
-[[nodiscard]] constexpr bool
+constexpr bool
 GetBit(const Bitboard bb, const Square sq) noexcept {
     return ((bb >> sq) & ONE);
 }
@@ -50,20 +55,20 @@ GetBit(const Bitboard bb, const Square sq) noexcept {
 /// @brief Returns the number of bits in a bitboard
 /// @param bb The bitboard
 /// @return The number of bits in the bitboard
-[[nodiscard]] constexpr auto
+[[nodiscard]] constexpr BitboardCount
 BitCount(Bitboard bb) noexcept {
-    unsigned int count = 0;
+    Bitboard count{0};
     while (bb) {
-        count++;
+        ++count;
         bb &= bb - 1;
     }
-    return static_cast<int>(count);
+    return count;
 }
 
 /// @brief Returns index of LSB bit
 /// @param bb The bitboard
 /// @return The index of the LSB bit
-[[maybe_unused]] [[nodiscard]] constexpr auto
+[[maybe_unused]] [[nodiscard]] constexpr Square
 BitScan(const Bitboard bb) noexcept {
     if (bb) {
         return static_cast<Square>(BitCount((bb & -bb) - 1));
@@ -78,7 +83,7 @@ BitScan(const Bitboard bb) noexcept {
 [[nodiscard]] Square BitScanForward(Bitboard bb) noexcept;
 
 /// @brief The directions of the board represented as offsets
-enum Direction : int {
+enum Direction : std::int8_t {
     NORTH [[maybe_unused]] = 8,
     SOUTH [[maybe_unused]] = -8,
     WEST [[maybe_unused]] = -1,
@@ -129,6 +134,5 @@ ShiftOne(const Bitboard bb) noexcept {
 /// @param os The output stream
 /// @param bb The bitboard
 /// @return The output stream
-[[maybe_unused]] void Display(std::ostream &os,
-                              const std::uint64_t &bb) noexcept;
+[[maybe_unused]] void Display(std::ostream &os, const Bitboard &bb) noexcept;
 }   // namespace codchess::bitboard
