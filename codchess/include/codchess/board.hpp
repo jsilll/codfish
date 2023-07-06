@@ -16,27 +16,27 @@ namespace cod::chess {
 class Board final {
   public:
     /// @brief A piece on the board
-    struct Piece {
+    struct ColoredPiece {
         /// @brief The color of the piece
         Color color;
         /// @brief The type of the piece
-        PieceType type;
+        Piece type;
 
         /// @brief Equality operator
-        /// @param p1 Piece 1
-        /// @param p2 Piece 2
+        /// @param p1 ColoredPiece 1
+        /// @param p2 ColoredPiece 2
         /// @return True if the pieces are equal, false otherwise
-        friend constexpr bool operator==(const Piece &p1,
-                                         const Piece &p2) noexcept {
+        friend constexpr bool operator==(const ColoredPiece &p1,
+                                         const ColoredPiece &p2) noexcept {
             return p1.color == p2.color and p1.type == p2.type;
         }
 
         /// @brief Inequality operator
-        /// @param p1 Piece 1
-        /// @param p2 Piece 2
+        /// @param p1 ColoredPiece 1
+        /// @param p2 ColoredPiece 2
         /// @return True if the pieces are not equal, false otherwise
-        friend constexpr bool operator!=(const Piece &p1,
-                                         const Piece &p2) noexcept {
+        friend constexpr bool operator!=(const ColoredPiece &p1,
+                                         const ColoredPiece &p2) noexcept {
             return p1.color != p2.color or p1.type != p2.type;
         }
     };
@@ -132,7 +132,7 @@ class Board final {
     /// @param color The color
     /// @param type The type
     [[nodiscard]] constexpr auto pieces(const Color color,
-                                        const PieceType type) const noexcept {
+                                        const Piece type) const noexcept {
         return _pieces[color][type];
     }
 
@@ -175,7 +175,7 @@ class Board final {
     /// @return Whether the current side to move is in check
     [[nodiscard]] bool IsCheck() const noexcept {
         const auto king_sq =
-            bitboard::BitScanForward(_pieces[_active][PieceType::KING]);
+            bitboard::BitScanForward(_pieces[_active][Piece::KING]);
         return IsSquareAttacked(king_sq, utils::GetOpponent(_active));
     }
 
@@ -279,7 +279,7 @@ class Board final {
 
     /// @brief The squares representation of the board
     /// @note This should be synced with the bitboards
-    Piece _piece[N_SQUARES]{};
+    ColoredPiece _piece[N_SQUARES]{};
     /// @brief The occupancy bitboards
     /// @note This should be synced with the bitboards
     std::uint64_t _occupancies[N_COLORS + 1]{};

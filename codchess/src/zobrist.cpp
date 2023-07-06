@@ -48,7 +48,7 @@ Hash(const Board &board) noexcept {
     for (int piece = PAWN; piece < N_PIECES; ++piece) {
         for (int side = WHITE; side < BOTH; ++side) {
             auto bitboard = board.pieces(static_cast<Color>(side),
-                                         static_cast<PieceType>(piece));
+                                         static_cast<Piece>(piece));
             while (bitboard) {
                 const auto sq = bitboard::BitScanForward(bitboard);
                 final_key ^= PIECE_KEY[side][piece][sq];

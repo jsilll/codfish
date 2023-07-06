@@ -5,7 +5,7 @@
 using namespace cod;
 
 using chess::Move;
-using chess::PieceType;
+using chess::Piece;
 using chess::Square;
 
 TEST_CASE("Move Class", "[move]") {
@@ -13,13 +13,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Impossible Move") {
         const auto move =
-            Move(Square::A1, Square::H8, PieceType::PAWN, PieceType::QUEEN,
-                 PieceType::QUEEN, true, false, true);
+            Move(Square::A1, Square::H8, Piece::PAWN, Piece::QUEEN,
+                 Piece::QUEEN, true, false, true);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::H8);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::QUEEN);
-        REQUIRE(move.PromotedPiece() == PieceType::QUEEN);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::QUEEN);
+        REQUIRE(move.PromotedPiece() == Piece::QUEEN);
         REQUIRE(move.IsDoublePush() == true);
         REQUIRE(move.IsEnPassant() == false);
         REQUIRE(move.IsCastle() == true);
@@ -29,13 +29,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes King") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::KING,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::KING,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::KING);
-        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::KING);
+        REQUIRE(move.PromotedPiece() == Piece::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -48,13 +48,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Queen") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::QUEEN,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::QUEEN,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::QUEEN);
-        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::QUEEN);
+        REQUIRE(move.PromotedPiece() == Piece::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -65,13 +65,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Rook") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::ROOK,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::ROOK,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::ROOK);
-        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::ROOK);
+        REQUIRE(move.PromotedPiece() == Piece::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -83,13 +83,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Bishop") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::BISHOP,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::BISHOP,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::BISHOP);
-        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::BISHOP);
+        REQUIRE(move.PromotedPiece() == Piece::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -100,13 +100,13 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Knight") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::KNIGHT,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::KNIGHT,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::KNIGHT);
-        REQUIRE(move.PromotedPiece() == PieceType::EMPTY_PIECE);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::KNIGHT);
+        REQUIRE(move.PromotedPiece() == Piece::EMPTY_PIECE);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);
@@ -117,12 +117,12 @@ TEST_CASE("Move Class", "[move]") {
 
     SECTION("Pawn Takes Pawn") {
         const auto move =
-            Move(Square::A1, Square::B1, PieceType::PAWN, PieceType::PAWN,
-                 PieceType::EMPTY_PIECE, false, false, false);
+            Move(Square::A1, Square::B1, Piece::PAWN, Piece::PAWN,
+                 Piece::EMPTY_PIECE, false, false, false);
         REQUIRE(move.FromSquare() == Square::A1);
         REQUIRE(move.ToSquare() == Square::B1);
-        REQUIRE(move.MovedPiece() == PieceType::PAWN);
-        REQUIRE(move.CapturedPiece() == PieceType::PAWN);
+        REQUIRE(move.MovedPiece() == Piece::PAWN);
+        REQUIRE(move.CapturedPiece() == Piece::PAWN);
         REQUIRE(move.IsPromotion() == false);
         REQUIRE(move.IsDoublePush() == false);
         REQUIRE(move.IsEnPassant() == false);

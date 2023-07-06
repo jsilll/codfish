@@ -162,7 +162,7 @@ GetOpponent(const Color to_move) noexcept {
 /// @param color The color
 /// @param ascii Whether to use ascii or unicode characters
 /// @return The string representation
-[[nodiscard]] std::string PieceToString(PieceType piece, Color color,
+[[nodiscard]] std::string PieceToString(Piece piece, Color color,
                                         bool ascii = true) noexcept;
 
 /// @brief Returns whether the FEN is valid

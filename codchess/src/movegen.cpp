@@ -291,7 +291,7 @@ PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
 /// leaper moves to.
 /// @param board The board to generate leaper moves
 /// on.
-template <Color ToMove, PieceType PType, GenType GType>
+template <Color ToMove, Piece PType, GenType GType>
 static void
 LeaperMoves(MoveList &move_list, const Board &board) noexcept {
     static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
@@ -350,7 +350,7 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
 /// @tparam GType The type of move generation to perform.
 /// @param move_list The list of moves to add the slider moves to.
 /// @param board The board to generate slider moves on.
-template <Color ToMove, PieceType PType, GenType GType>
+template <Color ToMove, Piece PType, GenType GType>
 static void
 SliderMoves(MoveList &move_list, const Board &board) {
     static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");

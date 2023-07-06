@@ -49,21 +49,21 @@ class Move final {
     /// @brief Returns the piece
     /// @return The piece
     [[maybe_unused]] [[nodiscard]] constexpr auto MovedPiece() const noexcept {
-        return static_cast<PieceType>((_encoded & 0x7000) >> 12);
+        return static_cast<Piece>((_encoded & 0x7000) >> 12);
     }
 
     /// @brief Returns the captured piece
     /// @return The captured piece
     [[maybe_unused]] [[nodiscard]] constexpr auto
     CapturedPiece() const noexcept {
-        return static_cast<PieceType>((_encoded & 0x38000) >> 15);
+        return static_cast<Piece>((_encoded & 0x38000) >> 15);
     }
 
     /// @brief Returns the promoted piece
     /// @return The promoted piece
     [[maybe_unused]] [[nodiscard]] constexpr auto
     PromotedPiece() const noexcept {
-        return static_cast<PieceType>((_encoded & 0x1C0000) >> 18);
+        return static_cast<Piece>((_encoded & 0x1C0000) >> 18);
     }
 
     /// @brief Returns if it is a double push

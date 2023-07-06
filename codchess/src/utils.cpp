@@ -19,9 +19,9 @@ SquareToString(const Square sq) noexcept {
 }
 
 std::string
-PieceToString(const PieceType piece, const Color color,
+PieceToString(const Piece piece, const Color color,
               const bool ascii) noexcept {
-    /// @brief The representation of the pieces aligned with the PieceType enum
+    /// @brief The representation of the pieces aligned with the Piece enum
     /// @note The first 13 elements are the ascii representation of the pieces
     /// and
     /// @note the last 13 are the unicode representation

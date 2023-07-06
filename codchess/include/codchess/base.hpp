@@ -124,7 +124,7 @@ enum Color : std::uint8_t {
 /// @brief The types of pieces
 /// @note This enum is used both for iterating over the piece types and for
 /// @note indexing into arrays
-enum PieceType : std::uint8_t {
+enum Piece : std::uint8_t {
     PAWN [[maybe_unused]],
     KNIGHT [[maybe_unused]],
     BISHOP [[maybe_unused]],
