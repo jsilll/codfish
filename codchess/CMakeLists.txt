@@ -5,7 +5,6 @@ add_subdirectory(src)
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(test)
     add_subdirectory(profile)
-    add_subdirectory(examples)
     add_subdirectory(benchmark)
     
     # -- Docs only available when building Standalone --

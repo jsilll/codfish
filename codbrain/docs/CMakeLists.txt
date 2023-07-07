@@ -1,3 +1,6 @@
+# -- Examples --
+add_subdirectory(examples)
+
 # -- Setting up Doxygen --
 set(DOXYGEN_EXTRACT_ALL YES)
 set(DOXYGEN_GENERATE_HTML YES)
