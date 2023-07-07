@@ -1,3 +1,6 @@
+# -- Profiling Sources --
+add_subdirectory(profiling)
+
 # -- Benchmark Sources --
 file(GLOB SOURCES bench_*.cpp)
 
