@@ -22,17 +22,17 @@ constexpr std::size_t N_BISHOP_MAGICS{512};
 /// @brief Bitboard masks for each king attack
 /// @note The Init() function must be called before using this
 extern bitboard::Bitboard
-    KING_ATTACKS[static_cast<std::size_t>(Square::N_SQUARES)];
+    KING_ATTACKS[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Bitboard masks for each knight attack
 /// @note The Init() function must be called before using this
 extern bitboard::Bitboard
-    KNIGHT_ATTACKS[static_cast<std::size_t>(Square::N_SQUARES)];
+    KNIGHT_ATTACKS[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Bitboard masks for each pawn attack
 /// @note The Init() function must be called before using this
 extern bitboard::Bitboard PAWN_ATTACKS[static_cast<std::size_t>(
-    Color::N_COLORS)][static_cast<std::size_t>(Square::N_SQUARES)];
+    Color::Total)][static_cast<std::size_t>(Square::Total)];
 
 /// @brief Masks the pawn attacks for a given color and direction.
 /// @tparam C The color of the pawns.
@@ -42,11 +42,11 @@ extern bitboard::Bitboard PAWN_ATTACKS[static_cast<std::size_t>(
 template <Color C, bitboard::Direction D>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == Color::WHITE or C == Color::BLACK);
+    static_assert(C == Color::White or C == Color::Black);
     static_assert(D == bitboard::Direction::WEST ||
                   D == bitboard::Direction::EAST);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == Color::White) {
         if constexpr (D == bitboard::Direction::WEST) {
             return bitboard::ShiftOne<bitboard::Direction::NORTH_WEST>(pawns);
         } else {
@@ -64,7 +64,7 @@ PawnAttacks(const bitboard::Bitboard pawns) noexcept {
 template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAllAttacks(const bitboard::Bitboard pawns) noexcept {
-    static_assert(C == Color::WHITE or C == Color::BLACK);
+    static_assert(C == Color::White or C == Color::Black);
 
     return PawnAttacks<C, bitboard::Direction::WEST>(pawns) |
            PawnAttacks<C, bitboard::Direction::EAST>(pawns);
@@ -79,9 +79,9 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnSinglePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == Color::WHITE or C == Color::BLACK);
+    static_assert(C == Color::White or C == Color::Black);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == Color::White) {
         return bitboard::ShiftOne<bitboard::Direction::NORTH>(pawns) & empty;
     } else {
         return bitboard::ShiftOne<bitboard::Direction::SOUTH>(pawns) & empty;
@@ -97,17 +97,17 @@ template <Color C>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnDoublePushes(const bitboard::Bitboard pawns,
                  const bitboard::Bitboard empty) noexcept {
-    static_assert(C == Color::WHITE or C == Color::BLACK);
+    static_assert(C == Color::White or C == Color::Black);
 
     const auto pushes =
         PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);
 
-    if constexpr (C == Color::WHITE) {
+    if constexpr (C == Color::White) {
         return pushes &
-               utils::MASK_RANK[static_cast<std::size_t>(Rank::RANK_4)];
+               utils::MASK_RANK[static_cast<std::size_t>(Rank::R4)];
     } else {
         return pushes &
-               utils::MASK_RANK[static_cast<std::size_t>(Rank::RANK_5)];
+               utils::MASK_RANK[static_cast<std::size_t>(Rank::R5)];
     }
 }
 

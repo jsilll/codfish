@@ -88,13 +88,13 @@ class Move final {
     /// @brief Returns if it is a capture
     /// @return If it is a capture
     [[maybe_unused]] [[nodiscard]] constexpr auto IsCapture() const noexcept {
-        return CapturedPiece() != Piece::EMPTY_PIECE;
+        return CapturedPiece() != Piece::Empty;
     }
 
     /// @brief Returns if it is a promotion
     /// @return If it is a promotion
     [[maybe_unused]] [[nodiscard]] constexpr auto IsPromotion() const noexcept {
-        return PromotedPiece() != Piece::EMPTY_PIECE;
+        return PromotedPiece() != Piece::Empty;
     }
 
     /// @brief Returns the move in UCI format
@@ -103,7 +103,7 @@ class Move final {
         if (IsPromotion()) {
             return utils::SquareToString(FromSquare()) +
                    utils::SquareToString(ToSquare()) +
-                   utils::PieceToString(PromotedPiece(), Color::BLACK);
+                   utils::PieceToString(PromotedPiece(), Color::Black);
         } else {
             return utils::SquareToString(FromSquare()) +
                    utils::SquareToString(ToSquare());

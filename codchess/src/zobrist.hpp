@@ -12,20 +12,20 @@ void Init() noexcept;
 constexpr std::size_t N_CASTLING_KEYS{16};
 
 /// @brief The keys for the side to move
-extern bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::BOTH)];
+extern bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::Both)];
 
 /// @brief The keys for the en passant squares
 extern bitboard::Bitboard
-    EN_PASSANT_KEY[static_cast<std::size_t>(Square::N_SQUARES)];
+    EN_PASSANT_KEY[static_cast<std::size_t>(Square::Total)];
 
 /// @brief The keys for the castling_availability rights
 extern bitboard::Bitboard CASTLE_KEY[N_CASTLING_KEYS];
 
 /// @brief The keys for the pieces
 extern bitboard::Bitboard
-    PIECE_KEY[static_cast<std::size_t>(Color::N_COLORS)]
-             [static_cast<std::size_t>(Piece::N_PIECES)]
-             [static_cast<std::size_t>(Square::N_SQUARES)];
+    PIECE_KEY[static_cast<std::size_t>(Color::Total)]
+             [static_cast<std::size_t>(Piece::Total)]
+             [static_cast<std::size_t>(Square::Total)];
 
 /// @brief Generates the hash key for a board
 /// @param board The board

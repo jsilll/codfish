@@ -7,32 +7,32 @@ namespace cod::chess {
 /// @note This enum is used both for iterating over the ranks and for indexing
 /// @note into arrays
 enum class Rank : std::uint8_t {
-    RANK_1 [[maybe_unused]],
-    RANK_2 [[maybe_unused]],
-    RANK_3 [[maybe_unused]],
-    RANK_4 [[maybe_unused]],
-    RANK_5 [[maybe_unused]],
-    RANK_6 [[maybe_unused]],
-    RANK_7 [[maybe_unused]],
-    RANK_8 [[maybe_unused]],
+    R1 [[maybe_unused]],
+    R2 [[maybe_unused]],
+    R3 [[maybe_unused]],
+    R4 [[maybe_unused]],
+    R5 [[maybe_unused]],
+    R6 [[maybe_unused]],
+    R7 [[maybe_unused]],
+    R8 [[maybe_unused]],
     /// @brief Used for iterating over the ranks
-    N_RANKS [[maybe_unused]],
+    Total [[maybe_unused]],
 };
 
 /// @brief The files of the board
 /// @note This enum is used both for iterating over the files and for indexing
 /// @note into arrays
 enum class File : std::uint8_t {
-    FILE_A [[maybe_unused]],
-    FILE_B [[maybe_unused]],
-    FILE_C [[maybe_unused]],
-    FILE_D [[maybe_unused]],
-    FILE_E [[maybe_unused]],
-    FILE_F [[maybe_unused]],
-    FILE_G [[maybe_unused]],
-    FILE_H [[maybe_unused]],
+    FA [[maybe_unused]],
+    FB [[maybe_unused]],
+    FC [[maybe_unused]],
+    FD [[maybe_unused]],
+    FE [[maybe_unused]],
+    FF [[maybe_unused]],
+    FG [[maybe_unused]],
+    FH [[maybe_unused]],
     /// @brief Used for iterating over the files
-    N_FILES [[maybe_unused]],
+    Total [[maybe_unused]],
 };
 
 /// @brief The squares of the board
@@ -104,48 +104,48 @@ enum class Square : std::uint8_t {
     G8 [[maybe_unused]],
     H8 [[maybe_unused]],
     /// @brief Used for iterating over the squares
-    N_SQUARES [[maybe_unused]],
+    Total [[maybe_unused]],
     /// @brief Used for representing an empty square
-    EMPTY_SQUARE [[maybe_unused]] = 64,
+    Empty [[maybe_unused]] = 64,
 };
 
 /// @brief The colors of the pieces
 /// @note This enum is used both for iterating over the colors and for indexing
 /// @note into arrays
 enum class Color : std::uint8_t {
-    WHITE [[maybe_unused]],
-    BLACK [[maybe_unused]],
-    /// @brief Used for iterating over the colors not including BOTH
-    N_COLORS [[maybe_unused]],
+    White [[maybe_unused]],
+    Black [[maybe_unused]],
+    /// @brief Used for iterating over the colors not including Both
+    Total [[maybe_unused]],
     /// @brief Used for representing both colors for occupancy bitboards
-    BOTH [[maybe_unused]] = 2,
+    Both [[maybe_unused]] = 2,
 };
 
 /// @brief The types of pieces
 /// @note This enum is used both for iterating over the piece types and for
 /// @note indexing into arrays
 enum class Piece : std::uint8_t {
-    PAWN [[maybe_unused]],
-    KNIGHT [[maybe_unused]],
-    BISHOP [[maybe_unused]],
-    ROOK [[maybe_unused]],
-    QUEEN [[maybe_unused]],
-    KING [[maybe_unused]],
-    /// @brief Used for iterating over the piece types not including EMPTY_PIECE
-    N_PIECES [[maybe_unused]],
+    Pawn [[maybe_unused]],
+    Knight [[maybe_unused]],
+    Bishop [[maybe_unused]],
+    Rook [[maybe_unused]],
+    Queen [[maybe_unused]],
+    King [[maybe_unused]],
+    /// @brief Used for iterating over the piece types not including Empty
+    Total [[maybe_unused]],
     /// @brief Used for representing an empty piece
-    EMPTY_PIECE [[maybe_unused]] = 6,
+    Empty [[maybe_unused]] = 6,
 };
 
 /// @brief The different types of castling_availability rights
 /// @note The values are powers of 2 so that each bit represents a different
 /// @note castling_availability right
-enum class CastlingAvailability : std::uint8_t {
-    NONE [[maybe_unused]] = 0,
-    WHITE_KING [[maybe_unused]] = 1,
-    WHITE_QUEEN [[maybe_unused]] = 2,
-    BLACK_KING [[maybe_unused]] = 4,
-    BLACK_QUEEN [[maybe_unused]] = 8,
-    ALL [[maybe_unused]] = 15,
+enum class Castle : std::uint8_t {
+    None [[maybe_unused]] = 0,
+    WhiteKing [[maybe_unused]] = 1,
+    WhiteQueen [[maybe_unused]] = 2,
+    BlackKing [[maybe_unused]] = 4,
+    BlackQueen [[maybe_unused]] = 8,
+    All [[maybe_unused]] = 15,
 };
 }   // namespace cod::chess

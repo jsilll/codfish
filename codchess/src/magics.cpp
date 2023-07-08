@@ -5,7 +5,7 @@
 namespace cod::chess::magics {
 /// @brief Pre-computed magic numbers for bishops.
 static constexpr bitboard::Bitboard
-    BISHOP_MAGICS[static_cast<std::size_t>(Square::N_SQUARES)] = {
+    BISHOP_MAGICS[static_cast<std::size_t>(Square::Total)] = {
         0x40040844404084ULL,   0x2004208a004208ULL,   0x10190041080202ULL,
         0x108060845042010ULL,  0x581104180800210ULL,  0x2112080446200010ULL,
         0x1080820820060210ULL, 0x3c0808410220200ULL,  0x4050404440404ULL,
@@ -31,7 +31,7 @@ static constexpr bitboard::Bitboard
 
 /// @brief Pre-computed magic numbers for rooks.
 static constexpr bitboard::Bitboard
-    ROOK_MAGICS[static_cast<std::size_t>(Square::N_SQUARES)] = {
+    ROOK_MAGICS[static_cast<std::size_t>(Square::Total)] = {
         0x8a80104000800020ULL, 0x140002000100040ULL,  0x2801880a0017001ULL,
         0x100081001000420ULL,  0x200020010080420ULL,  0x3001c0002010008ULL,
         0x8480008002000100ULL, 0x2080088004402900ULL, 0x800098204000ULL,
@@ -56,10 +56,10 @@ static constexpr bitboard::Bitboard
         0x1004081002402ULL};
 
 /// @brief Array of pre-computed magic numbers, masks and shifts for rooks.
-Magic ROOK_MAGIC_TABLE[static_cast<std::size_t>(Square::N_SQUARES)];
+Magic ROOK_MAGIC_TABLE[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Array of pre-computed magic numbers, masks and shifts for bishops.
-Magic BISHOP_MAGIC_TABLE[static_cast<std::size_t>(Square::N_SQUARES)];
+Magic BISHOP_MAGIC_TABLE[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Returns a bitboard of all the bishop attacks from a given square.
 /// @param sq The square to generate attacks from.
@@ -71,29 +71,29 @@ BishopXrayAttacks(const Square sq) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1, f = file + 1; r < static_cast<int>(Rank::RANK_8) and
-                                         f < static_cast<int>(File::FILE_H);
+    for (int r = rank + 1, f = file + 1; r < static_cast<int>(Rank::R8) and
+                                         f < static_cast<int>(File::FH);
          ++r, ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
     }
 
-    for (int r = rank + 1, f = file - 1; r < static_cast<int>(Rank::RANK_8) and
-                                         f > static_cast<int>(File::FILE_A);
+    for (int r = rank + 1, f = file - 1; r < static_cast<int>(Rank::R8) and
+                                         f > static_cast<int>(File::FA);
          ++r, --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
     }
 
-    for (int r = rank - 1, f = file + 1; r > static_cast<int>(Rank::RANK_1) and
-                                         f < static_cast<int>(File::FILE_H);
+    for (int r = rank - 1, f = file + 1; r > static_cast<int>(Rank::R1) and
+                                         f < static_cast<int>(File::FH);
          --r, ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
     }
 
-    for (int r = rank - 1, f = file - 1; r > static_cast<int>(Rank::RANK_1) and
-                                         f > static_cast<int>(File::FILE_A);
+    for (int r = rank - 1, f = file - 1; r > static_cast<int>(Rank::R1) and
+                                         f > static_cast<int>(File::FA);
          --r, --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
@@ -112,22 +112,22 @@ RookXrayAttacks(const Square sq) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1; r < static_cast<int>(Rank::RANK_8); ++r) {
+    for (int r = rank + 1; r < static_cast<int>(Rank::R8); ++r) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(file))));
     }
 
-    for (int r = rank - 1; r > static_cast<int>(Rank::RANK_1); --r) {
+    for (int r = rank - 1; r > static_cast<int>(Rank::R1); --r) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(file))));
     }
 
-    for (int f = file + 1; f < static_cast<int>(File::FILE_H); ++f) {
+    for (int f = file + 1; f < static_cast<int>(File::FH); ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(f))));
     }
 
-    for (int f = file - 1; f > static_cast<int>(File::FILE_A); --f) {
+    for (int f = file - 1; f > static_cast<int>(File::FA); --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(f))));
     }
@@ -138,19 +138,19 @@ RookXrayAttacks(const Square sq) noexcept {
 void
 Init() noexcept {
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         BISHOP_MAGIC_TABLE[sq].mask =
             BishopXrayAttacks(static_cast<Square>(sq));
         BISHOP_MAGIC_TABLE[sq].magic = BISHOP_MAGICS[sq];
-        BISHOP_MAGIC_TABLE[sq].shift = static_cast<int>(Square::N_SQUARES) -
+        BISHOP_MAGIC_TABLE[sq].shift = static_cast<int>(Square::Total) -
                                        utils::BISHOP_RELEVANT_BITS_COUNT[sq];
     }
 
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         ROOK_MAGIC_TABLE[sq].mask = RookXrayAttacks(static_cast<Square>(sq));
         ROOK_MAGIC_TABLE[sq].magic = ROOK_MAGICS[sq];
-        ROOK_MAGIC_TABLE[sq].shift = static_cast<int>(Square::N_SQUARES) -
+        ROOK_MAGIC_TABLE[sq].shift = static_cast<int>(Square::Total) -
                                      utils::ROOK_RELEVANT_BITS_COUNT[sq];
     }
 }

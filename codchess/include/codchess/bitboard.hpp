@@ -79,7 +79,7 @@ BitScan(const Bitboard bb) noexcept {
     if (bb) {
         return static_cast<Square>(BitCount((bb & -bb) - 1));
     } else {
-        return Square::EMPTY_SQUARE;
+        return Square::Empty;
     }
 }
 

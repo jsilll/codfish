@@ -8,7 +8,7 @@ SquareToString(const Square sq) noexcept {
     /// @brief The names of the squares aligned with the Square enum
     /// @note The names are compliant with the UCI format
     static const std::string
-        SQUARE[static_cast<std::size_t>(Square::N_SQUARES) + 1] = {
+        SQUARE[static_cast<std::size_t>(Square::Total) + 1] = {
             "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
             "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3",
             "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5",
@@ -65,7 +65,7 @@ PieceToString(const Piece piece, const Color color, const bool ascii) noexcept {
         " ",
     };
 
-    return PIECE[static_cast<int>(piece) + (color == Color::WHITE ? 0 : 6) +
+    return PIECE[static_cast<int>(piece) + (color == Color::White ? 0 : 6) +
                  (ascii ? 0 : 13)];
 }
 

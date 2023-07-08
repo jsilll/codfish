@@ -2,18 +2,18 @@
 
 namespace cod::chess::zobrist {
 /// @brief The keys for the side to move
-bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::BOTH)]{};
+bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::Both)]{};
 
 /// @brief The keys for the en passant squares
-bitboard::Bitboard EN_PASSANT_KEY[static_cast<std::size_t>(Square::N_SQUARES)];
+bitboard::Bitboard EN_PASSANT_KEY[static_cast<std::size_t>(Square::Total)];
 
 /// @brief The keys for the castling_availability rights
 bitboard::Bitboard CASTLE_KEY[N_CASTLING_KEYS];
 
 /// @brief The keys for the pieces
-bitboard::Bitboard PIECE_KEY[static_cast<std::size_t>(Color::N_COLORS)]
-                            [static_cast<std::size_t>(Piece::N_PIECES)]
-                            [static_cast<std::size_t>(Square::N_SQUARES)];
+bitboard::Bitboard PIECE_KEY[static_cast<std::size_t>(Color::Total)]
+                            [static_cast<std::size_t>(Piece::Total)]
+                            [static_cast<std::size_t>(Square::Total)];
 
 /// @brief Generates a random number
 /// @return The random number
@@ -34,13 +34,13 @@ Init() noexcept {
         castle_key = RandomBitboard();
     }
 
-    for (int piece = static_cast<int>(Piece::PAWN);
-         piece < static_cast<int>(Piece::N_PIECES); ++piece) {
+    for (int piece = static_cast<int>(Piece::Pawn);
+         piece < static_cast<int>(Piece::Total); ++piece) {
         for (int square = static_cast<int>(Square::A1);
-             square < static_cast<int>(Square::N_SQUARES); ++square) {
-            PIECE_KEY[static_cast<std::size_t>(Color::WHITE)][piece][square] =
+             square < static_cast<int>(Square::Total); ++square) {
+            PIECE_KEY[static_cast<std::size_t>(Color::White)][piece][square] =
                 RandomBitboard();
-            PIECE_KEY[static_cast<std::size_t>(Color::BLACK)][piece][square] =
+            PIECE_KEY[static_cast<std::size_t>(Color::Black)][piece][square] =
                 RandomBitboard();
         }
     }
@@ -51,10 +51,10 @@ Init() noexcept {
 bitboard::Bitboard
 Hash(const Board &board) noexcept {
     auto final_key{bitboard::ZERO};
-    for (int piece = static_cast<int>(Piece::PAWN);
-         piece < static_cast<int>(Piece::N_PIECES); ++piece) {
-        for (int side = static_cast<int>(Color::WHITE);
-             side < static_cast<int>(Color::BOTH); ++side) {
+    for (int piece = static_cast<int>(Piece::Pawn);
+         piece < static_cast<int>(Piece::Total); ++piece) {
+        for (int side = static_cast<int>(Color::White);
+             side < static_cast<int>(Color::Both); ++side) {
             auto bitboard = board.pieces(static_cast<Color>(side),
                                          static_cast<Piece>(piece));
             while (bitboard) {
@@ -66,7 +66,7 @@ Hash(const Board &board) noexcept {
         }
     }
 
-    if (board.en_passant_square() != Square::EMPTY_SQUARE) {
+    if (board.en_passant_square() != Square::Empty) {
         final_key ^=
             EN_PASSANT_KEY[static_cast<std::size_t>(board.en_passant_square())];
     }

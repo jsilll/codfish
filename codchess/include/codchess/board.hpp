@@ -46,7 +46,7 @@ class Board final {
         /// @brief The en passant square
         Square en_passant_square;
         /// @brief The castling availability rights
-        CastlingAvailability castling_availability;
+        Castle castling_availability;
         /// @brief The half move clock
         int half_move_clock;
         /// @brief The full move number
@@ -177,7 +177,7 @@ class Board final {
     [[nodiscard]] bool IsCheck() const noexcept {
         const auto king_sq = bitboard::BitScanForward(
             _pieces[static_cast<std::size_t>(_active)]
-                   [static_cast<std::size_t>(Piece::KING)]);
+                   [static_cast<std::size_t>(Piece::King)]);
         return IsSquareAttacked(king_sq, utils::GetOpponent(_active));
     }
 
@@ -202,7 +202,7 @@ class Board final {
     /// @brief Sets the current castling_availability rights
     /// @param castling_availability The castling_availability rights
     [[maybe_unused]] void castling_availability(
-        const CastlingAvailability castling_availability) noexcept {
+        const Castle castling_availability) noexcept {
         _castling_availability = castling_availability;
     }
 
@@ -281,19 +281,19 @@ class Board final {
 
     /// @brief The squares representation of the board
     /// @note This should be synced with the bitboards
-    ColoredPiece _piece[static_cast<std::size_t>(Square::N_SQUARES)]{};
+    ColoredPiece _piece[static_cast<std::size_t>(Square::Total)]{};
     /// @brief The occupancy bitboards
     /// @note This should be synced with the bitboards
-    std::uint64_t _occupancies[static_cast<std::size_t>(Color::N_COLORS) + 1]{};
+    std::uint64_t _occupancies[static_cast<std::size_t>(Color::Total) + 1]{};
     /// @brief The bitboards for the pieces
     /// @note This should be synced with the arrays above
-    std::uint64_t _pieces[static_cast<std::size_t>(Color::N_COLORS)]
-                         [static_cast<std::size_t>(Piece::N_PIECES)]{};
+    std::uint64_t _pieces[static_cast<std::size_t>(Color::Total)]
+                         [static_cast<std::size_t>(Piece::Total)]{};
 
     /// @brief The side to move
     Color _active{};
     /// @brief The current castling_availability rights
-    CastlingAvailability _castling_availability{};
+    Castle _castling_availability{};
     /// @brief The half move clock
     int _half_move_clock{};
     /// @brief The full move number

@@ -2,27 +2,27 @@
 
 namespace cod::chess::attacks {
 /// @brief Stores the attacks for the king
-bitboard::Bitboard KING_ATTACKS[static_cast<std::size_t>(Square::N_SQUARES)];
+bitboard::Bitboard KING_ATTACKS[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Stores the attacks for the knight
-bitboard::Bitboard KNIGHT_ATTACKS[static_cast<std::size_t>(Square::N_SQUARES)];
+bitboard::Bitboard KNIGHT_ATTACKS[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Stores the attacks for the pawns
-bitboard::Bitboard PAWN_ATTACKS[static_cast<std::size_t>(Color::N_COLORS)]
-                               [static_cast<std::size_t>(Square::N_SQUARES)];
+bitboard::Bitboard PAWN_ATTACKS[static_cast<std::size_t>(Color::Total)]
+                               [static_cast<std::size_t>(Square::Total)];
 
 /// @brief Stores each rook attack
 /// @note The codchess::Init() function must be called before using this
 /// @note The function RookAttacks() should be used to get the actual attacks
 auto ROOK_ATTACKS = std::vector<std::vector<bitboard::Bitboard>>(
-    static_cast<std::size_t>(Square::N_SQUARES),
+    static_cast<std::size_t>(Square::Total),
     std::vector<bitboard::Bitboard>(N_ROOK_MAGICS));
 
 /// @brief Stores each bishop attack
 /// @note The codchess::Init() function must be called before using this
 /// @note The function BishopAttacks() should be used to get the actual attacks
 auto BISHOP_ATTACKS = std::vector<std::vector<bitboard::Bitboard>>(
-    static_cast<std::size_t>(Square::N_SQUARES),
+    static_cast<std::size_t>(Square::Total),
     std::vector<bitboard::Bitboard>(N_BISHOP_MAGICS));
 
 /// @brief Returns a bitboard of all the knight attacks.
@@ -31,11 +31,11 @@ auto BISHOP_ATTACKS = std::vector<std::vector<bitboard::Bitboard>>(
 [[nodiscard]] constexpr bitboard::Bitboard
 KnightAttacks(const bitboard::Bitboard knights) noexcept {
     constexpr auto CLEAR_FILE_HG =
-        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FILE_H)] &
-        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FILE_G)];
+        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FH)] &
+        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FG)];
     constexpr auto CLEAR_FILE_AB =
-        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FILE_A)] &
-        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FILE_B)];
+        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FA)] &
+        utils::MASK_NOT_FILE[static_cast<std::size_t>(File::FB)];
 
     const auto l1 = (bitboard::ShiftOne<bitboard::Direction::WEST>(knights)) &
                     utils::MASK_NOT_FILE[7];
@@ -76,8 +76,8 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1, f = file + 1; r < static_cast<int>(Rank::N_RANKS) and
-                                         f < static_cast<int>(File::N_FILES);
+    for (int r = rank + 1, f = file + 1; r < static_cast<int>(Rank::Total) and
+                                         f < static_cast<int>(File::Total);
          ++r, ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
@@ -88,8 +88,8 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank + 1, f = file - 1; r < static_cast<int>(Rank::N_RANKS) and
-                                         f >= static_cast<int>(File::FILE_A);
+    for (int r = rank + 1, f = file - 1; r < static_cast<int>(Rank::Total) and
+                                         f >= static_cast<int>(File::FA);
          ++r, --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
@@ -100,8 +100,8 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank - 1, f = file + 1; r >= static_cast<int>(Rank::RANK_1) and
-                                         f < static_cast<int>(File::N_FILES);
+    for (int r = rank - 1, f = file + 1; r >= static_cast<int>(Rank::R1) and
+                                         f < static_cast<int>(File::Total);
          --r, ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
@@ -112,8 +112,8 @@ BishopNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank - 1, f = file - 1; r >= static_cast<int>(Rank::RANK_1) and
-                                         f >= static_cast<int>(File::FILE_A);
+    for (int r = rank - 1, f = file - 1; r >= static_cast<int>(Rank::R1) and
+                                         f >= static_cast<int>(File::FA);
          --r, --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(f))));
@@ -139,7 +139,7 @@ RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
 
     auto attacks{bitboard::ZERO};
 
-    for (int r = rank + 1; r < static_cast<int>(Rank::N_RANKS); ++r) {
+    for (int r = rank + 1; r < static_cast<int>(Rank::Total); ++r) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(file))));
         if ((bitboard::ONE << static_cast<int>(utils::GetSquare(
@@ -149,7 +149,7 @@ RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int r = rank - 1; r >= static_cast<int>(Rank::RANK_1); --r) {
+    for (int r = rank - 1; r >= static_cast<int>(Rank::R1); --r) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(r), static_cast<File>(file))));
         if ((bitboard::ONE << static_cast<int>(utils::GetSquare(
@@ -159,7 +159,7 @@ RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int f = file + 1; f < static_cast<int>(File::N_FILES); ++f) {
+    for (int f = file + 1; f < static_cast<int>(File::Total); ++f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(f))));
         if ((bitboard::ONE << static_cast<int>(utils::GetSquare(
@@ -169,7 +169,7 @@ RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
         }
     }
 
-    for (int f = file - 1; f >= static_cast<int>(File::FILE_A); --f) {
+    for (int f = file - 1; f >= static_cast<int>(File::FA); --f) {
         attacks |= (bitboard::ONE << static_cast<int>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(f))));
         if ((bitboard::ONE << static_cast<int>(utils::GetSquare(
@@ -185,25 +185,25 @@ RookNoXrayAttacks(const Square sq, const bitboard::Bitboard block) noexcept {
 void
 Init() noexcept {
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
-        PAWN_ATTACKS[static_cast<std::size_t>(Color::WHITE)][sq] =
-            attacks::PawnAllAttacks<Color::WHITE>(utils::SQUARE_TO_BB[sq]);
-        PAWN_ATTACKS[static_cast<std::size_t>(Color::BLACK)][sq] =
-            attacks::PawnAllAttacks<Color::BLACK>(utils::SQUARE_TO_BB[sq]);
+         sq < static_cast<int>(Square::Total); ++sq) {
+        PAWN_ATTACKS[static_cast<std::size_t>(Color::White)][sq] =
+            attacks::PawnAllAttacks<Color::White>(utils::SQUARE_TO_BB[sq]);
+        PAWN_ATTACKS[static_cast<std::size_t>(Color::Black)][sq] =
+            attacks::PawnAllAttacks<Color::Black>(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         KNIGHT_ATTACKS[sq] = attacks::KnightAttacks(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         KING_ATTACKS[sq] = attacks::KingAttacks(utils::SQUARE_TO_BB[sq]);
     }
 
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         const int occupancy_indices = 1
                                       << utils::BISHOP_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
@@ -218,7 +218,7 @@ Init() noexcept {
     }
 
     for (int sq = static_cast<int>(Square::A1);
-         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+         sq < static_cast<int>(Square::Total); ++sq) {
         const int occupancy_indices = 1 << utils::ROOK_RELEVANT_BITS_COUNT[sq];
         for (int i = 0; i < occupancy_indices; ++i) {
             const auto magic = magics::ROOK_MAGIC_TABLE[sq];

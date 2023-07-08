@@ -33,11 +33,11 @@ BitScanForward(const Bitboard bb) noexcept {
 
 [[maybe_unused]] void
 Display(std::ostream &os, const Bitboard &bb) noexcept {
-    for (int i = static_cast<int>(Rank::RANK_8);
-         i >= static_cast<int>(Rank::RANK_1); --i) {
+    for (int i = static_cast<int>(Rank::R8);
+         i >= static_cast<int>(Rank::R1); --i) {
         os << (i + 1) << "  ";
-        for (int n = static_cast<int>(File::FILE_A);
-             n < static_cast<int>(File::N_FILES); ++n) {
+        for (int n = static_cast<int>(File::FA);
+             n < static_cast<int>(File::Total); ++n) {
             os << static_cast<int>(
                       (bb >> static_cast<int>(utils::GetSquare(
                                  static_cast<Rank>(i), static_cast<File>(n)))) &

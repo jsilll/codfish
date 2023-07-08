@@ -32,7 +32,7 @@ static constexpr bitboard::Bitboard MASK_NOT_FILE[] = {
 
 /// @brief Bitboard representation of each square
 static constexpr bitboard::Bitboard
-    SQUARE_TO_BB[static_cast<std::size_t>(Square::N_SQUARES)] = {
+    SQUARE_TO_BB[static_cast<std::size_t>(Square::Total)] = {
         0x1ULL,
         0x2ULL,
         0x4ULL,
@@ -101,7 +101,7 @@ static constexpr bitboard::Bitboard
 
 /// @brief Relevant bits count for each square for the bishop
 static constexpr int
-    BISHOP_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::N_SQUARES)] = {
+    BISHOP_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::Total)] = {
         6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
         5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
         7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
@@ -109,7 +109,7 @@ static constexpr int
 
 /// @brief Relevant bits count for each square for the rook
 static constexpr int
-    ROOK_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::N_SQUARES)] = {
+    ROOK_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::Total)] = {
         12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
         11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
         11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
