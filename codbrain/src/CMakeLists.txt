@@ -5,7 +5,7 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 find_package(Boost REQUIRED)
 
 # -- Codchess --
-add_library(codbrain STATIC ${SOURCES})
+add_library(codbrain SHARED ${SOURCES})
 
 # -- Include Directory --
 target_include_directories(codbrain

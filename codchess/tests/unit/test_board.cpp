@@ -72,62 +72,70 @@ TEST_CASE("Board::castling_availability() returns the correct availability",
 
     SECTION("Position 4") {
         const auto board = Board("8/8/8/8/8/8/8/8 w KQk - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_KING |
-                 CastlingAvailability::WHITE_QUEEN |
-                 CastlingAvailability::BLACK_KING));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 5") {
         const auto board = Board("8/8/8/8/8/8/8/8 w KQq - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_KING |
-                 CastlingAvailability::WHITE_QUEEN |
-                 CastlingAvailability::BLACK_QUEEN));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 6") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Kkq - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_KING |
-                 CastlingAvailability::BLACK_KING |
-                 CastlingAvailability::BLACK_QUEEN));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 7") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Qkq - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_QUEEN |
-                 CastlingAvailability::BLACK_KING |
-                 CastlingAvailability::BLACK_QUEEN));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 8") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Kk - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_KING |
-                 CastlingAvailability::BLACK_KING));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 9") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Kq - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_KING |
-                 CastlingAvailability::BLACK_QUEEN));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 10") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Qk - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_QUEEN |
-                 CastlingAvailability::BLACK_KING));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 11") {
         const auto board = Board("8/8/8/8/8/8/8/8 w Qq - 0 1");
-        REQUIRE(board.castling_availability() ==
-                (CastlingAvailability::WHITE_QUEEN |
-                 CastlingAvailability::BLACK_QUEEN));
+        const auto expected = static_cast<CastlingAvailability>(
+            static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN) |
+            static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
+        REQUIRE(board.castling_availability() == expected);
     }
 
     SECTION("Position 12") {
@@ -390,31 +398,23 @@ TEST_CASE("Board::pieces() returns the correct bitboard", "[board]") {
     SECTION("Position 1") {
         const auto board = Board();
 
-        REQUIRE(board.pieces(Color::WHITE, Piece::PAWN) ==
-                0x000000000000FF00);
+        REQUIRE(board.pieces(Color::WHITE, Piece::PAWN) == 0x000000000000FF00);
         REQUIRE(board.pieces(Color::WHITE, Piece::KNIGHT) ==
                 0x0000000000000042);
         REQUIRE(board.pieces(Color::WHITE, Piece::BISHOP) ==
                 0x0000000000000024);
-        REQUIRE(board.pieces(Color::WHITE, Piece::ROOK) ==
-                0x0000000000000081);
-        REQUIRE(board.pieces(Color::WHITE, Piece::QUEEN) ==
-                0x0000000000000008);
-        REQUIRE(board.pieces(Color::WHITE, Piece::KING) ==
-                0x0000000000000010);
+        REQUIRE(board.pieces(Color::WHITE, Piece::ROOK) == 0x0000000000000081);
+        REQUIRE(board.pieces(Color::WHITE, Piece::QUEEN) == 0x0000000000000008);
+        REQUIRE(board.pieces(Color::WHITE, Piece::KING) == 0x0000000000000010);
 
-        REQUIRE(board.pieces(Color::BLACK, Piece::PAWN) ==
-                0x00FF000000000000);
+        REQUIRE(board.pieces(Color::BLACK, Piece::PAWN) == 0x00FF000000000000);
         REQUIRE(board.pieces(Color::BLACK, Piece::KNIGHT) ==
                 0x4200000000000000);
         REQUIRE(board.pieces(Color::BLACK, Piece::BISHOP) ==
                 0x2400000000000000);
-        REQUIRE(board.pieces(Color::BLACK, Piece::ROOK) ==
-                0x8100000000000000);
-        REQUIRE(board.pieces(Color::BLACK, Piece::QUEEN) ==
-                0x0800000000000000);
-        REQUIRE(board.pieces(Color::BLACK, Piece::KING) ==
-                0x1000000000000000);
+        REQUIRE(board.pieces(Color::BLACK, Piece::ROOK) == 0x8100000000000000);
+        REQUIRE(board.pieces(Color::BLACK, Piece::QUEEN) == 0x0800000000000000);
+        REQUIRE(board.pieces(Color::BLACK, Piece::KING) == 0x1000000000000000);
     }
 }
 
@@ -479,22 +479,26 @@ TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
     SECTION("Position 1") {
         const auto board = Board();
 
-        for (int square = Square::A3; square <= Square::H3; ++square) {
+        for (int square = static_cast<int>(Square::A3);
+             square <= static_cast<int>(Square::H3); ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
                                            Color::WHITE) == true);
         }
 
-        for (int square = Square::A6; square <= Square::H6; ++square) {
+        for (int square = static_cast<int>(Square::A6);
+             square <= static_cast<int>(Square::H6); ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
                                            Color::BLACK) == true);
         }
 
-        for (int square = Square::A4; square < Square::N_SQUARES; ++square) {
+        for (int square = static_cast<int>(Square::A4);
+             square < static_cast<int>(Square::N_SQUARES); ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
                                            Color::WHITE) == false);
         }
 
-        for (int square = Square::A1; square <= Square::H5; ++square) {
+        for (int square = static_cast<int>(Square::A1);
+             square <= static_cast<int>(Square::H5); ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
                                            Color::BLACK) == false);
         }
@@ -502,7 +506,8 @@ TEST_CASE("Board::IsSquareAttacked() returns the correct result", "[board]") {
 
     SECTION("Position 2") {
         const auto board = Board("8/8/8/8/8/8/8/8 w - - 0 1");
-        for (int square = Square::A1; square < Square::N_SQUARES; ++square) {
+        for (int square = static_cast<int>(Square::A1);
+             square < static_cast<int>(Square::N_SQUARES); ++square) {
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
                                            Color::WHITE) == false);
             REQUIRE(board.IsSquareAttacked(static_cast<Square>(square),
@@ -519,9 +524,9 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
 
-        const auto move = Move(Square::E2, Square::E4, Piece::PAWN,
-                               Piece::EMPTY_PIECE, Piece::EMPTY_PIECE,
-                               true, false, false);
+        const auto move =
+            Move(Square::E2, Square::E4, Piece::PAWN, Piece::EMPTY_PIECE,
+                 Piece::EMPTY_PIECE, true, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -553,9 +558,9 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/3ppppp/8/ppp5/6P1/5N1B/PPPPPP1P/RNBQK2R w KQkq - 0 4";
         auto board = Board(fen);
 
-        const auto move = Move(Square::E1, Square::G1, Piece::KING,
-                               Piece::EMPTY_PIECE, Piece::EMPTY_PIECE,
-                               false, false, true);
+        const auto move =
+            Move(Square::E1, Square::G1, Piece::KING, Piece::EMPTY_PIECE,
+                 Piece::EMPTY_PIECE, false, false, true);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -570,9 +575,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/3ppppp/8/ppp5/2P3P1/5N1B/PP1PPP1P/RNBQK2R b KQkq - 0 4";
         auto board = Board(fen);
 
-        const auto move =
-            Move(Square::B5, Square::C4, Piece::PAWN, Piece::PAWN,
-                 Piece::EMPTY_PIECE, false, false, false);
+        const auto move = Move(Square::B5, Square::C4, Piece::PAWN, Piece::PAWN,
+                               Piece::EMPTY_PIECE, false, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -588,8 +592,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
         auto board = Board(fen);
 
         const auto move =
-            Move(Square::A7, Square::A8, Piece::PAWN,
-                 Piece::EMPTY_PIECE, Piece::QUEEN, false, false, false);
+            Move(Square::A7, Square::A8, Piece::PAWN, Piece::EMPTY_PIECE,
+                 Piece::QUEEN, false, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -604,9 +608,8 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/3ppppp/8/p1p5/2pP2P1/5N1B/PP2PP1P/RNBQK2R b KQkq d3 0 5";
         auto board = Board(fen);
 
-        const auto move =
-            Move(Square::C4, Square::D3, Piece::PAWN, Piece::PAWN,
-                 Piece::EMPTY_PIECE, false, true, false);
+        const auto move = Move(Square::C4, Square::D3, Piece::PAWN, Piece::PAWN,
+                               Piece::EMPTY_PIECE, false, true, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);
@@ -621,9 +624,9 @@ TEST_CASE("Board::Make() and Board::Unmake() work correctly", "[board]") {
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         auto board = Board(fen);
 
-        const auto move = Move(Square::D2, Square::D4, Piece::PAWN,
-                               Piece::EMPTY_PIECE, Piece::EMPTY_PIECE,
-                               true, false, false);
+        const auto move =
+            Move(Square::D2, Square::D4, Piece::PAWN, Piece::EMPTY_PIECE,
+                 Piece::EMPTY_PIECE, true, false, false);
         const auto backup = board.GetStateBackup();
 
         board.Make(move);

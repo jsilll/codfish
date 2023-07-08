@@ -31,7 +31,7 @@ typedef std::uint8_t BitboardCount;
 /// @param sq The square
 constexpr void
 SetBit(Bitboard &bb, const Square sq) noexcept {
-    bb |= (ONE << sq);
+    bb |= (ONE << static_cast<std::uint8_t>(sq));
 }
 
 /// @brief Pops a bit in a bitboard
@@ -39,7 +39,7 @@ SetBit(Bitboard &bb, const Square sq) noexcept {
 /// @param sq The square
 constexpr void
 PopBit(Bitboard &bb, const Square sq) noexcept {
-    bb &= ~(ONE << sq);
+    bb &= ~(ONE << static_cast<std::uint8_t>(sq));
 }
 
 /// @brief Pops the last bit in a bitboard
@@ -55,7 +55,7 @@ PopLastBit(Bitboard &bb) noexcept {
 /// @return Whether the bit is set or not
 constexpr bool
 GetBit(const Bitboard bb, const Square sq) noexcept {
-    return ((bb >> sq) & ONE);
+    return ((bb >> static_cast<std::uint8_t>(sq)) & ONE);
 }
 
 /// @brief Returns the number of bits in a bitboard
@@ -79,7 +79,7 @@ BitScan(const Bitboard bb) noexcept {
     if (bb) {
         return static_cast<Square>(BitCount((bb & -bb) - 1));
     } else {
-        return EMPTY_SQUARE;
+        return Square::EMPTY_SQUARE;
     }
 }
 
@@ -89,7 +89,7 @@ BitScan(const Bitboard bb) noexcept {
 [[nodiscard]] Square BitScanForward(Bitboard bb) noexcept;
 
 /// @brief The directions of the board represented as offsets
-enum Direction : std::int8_t {
+enum class Direction : std::int8_t {
     NORTH [[maybe_unused]] = 8,
     SOUTH [[maybe_unused]] = -8,
     WEST [[maybe_unused]] = -1,
@@ -110,21 +110,25 @@ template <Direction D>
 [[nodiscard]] constexpr Bitboard
 ShiftOne(const Bitboard bb) noexcept {
     if constexpr (D == Direction::NORTH) {
-        return bb << Direction::NORTH;
+        return bb << static_cast<std::int8_t>(Direction::NORTH);
     } else if constexpr (D == Direction::SOUTH) {
-        return bb >> Direction::NORTH;
+        return bb >> static_cast<std::int8_t>(Direction::NORTH);
     } else if constexpr (D == Direction::EAST) {
-        return (bb << Direction::EAST) & NOT_A_FILE;
+        return (bb << static_cast<std::int8_t>(Direction::EAST)) & NOT_A_FILE;
     } else if constexpr (D == Direction::WEST) {
-        return (bb >> Direction::EAST) & NOT_H_FILE;
+        return (bb >> static_cast<std::int8_t>(Direction::EAST)) & NOT_H_FILE;
     } else if constexpr (D == Direction::NORTH_EAST) {
-        return (bb << Direction::NORTH_EAST) & NOT_A_FILE;
+        return (bb << static_cast<std::int8_t>(Direction::NORTH_EAST)) &
+               NOT_A_FILE;
     } else if constexpr (D == Direction::NORTH_WEST) {
-        return (bb << Direction::NORTH_WEST) & NOT_H_FILE;
+        return (bb << static_cast<std::int8_t>(Direction::NORTH_WEST)) &
+               NOT_H_FILE;
     } else if constexpr (D == Direction::SOUTH_EAST) {
-        return (bb >> Direction::NORTH_WEST) & NOT_A_FILE;
+        return (bb >> static_cast<std::int8_t>(Direction::NORTH_WEST)) &
+               NOT_A_FILE;
     } else if constexpr (D == Direction::SOUTH_WEST) {
-        return (bb >> Direction::NORTH_EAST) & NOT_H_FILE;
+        return (bb >> static_cast<std::int8_t>(Direction::NORTH_EAST)) &
+               NOT_H_FILE;
     }
 }
 

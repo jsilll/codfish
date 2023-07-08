@@ -2,7 +2,7 @@
 file(GLOB_RECURSE SOURCES "*.cpp")
 
 # -- Codchess --
-add_library(codchess STATIC ${SOURCES})
+add_library(codchess SHARED ${SOURCES})
 
 # -- Include Directory --
 target_include_directories(codchess

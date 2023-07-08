@@ -45,8 +45,8 @@ class Board final {
     struct StateBackup {
         /// @brief The en passant square
         Square en_passant_square;
-        /// @brief The castling_availability rights
-        int castling_availability;
+        /// @brief The castling availability rights
+        CastlingAvailability castling_availability;
         /// @brief The half move clock
         int half_move_clock;
         /// @brief The full move number
@@ -125,7 +125,7 @@ class Board final {
     /// @param sq The square
     /// @return The piece on the square
     [[nodiscard]] constexpr auto piece(const Square sq) const noexcept {
-        return _piece[sq];
+        return _piece[static_cast<std::size_t>(sq)];
     }
 
     /// @brief Returns the pieces bitboard of a color and type
@@ -133,14 +133,15 @@ class Board final {
     /// @param type The type
     [[nodiscard]] constexpr auto pieces(const Color color,
                                         const Piece type) const noexcept {
-        return _pieces[color][type];
+        return _pieces[static_cast<std::size_t>(color)]
+                      [static_cast<std::size_t>(type)];
     }
 
     /// @brief Returns the occupancy of a color
     /// @param color The color
     /// @return The occupancy of the color
     [[nodiscard]] constexpr auto occupancies(const Color color) const noexcept {
-        return _occupancies[color];
+        return _occupancies[static_cast<std::size_t>(color)];
     }
 
     /// @brief Returns the hash key of the board
@@ -174,13 +175,14 @@ class Board final {
     /// @brief Returns whether the current side to move is in check
     /// @return Whether the current side to move is in check
     [[nodiscard]] bool IsCheck() const noexcept {
-        const auto king_sq =
-            bitboard::BitScanForward(_pieces[_active][Piece::KING]);
+        const auto king_sq = bitboard::BitScanForward(
+            _pieces[static_cast<std::size_t>(_active)]
+                   [static_cast<std::size_t>(Piece::KING)]);
         return IsSquareAttacked(king_sq, utils::GetOpponent(_active));
     }
 
     /// @brief Returns whether the current side to move is in stalemate
-    /// @return Whether the current side to move is in stalemate 
+    /// @return Whether the current side to move is in stalemate
     [[nodiscard]] bool IsStaleMate() noexcept {
         return !IsCheck() && !HasLegalMoves();
     }
@@ -199,8 +201,8 @@ class Board final {
 
     /// @brief Sets the current castling_availability rights
     /// @param castling_availability The castling_availability rights
-    [[maybe_unused]] void
-    castling_availability(const int castling_availability) noexcept {
+    [[maybe_unused]] void castling_availability(
+        const CastlingAvailability castling_availability) noexcept {
         _castling_availability = castling_availability;
     }
 
@@ -279,18 +281,19 @@ class Board final {
 
     /// @brief The squares representation of the board
     /// @note This should be synced with the bitboards
-    ColoredPiece _piece[N_SQUARES]{};
+    ColoredPiece _piece[static_cast<std::size_t>(Square::N_SQUARES)]{};
     /// @brief The occupancy bitboards
     /// @note This should be synced with the bitboards
-    std::uint64_t _occupancies[N_COLORS + 1]{};
+    std::uint64_t _occupancies[static_cast<std::size_t>(Color::N_COLORS) + 1]{};
     /// @brief The bitboards for the pieces
     /// @note This should be synced with the arrays above
-    std::uint64_t _pieces[N_COLORS][N_PIECES]{};
+    std::uint64_t _pieces[static_cast<std::size_t>(Color::N_COLORS)]
+                         [static_cast<std::size_t>(Piece::N_PIECES)]{};
 
     /// @brief The side to move
     Color _active{};
     /// @brief The current castling_availability rights
-    int _castling_availability{};
+    CastlingAvailability _castling_availability{};
     /// @brief The half move clock
     int _half_move_clock{};
     /// @brief The full move number

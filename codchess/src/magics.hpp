@@ -19,10 +19,10 @@ struct Magic {
 void Init() noexcept;
 
 /// @brief Array of pre-computed magic numbers, masks and shifts for rooks.
-extern Magic ROOK_MAGIC_TABLE[N_SQUARES];
+extern Magic ROOK_MAGIC_TABLE[static_cast<std::size_t>(Square::N_SQUARES)];
 
 /// @brief Array of pre-computed magic numbers, masks and shifts for bishops.
-extern Magic BISHOP_MAGIC_TABLE[N_SQUARES];
+extern Magic BISHOP_MAGIC_TABLE[static_cast<std::size_t>(Square::N_SQUARES)];
 
 /// @brief Computes the magic index for a given occupancy and magic entry
 /// @param occ The occupancy

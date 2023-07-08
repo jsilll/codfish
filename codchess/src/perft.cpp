@@ -13,7 +13,7 @@ PerftUnmakeAux(Board &board, const std::uint32_t depth) noexcept {
         board.Make(move);
 
         const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+            bitboard::BitScanForward(board.pieces(board.inactive(), Piece::KING));
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             if (depth == 1) {
@@ -47,7 +47,7 @@ PerftCopyAux(Board &board, const std::uint32_t depth) noexcept {
         board.Make(move);
 
         const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+            bitboard::BitScanForward(board.pieces(board.inactive(), Piece::KING));
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             if (depth == 1) {

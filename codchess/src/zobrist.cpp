@@ -2,16 +2,18 @@
 
 namespace cod::chess::zobrist {
 /// @brief The keys for the side to move
-bitboard::Bitboard SIDE_KEY[BOTH]{};
+bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::BOTH)]{};
 
 /// @brief The keys for the en passant squares
-bitboard::Bitboard EN_PASSANT_KEY[N_SQUARES];
+bitboard::Bitboard EN_PASSANT_KEY[static_cast<std::size_t>(Square::N_SQUARES)];
 
 /// @brief The keys for the castling_availability rights
 bitboard::Bitboard CASTLE_KEY[N_CASTLING_KEYS];
 
 /// @brief The keys for the pieces
-bitboard::Bitboard PIECE_KEY[N_COLORS][N_PIECES][N_SQUARES];
+bitboard::Bitboard PIECE_KEY[static_cast<std::size_t>(Color::N_COLORS)]
+                            [static_cast<std::size_t>(Piece::N_PIECES)]
+                            [static_cast<std::size_t>(Square::N_SQUARES)];
 
 /// @brief Generates a random number
 /// @return The random number
@@ -32,10 +34,14 @@ Init() noexcept {
         castle_key = RandomBitboard();
     }
 
-    for (int piece = PAWN; piece < N_PIECES; ++piece) {
-        for (int square = A1; square < N_SQUARES; ++square) {
-            PIECE_KEY[WHITE][piece][square] = RandomBitboard();
-            PIECE_KEY[BLACK][piece][square] = RandomBitboard();
+    for (int piece = static_cast<int>(Piece::PAWN);
+         piece < static_cast<int>(Piece::N_PIECES); ++piece) {
+        for (int square = static_cast<int>(Square::A1);
+             square < static_cast<int>(Square::N_SQUARES); ++square) {
+            PIECE_KEY[static_cast<std::size_t>(Color::WHITE)][piece][square] =
+                RandomBitboard();
+            PIECE_KEY[static_cast<std::size_t>(Color::BLACK)][piece][square] =
+                RandomBitboard();
         }
     }
 
@@ -45,24 +51,29 @@ Init() noexcept {
 bitboard::Bitboard
 Hash(const Board &board) noexcept {
     auto final_key{bitboard::ZERO};
-    for (int piece = PAWN; piece < N_PIECES; ++piece) {
-        for (int side = WHITE; side < BOTH; ++side) {
+    for (int piece = static_cast<int>(Piece::PAWN);
+         piece < static_cast<int>(Piece::N_PIECES); ++piece) {
+        for (int side = static_cast<int>(Color::WHITE);
+             side < static_cast<int>(Color::BOTH); ++side) {
             auto bitboard = board.pieces(static_cast<Color>(side),
                                          static_cast<Piece>(piece));
             while (bitboard) {
                 const auto sq = bitboard::BitScanForward(bitboard);
-                final_key ^= PIECE_KEY[side][piece][sq];
+                final_key ^=
+                    PIECE_KEY[side][piece][static_cast<std::size_t>(sq)];
                 bitboard::PopBit(bitboard, sq);
             }
         }
     }
 
-    if (board.en_passant_square() != EMPTY_SQUARE) {
-        final_key ^= EN_PASSANT_KEY[board.en_passant_square()];
+    if (board.en_passant_square() != Square::EMPTY_SQUARE) {
+        final_key ^=
+            EN_PASSANT_KEY[static_cast<std::size_t>(board.en_passant_square())];
     }
 
-    final_key ^= CASTLE_KEY[board.castling_availability()];
-    final_key ^= SIDE_KEY[board.active()];
+    final_key ^=
+        CASTLE_KEY[static_cast<std::size_t>(board.castling_availability())];
+    final_key ^= SIDE_KEY[static_cast<std::size_t>(board.active())];
 
     return final_key;
 }

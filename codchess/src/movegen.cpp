@@ -4,7 +4,7 @@
 
 namespace cod::chess::movegen {
 /// @brief The type of move generation to perform.
-enum GenType {
+enum class GenType {
     /// @brief Generate capture moves.
     CAPTURES,
     /// @brief Generate quiet moves (non-captures).
@@ -19,41 +19,56 @@ enum GenType {
 template <Color ToMove>
 static void
 CastlingMoves(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto Opponent = (ToMove == WHITE ? BLACK : WHITE);
+    constexpr auto Opponent =
+        (ToMove == Color::WHITE ? Color::BLACK : Color::WHITE);
 
-    constexpr auto CastleBSq = (ToMove == WHITE ? B1 : B8);
-    constexpr auto CastleCSq = (ToMove == WHITE ? C1 : C8);
-    constexpr auto CastleDSq = (ToMove == WHITE ? D1 : D8);
-    constexpr auto CastleESq = (ToMove == WHITE ? E1 : E8);
-    constexpr auto CastleFSq = (ToMove == WHITE ? F1 : F8);
-    constexpr auto CastleGSq = (ToMove == WHITE ? G1 : G8);
+    constexpr auto CastleBSq =
+        (ToMove == Color::WHITE ? Square::B1 : Square::B8);
+    constexpr auto CastleCSq =
+        (ToMove == Color::WHITE ? Square::C1 : Square::C8);
+    constexpr auto CastleDSq =
+        (ToMove == Color::WHITE ? Square::D1 : Square::D8);
+    constexpr auto CastleESq =
+        (ToMove == Color::WHITE ? Square::E1 : Square::E8);
+    constexpr auto CastleFSq =
+        (ToMove == Color::WHITE ? Square::F1 : Square::F8);
+    constexpr auto CastleGSq =
+        (ToMove == Color::WHITE ? Square::G1 : Square::G8);
 
-    constexpr auto CastleKingMask = (ToMove == WHITE ? WHITE_KING : BLACK_KING);
+    constexpr auto CastleKingMask =
+        (ToMove == Color::WHITE ? CastlingAvailability::WHITE_KING
+                                : CastlingAvailability::BLACK_KING);
     constexpr auto CastleQueenMask =
-        (ToMove == WHITE ? WHITE_QUEEN : BLACK_QUEEN);
+        (ToMove == Color::WHITE ? CastlingAvailability::WHITE_QUEEN
+                                : CastlingAvailability::BLACK_QUEEN);
 
     if (!board.IsSquareAttacked(CastleESq, Opponent)) {
-        if ((board.castling_availability() & CastleKingMask) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CastleFSq) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CastleGSq)) {
+        if ((static_cast<std::uint8_t>(board.castling_availability()) &
+             static_cast<std::uint8_t>(CastleKingMask)) &&
+            !bitboard::GetBit(board.occupancies(Color::BOTH), CastleFSq) &&
+            !bitboard::GetBit(board.occupancies(Color::BOTH), CastleGSq)) {
             if (!board.IsSquareAttacked(CastleFSq, Opponent) &&
                 !board.IsSquareAttacked(CastleGSq, Opponent)) {
 
-                move_list.Insert({CastleESq, CastleGSq, KING, EMPTY_PIECE,
-                                  EMPTY_PIECE, false, false, true});
+                move_list.Insert({CastleESq, CastleGSq, Piece::KING,
+                                  Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, false,
+                                  false, true});
             }
         }
-        if ((board.castling_availability() & CastleQueenMask) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CastleDSq) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CastleCSq) &&
-            !bitboard::GetBit(board.occupancies(BOTH), CastleBSq)) {
+        if ((static_cast<std::uint8_t>(board.castling_availability()) &
+             static_cast<std::uint8_t>(CastleQueenMask)) &&
+            !bitboard::GetBit(board.occupancies(Color::BOTH), CastleDSq) &&
+            !bitboard::GetBit(board.occupancies(Color::BOTH), CastleCSq) &&
+            !bitboard::GetBit(board.occupancies(Color::BOTH), CastleBSq)) {
             if (!board.IsSquareAttacked(CastleDSq, Opponent) &&
                 !board.IsSquareAttacked(CastleCSq, Opponent)) {
 
-                move_list.Insert({CastleESq, CastleCSq, KING, EMPTY_PIECE,
-                                  EMPTY_PIECE, false, false, true});
+                move_list.Insert({CastleESq, CastleCSq, Piece::KING,
+                                  Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, false,
+                                  false, true});
             }
         }
     }
@@ -66,22 +81,27 @@ CastlingMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr auto Opponent =
+        ToMove == Color::WHITE ? Color::BLACK : Color::WHITE;
 
-    if (board.en_passant_square() != EMPTY_SQUARE) {
+    if (board.en_passant_square() != Square::EMPTY_SQUARE) {
         auto pawns_can_en_passant =
-            attacks::PAWN_ATTACKS[Opponent][board.en_passant_square()] &
-            board.pieces(ToMove, PAWN);
+            attacks::PAWN_ATTACKS[static_cast<std::size_t>(Opponent)]
+                                 [static_cast<std::size_t>(
+                                     board.en_passant_square())] &
+            board.pieces(ToMove, Piece::PAWN);
 
         while (pawns_can_en_passant) {
             const auto from_square =
                 bitboard::BitScanForward(pawns_can_en_passant);
 
-            move_list.Insert({from_square, board.en_passant_square(), PAWN,
+            move_list.Insert({from_square, board.en_passant_square(),
+                              Piece::PAWN,
                               board.piece(board.en_passant_square()).type,
-                              EMPTY_PIECE, false, true, false});
+                              Piece::EMPTY_PIECE, false, true, false});
 
             bitboard::PopLastBit(pawns_can_en_passant);
         }
@@ -96,31 +116,37 @@ EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
+    constexpr auto PawnSinglePushOffset = ToMove == Color::WHITE ? -8 : 8;
 
     auto pawn_single_pushes_promo =
-        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
-                                          ~board.occupancies(BOTH)) &
+        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, Piece::PAWN),
+                                          ~board.occupancies(Color::BOTH)) &
         (utils::MASK_RANK[0] | utils::MASK_RANK[7]);
 
     while (pawn_single_pushes_promo) {
         const auto to_square =
             bitboard::BitScanForward(pawn_single_pushes_promo);
-        const auto from_square = to_square + PawnSinglePushOffset;
+        const auto from_square = static_cast<Square>(
+            static_cast<std::uint8_t>(to_square) + PawnSinglePushOffset);
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE, QUEEN,
-                          false, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::QUEEN, false, false,
+                          false});
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE, KNIGHT,
-                          false, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::KNIGHT, false, false,
+                          false});
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE, ROOK,
-                          false, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::ROOK, false, false,
+                          false});
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE, BISHOP,
-                          false, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::BISHOP, false, false,
+                          false});
 
         bitboard::PopLastBit(pawn_single_pushes_promo);
     }
@@ -137,22 +163,25 @@ PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto PawnSinglePushOffset = ToMove == WHITE ? -8 : 8;
+    constexpr auto PawnSinglePushOffset = ToMove == Color::WHITE ? -8 : 8;
 
     auto pawn_single_pushes_no_promo =
-        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, PAWN),
-                                          ~board.occupancies(BOTH)) &
+        attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, Piece::PAWN),
+                                          ~board.occupancies(Color::BOTH)) &
         utils::MASK_NOT_RANK[0] & utils::MASK_NOT_RANK[7];
 
     while (pawn_single_pushes_no_promo) {
         const auto to_square =
             bitboard::BitScanForward(pawn_single_pushes_no_promo);
-        const auto from_square = to_square + PawnSinglePushOffset;
+        const auto from_square = static_cast<Square>(
+            static_cast<std::uint8_t>(to_square) + PawnSinglePushOffset);
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE,
-                          EMPTY_PIECE, false, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, false, false,
+                          false});
 
         bitboard::PopLastBit(pawn_single_pushes_no_promo);
     }
@@ -168,40 +197,44 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnCapturesPromotion(MoveList &move_list, const Board &board) {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
+    constexpr auto Opponent =
+        ToMove == Color::WHITE ? Color::BLACK : Color::WHITE;
+    constexpr auto MaskIndex = ToMove == Color::WHITE ? 6 : 1;
 
     auto pawns_can_capture_with_promo =
-        board.pieces(ToMove, PAWN) & utils::MASK_RANK[MaskIndex];
+        board.pieces(ToMove, Piece::PAWN) & utils::MASK_RANK[MaskIndex];
 
     while (pawns_can_capture_with_promo) {
         const auto from_square =
             bitboard::BitScanForward(pawns_can_capture_with_promo);
 
-        auto pawn_captures_promo = attacks::PAWN_ATTACKS[ToMove][from_square] &
-                                   board.occupancies(Opponent);
+        auto pawn_captures_promo =
+            attacks::PAWN_ATTACKS[static_cast<std::size_t>(ToMove)]
+                                 [static_cast<std::size_t>(from_square)] &
+            board.occupancies(Opponent);
 
         while (pawn_captures_promo) {
             const auto to_square =
                 bitboard::BitScanForward(pawn_captures_promo);
 
-            move_list.Insert({from_square, to_square, PAWN,
-                              board.piece(to_square).type, QUEEN, false, false,
-                              false});
+            move_list.Insert({from_square, to_square, Piece::PAWN,
+                              board.piece(to_square).type, Piece::QUEEN, false,
+                              false, false});
 
-            move_list.Insert({from_square, to_square, PAWN,
-                              board.piece(to_square).type, KNIGHT, false, false,
-                              false});
+            move_list.Insert({from_square, to_square, Piece::PAWN,
+                              board.piece(to_square).type, Piece::KNIGHT, false,
+                              false, false});
 
-            move_list.Insert({from_square, to_square, PAWN,
-                              board.piece(to_square).type, ROOK, false, false,
-                              false});
+            move_list.Insert({from_square, to_square, Piece::PAWN,
+                              board.piece(to_square).type, Piece::ROOK, false,
+                              false, false});
 
-            move_list.Insert({from_square, to_square, PAWN,
-                              board.piece(to_square).type, BISHOP, false, false,
-                              false});
+            move_list.Insert({from_square, to_square, Piece::PAWN,
+                              board.piece(to_square).type, Piece::BISHOP, false,
+                              false, false});
 
             bitboard::PopLastBit(pawn_captures_promo);
         }
@@ -220,29 +253,32 @@ PawnCapturesPromotion(MoveList &move_list, const Board &board) {
 template <Color ToMove>
 static void
 PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
-    constexpr auto MaskIndex = ToMove == WHITE ? 6 : 1;
+    constexpr auto Opponent =
+        ToMove == Color::WHITE ? Color::BLACK : Color::WHITE;
+    constexpr auto MaskIndex = ToMove == Color::WHITE ? 6 : 1;
 
     auto pawns_can_capture_no_promo =
-        board.pieces(ToMove, PAWN) & utils::MASK_NOT_RANK[MaskIndex];
+        board.pieces(ToMove, Piece::PAWN) & utils::MASK_NOT_RANK[MaskIndex];
 
     while (pawns_can_capture_no_promo) {
         const auto from_square =
             bitboard::BitScanForward(pawns_can_capture_no_promo);
 
         auto pawn_captures_no_promo =
-            attacks::PAWN_ATTACKS[ToMove][from_square] &
+            attacks::PAWN_ATTACKS[static_cast<std::size_t>(ToMove)]
+                                 [static_cast<std::size_t>(from_square)] &
             board.occupancies(Opponent);
 
         while (pawn_captures_no_promo) {
             const auto to_square =
                 bitboard::BitScanForward(pawn_captures_no_promo);
 
-            move_list.Insert({from_square, to_square, PAWN,
-                              board.piece(to_square).type, EMPTY_PIECE, false,
-                              false, false});
+            move_list.Insert({from_square, to_square, Piece::PAWN,
+                              board.piece(to_square).type, Piece::EMPTY_PIECE,
+                              false, false, false});
 
             bitboard::PopLastBit(pawn_captures_no_promo);
         }
@@ -261,19 +297,22 @@ PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove>
 static void
 PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
 
-    constexpr auto PawnDoublePushOffset = ToMove == WHITE ? -16 : 16;
+    constexpr auto PawnDoublePushOffset = ToMove == Color::WHITE ? -16 : 16;
 
     auto pawn_double_pushes = attacks::PawnDoublePushes<ToMove>(
-        board.pieces(ToMove, PAWN), ~board.occupancies(BOTH));
+        board.pieces(ToMove, Piece::PAWN), ~board.occupancies(Color::BOTH));
 
     while (pawn_double_pushes) {
         const auto to_square = bitboard::BitScanForward(pawn_double_pushes);
-        const auto from_square = to_square + PawnDoublePushOffset;
+        const auto from_square = static_cast<Square>(
+            static_cast<std::uint8_t>(to_square) + PawnDoublePushOffset);
 
-        move_list.Insert({from_square, to_square, PAWN, EMPTY_PIECE,
-                          EMPTY_PIECE, true, false, false});
+        move_list.Insert({from_square, to_square, Piece::PAWN,
+                          Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, true, false,
+                          false});
 
         bitboard::PopLastBit(pawn_double_pushes);
     }
@@ -294,10 +333,13 @@ PawnDoublePushes(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, Piece PType, GenType GType>
 static void
 LeaperMoves(MoveList &move_list, const Board &board) noexcept {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
-    static_assert(PType == KNIGHT or PType == KING, "Invalid piece type");
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
+    static_assert(PType == Piece::KNIGHT or PType == Piece::KING,
+                  "Invalid piece type");
 
-    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr auto Opponent =
+        ToMove == Color::WHITE ? Color::BLACK : Color::WHITE;
 
     auto to_move_pieces = board.pieces(ToMove, PType);
 
@@ -305,21 +347,25 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
         const auto from_square = bitboard::BitScanForward(to_move_pieces);
 
         auto moves{bitboard::ZERO};
-        if constexpr (GType == QUIETS) {
-            if constexpr (PType == KNIGHT) {
-                moves = attacks::KNIGHT_ATTACKS[from_square] &
-                        ~board.occupancies(BOTH);
+        if constexpr (GType == GenType::QUIETS) {
+            if constexpr (PType == Piece::KNIGHT) {
+                moves = attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(
+                            from_square)] &
+                        ~board.occupancies(Color::BOTH);
             } else {
-                moves = attacks::KING_ATTACKS[from_square] &
-                        ~board.occupancies(BOTH);
+                moves = attacks::KING_ATTACKS[static_cast<std::size_t>(
+                            from_square)] &
+                        ~board.occupancies(Color::BOTH);
             }
         } else {
-            if constexpr (PType == KNIGHT) {
-                moves = attacks::KNIGHT_ATTACKS[from_square] &
+            if constexpr (PType == Piece::KNIGHT) {
+                moves = attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(
+                            from_square)] &
                         ~board.occupancies(ToMove) &
                         board.occupancies(Opponent);
             } else {
-                moves = attacks::KING_ATTACKS[from_square] &
+                moves = attacks::KING_ATTACKS[static_cast<std::size_t>(
+                            from_square)] &
                         ~board.occupancies(ToMove) &
                         board.occupancies(Opponent);
             }
@@ -328,13 +374,14 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
         while (moves) {
             const auto to_square = bitboard::BitScanForward(moves);
 
-            if constexpr (GType == QUIETS) {
-                move_list.Insert({from_square, to_square, PType, EMPTY_PIECE,
-                                  EMPTY_PIECE, false, false, false});
+            if constexpr (GType == GenType::QUIETS) {
+                move_list.Insert({from_square, to_square, PType,
+                                  Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, false,
+                                  false, false});
             } else {
                 move_list.Insert({from_square, to_square, PType,
-                                  board.piece(to_square).type, EMPTY_PIECE,
-                                  false, false, false});
+                                  board.piece(to_square).type,
+                                  Piece::EMPTY_PIECE, false, false, false});
             }
 
             bitboard::PopLastBit(moves);
@@ -353,39 +400,44 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
 template <Color ToMove, Piece PType, GenType GType>
 static void
 SliderMoves(MoveList &move_list, const Board &board) {
-    static_assert(ToMove == WHITE or ToMove == BLACK, "Invalid color");
-    static_assert(PType == BISHOP or PType == ROOK or PType == QUEEN,
+    static_assert(ToMove == Color::WHITE or ToMove == Color::BLACK,
+                  "Invalid color");
+    static_assert(PType == Piece::BISHOP or PType == Piece::ROOK or
+                      PType == Piece::QUEEN,
                   "Invalid piece type");
 
-    constexpr auto Opponent = ToMove == WHITE ? BLACK : WHITE;
+    constexpr auto Opponent =
+        ToMove == Color::WHITE ? Color::BLACK : Color::WHITE;
 
-    constexpr auto ATTACKS_FUNC = (PType == BISHOP ? attacks::BishopAttacks
-                                   : PType == ROOK ? attacks::RookAttacks
-                                                   : attacks::QueenAttacks);
+    constexpr auto ATTACKS_FUNC =
+        (PType == Piece::BISHOP ? attacks::BishopAttacks
+         : PType == Piece::ROOK ? attacks::RookAttacks
+                                : attacks::QueenAttacks);
 
     auto to_move_pieces = board.pieces(ToMove, PType);
     while (to_move_pieces) {
         const auto from_square = bitboard::BitScanForward(to_move_pieces);
 
         auto moves{bitboard::ZERO};
-        if constexpr (GType == QUIETS) {
-            moves = ATTACKS_FUNC(from_square, board.occupancies(BOTH)) &
+        if constexpr (GType == GenType::QUIETS) {
+            moves = ATTACKS_FUNC(from_square, board.occupancies(Color::BOTH)) &
                     ~board.occupancies(ToMove) & ~board.occupancies(Opponent);
         } else {
-            moves = ATTACKS_FUNC(from_square, board.occupancies(BOTH)) &
+            moves = ATTACKS_FUNC(from_square, board.occupancies(Color::BOTH)) &
                     ~board.occupancies(ToMove) & board.occupancies(Opponent);
         }
 
         while (moves) {
             const auto to_square = bitboard::BitScanForward(moves);
 
-            if constexpr (GType == QUIETS) {
-                move_list.Insert({from_square, to_square, PType, EMPTY_PIECE,
-                                  EMPTY_PIECE, false, false, false});
+            if constexpr (GType == GenType::QUIETS) {
+                move_list.Insert({from_square, to_square, PType,
+                                  Piece::EMPTY_PIECE, Piece::EMPTY_PIECE, false,
+                                  false, false});
             } else {
                 move_list.Insert({from_square, to_square, PType,
-                                  board.piece(to_square).type, EMPTY_PIECE,
-                                  false, false, false});
+                                  board.piece(to_square).type,
+                                  Piece::EMPTY_PIECE, false, false, false});
             }
 
             bitboard::PopLastBit(moves);
@@ -399,48 +451,54 @@ MoveList
 PseudoLegal(const Board &board) noexcept {
     MoveList moves;
 
-    if (board.active() == WHITE) {
-        PawnCapturesPromotion<WHITE>(moves, board);
-        PawnCapturesNoPromotion<WHITE>(moves, board);
-        EnPassantCaptures<WHITE>(moves, board);
-        PawnSinglePushPromotions<WHITE>(moves, board);
-        PawnDoublePushes<WHITE>(moves, board);
-        PawnSinglePushesNoPromotion<WHITE>(moves, board);
+    if (board.active() == Color::WHITE) {
+        PawnCapturesPromotion<Color::WHITE>(moves, board);
+        PawnCapturesNoPromotion<Color::WHITE>(moves, board);
+        EnPassantCaptures<Color::WHITE>(moves, board);
+        PawnSinglePushPromotions<Color::WHITE>(moves, board);
+        PawnDoublePushes<Color::WHITE>(moves, board);
+        PawnSinglePushesNoPromotion<Color::WHITE>(moves, board);
 
-        LeaperMoves<WHITE, KNIGHT, CAPTURES>(moves, board);
-        LeaperMoves<WHITE, KING, CAPTURES>(moves, board);
-        SliderMoves<WHITE, BISHOP, CAPTURES>(moves, board);
-        SliderMoves<WHITE, ROOK, CAPTURES>(moves, board);
-        SliderMoves<WHITE, QUEEN, CAPTURES>(moves, board);
+        LeaperMoves<Color::WHITE, Piece::KNIGHT, GenType::CAPTURES>(moves,
+                                                                    board);
+        LeaperMoves<Color::WHITE, Piece::KING, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::WHITE, Piece::BISHOP, GenType::CAPTURES>(moves,
+                                                                    board);
+        SliderMoves<Color::WHITE, Piece::ROOK, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::WHITE, Piece::QUEEN, GenType::CAPTURES>(moves,
+                                                                   board);
 
-        LeaperMoves<WHITE, KNIGHT, QUIETS>(moves, board);
-        LeaperMoves<WHITE, KING, QUIETS>(moves, board);
-        SliderMoves<WHITE, BISHOP, QUIETS>(moves, board);
-        SliderMoves<WHITE, ROOK, QUIETS>(moves, board);
-        SliderMoves<WHITE, QUEEN, QUIETS>(moves, board);
+        LeaperMoves<Color::WHITE, Piece::KNIGHT, GenType::QUIETS>(moves, board);
+        LeaperMoves<Color::WHITE, Piece::KING, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::WHITE, Piece::BISHOP, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::WHITE, Piece::ROOK, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::WHITE, Piece::QUEEN, GenType::QUIETS>(moves, board);
 
-        CastlingMoves<WHITE>(moves, board);
+        CastlingMoves<Color::WHITE>(moves, board);
     } else {
-        PawnCapturesPromotion<BLACK>(moves, board);
-        PawnCapturesNoPromotion<BLACK>(moves, board);
-        EnPassantCaptures<BLACK>(moves, board);
-        PawnSinglePushPromotions<BLACK>(moves, board);
-        PawnDoublePushes<BLACK>(moves, board);
-        PawnSinglePushesNoPromotion<BLACK>(moves, board);
+        PawnCapturesPromotion<Color::BLACK>(moves, board);
+        PawnCapturesNoPromotion<Color::BLACK>(moves, board);
+        EnPassantCaptures<Color::BLACK>(moves, board);
+        PawnSinglePushPromotions<Color::BLACK>(moves, board);
+        PawnDoublePushes<Color::BLACK>(moves, board);
+        PawnSinglePushesNoPromotion<Color::BLACK>(moves, board);
 
-        LeaperMoves<BLACK, KNIGHT, CAPTURES>(moves, board);
-        LeaperMoves<BLACK, KING, CAPTURES>(moves, board);
-        SliderMoves<BLACK, BISHOP, CAPTURES>(moves, board);
-        SliderMoves<BLACK, ROOK, CAPTURES>(moves, board);
-        SliderMoves<BLACK, QUEEN, CAPTURES>(moves, board);
+        LeaperMoves<Color::BLACK, Piece::KNIGHT, GenType::CAPTURES>(moves,
+                                                                    board);
+        LeaperMoves<Color::BLACK, Piece::KING, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::BLACK, Piece::BISHOP, GenType::CAPTURES>(moves,
+                                                                    board);
+        SliderMoves<Color::BLACK, Piece::ROOK, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::BLACK, Piece::QUEEN, GenType::CAPTURES>(moves,
+                                                                   board);
 
-        LeaperMoves<BLACK, KNIGHT, QUIETS>(moves, board);
-        LeaperMoves<BLACK, KING, QUIETS>(moves, board);
-        SliderMoves<BLACK, BISHOP, QUIETS>(moves, board);
-        SliderMoves<BLACK, ROOK, QUIETS>(moves, board);
-        SliderMoves<BLACK, QUEEN, QUIETS>(moves, board);
+        LeaperMoves<Color::BLACK, Piece::KNIGHT, GenType::QUIETS>(moves, board);
+        LeaperMoves<Color::BLACK, Piece::KING, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::BLACK, Piece::BISHOP, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::BLACK, Piece::ROOK, GenType::QUIETS>(moves, board);
+        SliderMoves<Color::BLACK, Piece::QUEEN, GenType::QUIETS>(moves, board);
 
-        CastlingMoves<BLACK>(moves, board);
+        CastlingMoves<Color::BLACK>(moves, board);
     }
 
     return moves;
@@ -450,28 +508,34 @@ MoveList
 PseudoLegalCaptures(const Board &board) noexcept {
     MoveList moves;
 
-    if (board.active() == WHITE) {
-        PawnCapturesPromotion<WHITE>(moves, board);
-        PawnCapturesNoPromotion<WHITE>(moves, board);
-        EnPassantCaptures<WHITE>(moves, board);
+    if (board.active() == Color::WHITE) {
+        PawnCapturesPromotion<Color::WHITE>(moves, board);
+        PawnCapturesNoPromotion<Color::WHITE>(moves, board);
+        EnPassantCaptures<Color::WHITE>(moves, board);
 
-        LeaperMoves<WHITE, KNIGHT, CAPTURES>(moves, board);
-        LeaperMoves<WHITE, KING, CAPTURES>(moves, board);
+        LeaperMoves<Color::WHITE, Piece::KNIGHT, GenType::CAPTURES>(moves,
+                                                                    board);
+        LeaperMoves<Color::WHITE, Piece::KING, GenType::CAPTURES>(moves, board);
 
-        SliderMoves<WHITE, BISHOP, CAPTURES>(moves, board);
-        SliderMoves<WHITE, ROOK, CAPTURES>(moves, board);
-        SliderMoves<WHITE, QUEEN, CAPTURES>(moves, board);
+        SliderMoves<Color::WHITE, Piece::BISHOP, GenType::CAPTURES>(moves,
+                                                                    board);
+        SliderMoves<Color::WHITE, Piece::ROOK, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::WHITE, Piece::QUEEN, GenType::CAPTURES>(moves,
+                                                                   board);
     } else {
-        PawnCapturesPromotion<BLACK>(moves, board);
-        PawnCapturesNoPromotion<BLACK>(moves, board);
-        EnPassantCaptures<BLACK>(moves, board);
+        PawnCapturesPromotion<Color::BLACK>(moves, board);
+        PawnCapturesNoPromotion<Color::BLACK>(moves, board);
+        EnPassantCaptures<Color::BLACK>(moves, board);
 
-        LeaperMoves<BLACK, KNIGHT, CAPTURES>(moves, board);
-        LeaperMoves<BLACK, KING, CAPTURES>(moves, board);
+        LeaperMoves<Color::BLACK, Piece::KNIGHT, GenType::CAPTURES>(moves,
+                                                                    board);
+        LeaperMoves<Color::BLACK, Piece::KING, GenType::CAPTURES>(moves, board);
 
-        SliderMoves<BLACK, BISHOP, CAPTURES>(moves, board);
-        SliderMoves<BLACK, ROOK, CAPTURES>(moves, board);
-        SliderMoves<BLACK, QUEEN, CAPTURES>(moves, board);
+        SliderMoves<Color::BLACK, Piece::BISHOP, GenType::CAPTURES>(moves,
+                                                                    board);
+        SliderMoves<Color::BLACK, Piece::ROOK, GenType::CAPTURES>(moves, board);
+        SliderMoves<Color::BLACK, Piece::QUEEN, GenType::CAPTURES>(moves,
+                                                                   board);
     }
 
     return moves;
@@ -485,8 +549,8 @@ Legal(Board &board) noexcept {
     for (const auto move : movegen::PseudoLegal(board)) {
         board.Make(move);
 
-        const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+        const auto king_sq = bitboard::BitScanForward(
+            board.pieces(board.inactive(), Piece::KING));
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             moves.Insert(move);
@@ -506,8 +570,8 @@ LegalCaptures(Board &board) noexcept {
     for (const auto move : movegen::PseudoLegalCaptures(board)) {
         board.Make(move);
 
-        const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+        const auto king_sq = bitboard::BitScanForward(
+            board.pieces(board.inactive(), Piece::KING));
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             captures.Insert(move);
@@ -525,8 +589,8 @@ HasLegal(Board &board) noexcept {
     for (const auto move : PseudoLegal(board)) {
         board.Make(move);
 
-        const auto king_sq =
-            bitboard::BitScanForward(board.pieces(board.inactive(), KING));
+        const auto king_sq = bitboard::BitScanForward(
+            board.pieces(board.inactive(), Piece::KING));
 
         if (!board.IsSquareAttacked(king_sq, board.active())) {
             board.Unmake(move, state);

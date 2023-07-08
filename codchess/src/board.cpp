@@ -10,8 +10,10 @@ namespace cod::chess {
 Board::ToFen() const noexcept {
     int empty_squares{0};
     std::string piece_placements;
-    for (int rank = RANK_8; rank >= RANK_1; rank--) {
-        for (int file = FILE_A; file < N_FILES; file++) {
+    for (int rank = static_cast<int>(Rank::RANK_8);
+         rank >= static_cast<int>(Rank::RANK_1); --rank) {
+        for (int file = static_cast<int>(File::FILE_A);
+             file < static_cast<int>(File::N_FILES); ++file) {
             Square sq = utils::GetSquare(static_cast<Rank>(rank),
                                          static_cast<File>(file));
             if (file == 0) {
@@ -21,8 +23,8 @@ Board::ToFen() const noexcept {
                 }
                 piece_placements += '/';
             }
-            switch (_piece[sq].type) {
-            case EMPTY_PIECE:
+            switch (_piece[static_cast<std::size_t>(sq)].type) {
+            case Piece::EMPTY_PIECE:
                 empty_squares++;
                 break;
             default:
@@ -30,8 +32,9 @@ Board::ToFen() const noexcept {
                     piece_placements += std::to_string(empty_squares);
                     empty_squares = 0;
                 }
-                piece_placements +=
-                    utils::PieceToString(_piece[sq].type, _piece[sq].color);
+                piece_placements += utils::PieceToString(
+                    _piece[static_cast<std::size_t>(sq)].type,
+                    _piece[static_cast<std::size_t>(sq)].color);
                 break;
             }
         }
@@ -41,14 +44,26 @@ Board::ToFen() const noexcept {
         }
     }
 
-    const auto active_color = _active == WHITE ? "w" : "b";
+    const auto active_color = _active == Color::WHITE ? "w" : "b";
 
     char castling_rights_buf[5];
     snprintf(castling_rights_buf, 5, "%s%s%s%s",
-             (_castling_availability & WHITE_KING) ? "K" : "",
-             (_castling_availability & WHITE_QUEEN) ? "Q" : "",
-             (_castling_availability & BLACK_KING) ? "k" : "",
-             (_castling_availability & BLACK_QUEEN) ? "q" : "");
+             (static_cast<std::uint8_t>(_castling_availability) &
+              static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING))
+                 ? "K"
+                 : "",
+             (static_cast<std::uint8_t>(_castling_availability) &
+              static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN))
+                 ? "Q"
+                 : "",
+             (static_cast<std::uint8_t>(_castling_availability) &
+              static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING))
+                 ? "k"
+                 : "",
+             (static_cast<std::uint8_t>(_castling_availability) &
+              static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN))
+                 ? "q"
+                 : "");
     auto castling_rights = std::string(castling_rights_buf);
     if (castling_rights.empty()) {
         castling_rights = "-";
@@ -70,30 +85,44 @@ Board::HasLegalMoves() noexcept {
 
 bool
 Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
-    const auto pawns = _pieces[attacker][PAWN];
-    if (attacks::PAWN_ATTACKS[utils::GetOpponent(attacker)][sq] & pawns) {
+    const auto pawns = _pieces[static_cast<std::size_t>(attacker)]
+                              [static_cast<std::size_t>(Piece::PAWN)];
+    if (attacks::PAWN_ATTACKS[static_cast<std::size_t>(
+            utils::GetOpponent(attacker))][static_cast<std::size_t>(sq)] &
+        pawns) {
         return true;
     }
 
-    const auto knights = _pieces[attacker][KNIGHT];
-    if (attacks::KNIGHT_ATTACKS[sq] & knights) {
+    const auto knights = _pieces[static_cast<std::size_t>(attacker)]
+                                [static_cast<std::size_t>(Piece::KNIGHT)];
+    if (attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(sq)] & knights) {
         return true;
     }
 
-    const auto king = _pieces[attacker][KING];
-    if (attacks::KING_ATTACKS[sq] & king) {
+    const auto king = _pieces[static_cast<std::size_t>(attacker)]
+                             [static_cast<std::size_t>(Piece::KING)];
+    if (attacks::KING_ATTACKS[static_cast<std::size_t>(sq)] & king) {
         return true;
     }
 
     const auto bishops_queens =
-        _pieces[attacker][QUEEN] | _pieces[attacker][BISHOP];
-    if (attacks::BishopAttacks(sq, _occupancies[BOTH]) & bishops_queens) {
+        _pieces[static_cast<std::size_t>(attacker)]
+               [static_cast<std::size_t>(Piece::QUEEN)] |
+        _pieces[static_cast<std::size_t>(attacker)]
+               [static_cast<std::size_t>(Piece::BISHOP)];
+    if (attacks::BishopAttacks(
+            sq, _occupancies[static_cast<std::size_t>(Color::BOTH)]) &
+        bishops_queens) {
         return true;
     }
 
-    const auto rooks_queens =
-        _pieces[attacker][QUEEN] | _pieces[attacker][ROOK];
-    if (attacks::RookAttacks(sq, _occupancies[BOTH]) & rooks_queens) {
+    const auto rooks_queens = _pieces[static_cast<std::size_t>(attacker)]
+                                     [static_cast<std::size_t>(Piece::QUEEN)] |
+                              _pieces[static_cast<std::size_t>(attacker)]
+                                     [static_cast<std::size_t>(Piece::ROOK)];
+    if (attacks::RookAttacks(
+            sq, _occupancies[static_cast<std::size_t>(Color::BOTH)]) &
+        rooks_queens) {
         return true;
     }
 
@@ -120,105 +149,150 @@ Board::Make(Move move) noexcept {
     const auto is_en_passant = move.IsEnPassant();
     const auto is_castle = move.IsCastle();
 
-    const auto pawn_push_en_passant_offset = _active == WHITE ? -8 : 8;
+    const auto pawn_push_en_passant_offset = _active == Color::WHITE ? -8 : 8;
 
-    bitboard::PopBit(_pieces[_active][piece_type], (Square) from_square);
-    _piece[from_square] = {BLACK, EMPTY_PIECE};
+    bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
+                            [static_cast<std::size_t>(piece_type)],
+                     from_square);
+    _piece[static_cast<std::size_t>(from_square)] = {Color::BLACK,
+                                                     Piece::EMPTY_PIECE};
 
     // Remove from hash key moved piece
-    _hash ^= zobrist::PIECE_KEY[_active][piece_type][from_square];
+    _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+                               [static_cast<std::size_t>(piece_type)]
+                               [static_cast<std::size_t>(from_square)];
 
     if (is_en_passant) {
-        const auto captured_piece_square =
-            static_cast<Square>(to_square + pawn_push_en_passant_offset);
-        _piece[captured_piece_square] = {BLACK, EMPTY_PIECE};
-        bitboard::PopBit(_pieces[inactive()][PAWN], captured_piece_square);
+        const auto captured_piece_square = static_cast<Square>(
+            static_cast<std::uint8_t>(to_square) + pawn_push_en_passant_offset);
+        _piece[static_cast<std::size_t>(captured_piece_square)] = {
+            Color::BLACK, Piece::EMPTY_PIECE};
+        bitboard::PopBit(_pieces[static_cast<std::size_t>(inactive())]
+                                [static_cast<std::size_t>(Piece::PAWN)],
+                         captured_piece_square);
 
         // Remove from hash key captured pawn
-        _hash ^= zobrist::PIECE_KEY[inactive()][PAWN][captured_piece_square];
+        _hash ^=
+            zobrist::PIECE_KEY[static_cast<std::size_t>(inactive())]
+                              [static_cast<std::size_t>(Piece::PAWN)]
+                              [static_cast<std::size_t>(captured_piece_square)];
     } else if (is_capture) {
-        bitboard::PopBit(_pieces[inactive()][captured_piece], to_square);
+        bitboard::PopBit(_pieces[static_cast<std::size_t>(inactive())]
+                                [static_cast<std::size_t>(captured_piece)],
+                         to_square);
 
         // Remove from hash key captured piece
-        _hash ^= zobrist::PIECE_KEY[inactive()][captured_piece][to_square];
+        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(inactive())]
+                                   [static_cast<std::size_t>(captured_piece)]
+                                   [static_cast<std::size_t>(to_square)];
     }
 
     if (is_promotion) {
-        _piece[to_square].type = promoted_piece;
-        bitboard::SetBit(_pieces[_active][promoted_piece], to_square);
+        _piece[static_cast<std::size_t>(to_square)].type = promoted_piece;
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(promoted_piece)],
+                         to_square);
 
         // Update hash key with promoted piece
-        _hash ^= zobrist::PIECE_KEY[_active][promoted_piece][to_square];
+        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+                                   [static_cast<std::size_t>(promoted_piece)]
+                                   [static_cast<std::size_t>(to_square)];
     } else {
-        _piece[to_square].type = piece_type;
-        bitboard::SetBit(_pieces[_active][piece_type], to_square);
+        _piece[static_cast<std::size_t>(to_square)].type = piece_type;
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(piece_type)],
+                         to_square);
 
         // Update hash key with moved piece
-        _hash ^= zobrist::PIECE_KEY[_active][piece_type][to_square];
+        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+                                   [static_cast<std::size_t>(piece_type)]
+                                   [static_cast<std::size_t>(to_square)];
     }
 
-    _piece[to_square].color = _active;
+    _piece[static_cast<std::size_t>(to_square)].color = _active;
 
     if (is_castle) {
         Square rook_from_square, rook_to_square;
-        if (to_square - from_square > 0) {
-            rook_from_square = _active == WHITE ? H1 : H8;
-            rook_to_square = _active == WHITE ? F1 : F8;
+        if (static_cast<int>(to_square) - static_cast<int>(from_square) > 0) {
+            rook_from_square =
+                _active == Color::WHITE ? Square::H1 : Square::H8;
+            rook_to_square = _active == Color::WHITE ? Square::F1 : Square::F8;
         } else {
-            rook_from_square = _active == WHITE ? A1 : A8;
-            rook_to_square = _active == WHITE ? D1 : D8;
+            rook_from_square =
+                _active == Color::WHITE ? Square::A1 : Square::A8;
+            rook_to_square = _active == Color::WHITE ? Square::D1 : Square::D8;
         }
 
-        _piece[rook_to_square] = {_active, ROOK};
-        _piece[rook_from_square] = {BLACK, EMPTY_PIECE};
+        _piece[static_cast<std::size_t>(rook_to_square)] = {_active,
+                                                            Piece::ROOK};
+        _piece[static_cast<std::size_t>(rook_from_square)] = {
+            Color::BLACK, Piece::EMPTY_PIECE};
 
-        bitboard::PopBit(_pieces[_active][ROOK], rook_from_square);
+        bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(Piece::ROOK)],
+                         rook_from_square);
 
         // Remove from hash key rook
-        _hash ^= zobrist::PIECE_KEY[_active][ROOK][rook_from_square];
+        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+                                   [static_cast<std::size_t>(Piece::ROOK)]
+                                   [static_cast<std::size_t>(rook_from_square)];
 
-        bitboard::SetBit(_pieces[_active][ROOK], rook_to_square);
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(Piece::ROOK)],
+                         rook_to_square);
 
         // Update hash key with rook
-        _hash ^= zobrist::PIECE_KEY[_active][ROOK][rook_to_square];
+        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+                                   [static_cast<std::size_t>(Piece::ROOK)]
+                                   [static_cast<std::size_t>(rook_to_square)];
     }
 
     // Remove from hash key en passant square
-    if (_en_passant_square != EMPTY_SQUARE) {
-        _hash ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
+    if (_en_passant_square != Square::EMPTY_SQUARE) {
+        _hash ^= zobrist::EN_PASSANT_KEY[static_cast<std::size_t>(
+            _en_passant_square)];
     }
 
     // Remove from hash key castling_availability rights
-    _hash ^= zobrist::CASTLE_KEY[_castling_availability];
+    _hash ^=
+        zobrist::CASTLE_KEY[static_cast<std::size_t>(_castling_availability)];
 
     _en_passant_square =
-        is_double_push ? (Square) (to_square + pawn_push_en_passant_offset)
-                       : EMPTY_SQUARE;
+        is_double_push
+            ? static_cast<Square>(static_cast<std::uint8_t>(to_square) +
+                                  pawn_push_en_passant_offset)
+            : Square::EMPTY_SQUARE;
 
-    _castling_availability &= castling_rights[from_square];
-    _castling_availability &= castling_rights[to_square];
+    _castling_availability = static_cast<CastlingAvailability>(
+        static_cast<std::uint8_t>(_castling_availability) &
+        castling_rights[static_cast<std::size_t>(from_square)]);
+    _castling_availability = static_cast<CastlingAvailability>(
+        static_cast<std::uint8_t>(_castling_availability) &
+        castling_rights[static_cast<std::size_t>(to_square)]);
 
     // Update hash key with en passant square
-    if (_en_passant_square != EMPTY_SQUARE) {
-        _hash ^= zobrist::EN_PASSANT_KEY[_en_passant_square];
+    if (_en_passant_square != Square::EMPTY_SQUARE) {
+        _hash ^= zobrist::EN_PASSANT_KEY[static_cast<std::size_t>(
+            _en_passant_square)];
     }
 
     // Update hash key with castling_availability rights
-    _hash ^= zobrist::CASTLE_KEY[_castling_availability];
+    _hash ^=
+        zobrist::CASTLE_KEY[static_cast<std::size_t>(_castling_availability)];
 
-    if (piece_type == PAWN or (is_capture)) {
+    if (piece_type == Piece::PAWN or is_capture) {
         _half_move_clock = 0;
     } else {
         _half_move_clock++;
     }
 
-    if (_active == BLACK) {
+    if (_active == Color::BLACK) {
         _full_move_number++;
     }
 
     // Remove (and Update) from hash key side to move
     // This works because zobrist::SIDE_KEY[WHITE] = 0
-    _hash ^= zobrist::SIDE_KEY[BLACK];
+    _hash ^= zobrist::SIDE_KEY[static_cast<std::size_t>(Color::BLACK)];
 
     SwitchActive();
 
@@ -239,52 +313,75 @@ Board::Unmake(const Move move, const StateBackup &backup) noexcept {
     const auto is_en_passant = move.IsEnPassant();
     const auto is_castle = move.IsCastle();
 
-    _piece[from_square].type = piece_type;
-    _piece[from_square].color = _active;
-    bitboard::SetBit(_pieces[_active][piece_type], from_square);
+    _piece[static_cast<std::size_t>(from_square)].type = piece_type;
+    _piece[static_cast<std::size_t>(from_square)].color = _active;
+    bitboard::SetBit(_pieces[static_cast<std::size_t>(_active)]
+                            [static_cast<std::size_t>(piece_type)],
+                     from_square);
 
-    bitboard::PopBit(_pieces[_active][piece_type], to_square);
+    bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
+                            [static_cast<std::size_t>(piece_type)],
+                     to_square);
 
     if (is_en_passant) {
-        const auto captured_piece_square = _active == WHITE
-                                               ? (Square) (to_square - 8)
-                                               : (Square) (to_square + 8);
+        const auto captured_piece_square =
+            _active == Color::WHITE
+                ? static_cast<Square>(static_cast<std::uint8_t>(to_square) - 8)
+                : static_cast<Square>(static_cast<std::uint8_t>(to_square) + 8);
 
-        _piece[captured_piece_square].type = PAWN;
-        _piece[captured_piece_square].color = inactive();
-        bitboard::SetBit(_pieces[inactive()][PAWN], captured_piece_square);
+        _piece[static_cast<std::size_t>(captured_piece_square)].type =
+            Piece::PAWN;
+        _piece[static_cast<std::size_t>(captured_piece_square)].color =
+            inactive();
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(inactive())]
+                                [static_cast<std::size_t>(Piece::PAWN)],
+                         captured_piece_square);
 
-        _piece[to_square] = {BLACK, EMPTY_PIECE};
+        _piece[static_cast<std::size_t>(to_square)] = {Color::BLACK,
+                                                       Piece::EMPTY_PIECE};
     } else if (is_capture) {
-        _piece[to_square].type = captured_piece;
-        _piece[to_square].color = inactive();
-        bitboard::SetBit(_pieces[inactive()][captured_piece], to_square);
+        _piece[static_cast<std::size_t>(to_square)].type = captured_piece;
+        _piece[static_cast<std::size_t>(to_square)].color = inactive();
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(inactive())]
+                                [static_cast<std::size_t>(captured_piece)],
+                         to_square);
     } else {
-        _piece[to_square] = {BLACK, EMPTY_PIECE};
+        _piece[static_cast<std::size_t>(to_square)] = {Color::BLACK,
+                                                       Piece::EMPTY_PIECE};
     }
 
     if (is_promotion) {
-        bitboard::PopBit(_pieces[_active][promoted_piece], to_square);
+        bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(promoted_piece)],
+                         to_square);
     }
 
     if (is_castle) {
         Square rook_from_square, rook_to_square;
-        if (to_square - from_square > 0) {
-            rook_from_square = _active == WHITE ? H1 : H8;
-            rook_to_square = _active == WHITE ? F1 : F8;
+        if (static_cast<int>(to_square) - static_cast<int>(from_square) > 0) {
+            rook_from_square =
+                _active == Color::WHITE ? Square::H1 : Square::H8;
+            rook_to_square = _active == Color::WHITE ? Square::F1 : Square::F8;
         } else {
-            rook_from_square = _active == WHITE ? A1 : A8;
-            rook_to_square = _active == WHITE ? D1 : D8;
+            rook_from_square =
+                _active == Color::WHITE ? Square::A1 : Square::A8;
+            rook_to_square = _active == Color::WHITE ? Square::D1 : Square::D8;
         }
 
-        _piece[rook_to_square] = {BLACK, EMPTY_PIECE};
-        bitboard::PopBit(_pieces[_active][ROOK], rook_to_square);
+        _piece[static_cast<std::size_t>(rook_to_square)] = {Color::BLACK,
+                                                            Piece::EMPTY_PIECE};
+        bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(Piece::ROOK)],
+                         rook_to_square);
 
-        _piece[rook_from_square] = {_active, ROOK};
-        bitboard::SetBit(_pieces[_active][ROOK], rook_from_square);
+        _piece[static_cast<std::size_t>(rook_from_square)] = {_active,
+                                                              Piece::ROOK};
+        bitboard::SetBit(_pieces[static_cast<std::size_t>(_active)]
+                                [static_cast<std::size_t>(Piece::ROOK)],
+                         rook_from_square);
     }
 
-    if (_active == BLACK) {
+    if (_active == Color::BLACK) {
         _full_move_number--;
     }
 
@@ -301,119 +398,121 @@ void
 Board::FromFen(const std::string &fen_str) noexcept {
     const auto fen = Fen(fen_str);
 
-    for (int i = A1; i < N_SQUARES; ++i) {
-        _piece[i] = {BLACK, EMPTY_PIECE};
+    for (int i = static_cast<int>(Square::A1);
+         i < static_cast<int>(Square::N_SQUARES); ++i) {
+        _piece[i] = {Color::BLACK, Piece::EMPTY_PIECE};
     }
 
-    int file = FILE_A, rank = RANK_8;
+    int file = static_cast<int>(File::FILE_A),
+        rank = static_cast<int>(Rank::RANK_8);
     for (const char &c : fen.position) {
         switch (c) {
         case 'p':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = PAWN;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::PAWN;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'n':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = KNIGHT;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::KNIGHT;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'b':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = BISHOP;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::BISHOP;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'r':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = ROOK;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::ROOK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'q':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = QUEEN;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::QUEEN;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'k':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = KING;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = BLACK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::KING;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::BLACK;
             file = (file + 1) % 8;
             break;
         case 'P':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = PAWN;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::PAWN;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case 'N':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = KNIGHT;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::KNIGHT;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case 'B':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = BISHOP;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::BISHOP;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case 'R':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = ROOK;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::ROOK;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case 'Q':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = QUEEN;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::QUEEN;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case 'K':
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .type = KING;
-            _piece[utils::GetSquare(static_cast<Rank>(rank),
-                                    static_cast<File>(file))]
-                .color = WHITE;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .type = Piece::KING;
+            _piece[static_cast<std::size_t>(utils::GetSquare(
+                       static_cast<Rank>(rank), static_cast<File>(file)))]
+                .color = Color::WHITE;
             file = (file + 1) % 8;
             break;
         case '/':
@@ -427,24 +526,32 @@ Board::FromFen(const std::string &fen_str) noexcept {
     }
 
     if (fen.active == 'w') {
-        _active = WHITE;
+        _active = Color::WHITE;
     } else {
-        _active = BLACK;
+        _active = Color::BLACK;
     }
 
     for (const char &c : fen.castling_availability) {
         switch (c) {
         case 'Q':
-            _castling_availability += WHITE_QUEEN;
+            _castling_availability = static_cast<CastlingAvailability>(
+                static_cast<std::uint8_t>(_castling_availability) +
+                static_cast<std::uint8_t>(CastlingAvailability::WHITE_QUEEN));
             break;
         case 'K':
-            _castling_availability += WHITE_KING;
+            _castling_availability = static_cast<CastlingAvailability>(
+                static_cast<std::uint8_t>(_castling_availability) +
+                static_cast<std::uint8_t>(CastlingAvailability::WHITE_KING));
             break;
         case 'q':
-            _castling_availability += BLACK_QUEEN;
+            _castling_availability = static_cast<CastlingAvailability>(
+                static_cast<std::uint8_t>(_castling_availability) +
+                static_cast<std::uint8_t>(CastlingAvailability::BLACK_QUEEN));
             break;
         case 'k':
-            _castling_availability += BLACK_KING;
+            _castling_availability = static_cast<CastlingAvailability>(
+                static_cast<std::uint8_t>(_castling_availability) +
+                static_cast<std::uint8_t>(CastlingAvailability::BLACK_KING));
             break;
         default:
             break;
@@ -458,7 +565,7 @@ Board::FromFen(const std::string &fen_str) noexcept {
             utils::GetSquare(static_cast<Rank>(en_passant_rank),
                              static_cast<File>(en_passant_file));
     } else {
-        _en_passant_square = EMPTY_SQUARE;
+        _en_passant_square = Square::EMPTY_SQUARE;
     }
 
     _half_move_clock = fen.half_move_clock;
@@ -473,45 +580,77 @@ Board::FromFen(const std::string &fen_str) noexcept {
 void
 Board::UpdateOccupancies() noexcept {
     // Reset occupancies
-    _occupancies[BOTH] = bitboard::ZERO;
-    _occupancies[WHITE] = bitboard::ZERO;
-    _occupancies[BLACK] = bitboard::ZERO;
+    _occupancies[static_cast<std::size_t>(Color::BOTH)] = bitboard::ZERO;
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] = bitboard::ZERO;
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] = bitboard::ZERO;
 
     // Update white occupancies
-    _occupancies[WHITE] |= _pieces[WHITE][PAWN];
-    _occupancies[WHITE] |= _pieces[WHITE][KNIGHT];
-    _occupancies[WHITE] |= _pieces[WHITE][BISHOP];
-    _occupancies[WHITE] |= _pieces[WHITE][ROOK];
-    _occupancies[WHITE] |= _pieces[WHITE][QUEEN];
-    _occupancies[WHITE] |= _pieces[WHITE][KING];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::PAWN)];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::KNIGHT)];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::BISHOP)];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::ROOK)];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::QUEEN)];
+    _occupancies[static_cast<std::size_t>(Color::WHITE)] |=
+        _pieces[static_cast<std::size_t>(Color::WHITE)]
+               [static_cast<std::size_t>(Piece::KING)];
 
     // Update black occupancies
-    _occupancies[BLACK] |= _pieces[BLACK][PAWN];
-    _occupancies[BLACK] |= _pieces[BLACK][KNIGHT];
-    _occupancies[BLACK] |= _pieces[BLACK][BISHOP];
-    _occupancies[BLACK] |= _pieces[BLACK][ROOK];
-    _occupancies[BLACK] |= _pieces[BLACK][QUEEN];
-    _occupancies[BLACK] |= _pieces[BLACK][KING];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::PAWN)];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::KNIGHT)];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::BISHOP)];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::ROOK)];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::QUEEN)];
+    _occupancies[static_cast<std::size_t>(Color::BLACK)] |=
+        _pieces[static_cast<std::size_t>(Color::BLACK)]
+               [static_cast<std::size_t>(Piece::KING)];
 
     // Update occupancies for both sides
-    _occupancies[BOTH] |= _occupancies[WHITE];
-    _occupancies[BOTH] |= _occupancies[BLACK];
+    _occupancies[static_cast<std::size_t>(Color::BOTH)] |=
+        _occupancies[static_cast<std::size_t>(Color::WHITE)];
+    _occupancies[static_cast<std::size_t>(Color::BOTH)] |=
+        _occupancies[static_cast<std::size_t>(Color::BLACK)];
 }
 
 void
 Board::UpdateBitboards() noexcept {
     // Reset bitboards
-    for (int piece_type = PAWN; piece_type < N_PIECES; ++piece_type) {
-        _pieces[WHITE][piece_type] = bitboard::ZERO;
-        _pieces[BLACK][piece_type] = bitboard::ZERO;
+    for (int piece_type = static_cast<int>(Piece::PAWN);
+         piece_type < static_cast<int>(Piece::N_PIECES); ++piece_type) {
+        _pieces[static_cast<std::size_t>(Color::WHITE)][piece_type] =
+            bitboard::ZERO;
+        _pieces[static_cast<std::size_t>(Color::BLACK)][piece_type] =
+            bitboard::ZERO;
     }
 
     // Update bitboards
-    for (int sq = A1; sq < N_SQUARES; ++sq) {
-        if (_piece[sq].type != EMPTY_PIECE) {
+    for (int sq = static_cast<int>(Square::A1);
+         sq < static_cast<int>(Square::N_SQUARES); ++sq) {
+        if (_piece[sq].type != Piece::EMPTY_PIECE) {
             const auto color = _piece[sq].color;
             const auto type = _piece[sq].type;
-            bitboard::SetBit(_pieces[color][type], static_cast<Square>(sq));
+            bitboard::SetBit(_pieces[static_cast<std::size_t>(color)]
+                                    [static_cast<std::size_t>(type)],
+                             static_cast<Square>(sq));
         }
     }
 
@@ -525,12 +664,15 @@ Board::Display(std::ostream &os, const bool ascii,
     // TODO: some error here when white on top
     if (!white_on_bottom) {
         os << "      h   g   f   e   d   c   b   a\n";
-        for (int rank = RANK_1; rank < RANK_8; rank++) {
+        for (int rank = static_cast<int>(Rank::RANK_1);
+             rank < static_cast<int>(Rank::RANK_8); rank++) {
             os << "    +---+---+---+---+---+---+---+---+\n"
                << "    |";
-            for (int file = FILE_H; file >= FILE_A; file--) {
-                const auto piece = _piece[utils::GetSquare(
-                    static_cast<Rank>(rank), static_cast<File>(file))];
+            for (int file = static_cast<int>(File::FILE_H);
+                 file >= static_cast<int>(File::FILE_A); file--) {
+                const auto piece =
+                    _piece[static_cast<std::size_t>(utils::GetSquare(
+                        static_cast<Rank>(rank), static_cast<File>(file)))];
                 os << " "
                    << utils::PieceToString(piece.type, piece.color, ascii)
                    << " |";
@@ -539,12 +681,14 @@ Board::Display(std::ostream &os, const bool ascii,
         }
         os << "    +---+---+---+---+---+---+---+---+\n";
     } else {
-        for (int rank = RANK_8; rank >= RANK_1; rank--) {
+        for (int rank = static_cast<int>(Rank::RANK_8);
+             rank >= static_cast<int>(Rank::RANK_1); rank--) {
             os << "    +---+---+---+---+---+---+---+---+\n"
                << std::setw(3) << rank + 1 << " |";
             for (int file = 0; file < 8; file++) {
-                const auto piece = _piece[utils::GetSquare(
-                    static_cast<Rank>(rank), static_cast<File>(file))];
+                const auto piece =
+                    _piece[static_cast<std::size_t>(utils::GetSquare(
+                        static_cast<Rank>(rank), static_cast<File>(file)))];
                 os << " "
                    << utils::PieceToString(piece.type, piece.color, ascii)
                    << " |";

@@ -31,86 +31,89 @@ static constexpr bitboard::Bitboard MASK_NOT_FILE[] = {
     0xBFBFBFBFBFBFBFBF, 0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard representation of each square
-static constexpr bitboard::Bitboard SQUARE_TO_BB[N_SQUARES] = {
-    0x1ULL,
-    0x2ULL,
-    0x4ULL,
-    0x8ULL,
-    0x10ULL,
-    0x20ULL,
-    0x40ULL,
-    0x80ULL,
-    0x100ULL,
-    0x200ULL,
-    0x400ULL,
-    0x800ULL,
-    0x1000ULL,
-    0x2000ULL,
-    0x4000ULL,
-    0x8000ULL,
-    0x10000ULL,
-    0x20000ULL,
-    0x40000ULL,
-    0x80000ULL,
-    0x100000ULL,
-    0x200000ULL,
-    0x400000ULL,
-    0x800000ULL,
-    0x1000000ULL,
-    0x2000000ULL,
-    0x4000000ULL,
-    0x8000000ULL,
-    0x10000000ULL,
-    0x20000000ULL,
-    0x40000000ULL,
-    0x80000000ULL,
-    0x100000000ULL,
-    0x200000000ULL,
-    0x400000000ULL,
-    0x800000000ULL,
-    0x1000000000ULL,
-    0x2000000000ULL,
-    0x4000000000ULL,
-    0x8000000000ULL,
-    0x10000000000ULL,
-    0x20000000000ULL,
-    0x40000000000ULL,
-    0x80000000000ULL,
-    0x100000000000ULL,
-    0x200000000000ULL,
-    0x400000000000ULL,
-    0x800000000000ULL,
-    0x1000000000000ULL,
-    0x2000000000000ULL,
-    0x4000000000000ULL,
-    0x8000000000000ULL,
-    0x10000000000000ULL,
-    0x20000000000000ULL,
-    0x40000000000000ULL,
-    0x80000000000000ULL,
-    0x100000000000000ULL,
-    0x200000000000000ULL,
-    0x400000000000000ULL,
-    0x800000000000000ULL,
-    0x1000000000000000ULL,
-    0x2000000000000000ULL,
-    0x4000000000000000ULL,
-    0x8000000000000000ULL,
+static constexpr bitboard::Bitboard
+    SQUARE_TO_BB[static_cast<std::size_t>(Square::N_SQUARES)] = {
+        0x1ULL,
+        0x2ULL,
+        0x4ULL,
+        0x8ULL,
+        0x10ULL,
+        0x20ULL,
+        0x40ULL,
+        0x80ULL,
+        0x100ULL,
+        0x200ULL,
+        0x400ULL,
+        0x800ULL,
+        0x1000ULL,
+        0x2000ULL,
+        0x4000ULL,
+        0x8000ULL,
+        0x10000ULL,
+        0x20000ULL,
+        0x40000ULL,
+        0x80000ULL,
+        0x100000ULL,
+        0x200000ULL,
+        0x400000ULL,
+        0x800000ULL,
+        0x1000000ULL,
+        0x2000000ULL,
+        0x4000000ULL,
+        0x8000000ULL,
+        0x10000000ULL,
+        0x20000000ULL,
+        0x40000000ULL,
+        0x80000000ULL,
+        0x100000000ULL,
+        0x200000000ULL,
+        0x400000000ULL,
+        0x800000000ULL,
+        0x1000000000ULL,
+        0x2000000000ULL,
+        0x4000000000ULL,
+        0x8000000000ULL,
+        0x10000000000ULL,
+        0x20000000000ULL,
+        0x40000000000ULL,
+        0x80000000000ULL,
+        0x100000000000ULL,
+        0x200000000000ULL,
+        0x400000000000ULL,
+        0x800000000000ULL,
+        0x1000000000000ULL,
+        0x2000000000000ULL,
+        0x4000000000000ULL,
+        0x8000000000000ULL,
+        0x10000000000000ULL,
+        0x20000000000000ULL,
+        0x40000000000000ULL,
+        0x80000000000000ULL,
+        0x100000000000000ULL,
+        0x200000000000000ULL,
+        0x400000000000000ULL,
+        0x800000000000000ULL,
+        0x1000000000000000ULL,
+        0x2000000000000000ULL,
+        0x4000000000000000ULL,
+        0x8000000000000000ULL,
 };
 
 /// @brief Relevant bits count for each square for the bishop
-static constexpr int BISHOP_RELEVANT_BITS_COUNT[N_SQUARES] = {
-    6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
-    5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
-    7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
+static constexpr int
+    BISHOP_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::N_SQUARES)] = {
+        6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
+        5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
+        7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
 };
 
 /// @brief Relevant bits count for each square for the rook
-static constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
-    12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
+static constexpr int
+    ROOK_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::N_SQUARES)] = {
+        12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
 };
 
 /// @brief Returns the file of a square
@@ -118,7 +121,7 @@ static constexpr int ROOK_RELEVANT_BITS_COUNT[N_SQUARES] = {
 /// @return The file
 [[nodiscard]] constexpr File
 GetFile(const Square sq) noexcept {
-    return static_cast<File>(sq & 7);
+    return static_cast<File>(static_cast<std::uint8_t>(sq) & 7);
 }
 
 /// @brief Returns the rank of a square
@@ -126,7 +129,7 @@ GetFile(const Square sq) noexcept {
 /// @return The rank
 [[nodiscard]] constexpr Rank
 GetRank(const Square sq) noexcept {
-    return static_cast<Rank>(sq >> 3);
+    return static_cast<Rank>(static_cast<std::uint8_t>(sq) >> 3);
 }
 
 /// @brief Returns the square of a rank and file
@@ -135,7 +138,8 @@ GetRank(const Square sq) noexcept {
 /// @return The square
 [[nodiscard]] constexpr Square
 GetSquare(const Rank rk, const File fl) noexcept {
-    return static_cast<Square>(8 * rk + fl);
+    return static_cast<Square>(8 * static_cast<std::uint8_t>(rk) +
+                               static_cast<std::uint8_t>(fl));
 }
 
 /// @brief Returns the square flipped vertically
@@ -143,7 +147,7 @@ GetSquare(const Rank rk, const File fl) noexcept {
 /// @return The flipped square
 [[nodiscard]] constexpr Square
 FlipSquare(const Square sq) {
-    return static_cast<Square>(sq ^ 56);
+    return static_cast<Square>(static_cast<std::uint8_t>(sq) ^ 56);
 }
 
 /// @brief Returns the opposite color

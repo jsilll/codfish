@@ -1,6 +1,7 @@
 #include <codbrain/codbrain.hpp>
 
 #include <algorithm>
+#include <random>
 
 using namespace cod;
 
@@ -13,7 +14,9 @@ Rollout(chess::Board &board) noexcept {
     if (moves.empty()) {
         return board.IsCheck() ? -1 : 0;
     } else {
-        std::random_shuffle(moves.begin(), moves.end());
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(moves.begin(), moves.end(), g);
         const auto backup = board.GetStateBackup();
         board.Make(*moves.begin());
         auto eval = -Rollout(board);

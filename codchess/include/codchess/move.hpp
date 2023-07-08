@@ -21,18 +21,18 @@ class Move final {
     /// @param is_double_push If if double push
     /// @param is_en_passant If is en passant
     /// @param is_castle If is castle
-    [[nodiscard]] Move(const int source_square, const int target_square,
-                       const int piece, const int captured_piece,
-                       const int promoted_piece, const bool is_double_push,
+    [[nodiscard]] Move(const Square source_square, const Square target_square,
+                       const Piece piece, const Piece captured_piece,
+                       const Piece promoted_piece, const bool is_double_push,
                        const bool is_en_passant, const bool is_castle) noexcept
         : _encoded(static_cast<std::uint32_t>(source_square) |
-                   (static_cast<std::uint32_t>(target_square << 6)) |
-                   (static_cast<std::uint32_t>(piece << 12)) |
-                   (static_cast<std::uint32_t>(captured_piece << 15)) |
-                   (static_cast<std::uint32_t>(promoted_piece << 18)) |
-                   (static_cast<std::uint32_t>(is_double_push << 21)) |
-                   (static_cast<std::uint32_t>(is_en_passant << 22)) |
-                   (static_cast<std::uint32_t>(is_castle << 23))) {}
+                   static_cast<std::uint32_t>(target_square) << 6 |
+                   static_cast<std::uint32_t>(piece) << 12 |
+                   static_cast<std::uint32_t>(captured_piece) << 15 |
+                   static_cast<std::uint32_t>(promoted_piece) << 18 |
+                   static_cast<std::uint32_t>(is_double_push) << 21 |
+                   static_cast<std::uint32_t>(is_en_passant) << 22 |
+                   static_cast<std::uint32_t>(is_castle) << 23) {}
 
     /// @brief Returns the source square
     /// @return The source square
@@ -88,13 +88,13 @@ class Move final {
     /// @brief Returns if it is a capture
     /// @return If it is a capture
     [[maybe_unused]] [[nodiscard]] constexpr auto IsCapture() const noexcept {
-        return CapturedPiece() != EMPTY_PIECE;
+        return CapturedPiece() != Piece::EMPTY_PIECE;
     }
 
     /// @brief Returns if it is a promotion
     /// @return If it is a promotion
     [[maybe_unused]] [[nodiscard]] constexpr auto IsPromotion() const noexcept {
-        return PromotedPiece() != EMPTY_PIECE;
+        return PromotedPiece() != Piece::EMPTY_PIECE;
     }
 
     /// @brief Returns the move in UCI format
@@ -103,7 +103,7 @@ class Move final {
         if (IsPromotion()) {
             return utils::SquareToString(FromSquare()) +
                    utils::SquareToString(ToSquare()) +
-                   utils::PieceToString(PromotedPiece(), BLACK);
+                   utils::PieceToString(PromotedPiece(), Color::BLACK);
         } else {
             return utils::SquareToString(FromSquare()) +
                    utils::SquareToString(ToSquare());
