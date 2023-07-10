@@ -9,19 +9,19 @@ namespace cod::chess::bitboard {
 typedef std::uint64_t Bitboard;
 
 /// @brief Bitboard constant for bit manipulation
-constexpr Bitboard ONE{0x0000000000000001};
+constexpr Bitboard kOne{0x0000000000000001};
 
 /// @brief Bitboard constant for bit manipulation
-constexpr Bitboard ZERO{0x0000000000000000};
+constexpr Bitboard kZero{0x0000000000000000};
 
 /// @brief Bitboard constant for bit manipulation
-constexpr Bitboard FULL{0xFFFFFFFFFFFFFFFF};
+constexpr Bitboard kFull{0xFFFFFFFFFFFFFFFF};
 
 /// @brief Bitboard constant for masking out the A file
-constexpr Bitboard NOT_A_FILE{0xFEFEFEFEFEFEFEFE};
+constexpr Bitboard kNotAFile{0xFEFEFEFEFEFEFEFE};
 
 /// @brief Bitboard constant for masking out the A file
-constexpr Bitboard NOT_H_FILE{0x7F7F7F7F7F7F7F7F};
+constexpr Bitboard kNotHFile{0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard Count type
 typedef std::uint8_t BitboardCount;
@@ -31,7 +31,7 @@ typedef std::uint8_t BitboardCount;
 /// @param sq The square
 constexpr void
 SetBit(Bitboard &bb, const Square sq) noexcept {
-    bb |= (ONE << static_cast<std::uint8_t>(sq));
+    bb |= (kOne << static_cast<std::uint8_t>(sq));
 }
 
 /// @brief Pops a bit in a bitboard
@@ -39,14 +39,14 @@ SetBit(Bitboard &bb, const Square sq) noexcept {
 /// @param sq The square
 constexpr void
 PopBit(Bitboard &bb, const Square sq) noexcept {
-    bb &= ~(ONE << static_cast<std::uint8_t>(sq));
+    bb &= ~(kOne << static_cast<std::uint8_t>(sq));
 }
 
 /// @brief Pops the last bit in a bitboard
 /// @param bb The bitboard
 constexpr void
 PopLastBit(Bitboard &bb) noexcept {
-    bb &= bb - ONE;
+    bb &= bb - kOne;
 }
 
 /// @brief Gets a bit in a bitboard
@@ -55,7 +55,7 @@ PopLastBit(Bitboard &bb) noexcept {
 /// @return Whether the bit is set or not
 constexpr bool
 GetBit(const Bitboard bb, const Square sq) noexcept {
-    return ((bb >> static_cast<std::uint8_t>(sq)) & ONE);
+    return ((bb >> static_cast<std::uint8_t>(sq)) & kOne);
 }
 
 /// @brief Returns the number of bits in a bitboard
@@ -90,16 +90,16 @@ BitScan(const Bitboard bb) noexcept {
 
 /// @brief The directions of the board represented as offsets
 enum class Direction : std::int8_t {
-    NORTH [[maybe_unused]] = 8,
-    SOUTH [[maybe_unused]] = -8,
-    WEST [[maybe_unused]] = -1,
-    EAST [[maybe_unused]] = 1,
-    NORTH_WEST [[maybe_unused]] = 7,
-    NORTH_EAST [[maybe_unused]] = 9,
-    SOUTH_WEST [[maybe_unused]] = -9,
-    SOUTH_EAST [[maybe_unused]] = -7,
+    North [[maybe_unused]] = 8,
+    South [[maybe_unused]] = -8,
+    West [[maybe_unused]] = -1,
+    East [[maybe_unused]] = 1,
+    NorthWest [[maybe_unused]] = 7,
+    NorthEast [[maybe_unused]] = 9,
+    SouthWest [[maybe_unused]] = -9,
+    SouthEast [[maybe_unused]] = -7,
     /// @brief Used for iterating over all directions
-    N_DIRECTIONS [[maybe_unused]] = 8,
+    Total [[maybe_unused]] = 8,
 };
 
 /// @brief Returns the bitboard shifted in a direction
@@ -109,26 +109,26 @@ enum class Direction : std::int8_t {
 template <Direction D>
 [[nodiscard]] constexpr Bitboard
 ShiftOne(const Bitboard bb) noexcept {
-    if constexpr (D == Direction::NORTH) {
-        return bb << static_cast<std::int8_t>(Direction::NORTH);
-    } else if constexpr (D == Direction::SOUTH) {
-        return bb >> static_cast<std::int8_t>(Direction::NORTH);
-    } else if constexpr (D == Direction::EAST) {
-        return (bb << static_cast<std::int8_t>(Direction::EAST)) & NOT_A_FILE;
-    } else if constexpr (D == Direction::WEST) {
-        return (bb >> static_cast<std::int8_t>(Direction::EAST)) & NOT_H_FILE;
-    } else if constexpr (D == Direction::NORTH_EAST) {
-        return (bb << static_cast<std::int8_t>(Direction::NORTH_EAST)) &
-               NOT_A_FILE;
-    } else if constexpr (D == Direction::NORTH_WEST) {
-        return (bb << static_cast<std::int8_t>(Direction::NORTH_WEST)) &
-               NOT_H_FILE;
-    } else if constexpr (D == Direction::SOUTH_EAST) {
-        return (bb >> static_cast<std::int8_t>(Direction::NORTH_WEST)) &
-               NOT_A_FILE;
-    } else if constexpr (D == Direction::SOUTH_WEST) {
-        return (bb >> static_cast<std::int8_t>(Direction::NORTH_EAST)) &
-               NOT_H_FILE;
+    if constexpr (D == Direction::North) {
+        return bb << static_cast<std::int8_t>(Direction::North);
+    } else if constexpr (D == Direction::South) {
+        return bb >> static_cast<std::int8_t>(Direction::North);
+    } else if constexpr (D == Direction::East) {
+        return (bb << static_cast<std::int8_t>(Direction::East)) & kNotAFile;
+    } else if constexpr (D == Direction::West) {
+        return (bb >> static_cast<std::int8_t>(Direction::East)) & kNotHFile;
+    } else if constexpr (D == Direction::NorthEast) {
+        return (bb << static_cast<std::int8_t>(Direction::NorthEast)) &
+               kNotAFile;
+    } else if constexpr (D == Direction::NorthWest) {
+        return (bb << static_cast<std::int8_t>(Direction::NorthWest)) &
+               kNotHFile;
+    } else if constexpr (D == Direction::SouthEast) {
+        return (bb >> static_cast<std::int8_t>(Direction::NorthWest)) &
+               kNotAFile;
+    } else if constexpr (D == Direction::SouthWest) {
+        return (bb >> static_cast<std::int8_t>(Direction::NorthEast)) &
+               kNotHFile;
     }
 }
 

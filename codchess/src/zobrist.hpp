@@ -9,21 +9,21 @@ namespace cod::chess::zobrist {
 void Init() noexcept;
 
 /// @brief The number of castling_availability keys
-constexpr std::size_t N_CASTLING_KEYS{16};
+constexpr std::size_t kCastlingKeys{16};
 
 /// @brief The keys for the side to move
-extern bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::Both)];
+extern std::uint64_t kSideKey[static_cast<std::size_t>(Color::Both)];
 
 /// @brief The keys for the en passant squares
-extern bitboard::Bitboard
-    EN_PASSANT_KEY[static_cast<std::size_t>(Square::Total)];
+extern std::uint64_t
+    kEnPassantKey[static_cast<std::size_t>(Square::Total)];
 
 /// @brief The keys for the castling_availability rights
-extern bitboard::Bitboard CASTLE_KEY[N_CASTLING_KEYS];
+extern std::uint64_t kCastleKey[kCastlingKeys];
 
 /// @brief The keys for the pieces
-extern bitboard::Bitboard
-    PIECE_KEY[static_cast<std::size_t>(Color::Total)]
+extern std::uint64_t
+    kPieceKey[static_cast<std::size_t>(Color::Total)]
              [static_cast<std::size_t>(Piece::Total)]
              [static_cast<std::size_t>(Square::Total)];
 

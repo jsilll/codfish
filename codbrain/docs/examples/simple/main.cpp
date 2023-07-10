@@ -10,7 +10,7 @@ main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
     auto board = chess::Board();
 
     while (true) {
-        board.Display(std::cout, false);
+        board.Display(std::cout, chess::DisplayType::Unicode);
 
         std::getline(std::cin, input);
 

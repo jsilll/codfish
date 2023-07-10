@@ -2,55 +2,56 @@
 
 namespace cod::chess::zobrist {
 /// @brief The keys for the side to move
-bitboard::Bitboard SIDE_KEY[static_cast<std::size_t>(Color::Both)]{};
+/// @note The cod::chess::zobrist::Init() function must be called before using
+std::uint64_t kSideKey[static_cast<std::size_t>(Color::Both)]{};
 
 /// @brief The keys for the en passant squares
-bitboard::Bitboard EN_PASSANT_KEY[static_cast<std::size_t>(Square::Total)];
+std::uint64_t kEnPassantKey[static_cast<std::size_t>(Square::Total)];
 
 /// @brief The keys for the castling_availability rights
-bitboard::Bitboard CASTLE_KEY[N_CASTLING_KEYS];
+std::uint64_t kCastleKey[kCastlingKeys];
 
 /// @brief The keys for the pieces
-bitboard::Bitboard PIECE_KEY[static_cast<std::size_t>(Color::Total)]
+std::uint64_t kPieceKey[static_cast<std::size_t>(Color::Total)]
                             [static_cast<std::size_t>(Piece::Total)]
                             [static_cast<std::size_t>(Square::Total)];
 
 /// @brief Generates a random number
 /// @return The random number
-bitboard::Bitboard
-RandomBitboard() noexcept {
-    const auto n1 = (static_cast<bitboard::Bitboard>(std::rand()));
-    const auto n2 = (static_cast<bitboard::Bitboard>(std::rand()));
+std::uint64_t
+RandomNumber() noexcept {
+    const auto n1 = (static_cast<std::uint64_t>(std::rand()));
+    const auto n2 = (static_cast<std::uint64_t>(std::rand()));
     return n1 | (n2 << 32);
 }
 
 void
 Init() noexcept {
-    for (auto &en_passant_key : EN_PASSANT_KEY) {
-        en_passant_key = RandomBitboard();
+    for (auto &en_passant_key : kEnPassantKey) {
+        en_passant_key = RandomNumber();
     }
 
-    for (auto &castle_key : CASTLE_KEY) {
-        castle_key = RandomBitboard();
+    for (auto &castle_key : kCastleKey) {
+        castle_key = RandomNumber();
     }
 
     for (int piece = static_cast<int>(Piece::Pawn);
          piece < static_cast<int>(Piece::Total); ++piece) {
         for (int square = static_cast<int>(Square::A1);
              square < static_cast<int>(Square::Total); ++square) {
-            PIECE_KEY[static_cast<std::size_t>(Color::White)][piece][square] =
-                RandomBitboard();
-            PIECE_KEY[static_cast<std::size_t>(Color::Black)][piece][square] =
-                RandomBitboard();
+            kPieceKey[static_cast<std::size_t>(Color::White)][piece][square] =
+                RandomNumber();
+            kPieceKey[static_cast<std::size_t>(Color::Black)][piece][square] =
+                RandomNumber();
         }
     }
 
-    SIDE_KEY[1] = RandomBitboard();
+    kSideKey[1] = RandomNumber();
 }
 
-bitboard::Bitboard
+std::uint64_t
 Hash(const Board &board) noexcept {
-    auto final_key{bitboard::ZERO};
+    std::uint64_t final_key{0};
     for (int piece = static_cast<int>(Piece::Pawn);
          piece < static_cast<int>(Piece::Total); ++piece) {
         for (int side = static_cast<int>(Color::White);
@@ -60,7 +61,7 @@ Hash(const Board &board) noexcept {
             while (bitboard) {
                 const auto sq = bitboard::BitScanForward(bitboard);
                 final_key ^=
-                    PIECE_KEY[side][piece][static_cast<std::size_t>(sq)];
+                    kPieceKey[side][piece][static_cast<std::size_t>(sq)];
                 bitboard::PopBit(bitboard, sq);
             }
         }
@@ -68,12 +69,12 @@ Hash(const Board &board) noexcept {
 
     if (board.en_passant_square() != Square::Empty) {
         final_key ^=
-            EN_PASSANT_KEY[static_cast<std::size_t>(board.en_passant_square())];
+            kEnPassantKey[static_cast<std::size_t>(board.en_passant_square())];
     }
 
     final_key ^=
-        CASTLE_KEY[static_cast<std::size_t>(board.castling_availability())];
-    final_key ^= SIDE_KEY[static_cast<std::size_t>(board.active())];
+        kCastleKey[static_cast<std::size_t>(board.castling_availability())];
+    final_key ^= kSideKey[static_cast<std::size_t>(board.active())];
 
     return final_key;
 }

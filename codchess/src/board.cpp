@@ -87,7 +87,7 @@ bool
 Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
     const auto pawns = _pieces[static_cast<std::size_t>(attacker)]
                               [static_cast<std::size_t>(Piece::Pawn)];
-    if (attacks::PAWN_ATTACKS[static_cast<std::size_t>(
+    if (attacks::kPawnAttacks[static_cast<std::size_t>(
             utils::GetOpponent(attacker))][static_cast<std::size_t>(sq)] &
         pawns) {
         return true;
@@ -95,13 +95,13 @@ Board::IsSquareAttacked(Square sq, Color attacker) const noexcept {
 
     const auto knights = _pieces[static_cast<std::size_t>(attacker)]
                                 [static_cast<std::size_t>(Piece::Knight)];
-    if (attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(sq)] & knights) {
+    if (attacks::kKnightAttacks[static_cast<std::size_t>(sq)] & knights) {
         return true;
     }
 
     const auto king = _pieces[static_cast<std::size_t>(attacker)]
                              [static_cast<std::size_t>(Piece::King)];
-    if (attacks::KING_ATTACKS[static_cast<std::size_t>(sq)] & king) {
+    if (attacks::kKingAttacks[static_cast<std::size_t>(sq)] & king) {
         return true;
     }
 
@@ -158,7 +158,7 @@ Board::Make(Move move) noexcept {
                                                      Piece::Empty};
 
     // Remove from hash key moved piece
-    _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+    _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(_active)]
                                [static_cast<std::size_t>(piece_type)]
                                [static_cast<std::size_t>(from_square)];
 
@@ -173,7 +173,7 @@ Board::Make(Move move) noexcept {
 
         // Remove from hash key captured pawn
         _hash ^=
-            zobrist::PIECE_KEY[static_cast<std::size_t>(inactive())]
+            zobrist::kPieceKey[static_cast<std::size_t>(inactive())]
                               [static_cast<std::size_t>(Piece::Pawn)]
                               [static_cast<std::size_t>(captured_piece_square)];
     } else if (is_capture) {
@@ -182,7 +182,7 @@ Board::Make(Move move) noexcept {
                          to_square);
 
         // Remove from hash key captured piece
-        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(inactive())]
+        _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(inactive())]
                                    [static_cast<std::size_t>(captured_piece)]
                                    [static_cast<std::size_t>(to_square)];
     }
@@ -194,7 +194,7 @@ Board::Make(Move move) noexcept {
                          to_square);
 
         // Update hash key with promoted piece
-        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+        _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(_active)]
                                    [static_cast<std::size_t>(promoted_piece)]
                                    [static_cast<std::size_t>(to_square)];
     } else {
@@ -204,7 +204,7 @@ Board::Make(Move move) noexcept {
                          to_square);
 
         // Update hash key with moved piece
-        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+        _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(_active)]
                                    [static_cast<std::size_t>(piece_type)]
                                    [static_cast<std::size_t>(to_square)];
     }
@@ -225,15 +225,15 @@ Board::Make(Move move) noexcept {
 
         _piece[static_cast<std::size_t>(rook_to_square)] = {_active,
                                                             Piece::Rook};
-        _piece[static_cast<std::size_t>(rook_from_square)] = {
-            Color::Black, Piece::Empty};
+        _piece[static_cast<std::size_t>(rook_from_square)] = {Color::Black,
+                                                              Piece::Empty};
 
         bitboard::PopBit(_pieces[static_cast<std::size_t>(_active)]
                                 [static_cast<std::size_t>(Piece::Rook)],
                          rook_from_square);
 
         // Remove from hash key rook
-        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+        _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(_active)]
                                    [static_cast<std::size_t>(Piece::Rook)]
                                    [static_cast<std::size_t>(rook_from_square)];
 
@@ -242,20 +242,20 @@ Board::Make(Move move) noexcept {
                          rook_to_square);
 
         // Update hash key with rook
-        _hash ^= zobrist::PIECE_KEY[static_cast<std::size_t>(_active)]
+        _hash ^= zobrist::kPieceKey[static_cast<std::size_t>(_active)]
                                    [static_cast<std::size_t>(Piece::Rook)]
                                    [static_cast<std::size_t>(rook_to_square)];
     }
 
     // Remove from hash key en passant square
     if (_en_passant_square != Square::Empty) {
-        _hash ^= zobrist::EN_PASSANT_KEY[static_cast<std::size_t>(
+        _hash ^= zobrist::kEnPassantKey[static_cast<std::size_t>(
             _en_passant_square)];
     }
 
     // Remove from hash key castling_availability rights
     _hash ^=
-        zobrist::CASTLE_KEY[static_cast<std::size_t>(_castling_availability)];
+        zobrist::kCastleKey[static_cast<std::size_t>(_castling_availability)];
 
     _en_passant_square =
         is_double_push
@@ -272,13 +272,13 @@ Board::Make(Move move) noexcept {
 
     // Update hash key with en passant square
     if (_en_passant_square != Square::Empty) {
-        _hash ^= zobrist::EN_PASSANT_KEY[static_cast<std::size_t>(
+        _hash ^= zobrist::kEnPassantKey[static_cast<std::size_t>(
             _en_passant_square)];
     }
 
     // Update hash key with castling_availability rights
     _hash ^=
-        zobrist::CASTLE_KEY[static_cast<std::size_t>(_castling_availability)];
+        zobrist::kCastleKey[static_cast<std::size_t>(_castling_availability)];
 
     if (piece_type == Piece::Pawn or is_capture) {
         _half_move_clock = 0;
@@ -291,8 +291,8 @@ Board::Make(Move move) noexcept {
     }
 
     // Remove (and Update) from hash key side to move
-    // This works because zobrist::SIDE_KEY[WHITE] = 0
-    _hash ^= zobrist::SIDE_KEY[static_cast<std::size_t>(Color::Black)];
+    // This works because zobrist::kSideKey[WHITE] = 0
+    _hash ^= zobrist::kSideKey[static_cast<std::size_t>(Color::Black)];
 
     SwitchActive();
 
@@ -403,8 +403,7 @@ Board::FromFen(const std::string &fen_str) noexcept {
         _piece[i] = {Color::Black, Piece::Empty};
     }
 
-    int file = static_cast<int>(File::FA),
-        rank = static_cast<int>(Rank::R8);
+    int file = static_cast<int>(File::FA), rank = static_cast<int>(Rank::R8);
     for (const char &c : fen.position) {
         switch (c) {
         case 'p':
@@ -580,9 +579,9 @@ Board::FromFen(const std::string &fen_str) noexcept {
 void
 Board::UpdateOccupancies() noexcept {
     // Reset occupancies
-    _occupancies[static_cast<std::size_t>(Color::Both)] = bitboard::ZERO;
-    _occupancies[static_cast<std::size_t>(Color::White)] = bitboard::ZERO;
-    _occupancies[static_cast<std::size_t>(Color::Black)] = bitboard::ZERO;
+    _occupancies[static_cast<std::size_t>(Color::Both)] = bitboard::kZero;
+    _occupancies[static_cast<std::size_t>(Color::White)] = bitboard::kZero;
+    _occupancies[static_cast<std::size_t>(Color::Black)] = bitboard::kZero;
 
     // Update white occupancies
     _occupancies[static_cast<std::size_t>(Color::White)] |=
@@ -637,9 +636,9 @@ Board::UpdateBitboards() noexcept {
     for (int piece_type = static_cast<int>(Piece::Pawn);
          piece_type < static_cast<int>(Piece::Total); ++piece_type) {
         _pieces[static_cast<std::size_t>(Color::White)][piece_type] =
-            bitboard::ZERO;
+            bitboard::kZero;
         _pieces[static_cast<std::size_t>(Color::Black)][piece_type] =
-            bitboard::ZERO;
+            bitboard::kZero;
     }
 
     // Update bitboards
@@ -659,7 +658,7 @@ Board::UpdateBitboards() noexcept {
 }
 
 void
-Board::Display(std::ostream &os, const bool ascii,
+Board::Display(std::ostream &os, const DisplayType dp,
                const bool white_on_bottom) const noexcept {
     // TODO: some error here when white on top
     if (!white_on_bottom) {
@@ -674,7 +673,8 @@ Board::Display(std::ostream &os, const bool ascii,
                     _piece[static_cast<std::size_t>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(file)))];
                 os << " "
-                   << utils::PieceToString(piece.type, piece.color, ascii)
+                   << utils::PieceToString(piece.type, piece.color,
+                                           dp == DisplayType::Ascii)
                    << " |";
             }
             os << std::setw(3) << rank + 1 << "\n";
@@ -690,7 +690,8 @@ Board::Display(std::ostream &os, const bool ascii,
                     _piece[static_cast<std::size_t>(utils::GetSquare(
                         static_cast<Rank>(rank), static_cast<File>(file)))];
                 os << " "
-                   << utils::PieceToString(piece.type, piece.color, ascii)
+                   << utils::PieceToString(piece.type, piece.color,
+                                           dp == DisplayType::Ascii)
                    << " |";
             }
             os << '\n';

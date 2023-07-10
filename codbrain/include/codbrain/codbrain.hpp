@@ -1,8 +1,11 @@
 #pragma once
 
+#include <random>
 #include <vector>
 
 #include <codchess/codchess.hpp>
+
+#include <codbrain/history.hpp>
 
 namespace cod::brain {
 /// @brief Initializes the library
@@ -87,10 +90,48 @@ class Random final : public Brain {
 class Mcts final : public Brain {
   public:
     /// @brief Construct a new Mcts object.
-    Mcts() noexcept : Brain() {}
+    Mcts() noexcept : Brain(), _g(_rd()) {}
 
     /// @brief Searches the position.
     /// @return The search result.
     Result PickMove() noexcept override;
+
+  private:
+    /// @brief The history table.
+    utils::History _history{};
+    /// @brief The random device.
+    std::random_device _rd{};
+    /// @brief The random number generator.
+    std::mt19937 _g;
+
+    /// @brief Make a move and register it in the history table.
+    /// @param move The move to make.
+    void Make(const chess::Move move) noexcept {
+        _board.Make(move);
+        _history.push(_board.hash());
+    }
+
+    /// @brief Unmake a move and unregister it from the history table.
+    /// @param move The move to unmake.
+    void Unmake(const chess::Move move,
+                const chess::Board::StateBackup &backup) noexcept {
+        _board.Unmake(move, backup);
+        _history.pop();
+    }
+
+    /// @brief The result of a rollout.
+    enum class Outcome { Loss, Draw };
+
+    /// @brief The result of a rollout.
+    struct RolloutResult {
+        /// @brief Whether the rollout was a win.
+        Outcome outcome;
+        /// @brief The color that was going to move.
+        chess::Color last;
+    };
+
+    /// @brief Rollout the position.
+    /// @return The evaluation of the position.
+    RolloutResult Rollout() noexcept;
 };
 }   // namespace cod::brain

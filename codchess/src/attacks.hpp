@@ -13,25 +13,25 @@ void Init() noexcept;
 
 /// @brief Number of rook magics
 /// @note 4096 is the number of unique 12-bit numbers
-constexpr std::size_t N_ROOK_MAGICS{4096};
+constexpr std::size_t kRookMagics{4096};
 
 /// @brief Number of bishop magics
 /// @note 512 is the number of unique 9-bit numbers
-constexpr std::size_t N_BISHOP_MAGICS{512};
+constexpr std::size_t kBishopMagics{512};
 
 /// @brief Bitboard masks for each king attack
 /// @note The Init() function must be called before using this
 extern bitboard::Bitboard
-    KING_ATTACKS[static_cast<std::size_t>(Square::Total)];
+    kKingAttacks[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Bitboard masks for each knight attack
 /// @note The Init() function must be called before using this
 extern bitboard::Bitboard
-    KNIGHT_ATTACKS[static_cast<std::size_t>(Square::Total)];
+    kKnightAttacks[static_cast<std::size_t>(Square::Total)];
 
 /// @brief Bitboard masks for each pawn attack
 /// @note The Init() function must be called before using this
-extern bitboard::Bitboard PAWN_ATTACKS[static_cast<std::size_t>(
+extern bitboard::Bitboard kPawnAttacks[static_cast<std::size_t>(
     Color::Total)][static_cast<std::size_t>(Square::Total)];
 
 /// @brief Masks the pawn attacks for a given color and direction.
@@ -43,20 +43,20 @@ template <Color C, bitboard::Direction D>
 [[nodiscard]] constexpr bitboard::Bitboard
 PawnAttacks(const bitboard::Bitboard pawns) noexcept {
     static_assert(C == Color::White or C == Color::Black);
-    static_assert(D == bitboard::Direction::WEST ||
-                  D == bitboard::Direction::EAST);
+    static_assert(D == bitboard::Direction::West ||
+                  D == bitboard::Direction::East);
 
     if constexpr (C == Color::White) {
-        if constexpr (D == bitboard::Direction::WEST) {
-            return bitboard::ShiftOne<bitboard::Direction::NORTH_WEST>(pawns);
+        if constexpr (D == bitboard::Direction::West) {
+            return bitboard::ShiftOne<bitboard::Direction::NorthWest>(pawns);
         } else {
-            return bitboard::ShiftOne<bitboard::Direction::NORTH_EAST>(pawns);
+            return bitboard::ShiftOne<bitboard::Direction::NorthEast>(pawns);
         }
     } else {
-        if constexpr (D == bitboard::Direction::WEST) {
-            return bitboard::ShiftOne<bitboard::Direction::SOUTH_WEST>(pawns);
+        if constexpr (D == bitboard::Direction::West) {
+            return bitboard::ShiftOne<bitboard::Direction::SouthWest>(pawns);
         } else {
-            return bitboard::ShiftOne<bitboard::Direction::SOUTH_EAST>(pawns);
+            return bitboard::ShiftOne<bitboard::Direction::SouthEast>(pawns);
         }
     }
 }
@@ -66,8 +66,8 @@ template <Color C>
 PawnAllAttacks(const bitboard::Bitboard pawns) noexcept {
     static_assert(C == Color::White or C == Color::Black);
 
-    return PawnAttacks<C, bitboard::Direction::WEST>(pawns) |
-           PawnAttacks<C, bitboard::Direction::EAST>(pawns);
+    return PawnAttacks<C, bitboard::Direction::West>(pawns) |
+           PawnAttacks<C, bitboard::Direction::East>(pawns);
 }
 
 /// @brief Returns a bitboard of all pawn single pushes.
@@ -82,9 +82,9 @@ PawnSinglePushes(const bitboard::Bitboard pawns,
     static_assert(C == Color::White or C == Color::Black);
 
     if constexpr (C == Color::White) {
-        return bitboard::ShiftOne<bitboard::Direction::NORTH>(pawns) & empty;
+        return bitboard::ShiftOne<bitboard::Direction::North>(pawns) & empty;
     } else {
-        return bitboard::ShiftOne<bitboard::Direction::SOUTH>(pawns) & empty;
+        return bitboard::ShiftOne<bitboard::Direction::South>(pawns) & empty;
     }
 }
 
@@ -101,13 +101,12 @@ PawnDoublePushes(const bitboard::Bitboard pawns,
 
     const auto pushes =
         PawnSinglePushes<C>(PawnSinglePushes<C>(pawns, empty), empty);
-
     if constexpr (C == Color::White) {
         return pushes &
-               utils::MASK_RANK[static_cast<std::size_t>(Rank::R4)];
+               utils::kMaskRank[static_cast<std::size_t>(Rank::R4)];
     } else {
         return pushes &
-               utils::MASK_RANK[static_cast<std::size_t>(Rank::R5)];
+               utils::kMaskRank[static_cast<std::size_t>(Rank::R5)];
     }
 }
 

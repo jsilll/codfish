@@ -3,7 +3,8 @@
 using namespace cod;
 
 int main() {
+    constexpr auto depth = 5;
     auto board = chess::Board();
-    chess::perft::PerftUnmake(board, 5);
+    chess::perft::PerftUnmake(board, depth);
     return EXIT_SUCCESS;
 }

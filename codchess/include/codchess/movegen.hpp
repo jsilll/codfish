@@ -9,10 +9,6 @@ namespace cod::chess::movegen {
 /// @brief A list of moves.
 class MoveList final {
   public:
-    /// @brief Returns whehter the list is empty.
-    /// @return True if the list is empty, false otherwise.
-    [[nodiscard]] constexpr bool empty() const noexcept { return _size == 0; }
-
     /// @brief Returns an iterator to the beginning of the list.
     /// @return An iterator to the beginning of the list.
     [[nodiscard]] constexpr auto begin() const noexcept {
@@ -36,6 +32,10 @@ class MoveList final {
     /// @brief Returns the number of moves in the list.
     /// @return The number of moves in the list.
     [[nodiscard]] auto size() const noexcept { return _size; }
+
+    /// @brief Returns whehter the list is empty.
+    /// @return True if the list is empty, false otherwise.
+    [[nodiscard]] constexpr bool empty() const noexcept { return _size == 0; }
 
     /// @brief Inserts a move into the list.
     /// @param move The move to insert.

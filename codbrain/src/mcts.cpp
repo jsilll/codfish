@@ -1,43 +1,63 @@
 #include <codbrain/codbrain.hpp>
 
 #include <algorithm>
-#include <random>
 
 using namespace cod;
 
 using chess::Move;
 
 namespace cod::brain {
-Evaluation
-Rollout(chess::Board &board) noexcept {
-    auto moves = chess::movegen::Legal(board);
+Mcts::RolloutResult
+Mcts::Rollout() noexcept {
+    auto moves = chess::movegen::Legal(_board);
     if (moves.empty()) {
-        return board.IsCheck() ? -1 : 0;
+        return RolloutResult{_board.IsCheck() ? Outcome::Loss : Outcome::Draw,
+                             _board.active()};
+    } else if (_history.IsRepetition(_board.hash())) {
+        return RolloutResult{Outcome::Draw, _board.active()};
     } else {
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(moves.begin(), moves.end(), g);
-        const auto backup = board.GetStateBackup();
-        board.Make(*moves.begin());
-        auto eval = -Rollout(board);
-        board.Unmake(*moves.begin(), backup);
-        return eval;
+        std::shuffle(moves.begin(), moves.end(), _g);
+        const auto backup = _board.GetStateBackup();
+        Make(*moves.begin());
+        const auto result = Rollout();
+        Unmake(*moves.begin(), backup);
+        return result;
     }
 }
 
 Result
 Mcts::PickMove() noexcept {
-    auto best_move_ = Move{};
-    auto best_eval_ = -1000.0;
+    const auto side = _board.active();
+    const auto backup = _board.GetStateBackup();
+    const auto moves = chess::movegen::Legal(_board);
 
-    for (const auto &move : chess::movegen::Legal(_board)) {
-        auto eval = Rollout(_board);
-        if (eval > best_eval_) {
-            best_eval_ = eval;
-            best_move_ = move;
+    int best_wins{0};
+    int best_draws{0};
+    Move best_move{*moves.begin()};
+    for (const auto &move : moves) {
+        Make(move);
+        int wins{0};
+        int draws{0};
+        for (int i = 0; i < 100000; ++i) {
+            const auto result = Rollout();
+            if (result.outcome == Outcome::Loss and result.last != side) {
+                ++wins;
+            } else if (result.outcome == Outcome::Draw) {
+                ++draws;
+            }
         }
+        std::cout << "Move: " << move.ToString() << " Wins: " << wins << " Draws: " << draws << " in 1000\n";
+        if (wins > best_wins) {
+            best_wins = wins;
+            best_move = move;
+        } else if (wins == best_wins) {
+            if (draws > best_draws) {
+                best_draws = draws;
+                best_move = move;
+            }
+        }
+        Unmake(move, backup);
     }
-
-    return Result{0, 0, {best_move_}};
+    return Result{0, 0, {best_move}};
 }
 }   // namespace cod::brain

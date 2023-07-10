@@ -8,31 +8,31 @@
 
 namespace cod::chess::utils {
 /// @brief Bitboard masks for each rank
-static constexpr bitboard::Bitboard MASK_RANK[] = {
+static constexpr bitboard::Bitboard kMaskRank[] = {
     0xFF,         0xFF00,         0xFF0000,         0xFF000000,
     0xFF00000000, 0xFF0000000000, 0xFF000000000000, 0xFF00000000000000};
 
 /// @brief Bitboard masks for each file
-[[maybe_unused]] static constexpr bitboard::Bitboard MASK_FILE[] = {
+[[maybe_unused]] static constexpr bitboard::Bitboard kMaskFile[] = {
     0x0101010101010101, 0x202020202020202,  0x404040404040404,
     0x808080808080808,  0x1010101010101010, 0x2020202020202020,
     0x4040404040404040, 0x8080808080808080};
 
 /// @brief Bitboard masks for clearing each rank
-static constexpr bitboard::Bitboard MASK_NOT_RANK[] = {
+static constexpr bitboard::Bitboard kMaskNotRank[] = {
     0xFFFFFFFFFFFFFF00, 0xFFFFFFFFFFFF00FF, 0xFFFFFFFFFF00FFFF,
     0xFFFFFFFF00FFFFFF, 0xFFFFFF00FFFFFFFF, 0xFFFF00FFFFFFFFFF,
     0xFF00FFFFFFFFFFFF, 0x00FFFFFFFFFFFFFF};
 
 /// @brief Bitboard masks for clearing each file
-static constexpr bitboard::Bitboard MASK_NOT_FILE[] = {
+static constexpr bitboard::Bitboard kMaskNotFile[] = {
     0xFEFEFEFEFEFEFEFE, 0xFDFDFDFDFDFDFDFD, 0xFBFBFBFBFBFBFBFB,
     0xF7F7F7F7F7F7F7F7, 0xEFEFEFEFEFEFEFEF, 0xDFDFDFDFDFDFDFDF,
     0xBFBFBFBFBFBFBFBF, 0x7F7F7F7F7F7F7F7F};
 
 /// @brief Bitboard representation of each square
 static constexpr bitboard::Bitboard
-    SQUARE_TO_BB[static_cast<std::size_t>(Square::Total)] = {
+    kSquareToBitboard[static_cast<std::size_t>(Square::Total)] = {
         0x1ULL,
         0x2ULL,
         0x4ULL,
@@ -101,7 +101,7 @@ static constexpr bitboard::Bitboard
 
 /// @brief Relevant bits count for each square for the bishop
 static constexpr int
-    BISHOP_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::Total)] = {
+    kBishopRelevantBits[static_cast<std::size_t>(Square::Total)] = {
         6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7,
         5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7,
         7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
@@ -109,7 +109,7 @@ static constexpr int
 
 /// @brief Relevant bits count for each square for the rook
 static constexpr int
-    ROOK_RELEVANT_BITS_COUNT[static_cast<std::size_t>(Square::Total)] = {
+    kRookRelevantBits[static_cast<std::size_t>(Square::Total)] = {
         12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11,
         11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
         11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,

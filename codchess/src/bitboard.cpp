@@ -9,12 +9,12 @@ namespace cod::chess::bitboard {
 Bitboard
 SetOccupancy(const int index, const int bits_in_mask,
              Bitboard attack_mask) noexcept {
-    auto occupancy{ZERO};
+    auto occupancy{kZero};
     for (int bit = 0; bit < bits_in_mask; ++bit) {
         const auto lsb_sq = BitScanForward(attack_mask);
         PopBit(attack_mask, lsb_sq);
         if (index & (1 << bit)) {
-            occupancy |= utils::SQUARE_TO_BB[static_cast<std::size_t>(lsb_sq)];
+            occupancy |= utils::kSquareToBitboard[static_cast<std::size_t>(lsb_sq)];
         }
     }
     return occupancy;
@@ -41,7 +41,7 @@ Display(std::ostream &os, const Bitboard &bb) noexcept {
             os << static_cast<int>(
                       (bb >> static_cast<int>(utils::GetSquare(
                                  static_cast<Rank>(i), static_cast<File>(n)))) &
-                      ONE)
+                      kOne)
                << " ";
         }
         os << "\n";

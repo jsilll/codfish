@@ -13,26 +13,26 @@ class Move final {
     [[maybe_unused]] [[nodiscard]] Move() noexcept = default;
 
     /// @brief Constructor
-    /// @param source_square The source square
-    /// @param target_square The target square
+    /// @param src The source square
+    /// @param target The target square
     /// @param piece The piece
-    /// @param captured_piece The captured piece
-    /// @param promoted_piece The promoted piece
-    /// @param is_double_push If if double push
-    /// @param is_en_passant If is en passant
-    /// @param is_castle If is castle
-    [[nodiscard]] Move(const Square source_square, const Square target_square,
-                       const Piece piece, const Piece captured_piece,
-                       const Piece promoted_piece, const bool is_double_push,
-                       const bool is_en_passant, const bool is_castle) noexcept
-        : _encoded(static_cast<std::uint32_t>(source_square) |
-                   static_cast<std::uint32_t>(target_square) << 6 |
+    /// @param captured The captured piece
+    /// @param promoted The promoted piece
+    /// @param double_push If if double push
+    /// @param en_passant If is en passant
+    /// @param castle If is castle
+    [[nodiscard]] Move(const Square src, const Square target,
+                       const Piece piece, const Piece captured,
+                       const Piece promoted, const bool double_push,
+                       const bool en_passant, const bool castle) noexcept
+        : _encoded(static_cast<std::uint32_t>(src) |
+                   static_cast<std::uint32_t>(target) << 6 |
                    static_cast<std::uint32_t>(piece) << 12 |
-                   static_cast<std::uint32_t>(captured_piece) << 15 |
-                   static_cast<std::uint32_t>(promoted_piece) << 18 |
-                   static_cast<std::uint32_t>(is_double_push) << 21 |
-                   static_cast<std::uint32_t>(is_en_passant) << 22 |
-                   static_cast<std::uint32_t>(is_castle) << 23) {}
+                   static_cast<std::uint32_t>(captured) << 15 |
+                   static_cast<std::uint32_t>(promoted) << 18 |
+                   static_cast<std::uint32_t>(double_push) << 21 |
+                   static_cast<std::uint32_t>(en_passant) << 22 |
+                   static_cast<std::uint32_t>(castle) << 23) {}
 
     /// @brief Returns the source square
     /// @return The source square

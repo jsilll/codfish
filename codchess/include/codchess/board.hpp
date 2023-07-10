@@ -12,6 +12,14 @@
 #include <codchess/utils.hpp>
 
 namespace cod::chess {
+/// @brief The display type of the board
+enum DisplayType {
+    /// @brief Display the board in ASCII
+    Ascii,
+    /// @brief Display the board in Unicode
+    Unicode
+};
+
 /// @brief Represents a chess board
 class Board final {
   public:
@@ -201,8 +209,8 @@ class Board final {
 
     /// @brief Sets the current castling_availability rights
     /// @param castling_availability The castling_availability rights
-    [[maybe_unused]] void castling_availability(
-        const Castle castling_availability) noexcept {
+    [[maybe_unused]] void
+    castling_availability(const Castle castling_availability) noexcept {
         _castling_availability = castling_availability;
     }
 
@@ -246,7 +254,7 @@ class Board final {
     /// @param os The output stream
     /// @param ascii Whether to display the board in ASCII
     /// @param color Whether to display the board with white on bottom
-    void Display(std::ostream &os, bool ascii = true,
+    void Display(std::ostream &os, DisplayType dt = DisplayType::Ascii,
                  bool white_on_bottom = true) const noexcept;
 
   private:
@@ -284,11 +292,12 @@ class Board final {
     ColoredPiece _piece[static_cast<std::size_t>(Square::Total)]{};
     /// @brief The occupancy bitboards
     /// @note This should be synced with the bitboards
-    std::uint64_t _occupancies[static_cast<std::size_t>(Color::Total) + 1]{};
+    bitboard::Bitboard
+        _occupancies[static_cast<std::size_t>(Color::Total) + 1]{};
     /// @brief The bitboards for the pieces
     /// @note This should be synced with the arrays above
-    std::uint64_t _pieces[static_cast<std::size_t>(Color::Total)]
-                         [static_cast<std::size_t>(Piece::Total)]{};
+    bitboard::Bitboard _pieces[static_cast<std::size_t>(Color::Total)]
+                              [static_cast<std::size_t>(Piece::Total)]{};
 
     /// @brief The side to move
     Color _active{};

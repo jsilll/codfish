@@ -161,4 +161,6 @@ main() {
     }
 
     bench.Run();
+
+    return EXIT_SUCCESS;
 }

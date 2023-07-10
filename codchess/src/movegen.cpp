@@ -6,9 +6,9 @@ namespace cod::chess::movegen {
 /// @brief The type of move generation to perform.
 enum class GenType {
     /// @brief Generate capture moves.
-    CAPTURES,
+    Captures,
     /// @brief Generate quiet moves (non-captures).
-    QUIETS,
+    Quiets,
 };
 
 /// @brief Generates all the castling_availability moves for the given board.
@@ -89,7 +89,7 @@ EnPassantCaptures(MoveList &move_list, const Board &board) noexcept {
 
     if (board.en_passant_square() != Square::Empty) {
         auto pawns_can_en_passant =
-            attacks::PAWN_ATTACKS[static_cast<std::size_t>(Opponent)]
+            attacks::kPawnAttacks[static_cast<std::size_t>(Opponent)]
                                  [static_cast<std::size_t>(
                                      board.en_passant_square())] &
             board.pieces(ToMove, Piece::Pawn);
@@ -124,7 +124,7 @@ PawnSinglePushPromotions(MoveList &move_list, const Board &board) noexcept {
     auto pawn_single_pushes_promo =
         attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, Piece::Pawn),
                                           ~board.occupancies(Color::Both)) &
-        (utils::MASK_RANK[0] | utils::MASK_RANK[7]);
+        (utils::kMaskRank[0] | utils::kMaskRank[7]);
 
     while (pawn_single_pushes_promo) {
         const auto to_square =
@@ -171,7 +171,7 @@ PawnSinglePushesNoPromotion(MoveList &move_list, const Board &board) noexcept {
     auto pawn_single_pushes_no_promo =
         attacks::PawnSinglePushes<ToMove>(board.pieces(ToMove, Piece::Pawn),
                                           ~board.occupancies(Color::Both)) &
-        utils::MASK_NOT_RANK[0] & utils::MASK_NOT_RANK[7];
+        utils::kMaskNotRank[0] & utils::kMaskNotRank[7];
 
     while (pawn_single_pushes_no_promo) {
         const auto to_square =
@@ -205,14 +205,14 @@ PawnCapturesPromotion(MoveList &move_list, const Board &board) {
     constexpr auto MaskIndex = ToMove == Color::White ? 6 : 1;
 
     auto pawns_can_capture_with_promo =
-        board.pieces(ToMove, Piece::Pawn) & utils::MASK_RANK[MaskIndex];
+        board.pieces(ToMove, Piece::Pawn) & utils::kMaskRank[MaskIndex];
 
     while (pawns_can_capture_with_promo) {
         const auto from_square =
             bitboard::BitScanForward(pawns_can_capture_with_promo);
 
         auto pawn_captures_promo =
-            attacks::PAWN_ATTACKS[static_cast<std::size_t>(ToMove)]
+            attacks::kPawnAttacks[static_cast<std::size_t>(ToMove)]
                                  [static_cast<std::size_t>(from_square)] &
             board.occupancies(Opponent);
 
@@ -261,14 +261,14 @@ PawnCapturesNoPromotion(MoveList &move_list, const Board &board) noexcept {
     constexpr auto MaskIndex = ToMove == Color::White ? 6 : 1;
 
     auto pawns_can_capture_no_promo =
-        board.pieces(ToMove, Piece::Pawn) & utils::MASK_NOT_RANK[MaskIndex];
+        board.pieces(ToMove, Piece::Pawn) & utils::kMaskNotRank[MaskIndex];
 
     while (pawns_can_capture_no_promo) {
         const auto from_square =
             bitboard::BitScanForward(pawns_can_capture_no_promo);
 
         auto pawn_captures_no_promo =
-            attacks::PAWN_ATTACKS[static_cast<std::size_t>(ToMove)]
+            attacks::kPawnAttacks[static_cast<std::size_t>(ToMove)]
                                  [static_cast<std::size_t>(from_square)] &
             board.occupancies(Opponent);
 
@@ -346,25 +346,25 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
     while (to_move_pieces) {
         const auto from_square = bitboard::BitScanForward(to_move_pieces);
 
-        auto moves{bitboard::ZERO};
-        if constexpr (GType == GenType::QUIETS) {
+        auto moves{bitboard::kZero};
+        if constexpr (GType == GenType::Quiets) {
             if constexpr (PType == Piece::Knight) {
-                moves = attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(
+                moves = attacks::kKnightAttacks[static_cast<std::size_t>(
                             from_square)] &
                         ~board.occupancies(Color::Both);
             } else {
-                moves = attacks::KING_ATTACKS[static_cast<std::size_t>(
+                moves = attacks::kKingAttacks[static_cast<std::size_t>(
                             from_square)] &
                         ~board.occupancies(Color::Both);
             }
         } else {
             if constexpr (PType == Piece::Knight) {
-                moves = attacks::KNIGHT_ATTACKS[static_cast<std::size_t>(
+                moves = attacks::kKnightAttacks[static_cast<std::size_t>(
                             from_square)] &
                         ~board.occupancies(ToMove) &
                         board.occupancies(Opponent);
             } else {
-                moves = attacks::KING_ATTACKS[static_cast<std::size_t>(
+                moves = attacks::kKingAttacks[static_cast<std::size_t>(
                             from_square)] &
                         ~board.occupancies(ToMove) &
                         board.occupancies(Opponent);
@@ -374,7 +374,7 @@ LeaperMoves(MoveList &move_list, const Board &board) noexcept {
         while (moves) {
             const auto to_square = bitboard::BitScanForward(moves);
 
-            if constexpr (GType == GenType::QUIETS) {
+            if constexpr (GType == GenType::Quiets) {
                 move_list.Insert({from_square, to_square, PType,
                                   Piece::Empty, Piece::Empty, false,
                                   false, false});
@@ -418,8 +418,8 @@ SliderMoves(MoveList &move_list, const Board &board) {
     while (to_move_pieces) {
         const auto from_square = bitboard::BitScanForward(to_move_pieces);
 
-        auto moves{bitboard::ZERO};
-        if constexpr (GType == GenType::QUIETS) {
+        auto moves{bitboard::kZero};
+        if constexpr (GType == GenType::Quiets) {
             moves = ATTACKS_FUNC(from_square, board.occupancies(Color::Both)) &
                     ~board.occupancies(ToMove) & ~board.occupancies(Opponent);
         } else {
@@ -430,7 +430,7 @@ SliderMoves(MoveList &move_list, const Board &board) {
         while (moves) {
             const auto to_square = bitboard::BitScanForward(moves);
 
-            if constexpr (GType == GenType::QUIETS) {
+            if constexpr (GType == GenType::Quiets) {
                 move_list.Insert({from_square, to_square, PType,
                                   Piece::Empty, Piece::Empty, false,
                                   false, false});
@@ -459,20 +459,20 @@ PseudoLegal(const Board &board) noexcept {
         PawnDoublePushes<Color::White>(moves, board);
         PawnSinglePushesNoPromotion<Color::White>(moves, board);
 
-        LeaperMoves<Color::White, Piece::Knight, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::White, Piece::Knight, GenType::Captures>(moves,
                                                                     board);
-        LeaperMoves<Color::White, Piece::King, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::White, Piece::Bishop, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::White, Piece::King, GenType::Captures>(moves, board);
+        SliderMoves<Color::White, Piece::Bishop, GenType::Captures>(moves,
                                                                     board);
-        SliderMoves<Color::White, Piece::Rook, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::White, Piece::Queen, GenType::CAPTURES>(moves,
+        SliderMoves<Color::White, Piece::Rook, GenType::Captures>(moves, board);
+        SliderMoves<Color::White, Piece::Queen, GenType::Captures>(moves,
                                                                    board);
 
-        LeaperMoves<Color::White, Piece::Knight, GenType::QUIETS>(moves, board);
-        LeaperMoves<Color::White, Piece::King, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::White, Piece::Bishop, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::White, Piece::Rook, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::White, Piece::Queen, GenType::QUIETS>(moves, board);
+        LeaperMoves<Color::White, Piece::Knight, GenType::Quiets>(moves, board);
+        LeaperMoves<Color::White, Piece::King, GenType::Quiets>(moves, board);
+        SliderMoves<Color::White, Piece::Bishop, GenType::Quiets>(moves, board);
+        SliderMoves<Color::White, Piece::Rook, GenType::Quiets>(moves, board);
+        SliderMoves<Color::White, Piece::Queen, GenType::Quiets>(moves, board);
 
         CastlingMoves<Color::White>(moves, board);
     } else {
@@ -483,20 +483,20 @@ PseudoLegal(const Board &board) noexcept {
         PawnDoublePushes<Color::Black>(moves, board);
         PawnSinglePushesNoPromotion<Color::Black>(moves, board);
 
-        LeaperMoves<Color::Black, Piece::Knight, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::Black, Piece::Knight, GenType::Captures>(moves,
                                                                     board);
-        LeaperMoves<Color::Black, Piece::King, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::Black, Piece::Bishop, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::Black, Piece::King, GenType::Captures>(moves, board);
+        SliderMoves<Color::Black, Piece::Bishop, GenType::Captures>(moves,
                                                                     board);
-        SliderMoves<Color::Black, Piece::Rook, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::Black, Piece::Queen, GenType::CAPTURES>(moves,
+        SliderMoves<Color::Black, Piece::Rook, GenType::Captures>(moves, board);
+        SliderMoves<Color::Black, Piece::Queen, GenType::Captures>(moves,
                                                                    board);
 
-        LeaperMoves<Color::Black, Piece::Knight, GenType::QUIETS>(moves, board);
-        LeaperMoves<Color::Black, Piece::King, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::Black, Piece::Bishop, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::Black, Piece::Rook, GenType::QUIETS>(moves, board);
-        SliderMoves<Color::Black, Piece::Queen, GenType::QUIETS>(moves, board);
+        LeaperMoves<Color::Black, Piece::Knight, GenType::Quiets>(moves, board);
+        LeaperMoves<Color::Black, Piece::King, GenType::Quiets>(moves, board);
+        SliderMoves<Color::Black, Piece::Bishop, GenType::Quiets>(moves, board);
+        SliderMoves<Color::Black, Piece::Rook, GenType::Quiets>(moves, board);
+        SliderMoves<Color::Black, Piece::Queen, GenType::Quiets>(moves, board);
 
         CastlingMoves<Color::Black>(moves, board);
     }
@@ -513,28 +513,28 @@ PseudoLegalCaptures(const Board &board) noexcept {
         PawnCapturesNoPromotion<Color::White>(moves, board);
         EnPassantCaptures<Color::White>(moves, board);
 
-        LeaperMoves<Color::White, Piece::Knight, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::White, Piece::Knight, GenType::Captures>(moves,
                                                                     board);
-        LeaperMoves<Color::White, Piece::King, GenType::CAPTURES>(moves, board);
+        LeaperMoves<Color::White, Piece::King, GenType::Captures>(moves, board);
 
-        SliderMoves<Color::White, Piece::Bishop, GenType::CAPTURES>(moves,
+        SliderMoves<Color::White, Piece::Bishop, GenType::Captures>(moves,
                                                                     board);
-        SliderMoves<Color::White, Piece::Rook, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::White, Piece::Queen, GenType::CAPTURES>(moves,
+        SliderMoves<Color::White, Piece::Rook, GenType::Captures>(moves, board);
+        SliderMoves<Color::White, Piece::Queen, GenType::Captures>(moves,
                                                                    board);
     } else {
         PawnCapturesPromotion<Color::Black>(moves, board);
         PawnCapturesNoPromotion<Color::Black>(moves, board);
         EnPassantCaptures<Color::Black>(moves, board);
 
-        LeaperMoves<Color::Black, Piece::Knight, GenType::CAPTURES>(moves,
+        LeaperMoves<Color::Black, Piece::Knight, GenType::Captures>(moves,
                                                                     board);
-        LeaperMoves<Color::Black, Piece::King, GenType::CAPTURES>(moves, board);
+        LeaperMoves<Color::Black, Piece::King, GenType::Captures>(moves, board);
 
-        SliderMoves<Color::Black, Piece::Bishop, GenType::CAPTURES>(moves,
+        SliderMoves<Color::Black, Piece::Bishop, GenType::Captures>(moves,
                                                                     board);
-        SliderMoves<Color::Black, Piece::Rook, GenType::CAPTURES>(moves, board);
-        SliderMoves<Color::Black, Piece::Queen, GenType::CAPTURES>(moves,
+        SliderMoves<Color::Black, Piece::Rook, GenType::Captures>(moves, board);
+        SliderMoves<Color::Black, Piece::Queen, GenType::Captures>(moves,
                                                                    board);
     }
 
