@@ -13,10 +13,10 @@ target_include_directories(codbrain
 
 # -- Link Libraries --
 target_link_libraries(codbrain
-        PUBLIC codchess)
+        PUBLIC uci)
 
 target_link_libraries(codbrain
-        PUBLIC ${Boost_LIBRARIES})
+        PUBLIC codchess)
 
 # -- All Warnings as Errors --
 if (MSVC)

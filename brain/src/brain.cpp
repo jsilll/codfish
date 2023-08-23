@@ -1,6 +1,6 @@
 #include <codbrain/codbrain.hpp>
 
-#include "uci.hpp"
+#include <uci/uci.hpp>
 
 namespace cod::brain {
 Brain::Brain() noexcept {
