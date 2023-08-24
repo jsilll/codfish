@@ -17,8 +17,8 @@ main([[maybe_unused]] const int argc, [[maybe_unused]] const char **argv) {
         } else {
             const auto moves = chess::movegen::Legal(board);
             const auto move = std::find_if(moves.begin(), moves.end(),
-                                           [&input](const auto &move) {
-                                               return move.ToString() == input;
+                                           [&input](const auto &m) {
+                                               return m.ToString() == input;
                                            });
             if (move != moves.end()) {
                 board.Make(*move);

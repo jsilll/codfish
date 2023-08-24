@@ -46,13 +46,13 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif ()
 
 # -- Uci Library --
-add_subdirectory(uci)
+add_subdirectory(coduci)
 
 # -- Chess Library --
-add_subdirectory(chess)
+add_subdirectory(codchess)
 
 # -- Brain Library -- 
-add_subdirectory(brain)
+add_subdirectory(codbrain)
 
-# -- Applications --
-add_subdirectory(apps)
+# -- Engine --
+add_subdirectory(engine)
