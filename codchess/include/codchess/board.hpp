@@ -1,5 +1,9 @@
 #pragma once
 
+#include <codchess/base.hpp>
+#include <codchess/move.hpp>
+#include <codchess/utils.hpp>
+
 #include <array>
 #include <cstdint>
 #include <cstring>
@@ -7,22 +11,18 @@
 #include <iostream>
 #include <string>
 
-#include <codchess/base.hpp>
-#include <codchess/move.hpp>
-#include <codchess/utils.hpp>
-
 namespace cod::chess {
-/// @brief The display type of the board
-enum DisplayType {
-    /// @brief Display the board in ASCII
-    Ascii,
-    /// @brief Display the board in Unicode
-    Unicode
-};
-
 /// @brief Represents a chess board
 class Board final {
   public:
+    /// @brief The display type of the board
+    enum DisplayType {
+        /// @brief Display the board in ASCII
+        Ascii,
+        /// @brief Display the board in Unicode
+        Unicode
+    };
+
     /// @brief A piece on the board
     struct ColoredPiece {
         /// @brief The color of the piece
