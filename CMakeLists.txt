@@ -45,14 +45,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif ()
 
-# -- Uci Library --
-add_subdirectory(coduci)
+# -- Libraries --
+add_subdirectory(libs)
 
-# -- Chess Library --
-add_subdirectory(codchess)
-
-# -- Brain Library -- 
-add_subdirectory(codbrain)
-
-# -- Engine --
-add_subdirectory(engine)
+# -- App --
+add_subdirectory(app)
