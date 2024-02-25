@@ -1,5 +1,1 @@
-.vscode/
-.idea/
-build/
-cmake-build-debug/
-cmake-build-debug-coverage/
+target/
