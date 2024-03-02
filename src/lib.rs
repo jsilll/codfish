@@ -1,5 +1,6 @@
 use strum_macros::EnumCount;
 
+/// Represents the possible castling permissions.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
 pub enum CastlePerm {
@@ -11,6 +12,7 @@ pub enum CastlePerm {
     All = 15,
 }
 
+/// Represents the possible colors.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumCount)]
 pub enum Color {
@@ -19,9 +21,40 @@ pub enum Color {
     Both = 2,
 }
 
+/// Represents the possible pieces, including an piece.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumCount)]
 pub enum Piece {
+    None = 0,
+    Pawn = 1,
+    Knight = 2,
+    Bishop = 3,
+    Rook = 4,
+    Queen = 5,
+    King = 6,
+}
+
+impl TryFrom<u8> for Piece {
+    type Error = ();
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Piece::None),
+            1 => Ok(Piece::Pawn),
+            2 => Ok(Piece::Knight),
+            3 => Ok(Piece::Bishop),
+            4 => Ok(Piece::Rook),
+            5 => Ok(Piece::Queen),
+            6 => Ok(Piece::King),
+            _ => Err(()),
+        }
+    }
+}
+
+/// Represents the possible colored pieces.
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumCount)]
+pub enum ColoredPiece {
     WhitePawn = 0,
     WhiteKnight = 1,
     WhiteBishop = 2,
@@ -36,25 +69,15 @@ pub enum Piece {
     BlackKing = 11,
 }
 
-impl Piece {
+const PIECE_TO_CHAR: [char; 12] = ['P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'];
+
+impl ColoredPiece {
     pub fn to_char(&self) -> char {
-        match self {
-            Piece::WhitePawn => 'P',
-            Piece::WhiteKnight => 'N',
-            Piece::WhiteBishop => 'B',
-            Piece::WhiteRook => 'R',
-            Piece::WhiteQueen => 'Q',
-            Piece::WhiteKing => 'K',
-            Piece::BlackPawn => 'p',
-            Piece::BlackKnight => 'n',
-            Piece::BlackBishop => 'b',
-            Piece::BlackRook => 'r',
-            Piece::BlackQueen => 'q',
-            Piece::BlackKing => 'k',
-        }
+        PIECE_TO_CHAR[*self as usize]
     }
 }
 
+/// Represents the possible files.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, EnumCount)]
 pub enum File {
@@ -68,6 +91,7 @@ pub enum File {
     H = 7,
 }
 
+/// Represents the possible ranks.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, EnumCount)]
 pub enum Rank {
@@ -81,6 +105,7 @@ pub enum Rank {
     R8 = 7,
 }
 
+/// Represents the possible squares.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, EnumCount)]
 pub enum Square {
@@ -150,145 +175,184 @@ pub enum Square {
     H8 = 63,
 }
 
-impl Square {
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s {
-            "a1" => Some(Square::A1),
-            "b1" => Some(Square::B1),
-            "c1" => Some(Square::C1),
-            "d1" => Some(Square::D1),
-            "e1" => Some(Square::E1),
-            "f1" => Some(Square::F1),
-            "g1" => Some(Square::G1),
-            "h1" => Some(Square::H1),
-            "a2" => Some(Square::A2),
-            "b2" => Some(Square::B2),
-            "c2" => Some(Square::C2),
-            "d2" => Some(Square::D2),
-            "e2" => Some(Square::E2),
-            "f2" => Some(Square::F2),
-            "g2" => Some(Square::G2),
-            "h2" => Some(Square::H2),
-            "a3" => Some(Square::A3),
-            "b3" => Some(Square::B3),
-            "c3" => Some(Square::C3),
-            "d3" => Some(Square::D3),
-            "e3" => Some(Square::E3),
-            "f3" => Some(Square::F3),
-            "g3" => Some(Square::G3),
-            "h3" => Some(Square::H3),
-            "a4" => Some(Square::A4),
-            "b4" => Some(Square::B4),
-            "c4" => Some(Square::C4),
-            "d4" => Some(Square::D4),
-            "e4" => Some(Square::E4),
-            "f4" => Some(Square::F4),
-            "g4" => Some(Square::G4),
-            "h4" => Some(Square::H4),
-            "a5" => Some(Square::A5),
-            "b5" => Some(Square::B5),
-            "c5" => Some(Square::C5),
-            "d5" => Some(Square::D5),
-            "e5" => Some(Square::E5),
-            "f5" => Some(Square::F5),
-            "g5" => Some(Square::G5),
-            "h5" => Some(Square::H5),
-            "a6" => Some(Square::A6),
-            "b6" => Some(Square::B6),
-            "c6" => Some(Square::C6),
-            "d6" => Some(Square::D6),
-            "e6" => Some(Square::E6),
-            "f6" => Some(Square::F6),
-            "g6" => Some(Square::G6),
-            "h6" => Some(Square::H6),
-            "a7" => Some(Square::A7),
-            "b7" => Some(Square::B7),
-            "c7" => Some(Square::C7),
-            "d7" => Some(Square::D7),
-            "e7" => Some(Square::E7),
-            "f7" => Some(Square::F7),
-            "g7" => Some(Square::G7),
-            "h7" => Some(Square::H7),
-            "a8" => Some(Square::A8),
-            "b8" => Some(Square::B8),
-            "c8" => Some(Square::C8),
-            "d8" => Some(Square::D8),
-            "e8" => Some(Square::E8),
-            "f8" => Some(Square::F8),
-            "g8" => Some(Square::G8),
-            "h8" => Some(Square::H8),
-            _ => None,
-        }
-    }
+const SQUARE_FROM_U8: [Square; 64] = [
+    Square::A1,
+    Square::B1,
+    Square::C1,
+    Square::D1,
+    Square::E1,
+    Square::F1,
+    Square::G1,
+    Square::H1,
+    Square::A2,
+    Square::B2,
+    Square::C2,
+    Square::D2,
+    Square::E2,
+    Square::F2,
+    Square::G2,
+    Square::H2,
+    Square::A3,
+    Square::B3,
+    Square::C3,
+    Square::D3,
+    Square::E3,
+    Square::F3,
+    Square::G3,
+    Square::H3,
+    Square::A4,
+    Square::B4,
+    Square::C4,
+    Square::D4,
+    Square::E4,
+    Square::F4,
+    Square::G4,
+    Square::H4,
+    Square::A5,
+    Square::B5,
+    Square::C5,
+    Square::D5,
+    Square::E5,
+    Square::F5,
+    Square::G5,
+    Square::H5,
+    Square::A6,
+    Square::B6,
+    Square::C6,
+    Square::D6,
+    Square::E6,
+    Square::F6,
+    Square::G6,
+    Square::H6,
+    Square::A7,
+    Square::B7,
+    Square::C7,
+    Square::D7,
+    Square::E7,
+    Square::F7,
+    Square::G7,
+    Square::H7,
+    Square::A8,
+    Square::B8,
+    Square::C8,
+    Square::D8,
+    Square::E8,
+    Square::F8,
+    Square::G8,
+    Square::H8,
+];
 
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            Square::A1 => "a1",
-            Square::B1 => "b1",
-            Square::C1 => "c1",
-            Square::D1 => "d1",
-            Square::E1 => "e1",
-            Square::F1 => "f1",
-            Square::G1 => "g1",
-            Square::H1 => "h1",
-            Square::A2 => "a2",
-            Square::B2 => "b2",
-            Square::C2 => "c2",
-            Square::D2 => "d2",
-            Square::E2 => "e2",
-            Square::F2 => "f2",
-            Square::G2 => "g2",
-            Square::H2 => "h2",
-            Square::A3 => "a3",
-            Square::B3 => "b3",
-            Square::C3 => "c3",
-            Square::D3 => "d3",
-            Square::E3 => "e3",
-            Square::F3 => "f3",
-            Square::G3 => "g3",
-            Square::H3 => "h3",
-            Square::A4 => "a4",
-            Square::B4 => "b4",
-            Square::C4 => "c4",
-            Square::D4 => "d4",
-            Square::E4 => "e4",
-            Square::F4 => "f4",
-            Square::G4 => "g4",
-            Square::H4 => "h4",
-            Square::A5 => "a5",
-            Square::B5 => "b5",
-            Square::C5 => "c5",
-            Square::D5 => "d5",
-            Square::E5 => "e5",
-            Square::F5 => "f5",
-            Square::G5 => "g5",
-            Square::H5 => "h5",
-            Square::A6 => "a6",
-            Square::B6 => "b6",
-            Square::C6 => "c6",
-            Square::D6 => "d6",
-            Square::E6 => "e6",
-            Square::F6 => "f6",
-            Square::G6 => "g6",
-            Square::H6 => "h6",
-            Square::A7 => "a7",
-            Square::B7 => "b7",
-            Square::C7 => "c7",
-            Square::D7 => "d7",
-            Square::E7 => "e7",
-            Square::F7 => "f7",
-            Square::G7 => "g7",
-            Square::H7 => "h7",
-            Square::A8 => "a8",
-            Square::B8 => "b8",
-            Square::C8 => "c8",
-            Square::D8 => "d8",
-            Square::E8 => "e8",
-            Square::F8 => "f8",
-            Square::G8 => "g8",
-            Square::H8 => "h8",
+impl TryFrom<u8> for Square {
+    type Error = ();
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value < 64 {
+            Ok(SQUARE_FROM_U8[value as usize])
+        } else {
+            Err(())
         }
     }
 }
+
+const SQUARE_FROM_STR: phf::Map<&str, Square> = phf::phf_map! {
+    "a1" => Square::A1,
+    "b1" => Square::B1,
+    "c1" => Square::C1,
+    "d1" => Square::D1,
+    "e1" => Square::E1,
+    "f1" => Square::F1,
+    "g1" => Square::G1,
+    "h1" => Square::H1,
+    "a2" => Square::A2,
+    "b2" => Square::B2,
+    "c2" => Square::C2,
+    "d2" => Square::D2,
+    "e2" => Square::E2,
+    "f2" => Square::F2,
+    "g2" => Square::G2,
+    "h2" => Square::H2,
+    "a3" => Square::A3,
+    "b3" => Square::B3,
+    "c3" => Square::C3,
+    "d3" => Square::D3,
+    "e3" => Square::E3,
+    "f3" => Square::F3,
+    "g3" => Square::G3,
+    "h3" => Square::H3,
+    "a4" => Square::A4,
+    "b4" => Square::B4,
+    "c4" => Square::C4,
+    "d4" => Square::D4,
+    "e4" => Square::E4,
+    "f4" => Square::F4,
+    "g4" => Square::G4,
+    "h4" => Square::H4,
+    "a5" => Square::A5,
+    "b5" => Square::B5,
+    "c5" => Square::C5,
+    "d5" => Square::D5,
+    "e5" => Square::E5,
+    "f5" => Square::F5,
+    "g5" => Square::G5,
+    "h5" => Square::H5,
+    "a6" => Square::A6,
+    "b6" => Square::B6,
+    "c6" => Square::C6,
+    "d6" => Square::D6,
+    "e6" => Square::E6,
+    "f6" => Square::F6,
+    "g6" => Square::G6,
+    "h6" => Square::H6,
+    "a7" => Square::A7,
+    "b7" => Square::B7,
+    "c7" => Square::C7,
+    "d7" => Square::D7,
+    "e7" => Square::E7,
+    "f7" => Square::F7,
+    "g7" => Square::G7,
+    "h7" => Square::H7,
+    "a8" => Square::A8,
+    "b8" => Square::B8,
+    "c8" => Square::C8,
+    "d8" => Square::D8,
+    "e8" => Square::E8,
+    "f8" => Square::F8,
+    "g8" => Square::G8,
+    "h8" => Square::H8,
+};
+
+const SQUARE_TO_STR: [&str; 64] = [
+    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+    "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+    "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+    "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+];
+
+impl Square {
+    pub fn from_str(s: &str) -> Option<Self> {
+        SQUARE_FROM_STR.get(s).copied() 
+    }
+
+    pub fn to_str(&self) -> &'static str {
+        SQUARE_TO_STR[*self as usize]
+    }
+}
+
+// #[repr(i8)]
+// #[derive(Debug, Clone, Copy, EnumCount)]
+// pub enum Direction {
+//     North = 8,
+//     South = -8,
+//     East = 1,
+//     West = -1,
+//     NorthEast = 9,
+//     NorthWest = 7,
+//     SouthEast = -7,
+//     SouthWest = -9,
+// }
+
+pub mod bit;
+
+pub mod mov;
 
 pub mod board;

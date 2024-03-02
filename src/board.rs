@@ -1,7 +1,8 @@
-use crate::{CastlePerm, Color, Piece, Square};
+use crate::{CastlePerm, Color, ColoredPiece, Square};
 
 use strum::EnumCount;
 
+/// A chess board.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Board {
     /// Whether it's white's turn to move.
@@ -23,13 +24,18 @@ pub struct Board {
     occ: [u64; Color::COUNT],
 
     /// The piece bitboards.
-    pie: [u64; Piece::COUNT],
+    pie: [u64; ColoredPiece::COUNT],
 
     /// The piece-square table.
-    sqr: [Option<Piece>; Square::COUNT],
+    sqr: [Option<ColoredPiece>; Square::COUNT],
 }
 
 impl Board {
+    /// Creates a new board from a FEN string.
+    ///
+    /// # Arguments
+    ///
+    /// * `fen` - The FEN string
     pub fn from_fen(fen: &str) -> Option<Self> {
         let fields: Vec<&str> = fen.split(' ').collect();
         match fields.len() {
@@ -38,7 +44,7 @@ impl Board {
                     cas: 0,
                     w: fields[1] == "w",
                     occ: [0; Color::COUNT],
-                    pie: [0; Piece::COUNT],
+                    pie: [0; ColoredPiece::COUNT],
                     sqr: [None; Square::COUNT],
                     hmc: fields[4].parse().ok()?,
                     fmc: fields[5].parse().ok()?,
@@ -54,74 +60,74 @@ impl Board {
                         '1'..='8' => file += c as u8 - b'0',
                         'p' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackPawn as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackPawn);
+                            b.pie[ColoredPiece::BlackPawn as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackPawn);
                             file += 1;
                         }
                         'n' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackKnight as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackKnight);
+                            b.pie[ColoredPiece::BlackKnight as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackKnight);
                             file += 1;
                         }
                         'b' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackBishop as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackBishop);
+                            b.pie[ColoredPiece::BlackBishop as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackBishop);
                             file += 1;
                         }
                         'r' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackRook as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackRook);
+                            b.pie[ColoredPiece::BlackRook as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackRook);
                             file += 1;
                         }
                         'q' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackQueen as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackQueen);
+                            b.pie[ColoredPiece::BlackQueen as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackQueen);
                             file += 1;
                         }
                         'k' => {
                             b.occ[Color::Black as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::BlackKing as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::BlackKing);
+                            b.pie[ColoredPiece::BlackKing as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::BlackKing);
                             file += 1;
                         }
                         'P' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhitePawn as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhitePawn);
+                            b.pie[ColoredPiece::WhitePawn as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhitePawn);
                             file += 1;
                         }
                         'N' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhiteKnight as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhiteKnight);
+                            b.pie[ColoredPiece::WhiteKnight as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhiteKnight);
                             file += 1;
                         }
                         'B' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhiteBishop as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhiteBishop);
+                            b.pie[ColoredPiece::WhiteBishop as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhiteBishop);
                             file += 1;
                         }
                         'R' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhiteRook as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhiteRook);
+                            b.pie[ColoredPiece::WhiteRook as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhiteRook);
                             file += 1;
                         }
                         'Q' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhiteQueen as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhiteQueen);
+                            b.pie[ColoredPiece::WhiteQueen as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhiteQueen);
                             file += 1;
                         }
                         'K' => {
                             b.occ[Color::White as usize] |= 1 << (rank * 8 + file);
-                            b.pie[Piece::WhiteKing as usize] |= 1 << (rank * 8 + file);
-                            b.sqr[(rank * 8 + file) as usize] = Some(Piece::WhiteKing);
+                            b.pie[ColoredPiece::WhiteKing as usize] |= 1 << (rank * 8 + file);
+                            b.sqr[(rank * 8 + file) as usize] = Some(ColoredPiece::WhiteKing);
                             file += 1;
                         }
                         '/' => {
@@ -149,6 +155,7 @@ impl Board {
         }
     }
 
+    /// Converts the board to a FEN string.
     pub fn to_fen(&self) -> String {
         let mut fen = String::new();
         for rank in (0..8).rev() {
@@ -215,7 +222,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn from_fen() {
+    fn test_from_fen() {
         let b =
             Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
         assert_eq!(b.w, true);
@@ -226,34 +233,34 @@ mod tests {
         assert_eq!(b.occ[Color::White as usize], 0x000000000000FFFF);
         assert_eq!(b.occ[Color::Black as usize], 0xFFFF000000000000);
         assert_eq!(b.occ[Color::Both as usize], 0xFFFF00000000FFFF);
-        assert_eq!(b.pie[Piece::WhitePawn as usize], 0x000000000000FF00);
-        assert_eq!(b.pie[Piece::WhiteKnight as usize], 0x0000000000000042);
-        assert_eq!(b.pie[Piece::WhiteBishop as usize], 0x0000000000000024);
-        assert_eq!(b.pie[Piece::WhiteRook as usize], 0x0000000000000081);
-        assert_eq!(b.pie[Piece::WhiteQueen as usize], 0x0000000000000008);
-        assert_eq!(b.pie[Piece::WhiteKing as usize], 0x0000000000000010);
-        assert_eq!(b.pie[Piece::BlackPawn as usize], 0x00FF000000000000);
-        assert_eq!(b.pie[Piece::BlackKnight as usize], 0x4200000000000000);
-        assert_eq!(b.pie[Piece::BlackBishop as usize], 0x2400000000000000);
-        assert_eq!(b.pie[Piece::BlackRook as usize], 0x8100000000000000);
-        assert_eq!(b.pie[Piece::BlackQueen as usize], 0x0800000000000000);
-        assert_eq!(b.pie[Piece::BlackKing as usize], 0x1000000000000000);
-        assert_eq!(b.sqr[Square::A1 as usize], Some(Piece::WhiteRook));
-        assert_eq!(b.sqr[Square::B1 as usize], Some(Piece::WhiteKnight));
-        assert_eq!(b.sqr[Square::C1 as usize], Some(Piece::WhiteBishop));
-        assert_eq!(b.sqr[Square::D1 as usize], Some(Piece::WhiteQueen));
-        assert_eq!(b.sqr[Square::E1 as usize], Some(Piece::WhiteKing));
-        assert_eq!(b.sqr[Square::F1 as usize], Some(Piece::WhiteBishop));
-        assert_eq!(b.sqr[Square::G1 as usize], Some(Piece::WhiteKnight));
-        assert_eq!(b.sqr[Square::H1 as usize], Some(Piece::WhiteRook));
-        assert_eq!(b.sqr[Square::A2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::B2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::C2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::D2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::E2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::F2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::G2 as usize], Some(Piece::WhitePawn));
-        assert_eq!(b.sqr[Square::H2 as usize], Some(Piece::WhitePawn));
+        assert_eq!(b.pie[ColoredPiece::WhitePawn as usize], 0x000000000000FF00);
+        assert_eq!(b.pie[ColoredPiece::WhiteKnight as usize], 0x0000000000000042);
+        assert_eq!(b.pie[ColoredPiece::WhiteBishop as usize], 0x0000000000000024);
+        assert_eq!(b.pie[ColoredPiece::WhiteRook as usize], 0x0000000000000081);
+        assert_eq!(b.pie[ColoredPiece::WhiteQueen as usize], 0x0000000000000008);
+        assert_eq!(b.pie[ColoredPiece::WhiteKing as usize], 0x0000000000000010);
+        assert_eq!(b.pie[ColoredPiece::BlackPawn as usize], 0x00FF000000000000);
+        assert_eq!(b.pie[ColoredPiece::BlackKnight as usize], 0x4200000000000000);
+        assert_eq!(b.pie[ColoredPiece::BlackBishop as usize], 0x2400000000000000);
+        assert_eq!(b.pie[ColoredPiece::BlackRook as usize], 0x8100000000000000);
+        assert_eq!(b.pie[ColoredPiece::BlackQueen as usize], 0x0800000000000000);
+        assert_eq!(b.pie[ColoredPiece::BlackKing as usize], 0x1000000000000000);
+        assert_eq!(b.sqr[Square::A1 as usize], Some(ColoredPiece::WhiteRook));
+        assert_eq!(b.sqr[Square::B1 as usize], Some(ColoredPiece::WhiteKnight));
+        assert_eq!(b.sqr[Square::C1 as usize], Some(ColoredPiece::WhiteBishop));
+        assert_eq!(b.sqr[Square::D1 as usize], Some(ColoredPiece::WhiteQueen));
+        assert_eq!(b.sqr[Square::E1 as usize], Some(ColoredPiece::WhiteKing));
+        assert_eq!(b.sqr[Square::F1 as usize], Some(ColoredPiece::WhiteBishop));
+        assert_eq!(b.sqr[Square::G1 as usize], Some(ColoredPiece::WhiteKnight));
+        assert_eq!(b.sqr[Square::H1 as usize], Some(ColoredPiece::WhiteRook));
+        assert_eq!(b.sqr[Square::A2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::B2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::C2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::D2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::E2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::F2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::G2 as usize], Some(ColoredPiece::WhitePawn));
+        assert_eq!(b.sqr[Square::H2 as usize], Some(ColoredPiece::WhitePawn));
         assert_eq!(b.sqr[Square::A3 as usize], None);
         assert_eq!(b.sqr[Square::B3 as usize], None);
         assert_eq!(b.sqr[Square::C3 as usize], None);
@@ -286,26 +293,26 @@ mod tests {
         assert_eq!(b.sqr[Square::F6 as usize], None);
         assert_eq!(b.sqr[Square::G6 as usize], None);
         assert_eq!(b.sqr[Square::H6 as usize], None);
-        assert_eq!(b.sqr[Square::A7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::B7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::C7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::D7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::E7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::F7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::G7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::H7 as usize], Some(Piece::BlackPawn));
-        assert_eq!(b.sqr[Square::A8 as usize], Some(Piece::BlackRook));
-        assert_eq!(b.sqr[Square::B8 as usize], Some(Piece::BlackKnight));
-        assert_eq!(b.sqr[Square::C8 as usize], Some(Piece::BlackBishop));
-        assert_eq!(b.sqr[Square::D8 as usize], Some(Piece::BlackQueen));
-        assert_eq!(b.sqr[Square::E8 as usize], Some(Piece::BlackKing));
-        assert_eq!(b.sqr[Square::F8 as usize], Some(Piece::BlackBishop));
-        assert_eq!(b.sqr[Square::G8 as usize], Some(Piece::BlackKnight));
-        assert_eq!(b.sqr[Square::H8 as usize], Some(Piece::BlackRook));
+        assert_eq!(b.sqr[Square::A7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::B7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::C7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::D7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::E7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::F7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::G7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::H7 as usize], Some(ColoredPiece::BlackPawn));
+        assert_eq!(b.sqr[Square::A8 as usize], Some(ColoredPiece::BlackRook));
+        assert_eq!(b.sqr[Square::B8 as usize], Some(ColoredPiece::BlackKnight));
+        assert_eq!(b.sqr[Square::C8 as usize], Some(ColoredPiece::BlackBishop));
+        assert_eq!(b.sqr[Square::D8 as usize], Some(ColoredPiece::BlackQueen));
+        assert_eq!(b.sqr[Square::E8 as usize], Some(ColoredPiece::BlackKing));
+        assert_eq!(b.sqr[Square::F8 as usize], Some(ColoredPiece::BlackBishop));
+        assert_eq!(b.sqr[Square::G8 as usize], Some(ColoredPiece::BlackKnight));
+        assert_eq!(b.sqr[Square::H8 as usize], Some(ColoredPiece::BlackRook));
     }
 
     #[test]
-    fn to_fen() {
+    fn test_to_fen() {
         let b =
             Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
         assert_eq!(
