@@ -2,18 +2,18 @@
 
 #include <engine/constants.hpp>
 
-#include <iostream>
+#include <cstdint>
 #include <string>
-#include <vector>
 
-class Move
-{
+class Move {
 private:
   uint32_t _move_encoded;
 
 public:
   Move() : _move_encoded(0){};
-  Move(int source_square, int target_square, int piece, int captured_piece, int promoted_piece, bool is_double_push, bool is_en_passant, bool is_castle);
+  Move(int source_square, int target_square, int piece, int captured_piece,
+       int promoted_piece, bool is_double_push, bool is_en_passant,
+       bool is_castle);
 
   [[nodiscard]] Square get_from_square() const;
   [[nodiscard]] Square get_to_square() const;
@@ -30,12 +30,10 @@ public:
   [[nodiscard]] std::string get_uci() const;
 };
 
-inline bool operator==(const Move &m1, const Move &m2)
-{
+inline bool operator==(const Move &m1, const Move &m2) {
   return m1.get_encoded() == m2.get_encoded();
 }
 
-inline bool operator!=(const Move &m1, const Move &m2)
-{
+inline bool operator!=(const Move &m1, const Move &m2) {
   return m1.get_encoded() != m2.get_encoded();
 }
